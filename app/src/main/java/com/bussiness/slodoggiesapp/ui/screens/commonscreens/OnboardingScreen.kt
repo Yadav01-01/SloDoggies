@@ -19,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.OnboardingPage
 import kotlinx.coroutines.launch
@@ -42,9 +44,8 @@ val onboardingPages = listOf(
 )
 
 @Composable
-fun OnboardingScreen(
-    onFinish: () -> Unit
-) {
+fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
+
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { onboardingPages.size })
     val scope = rememberCoroutineScope()
 
@@ -164,9 +165,11 @@ fun OnboardingPageContent(page: OnboardingPage) {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun OnboardingScreenPreview() {
+    val navController = rememberNavController()
     OnboardingScreen(
         onFinish = {
             // No-op for preview
-        }
+        },
+        navController = navController
     )
 }

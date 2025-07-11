@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.bussiness.slodoggiesapp.ui.intro.SplashScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.OnboardingScreen
 
 @Composable
 fun NavGraph(navController: NavHostController, authNavController: NavHostController) {
@@ -20,6 +21,7 @@ fun NavGraph(navController: NavHostController, authNavController: NavHostControl
                 }
             )
         }
+        composable(Routes.ONBOARDING) { OnboardingScreen(authNavController) }
     }
 }
 
