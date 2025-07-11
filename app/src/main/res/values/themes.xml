@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.SloDoggiesApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.MyApp.Splash" parent="Theme.SplashScreen">
+        <!-- Customize background -->
+        <item name="windowSplashScreenBackground">@color/white</item>
+
+        <!-- Customize logo -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+
+        <!-- Optional: duration -->
+        <item name="postSplashScreenTheme">@style/Theme.SloDoggiesApp</item>
+    </style>
+
+</resources>
