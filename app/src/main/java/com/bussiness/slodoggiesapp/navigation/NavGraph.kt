@@ -21,7 +21,7 @@ fun NavGraph(navController: NavHostController, authNavController: NavHostControl
                 }
             )
         }
-        composable(Routes.ONBOARDING) { OnboardingScreen(authNavController) }
+        composable(Routes.ONBOARDING) { OnboardingScreen(authNavController, onFinish = {}) }
     }
 }
 

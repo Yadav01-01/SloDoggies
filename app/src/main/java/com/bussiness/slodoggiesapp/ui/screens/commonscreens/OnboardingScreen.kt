@@ -1,12 +1,17 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,10 +20,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
@@ -27,12 +35,12 @@ import kotlinx.coroutines.launch
 
 val onboardingPages = listOf(
     OnboardingPage(
-        imageRes = R.drawable.logo, // Replace with actual drawables
+        imageRes = R.drawable.onboard1, // Replace with actual drawables
         title = "Welcome to SloDoggies",
         description = "Discover a tail-wagging world where dog lovers and trusted local services connect."
     ),
     OnboardingPage(
-        imageRes = R.drawable.logo,
+        imageRes = R.drawable.onboard2,
         title = "Sniff Out Local Pet Pros",
         description = "Search for groomers, walkers, trainers, and more—powered by real reviews."
     ),
@@ -45,42 +53,28 @@ val onboardingPages = listOf(
 
 @Composable
 fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
-
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { onboardingPages.size })
     val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5)),
+            .background(Color.White),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.weight(1f)
         ) { page ->
-            OnboardingPageContent(onboardingPages[page])
+            OnboardingPageContent(
+                page = onboardingPages[page],
+                currentPage = pagerState.currentPage,
+                totalPages = onboardingPages.size
+            )
         }
 
-        // Custom pager indicator
-        Row(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(onboardingPages.size) { index ->
-                val color =
-                    if (pagerState.currentPage == index) Color(0xFF00897B) else Color.LightGray
-                Box(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(10.dp)
-                        .clip(CircleShape)
-                        .background(color)
-                )
-            }
-        }
+
+
 
         Column(
             modifier = Modifier
@@ -101,8 +95,8 @@ fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(12.dp),
+                    .height(48.dp),
+                shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00897B))
             ) {
                 Text(
@@ -124,52 +118,102 @@ fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
 }
 
 @Composable
-fun OnboardingPageContent(page: OnboardingPage) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+fun OnboardingPageContent(
+    page: OnboardingPage,
+    currentPage: Int,
+    totalPages: Int
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        // Top Image
         Image(
             painter = painterResource(id = page.imageRes),
-            contentDescription = null,
+            contentDescription = "Onboarding Image",
             modifier = Modifier
-                .height(350.dp)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp)),
+                .height(500.dp),
             contentScale = ContentScale.Crop
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        // Bottom Rounded White Card
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.38f)
+                .align(Alignment.BottomCenter)
+                .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
+                .background(Color.White)
+                .padding(horizontal = 24.dp, vertical = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
 
-        Text(
-            text = page.title,
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-            textAlign = TextAlign.Center,
-            color = Color.Black
-        )
+                Spacer(Modifier.height(25.dp))
+                // Custom Page Indicator ABOVE the title
+                PageIndicator(currentPage = currentPage, totalPages = totalPages)
 
-        Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = page.title,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    ),
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
+                )
 
-        Text(
-            text = page.description,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-            color = Color.DarkGray
-        )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = page.description,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                    textAlign = TextAlign.Center,
+                    color = Color.DarkGray
+                )
+            }
+        }
     }
 }
+
+@Composable
+fun PageIndicator(currentPage: Int, totalPages: Int) {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier.padding(bottom = 16.dp)
+    ) {
+        repeat(totalPages) { index ->
+            val isSelected = index == currentPage
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .height(10.dp)
+                    .width(if (isSelected) 24.dp else 16.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(
+                        if (isSelected) Color(0xFF00897B) else Color.Transparent
+                    )
+                    .border(
+                        width = 1.dp,
+                        color = if (isSelected) Color(0xFF00897B) else Color.Gray,
+                        shape = RoundedCornerShape(50)
+                    )
+            )
+        }
+    }
+}
+
+
+
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 fun OnboardingScreenPreview() {
     val navController = rememberNavController()
     OnboardingScreen(
-        onFinish = {
-            // No-op for preview
-        },
-        navController = navController
+        navController = navController,
+        onFinish = { /* No-op for preview */ }
     )
 }
