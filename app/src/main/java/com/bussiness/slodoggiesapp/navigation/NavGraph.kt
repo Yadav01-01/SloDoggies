@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.bussiness.slodoggiesapp.ui.intro.SplashScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.OnboardingScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.LocationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.NotificationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetMainScreen
