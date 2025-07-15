@@ -6,7 +6,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.bussiness.slodoggiesapp.ui.intro.SplashScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.OnboardingScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.LocationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.NotificationPermissionScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.PetMainScreen
 
 @Composable
 fun NavGraph(navController: NavHostController, authNavController: NavHostController) {
@@ -32,18 +34,24 @@ fun NavGraph(navController: NavHostController, authNavController: NavHostControl
             )
         }
        // composable(Routes.ONBOARDING) { OnboardingScreen(authNavController, onFinish = {}) }
+//        composable(Routes.NotificationAlert) {
+//            NotificationPermissionScreen(authNavController)
+//        }
+//        composable(Routes.LocationAlert) {
+//            LocationPermissionScreen(authNavController)
+//        }
+//        composable(Routes.PetMainScreen) {
+//            PetMainScreen(authNavController)
+//        }
+        // composable(Routes.ONBOARDING) { OnboardingScreen(authNavController, onFinish = {}) }
         composable(Routes.NotificationAlert) {
-            NotificationPermissionScreen(
-                onTurnOnClick = {
-                    // Handle turn on notifications action
-                    // You might want to navigate somewhere after enabling notifications
-                    authNavController.navigate(Routes.SPLASH)  // Example navigation
-                },
-                onNotNowClick = {
-                    // Handle "not now" action
-                    authNavController.navigate(Routes.SPLASH)  // Example navigation
-                }
-            )
+            NotificationPermissionScreen(navController)  // Pass navController instead of authNavController
+        }
+        composable(Routes.LocationAlert) {
+            LocationPermissionScreen(navController)  // Also changed this for consistency
+        }
+        composable(Routes.PetMainScreen) {
+            PetMainScreen(authNavController)  // Keep authNavController here if PetMainScreen needs it
         }
     }
 }
