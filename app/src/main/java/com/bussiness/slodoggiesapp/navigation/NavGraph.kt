@@ -28,6 +28,26 @@ fun NavGraph(navController: NavHostController) {
                 }
             )
         }
+       // composable(Routes.ONBOARDING) { OnboardingScreen(authNavController, onFinish = {}) }
+//        composable(Routes.NotificationAlert) {
+//            NotificationPermissionScreen(authNavController)
+//        }
+//        composable(Routes.LocationAlert) {
+//            LocationPermissionScreen(authNavController)
+//        }
+//        composable(Routes.PetMainScreen) {
+//            PetMainScreen(authNavController)
+//        }
+        // composable(Routes.ONBOARDING) { OnboardingScreen(authNavController, onFinish = {}) }
+        composable(Routes.NOTIFICATION_ALERT) {
+            NotificationPermissionScreen(navController)  // Pass navController instead of authNavController
+        }
+        composable(Routes.LOCATION_ALERT) {
+            LocationPermissionScreen(navController)  // Also changed this for consistency
+        }
+        composable(Routes.PET_MAIN_SCREEN) {
+            PetMainScreen(authNavController)  // Keep authNavController here if PetMainScreen needs it
+        }
         composable(Routes.ONBOARDING) { OnboardingScreen(navController, onFinish = {}) }
         composable(Routes.JOIN_THE_PACK) { JoinThePackScreen(navController) }
         composable(Routes.PHONE_AUTH_SCREEN) { PhoneAuthScreen(navController) }
