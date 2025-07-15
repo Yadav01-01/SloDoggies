@@ -27,8 +27,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.CommonBlueButton
-import com.bussiness.slodoggiesapp.ui.component.CommonWhiteButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 
 @Composable
 fun LocationPermissionScreen(

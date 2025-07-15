@@ -19,11 +19,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -61,21 +58,13 @@ import android.widget.MediaController
 import android.widget.VideoView
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.graphics.ColorFilter
-import com.bussiness.slodoggiesapp.ui.component.PetInfoDialog
-import com.bussiness.slodoggiesapp.ui.component.UserDetailsDialog
-import com.bussiness.slodoggiesapp.ui.component.WelcomeDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.UserDetailsDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.WelcomeDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 

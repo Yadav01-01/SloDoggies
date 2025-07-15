@@ -1,7 +1,5 @@
-package com.bussiness.slodoggiesapp.ui.component
+package com.bussiness.slodoggiesapp.ui.component.petOwner
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
