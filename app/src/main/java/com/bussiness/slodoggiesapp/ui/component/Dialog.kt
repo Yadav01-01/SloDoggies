@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
 
 @Composable
 fun WelcomeDialog(
@@ -288,21 +289,58 @@ fun PetInfoDialog(
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // Pet Name Field
+
+                    CustomOutlinedTextField(
+                        value = petName,
+                        onValueChange = { petName = it },
+                        placeholder = "Enter pet name",
+                        label = "Pet Name"
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Pet Breed Field
+
+                    CustomOutlinedTextField(
+                        value = petBreed,
+                        onValueChange = { petBreed = it },
+                        placeholder = "Enter Breed",
+                        label = "Pet Breed"
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Pet Age Dropdown
+
+                    CustomDropdownMenu(
+                        value = petAge,
+                        onValueChange = { petAge = it },
+                        options = ageOptions,
+                        label = "Pet Age",
+                        placeholder = "Enter pet age",
+                        isExpanded = showAgeDropdown,
+                        onExpandedChange = { showAgeDropdown = it }
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Pet Bio Field
                     Column {
                         Text(
-                            text = "Pet Name",
+                            text = "Pet Bio",
                             fontSize = 15.sp,
-
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             color = Color.Black,
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                         OutlinedTextField(
-                            value = petName,
-                            onValueChange = { petName = it },
-                            placeholder = { Text("Enter pet name", fontSize = 14.sp,fontFamily = FontFamily(Font(R.font.outfit_regular)), color = Color(0xFF949494)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = RoundedCornerShape(12.dp),
+                            value = petBio,
+                            onValueChange = { petBio = it },
+                            placeholder = { Text("Enter Bio", fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.outfit_regular)), color = Color(0xFF949494)) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp),
+                            maxLines = 4,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = Color(0xFF00ACC1),
                                 unfocusedBorderColor = Color(0xFF949494)
@@ -312,160 +350,17 @@ fun PetInfoDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Pet Breed Field
-                    Column {
-                        Text(
-                            text = "Pet Breed",
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        OutlinedTextField(
-                            value = petBreed,
-                            onValueChange = { petBreed = it },
-                            placeholder = { Text("Enter Breed", color = Color.Gray) },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF00ACC1),
-                                unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
-                            )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Pet Age Dropdown
-                    Column {
-                        Text(
-                            text = "Pet Age",
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        ExposedDropdownMenuBox(
-                            expanded = showAgeDropdown,
-                            onExpandedChange = { showAgeDropdown = !showAgeDropdown }
-                        ) {
-                            OutlinedTextField(
-                                value = petAge,
-                                onValueChange = {},
-                                readOnly = true,
-                                placeholder = { Text("Enter pet age", color = Color.Gray) },
-                                trailingIcon = {
-                                    Icon(
-                                        Icons.Default.ArrowDropDown,
-                                        contentDescription = "Dropdown",
-                                        tint = Color.Gray
-                                    )
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .menuAnchor(),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color(0xFF00ACC1),
-                                    unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
-                                )
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = showAgeDropdown,
-                                onDismissRequest = { showAgeDropdown = false }
-                            ) {
-                                ageOptions.forEach { option ->
-                                    DropdownMenuItem(
-                                        text = { Text(option) },
-                                        onClick = {
-                                            petAge = option
-                                            showAgeDropdown = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Pet Bio Field
-                    Column {
-                        Text(
-                            text = "Pet Bio",
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                        OutlinedTextField(
-                            value = petBio,
-                            onValueChange = { petBio = it },
-                            placeholder = { Text("Enter Bio", color = Color.Gray) },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp),
-                            maxLines = 4,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color(0xFF00ACC1),
-                                unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
-                            )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
                     // Managed By Dropdown
-                    Column {
-                        Text(
-                            text = "Managed By",
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            color = Color.Black,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
 
-                        ExposedDropdownMenuBox(
-                            expanded = showManagedByDropdown,
-                            onExpandedChange = { showManagedByDropdown = !showManagedByDropdown }
-                        ) {
-                            OutlinedTextField(
-                                value = managedBy,
-                                onValueChange = {},
-                                readOnly = true,
-                                trailingIcon = {
-                                    Icon(
-                                        Icons.Default.ArrowDropDown,
-                                        contentDescription = "Dropdown",
-                                        tint = Color.Gray
-                                    )
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .menuAnchor(),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color(0xFF00ACC1),
-                                    unfocusedBorderColor = Color.Gray.copy(alpha = 0.3f)
-                                )
-                            )
-
-                            ExposedDropdownMenu(
-                                expanded = showManagedByDropdown,
-                                onDismissRequest = { showManagedByDropdown = false }
-                            ) {
-                                managedByOptions.forEach { option ->
-                                    DropdownMenuItem(
-                                        text = { Text(option) },
-                                        onClick = {
-                                            managedBy = option
-                                            showManagedByDropdown = false
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
-
+                    CustomDropdownMenu(
+                        value = managedBy,
+                        onValueChange = { managedBy = it },
+                        options = managedByOptions,
+                        label = "Managed By",
+                        placeholder = "Select relationship",
+                        isExpanded = showManagedByDropdown,
+                        onExpandedChange = { showManagedByDropdown = it }
+                    )
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // Bottom Buttons
@@ -474,43 +369,23 @@ fun PetInfoDialog(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         // Skip Button
-                        TextButton(
-                            onClick = onDismiss,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = "Skip",
-                                color = Color.Gray,
-                                fontSize = 14.sp
-                            )
-                        }
 
-                        Spacer(modifier = Modifier.width(16.dp))
-                        
-                        Button(
+                        CommonWhiteButton(
+                            text = "Skip",
                             onClick = {
-                                val petInfo = PetInfo(
-                                    name = petName,
-                                    breed = petBreed,
-                                    age = petAge,
-                                    bio = petBio,
-                                    managedBy = managedBy
-                                )
-                                onSaveAndContinue(petInfo)
+                              //  navController.navigate(Routes.LOCATION_ALERT)  // Also changed this for consistency
                             },
                             modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF258694)
-                            ),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Text(
-                                text = "Save & Continue",
-                                color = Color.White,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                        }
+                        )
+                        CommonBlueButton(
+                            text = "Save & Continue ",
+                            fontSize = 22.sp,
+                            onClick = {
+                              //  navController.navigate(Routes.PET_MAIN_SCREEN)  // Now using navController instead of authNavController
+                            },
+                            modifier = Modifier.weight(1f),
+                        )
+
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -521,16 +396,16 @@ fun PetInfoDialog(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PetInfoDialogPreview() {
-    MaterialTheme {
-        PetInfoDialog(
-            onDismiss = {},
-            onSaveAndContinue = {}
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PetInfoDialogPreview() {
+//    MaterialTheme {
+//        PetInfoDialog(
+//            onDismiss = {},
+//            onSaveAndContinue = {}
+//        )
+//    }
+//}
 
 // Data class to hold pet information
 data class PetInfo(
@@ -540,6 +415,258 @@ data class PetInfo(
     val bio: String,
     val managedBy: String
 )
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserDetailsDialog(
+    onDismiss: () -> Unit = {},
+    onSubmit: () -> Unit = {}
+) {
+    var name by remember { mutableStateOf("") }
+    var mobileNumber by remember { mutableStateOf("+1 (555) 123 456") }
+    var email by remember { mutableStateOf("merrysglobalogales.com") }
+    var bio by remember { mutableStateOf("") }
+
+    Dialog(
+        onDismissRequest = onDismiss
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Close button at top-right
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_cross_icon),
+                    contentDescription = "Close",
+                    modifier = Modifier
+                        .clickable(onClick = onDismiss)
+                        .align(Alignment.TopEnd)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .padding(8.dp)
+                )
+            }
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    // Header
+                    Text(
+                        text = "Add Your Details",
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 24.dp)
+                    )
+
+                    // Add Photo Section
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier.size(80.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_black_profile_icon),
+                                contentDescription = "Add Photo",
+                                modifier = Modifier.size(70.dp)
+                            )
+
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_post_icon),
+                                contentDescription = "Add",
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .align(Alignment.BottomEnd)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Add Photo",
+                            fontSize = 15.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Name Field
+                    CustomOutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        placeholder = "Enter name",
+                        label = "Name"
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Mobile Number (read-only)
+                    Column {
+                        Text(
+                            text = "Mobile Number",
+                            fontSize = 15.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        OutlinedTextField(
+                            value = mobileNumber,
+                            onValueChange = {},
+                            readOnly = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFF00ACC1),
+                                unfocusedBorderColor = Color(0xFF949494)
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Email Field (read-only with verify button)
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Email",
+                                fontSize = 15.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                color = Color.Black
+                            )
+
+                            TextButton(onClick = { /* Verify email */ }) {
+                                Text(
+                                    text = "Verify",
+                                    color = Color(0xFF00ACC1),
+                                    fontFamily = FontFamily(Font(R.font.outfit_medium))
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+//                        OutlinedTextField(
+//                            value = email,
+//                            onValueChange = {},
+//                            readOnly = true,
+//                            modifier = Modifier.fillMaxWidth(),
+//                            colors = OutlinedTextFieldDefaults.colors(
+//                                focusedBorderColor = Color(0xFF00ACC1),
+//                                unfocusedBorderColor = Color(0xFF949494)
+//                            ),
+//                            shape = RoundedCornerShape(12.dp)
+//                        )
+                        OutlinedTextField(
+                            value = "merry@slodoggies.com",
+                            onValueChange = {},
+                            readOnly = true,
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFF00ACC1),
+                                unfocusedBorderColor = Color(0xFF949494)
+                            ),
+                            shape = RoundedCornerShape(12.dp),
+                            trailingIcon = {
+                                TextButton(
+                                    onClick = { /* Verify email */ },
+                                    modifier = Modifier.padding(end = 4.dp)
+                                ) {
+                                    Text(
+                                        text = "verify", // lowercase as shown in image
+                                        color = Color(0xFF00ACC1),
+                                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                        fontSize = 14.sp
+                                    )
+                                }
+                            }
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Bio Field
+                    Column {
+                        Text(
+                            text = "Bio",
+                            fontSize = 15.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        OutlinedTextField(
+                            value = bio,
+                            onValueChange = { bio = it },
+                            placeholder = { Text("Enter Bio...", color = Color(0xFF949494)) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp),
+                            maxLines = 4,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color(0xFF00ACC1),
+                                unfocusedBorderColor = Color(0xFF949494)
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    // Bottom Buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        CommonWhiteButton(
+                            text = "Skip",
+                            onClick = onDismiss,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        CommonBlueButton(
+                            text = "Submit",
+                            onClick = onSubmit,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun UserDetailsDialogPreview() {
+    MaterialTheme {
+        UserDetailsDialog(
+            onDismiss = {},
+            onSubmit = {}
+        )
+    }
+}
 
 //@Preview(showBackground = true)
 //@Composable

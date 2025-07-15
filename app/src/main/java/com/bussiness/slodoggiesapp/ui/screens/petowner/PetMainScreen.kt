@@ -74,6 +74,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.ColorFilter
 import com.bussiness.slodoggiesapp.ui.component.PetInfoDialog
+import com.bussiness.slodoggiesapp.ui.component.UserDetailsDialog
 import com.bussiness.slodoggiesapp.ui.component.WelcomeDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,9 +153,15 @@ fun PetMainScreen(authNavController: NavHostController){
                 )
             }}
         if (showPetInfoDialog) {
-            PetInfoDialog(
+//            PetInfoDialog(
+//                onDismiss = { showPetInfoDialog = false },
+//                onSaveAndContinue = { petInfo ->
+//                    // Handle pet info saving
+//                }
+//            )
+            UserDetailsDialog(
                 onDismiss = { showPetInfoDialog = false },
-                onSaveAndContinue = { petInfo ->
+                onSubmit = {
                     // Handle pet info saving
                 }
             )
