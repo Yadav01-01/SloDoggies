@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 
 data class NotificationItem(
@@ -38,7 +39,7 @@ data class NotificationItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotificationsScreen() {
+fun NotificationsScreen(navController: NavHostController) {
     val notifications = remember {
         listOf(
             NotificationItem(
@@ -277,6 +278,6 @@ fun NotificationItemRow(
 @Composable
 fun NotificationsScreenPreview() {
     MaterialTheme {
-        NotificationsScreen()
+        NotificationsScreen(navController)
     }
 }

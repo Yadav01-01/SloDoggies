@@ -16,10 +16,13 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.BusinessRegistrat
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.MainScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.PhoneAuthScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.VerifyOTPScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.LocationPermissionScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.NotificationsScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.PetMainScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
-    // Use both as needed
+
     NavHost(navController = navController, startDestination = Routes.SPLASH) {
         composable(Routes.SPLASH) {
             SplashScreen(onNavigateToNext = { navController.navigate(Routes.ONBOARDING) {
@@ -27,26 +30,6 @@ fun NavGraph(navController: NavHostController) {
                     }
                 }
             )
-        }
-       // composable(Routes.ONBOARDING) { OnboardingScreen(authNavController, onFinish = {}) }
-//        composable(Routes.NotificationAlert) {
-//            NotificationPermissionScreen(authNavController)
-//        }
-//        composable(Routes.LocationAlert) {
-//            LocationPermissionScreen(authNavController)
-//        }
-//        composable(Routes.PetMainScreen) {
-//            PetMainScreen(authNavController)
-//        }
-        // composable(Routes.ONBOARDING) { OnboardingScreen(authNavController, onFinish = {}) }
-        composable(Routes.NOTIFICATION_ALERT) {
-            NotificationPermissionScreen(navController)  // Pass navController instead of authNavController
-        }
-        composable(Routes.LOCATION_ALERT) {
-            LocationPermissionScreen(navController)  // Also changed this for consistency
-        }
-        composable(Routes.PET_MAIN_SCREEN) {
-            PetMainScreen(authNavController)  // Keep authNavController here if PetMainScreen needs it
         }
         composable(Routes.ONBOARDING) { OnboardingScreen(navController, onFinish = {}) }
         composable(Routes.JOIN_THE_PACK) { JoinThePackScreen(navController) }
@@ -62,6 +45,11 @@ fun NavGraph(navController: NavHostController) {
             val type = it.arguments?.getString("type") ?: "phone"
             VerifyOTPScreen(navController, type = VerificationType.valueOf(type.uppercase()))
         }
+
+        //vipin petowner
+        composable(Routes.NOTIFICATION_ALERT) { NotificationsScreen(navController) }
+        composable(Routes.LOCATION_ALERT) { LocationPermissionScreen(navController) }
+        composable(Routes.PET_MAIN_SCREEN) { PetMainScreen(navController) }
 
 
     }
