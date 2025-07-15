@@ -82,7 +82,7 @@ fun LocationPermissionScreen(
                 text = "Turn On",
                 fontSize = 22.sp,
                 onClick = {
-                    authNavController.navigate(Routes.LocationAlert)
+                    authNavController.navigate(Routes.LOCATION_ALERT)
                 }
             )
 
@@ -91,7 +91,7 @@ fun LocationPermissionScreen(
             CommonWhiteButton(
                 text = "NOT NOW",
                 onClick = {
-                    authNavController.navigate(Routes.LocationAlert)
+                    authNavController.navigate(Routes.LOCATION_ALERT)
                 }
             )
         }

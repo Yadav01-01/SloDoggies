@@ -27,7 +27,7 @@ fun NavGraph(navController: NavHostController, authNavController: NavHostControl
         composable(Routes.SPLASH) {
             SplashScreen(
                 onNavigateToNext = {
-                    navController.navigate(Routes.NotificationAlert) {
+                    navController.navigate(Routes.NOTIFICATION_ALERT) {
                         popUpTo(Routes.SPLASH) { inclusive = true }
                     }
                 }
@@ -44,13 +44,13 @@ fun NavGraph(navController: NavHostController, authNavController: NavHostControl
 //            PetMainScreen(authNavController)
 //        }
         // composable(Routes.ONBOARDING) { OnboardingScreen(authNavController, onFinish = {}) }
-        composable(Routes.NotificationAlert) {
+        composable(Routes.NOTIFICATION_ALERT) {
             NotificationPermissionScreen(navController)  // Pass navController instead of authNavController
         }
-        composable(Routes.LocationAlert) {
+        composable(Routes.LOCATION_ALERT) {
             LocationPermissionScreen(navController)  // Also changed this for consistency
         }
-        composable(Routes.PetMainScreen) {
+        composable(Routes.PET_MAIN_SCREEN) {
             PetMainScreen(authNavController)  // Keep authNavController here if PetMainScreen needs it
         }
     }

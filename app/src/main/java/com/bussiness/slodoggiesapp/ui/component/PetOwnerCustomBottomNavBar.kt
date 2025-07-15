@@ -45,11 +45,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 
 val bottomNavItems = listOf(
-    PetOwnerBottomNavItem("Home", R.drawable.pet_ic_home, Routes.PetHomeScreen),
-    PetOwnerBottomNavItem("Discover", R.drawable.pet_ic_discover, Routes.PetDiscoverScreen),
-    PetOwnerBottomNavItem("", R.drawable.pet_ic_post, Routes.PetPostScreen),
-    PetOwnerBottomNavItem("Services", R.drawable.pet_ic_sevice, Routes.PetServicesScreen),
-    PetOwnerBottomNavItem("Profile", R.drawable.pet_ic_profile, Routes.PetProfileScreen)
+    PetOwnerBottomNavItem("Home", R.drawable.pet_ic_home, Routes.PET_HOME_SCREEN),
+    PetOwnerBottomNavItem("Discover", R.drawable.pet_ic_discover, Routes.PET_DISCOVER_SCREEN),
+    PetOwnerBottomNavItem("", R.drawable.pet_ic_post, Routes.PET_POST_SCREEN),
+    PetOwnerBottomNavItem("Services", R.drawable.pet_ic_sevice, Routes.PET_SERVICES_SCREEN),
+    PetOwnerBottomNavItem("Profile", R.drawable.pet_ic_profile, Routes.PET_PROFILE_SCREEN)
 )
 
 //@RequiresApi(Build.VERSION_CODES.Q)
@@ -255,7 +255,7 @@ fun CustomBottomBar(
                 .offset(y = (-fabSize / 2))
                 .border(fabBorderSize, fabBorderColor, CircleShape),
             onClick = {
-                items.find { it.route == Routes.PetPostScreen }?.let { onItemClick(it) }
+                items.find { it.route == Routes.PET_POST_SCREEN }?.let { onItemClick(it) }
             },
             shape = CircleShape,
             containerColor = fabBackgroundColor,
@@ -337,7 +337,7 @@ fun PreviewCustomBottomBar() {
                 CustomBottomBar(
                     navController = mockNavController,
                     items = bottomNavItems,
-                    selectedRoute = Routes.PetHomeScreen,
+                    selectedRoute = Routes.PET_HOME_SCREEN,
                     onItemClick = { println("Clicked on ${it.label}") }
                 )
             }

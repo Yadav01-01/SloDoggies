@@ -204,7 +204,7 @@ fun NotificationPermissionScreen(
                 text = "Turn On",
                 fontSize = 22.sp,
                 onClick = {
-                    navController.navigate(Routes.PetMainScreen)  // Now using navController instead of authNavController
+                    navController.navigate(Routes.PET_MAIN_SCREEN)  // Now using navController instead of authNavController
                 }
             )
 
@@ -213,7 +213,7 @@ fun NotificationPermissionScreen(
             CommonWhiteButton(
                 text = "NOT NOW",
                 onClick = {
-                    navController.navigate(Routes.LocationAlert)  // Also changed this for consistency
+                    navController.navigate(Routes.LOCATION_ALERT)  // Also changed this for consistency
                 }
             )
         }
