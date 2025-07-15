@@ -63,6 +63,8 @@ dependencies {
     //Accompanist
     implementation (libs.accompanist.pager)
     implementation (libs.accompanist.pager.indicators)
+    //chip
+    implementation (libs.accompanist.flowlayout)
 
 
 

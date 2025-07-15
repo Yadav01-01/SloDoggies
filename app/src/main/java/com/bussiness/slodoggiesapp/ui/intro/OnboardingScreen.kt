@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.commonscreens
+package com.bussiness.slodoggiesapp.ui.intro
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

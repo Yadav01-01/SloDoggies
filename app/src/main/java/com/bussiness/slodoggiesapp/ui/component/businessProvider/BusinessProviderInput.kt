@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
@@ -137,7 +140,7 @@ fun ContinueButton(
             .fillMaxWidth()
             .height(50.dp)
             .clip(RoundedCornerShape(10.dp))
-            .background(PrimaryColor)
+            .background(backgroundColor)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -227,6 +230,31 @@ fun OtpInputField(
                 .fillMaxWidth()
                 .height(1.dp)
                 .focusable()
+        )
+    }
+}
+
+@Composable
+fun SubmitButton(modifier: Modifier = Modifier,buttonText : String, onClickButton : () -> Unit,buttonTextSize : Int = 15){
+    Button(
+        onClick = onClickButton,
+        modifier = modifier
+            .height(42.dp)
+            .fillMaxWidth()
+            .padding(start = 9.dp, end = 9.dp),
+        colors = ButtonDefaults.buttonColors(
+            PrimaryColor,
+            contentColor = Color.White
+        ),
+        shape = RoundedCornerShape(10.dp),
+        elevation = ButtonDefaults.buttonElevation(4.dp)
+    ) {
+        Text(
+            text = buttonText,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            fontSize = buttonTextSize.sp,
+            textAlign = TextAlign.Center,
+            color = Color.White
         )
     }
 }

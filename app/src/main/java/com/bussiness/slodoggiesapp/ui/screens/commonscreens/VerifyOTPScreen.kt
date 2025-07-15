@@ -36,6 +36,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.VerificationType
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OtpInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
@@ -119,10 +120,9 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
     )
 }
 
-
             Spacer(Modifier.height(22.dp))
 
-            ContinueButton ( onClick = {  }, text = "Verify",backgroundColor = if (otp.length == 4) PrimaryColor else Color(0xFFD9D9D9),
+            ContinueButton ( onClick = { navController.navigate(Routes.BUSINESS_REGISTRATION) }, text = "Verify",backgroundColor = if (otp.length == 4) PrimaryColor else Color(0xFFD9D9D9),
                 textColor = if (otp.length == 4) Color.White else Color(0xFF686868), iconColor = if (otp.length == 4) Color.White else Color(0xFF686868) )
 
             Spacer(Modifier.height(25.dp))

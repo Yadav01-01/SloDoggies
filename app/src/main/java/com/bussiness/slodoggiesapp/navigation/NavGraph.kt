@@ -10,12 +10,15 @@ import com.bussiness.slodoggiesapp.model.VerificationType
 import com.bussiness.slodoggiesapp.ui.intro.SplashScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.EmailLoginScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.JoinThePackScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.OnboardingScreen
+import com.bussiness.slodoggiesapp.ui.intro.OnboardingScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.AddServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.BusinessRegistrationScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.MainScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.PhoneAuthScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.VerifyOTPScreen
 
 @Composable
-fun NavGraph(navController: NavHostController, authNavController: NavHostController) {
+fun NavGraph(navController: NavHostController) {
     // Use both as needed
     NavHost(navController = navController, startDestination = Routes.SPLASH) {
         composable(Routes.SPLASH) {
@@ -29,6 +32,9 @@ fun NavGraph(navController: NavHostController, authNavController: NavHostControl
         composable(Routes.JOIN_THE_PACK) { JoinThePackScreen(navController) }
         composable(Routes.PHONE_AUTH_SCREEN) { PhoneAuthScreen(navController) }
         composable(Routes.EMAIL_AUTH_SCREEN) { EmailLoginScreen(navController) }
+        composable(Routes.BUSINESS_REGISTRATION){ BusinessRegistrationScreen(navController) }
+        composable(Routes.ADD_SERVICE){ AddServiceScreen(navController) }
+        composable(Routes.MAIN_SCREEN){ MainScreen(navController) }
         composable(
             route = "${Routes.VERIFY_OTP}/{type}",
             arguments = listOf(navArgument("type") { type = NavType.StringType })
