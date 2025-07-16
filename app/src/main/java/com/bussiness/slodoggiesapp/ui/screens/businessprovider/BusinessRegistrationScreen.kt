@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
@@ -57,7 +58,6 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.google.accompanist.flowlayout.FlowRow
-import java.text.Normalizer.Form
 
 @Composable
 fun BusinessRegistrationScreen(navController: NavHostController){

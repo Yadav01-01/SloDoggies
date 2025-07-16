@@ -19,11 +19,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -35,21 +40,26 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
 fun JoinThePackScreen(
     navController: NavHostController
 ) {
+    var selectedOption by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
-        // Main content centered
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -87,27 +97,33 @@ fun JoinThePackScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+                // Pet Professional
                 OptionCard(
                     imageRes = R.drawable.petprofessional_ic,
                     label = "Pet Professional",
-                    isSelected = true,
+                    isSelected = selectedOption == "Pet Professional",
                     onClick = {
+                        selectedOption = "Pet Professional"
+                        sessionManager.setUserType(UserType.BUSINESS_PROVIDER)
                         navController.navigate(Routes.PHONE_AUTH_SCREEN)
                     }
                 )
 
+                // Pet Owner
                 OptionCard(
                     imageRes = R.drawable.petownner_ic,
                     label = "Pet Owner",
-                    isSelected = false,
+                    isSelected = selectedOption == "Pet Owner",
                     onClick = {
+                        selectedOption = "Pet Owner"
+                        sessionManager.setUserType(UserType.PET_OWNER)
                         navController.navigate(Routes.PHONE_AUTH_SCREEN)
                     }
                 )
             }
         }
 
-        // Paw icon positioned bottom-end
+        // Paw icon
         Image(
             painter = painterResource(id = R.drawable.paw_ic),
             contentDescription = null,
@@ -119,6 +135,7 @@ fun JoinThePackScreen(
         )
     }
 }
+
 
 
 

@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 
 data class NotificationItem(
@@ -277,7 +278,8 @@ fun NotificationItemRow(
 @Preview(showBackground = true)
 @Composable
 fun NotificationsScreenPreview() {
+    val navController = rememberNavController()
     MaterialTheme {
-        NotificationsScreen(navController)
+    NotificationsScreen(navController)
     }
 }

@@ -126,20 +126,20 @@ fun PetMainScreen(authNavController: NavHostController){
         ) {
 
             if (showSuccessDialog) {
-                WelcomeDialog(
-                    onDismiss = { showSuccessDialog = false
-                        showPetInfoDialog = true
-                         },
-                    onSubmitClick = {
-                        showSuccessDialog = false
-//                        navController.navigate(Routes.MAIN_SCREEN) {
-//                            popUpTo(Routes.LOGIN) { inclusive = true }
-//                        }
-                    },
-                    title = "Welcome to SloDoggies!",
-                    description = "We're excited you're here!  Rather than excited to have you. Thanks",
-                    button = "Get Started"
-                )
+//                WelcomeDialog(
+//                    onDismiss = { showSuccessDialog = false
+//                        showPetInfoDialog = true
+//                         },
+//                    onSubmitClick = {
+//                        showSuccessDialog = false
+////                        navController.navigate(Routes.MAIN_SCREEN) {
+////                            popUpTo(Routes.LOGIN) { inclusive = true }
+////                        }
+//                    },
+//                    title = "Welcome to SloDoggies!",
+//                    description = "We're excited you're here!  Rather than excited to have you. Thanks",
+//                    button = "Get Started"
+//                )
             }}
         if (showPetInfoDialog) {
 //            PetInfoDialog(
@@ -148,12 +148,12 @@ fun PetMainScreen(authNavController: NavHostController){
 //                    // Handle pet info saving
 //                }
 //            )
-            UserDetailsDialog(
-                onDismiss = { showPetInfoDialog = false },
-                onSubmit = {
-                    // Handle pet info saving
-                }
-            )
+//            UserDetailsDialog(
+//                onDismiss = { showPetInfoDialog = false },
+//                onSubmit = {
+//                    // Handle pet info saving
+//                }
+      //      )
         }
     }
 
@@ -794,8 +794,4 @@ private fun PostImage(
             }
         }
     }
-
-
-
-
 }

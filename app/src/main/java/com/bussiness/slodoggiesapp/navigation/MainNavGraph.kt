@@ -5,10 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.DiscoverScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.HomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.ProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.ServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.PersonDetailScreen
 
 @Composable
 fun MainNavGraph(
@@ -24,5 +25,6 @@ fun MainNavGraph(
         composable(Routes.DISCOVER_SCREEN) { DiscoverScreen(navController) }
         composable(Routes.SERVICES_SCREEN) { ServiceScreen(navController) }
         composable(Routes.PROFILE_SCREEN) { ProfileScreen(navController) }
+        composable(Routes.PERSON_DETAIL_SCREEN) { PersonDetailScreen(navController) }
     }
 }
