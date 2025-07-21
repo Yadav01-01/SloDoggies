@@ -238,7 +238,7 @@ fun OtpInputField(
 }
 
 @Composable
-fun SubmitButton(modifier: Modifier = Modifier,buttonText : String, onClickButton : () -> Unit,buttonTextSize : Int = 15){
+fun     SubmitButton(modifier: Modifier = Modifier,buttonText : String, onClickButton : () -> Unit,buttonTextSize : Int = 15){
     Button(
         onClick = onClickButton,
         modifier = modifier

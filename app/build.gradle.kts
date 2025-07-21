@@ -65,11 +65,14 @@ dependencies {
     implementation (libs.accompanist.pager.indicators)
     //chip
     implementation (libs.accompanist.flowlayout)
-
-    implementation ("androidx.media3:media3-exoplayer:1.3.0")
-    implementation ("androidx.media3:media3-ui:1.3.0")
+    //exoplayer
+    implementation (libs.androidx.media3.exoplayer)
+    implementation (libs.androidx.media3.ui)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
-    implementation ("androidx.media3:media3-exoplayer:1.3.1")
-    implementation ("androidx.media3:media3-ui:1.3.1")
+    implementation (libs.androidx.media3.exoplayer.v131)
+    implementation (libs.androidx.media3.ui.v131)
+    //coil
+    implementation(libs.coil.compose)
+
 
 }

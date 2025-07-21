@@ -7,9 +7,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.HomeScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.ProfileScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.ServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.PersonDetailScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.PostScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.EditProfileScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.FollowerScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.SponsoredAdsScreen
 
 @Composable
 fun MainNavGraph(
@@ -26,5 +30,9 @@ fun MainNavGraph(
         composable(Routes.SERVICES_SCREEN) { ServiceScreen(navController) }
         composable(Routes.PROFILE_SCREEN) { ProfileScreen(navController) }
         composable(Routes.PERSON_DETAIL_SCREEN) { PersonDetailScreen(navController) }
+        composable(Routes.FOLLOWER_SCREEN) { FollowerScreen(navController) }
+        composable(Routes.SPONSORED_ADS_SCREEN) { SponsoredAdsScreen(navController) }
+        composable(Routes.EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
+        composable(Routes.POST_SCREEN) { PostScreen(navController) }
     }
 }

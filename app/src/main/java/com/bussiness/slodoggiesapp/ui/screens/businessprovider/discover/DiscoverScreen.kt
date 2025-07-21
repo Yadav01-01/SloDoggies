@@ -2,7 +2,9 @@ package com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FilterChip
@@ -35,11 +39,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.EventPost
+import com.bussiness.slodoggiesapp.model.PetPlaceItem
 import com.bussiness.slodoggiesapp.model.SearchResult
+import com.bussiness.slodoggiesapp.model.SocialPost
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ActivityPostCard
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.FilterChipBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HashtagChip
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetPlaceCard
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchBar
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchResultItem
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.SocialEventCard
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
@@ -47,6 +58,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 fun DiscoverScreen(navController: NavHostController) {
     var query by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("Pets Near You") }
+    val categories = listOf("Pets Near You", "Events", "Pet Places", "Activities")
 
     val searchResults = remember {
         mutableStateListOf(
@@ -55,13 +67,12 @@ fun DiscoverScreen(navController: NavHostController) {
             SearchResult("Buddy John", "Trainer", R.drawable.sample_user)
         )
     }
-    var controller = navController
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(16.dp)
+            .padding(horizontal = 12.dp)
     ) {
         // Search Bar
         SearchBar(query = query, onQueryChange = { query = it }, placeholder = "Search")
@@ -79,48 +90,34 @@ fun DiscoverScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(12.dp))
 
         // Category Filters
-        val categories = listOf("Pets Near You", "Events", "Pet Places", "Activities")
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyRow(
+            modifier = Modifier,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             items(categories) { category ->
                 val isSelected = selectedCategory == category
 
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { selectedCategory = category },
-                    label = {
-                        Text(
-                            text = category,
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                                color = if (isSelected) Color.White else TextGrey,
-                                fontFamily = FontFamily(Font(R.font.outfit_regular))
-                            )
-                        )
-                    },
-                    modifier = Modifier
-                        .height(40.dp)
-                        .border(
-                            width = 1.dp,
-                            color = if (isSelected) PrimaryColor else TextGrey,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clip(RoundedCornerShape(11.dp)),
-                    colors = FilterChipDefaults.filterChipColors(
-                        containerColor = Color.White,
-                        selectedContainerColor = PrimaryColor,
-                        labelColor = if (isSelected) Color.White else TextGrey,
-                        selectedLabelColor = Color.White
+                Box(modifier = Modifier
+                    .clickable { selectedCategory = category }
+                ) {
+                    FilterChipBox(
+                        text = category,
+                        borderColor = if (isSelected) PrimaryColor else TextGrey,
+                        backgroundColor = if (isSelected) PrimaryColor else Color.White,
+                        textColor = if (isSelected) Color.White else TextGrey
                     )
-                )
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(15.dp))
 
         when (selectedCategory) {
-            "Pets Near You" -> ShowPetsNearYou(searchResults,controller)
-            else -> ShowGeneralResults(searchResults,controller)
+            "Pets Near You" -> ShowPetsNearYou(searchResults, navController)
+            "Pet Places" -> PetPlacesResults()
+            "Activities" -> ActivityCard()
+            "Events" -> EventsResult()
+            else -> ShowGeneralResults(searchResults, navController)
         }
     }
 }
@@ -163,6 +160,141 @@ fun ShowGeneralResults(results: List<SearchResult>, controller: NavHostControlle
         }
     }
 }
+@Composable
+fun PetPlacesResults() {
+    val petDummyPlace = remember {
+        listOf(
+            PetPlaceItem(R.drawable.place_ic, "Highway 1 Road Trip", "San Luis Obispo", "10 km"),
+            PetPlaceItem(R.drawable.place_ic, "Avila Beach", "San Luis Obispo", "10 km"),
+            PetPlaceItem(R.drawable.place_ic, "El Chorro Dog Park", "San Luis Obispo", "30 km"),
+            PetPlaceItem(R.drawable.place_ic, "Springdale Pet Ranch", "San Luis Obispo", "40 km"),
+            PetPlaceItem(R.drawable.place_ic, "El Chorro Dog Park", "San Luis Obispo", "30 km"),
+            PetPlaceItem(R.drawable.place_ic, "Springdale Pet Ranch", "San Luis Obispo", "40 km"),
+            PetPlaceItem(R.drawable.place_ic, "El Chorro Dog Park", "San Luis Obispo", "30 km"),
+            PetPlaceItem(R.drawable.place_ic, "Springdale Pet Ranch", "San Luis Obispo", "40 km"),
+        )
+    }
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxSize(),
+
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(petDummyPlace.size) { index ->
+            PetPlaceCard(placeItem = petDummyPlace[index])
+        }
+    }
+}
+
+@Composable
+fun ActivityCard() {
+    val samplePosts = remember {
+        listOf(
+            SocialPost(R.drawable.user_ic, "Alena Geidt", "5 Days", "Dog Beach Adventures", "Avila Beach – Fun day with your pet at the coast!", R.drawable.dog3),
+            SocialPost(R.drawable.user_ic, "Alena Geidt", "2 Days", "Pet-Friendly Hiking", "Cerro San Luis Trail - Hike with your furry friend.", R.drawable.dog3),
+            SocialPost(R.drawable.user_ic, "Alena Geidt", "5 Days","Dog Beach Adventures", "Avila Beach – Fun day with your pet at the coast!", R.drawable.dog3),
+            SocialPost(R.drawable.user_ic, "Alena", "8 Days", "Dog Beach Adventures", "Cerro San Luis Trail - Hike with your furry friend.", R.drawable.dog3)
+        )
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(samplePosts) { post ->
+            ActivityPostCard(post = post)
+        }
+    }
+}
+
+@Composable
+fun EventsResult() {
+
+    val sampleEvents = listOf(
+        EventPost(
+            userName = "Lydia Vaccaro with Wixx",
+            userImage = R.drawable.user_ic,
+            postImage = R.drawable.post_img,
+            label = "Pet Mom",
+            time = "5 Min.",
+            eventTitle = "Event Title",
+            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+            eventDuration = "30 Mins.",
+            location = "San Luis Obispo County",
+            onClickFollow = {},
+            onClickMore = {},
+            eventDate = "May 25, 4:00 PM",
+            onClickLike = {},
+            onClickComment = {},
+            onClickShare = {}
+        ),
+        EventPost(
+            userName = "Lydia Vaccaro with Wixx",
+            userImage = R.drawable.user_ic,
+            postImage = R.drawable.post_img,
+            label = "Pet Mom",
+            time = "5 Min.",
+            eventTitle = "Event Title",
+            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+            eventDuration = "30 Mins.",
+            location = "San Luis Obispo County",
+            onClickFollow = {},
+            onClickMore = {},
+            eventDate = "May 25, 4:00 PM",
+            onClickLike = {},
+            onClickComment = {},
+            onClickShare = {}
+        ),
+        EventPost(
+            userName = "Lydia Vaccaro with Wixx",
+            userImage = R.drawable.user_ic,
+            postImage = R.drawable.post_img,
+            label = "Pet Mom",
+            time = "5 Min.",
+            eventTitle = "Event Title",
+            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+            eventDuration = "30 Mins.",
+            location = "San Luis Obispo County",
+            onClickFollow = {},
+            onClickMore = {},
+            eventDate = "May 25, 4:00 PM",
+            onClickLike = {},
+            onClickComment = {},
+            onClickShare = {}
+        ),
+        EventPost(
+            userName = "Lydia Vaccaro with Wixx",
+            userImage = R.drawable.user_ic,
+            postImage = R.drawable.post_img,
+            label = "Pet Mom",
+            time = "5 Min.",
+            eventTitle = "Event Title",
+            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+            eventDuration = "30 Mins.",
+            location = "San Luis Obispo County",
+            onClickFollow = {},
+            onClickMore = {},
+            eventDate = "May 25, 4:00 PM",
+            onClickLike = {},
+            onClickComment = {},
+            onClickShare = {}
+        ),
+
+    )
+
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(sampleEvents) { event ->
+            SocialEventCard( event = event )
+        }
+    }
+}
+
+
 
 
 
