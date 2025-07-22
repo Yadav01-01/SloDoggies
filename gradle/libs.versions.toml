@@ -2,6 +2,7 @@
 accompanistFlowlayout = "0.28.0"
 accompanistPager = "0.36.0"
 agp = "8.10.1"
+coilCompose = "2.4.0"
 coreSplashscreen = "1.0.1"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
@@ -11,6 +12,9 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
 composeBom = "2024.09.00"
+media3Exoplayer = "1.7.1"
+media3ExoplayerVersion = "1.3.1"
+media3Ui = "1.3.1"
 navigationCompose = "2.9.1"
 
 [libraries]
@@ -19,7 +23,12 @@ accompanist-pager = { module = "com.google.accompanist:accompanist-pager", versi
 accompanist-pager-indicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistPager" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
+androidx-media3-exoplayer-v131 = { module = "androidx.media3:media3-exoplayer", version.ref = "media3ExoplayerVersion" }
+androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
+androidx-media3-ui-v131 = { module = "androidx.media3:media3-ui", version.ref = "media3Ui" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

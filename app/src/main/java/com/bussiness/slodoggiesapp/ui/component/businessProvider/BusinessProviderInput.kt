@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.component.businessProvider
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,11 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -235,7 +238,7 @@ fun OtpInputField(
 }
 
 @Composable
-fun SubmitButton(modifier: Modifier = Modifier,buttonText : String, onClickButton : () -> Unit,buttonTextSize : Int = 15){
+fun     SubmitButton(modifier: Modifier = Modifier,buttonText : String, onClickButton : () -> Unit,buttonTextSize : Int = 15){
     Button(
         onClick = onClickButton,
         modifier = modifier
@@ -247,6 +250,56 @@ fun SubmitButton(modifier: Modifier = Modifier,buttonText : String, onClickButto
             contentColor = Color.White
         ),
         shape = RoundedCornerShape(10.dp),
+        elevation = ButtonDefaults.buttonElevation(4.dp)
+    ) {
+        Text(
+            text = buttonText,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            fontSize = buttonTextSize.sp,
+            textAlign = TextAlign.Center,
+            color = Color.White
+        )
+    }
+}
+
+@Composable
+fun OutlineCustomButton(modifier: Modifier,onClick: () -> Unit,text: String) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier
+            .height(34.dp)
+            .fillMaxWidth()
+            .padding(start = 9.dp, end = 9.dp)
+            .clip(RoundedCornerShape(6.dp)),
+        border = BorderStroke(1.dp, PrimaryColor),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.White,
+            contentColor = PrimaryColor
+        ),
+        shape = RoundedCornerShape(6.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            color = PrimaryColor
+        )
+    }
+}
+
+@Composable
+fun FilledCustomButton(modifier: Modifier = Modifier,buttonText : String, onClickFilled : () -> Unit,buttonTextSize : Int = 15){
+    Button(
+        onClick = onClickFilled,
+        modifier = modifier
+            .height(34.dp)
+            .fillMaxWidth()
+            .padding(start = 9.dp, end = 9.dp),
+        colors = ButtonDefaults.buttonColors(
+            PrimaryColor,
+            contentColor = Color.White
+        ),
+        shape = RoundedCornerShape(6.dp),
         elevation = ButtonDefaults.buttonElevation(4.dp)
     ) {
         Text(

@@ -78,7 +78,7 @@ fun AddServiceScreen(navController: NavHostController) {
 
             Spacer(Modifier.height(25.dp))
 
-        SubmitButton(modifier = Modifier, buttonText = "Add Service", onClickButton = { navController.navigate(Routes.MAIN_SCREEN) }, buttonTextSize = 15)
+        SubmitButton(modifier = Modifier, buttonText = "Add Service", onClickButton = { navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) }, buttonTextSize = 15)
         }
     }
 }

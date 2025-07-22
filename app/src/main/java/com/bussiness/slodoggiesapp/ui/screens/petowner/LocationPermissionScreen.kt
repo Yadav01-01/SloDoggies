@@ -31,9 +31,7 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 
 @Composable
-fun LocationPermissionScreen(
-    authNavController: NavHostController
-) {
+fun LocationPermissionScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -78,22 +76,11 @@ fun LocationPermissionScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            CommonBlueButton(
-                text = "Turn On",
-                fontSize = 22.sp,
-                onClick = {
-                    authNavController.navigate(Routes.LOCATION_ALERT)
-                }
-            )
+            CommonBlueButton(text = "Turn On", fontSize = 22.sp, onClick = { navController.navigate(Routes.MAIN_SCREEN) })
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CommonWhiteButton(
-                text = "NOT NOW",
-                onClick = {
-                    authNavController.navigate(Routes.LOCATION_ALERT)
-                }
-            )
+            CommonWhiteButton(text = "NOT NOW", onClick = { navController.navigate(Routes.MAIN_SCREEN) })
         }
 
         Box(

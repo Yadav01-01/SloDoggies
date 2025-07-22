@@ -87,7 +87,7 @@ fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 12.dp)
+                .padding(horizontal = 24.dp, vertical = 10.dp)
         ) {
             val isLastPage = pagerState.currentPage == onboardingPages.lastIndex
 
@@ -179,11 +179,11 @@ fun OnboardingPageContent(
                 verticalArrangement = Arrangement.Top
             ) {
 
-                Spacer(Modifier.height(25.dp))
+                Spacer(Modifier.height(20.dp))
                 // Custom Page Indicator ABOVE the title
                 PageIndicator(currentPage = currentPage, totalPages = totalPages)
 
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(13.dp))
 
                 Text(
                     text = page.title,

@@ -82,14 +82,6 @@ fun CommonWhiteButton(
     }
 }
 
-
-
-
-
-
-
-
-
 @Composable
 fun CustomOutlinedTextField(
     value: String,

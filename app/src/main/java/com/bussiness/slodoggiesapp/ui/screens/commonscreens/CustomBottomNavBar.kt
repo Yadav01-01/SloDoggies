@@ -53,7 +53,7 @@ fun CustomBottomBar(
         // Bottom container with top teal strip and rounded corners
         Column(modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Transparent)
+                .background(Color.White)
         ) {
             // Top Teal Strip
             Box(
@@ -72,7 +72,7 @@ fun CustomBottomBar(
                 shadowElevation = 4.dp
             ) {
                 Row(
-                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(bottom = 12.dp),
+                    modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
