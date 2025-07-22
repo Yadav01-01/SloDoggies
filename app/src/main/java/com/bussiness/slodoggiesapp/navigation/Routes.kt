@@ -12,6 +12,13 @@ object Routes {
     const val PET_SERVICES_SCREEN = "petServicesScreen"
     const val PET_PROFILE_SCREEN = "petProfileScreen"
     const val PET_MAIN_SCREEN = "PetMainScreen"
+    const val SERVICE_PROVIDER_DETAILS = "serviceProviderDetails"
+    const val PROFILE_FOLLOWER_FOLLOWING = "ProfileFollowerAndFollowingScreen"
+    const val EDIT_PET_PROFILE_SCREEN = "EditPetProfileScreen"
+    const val EDIT_PROFILE_SCREEN = "EditProfileScreen"
+    const val PET_SETTINGS_SCREEN = "PetSettingsScreen"
+    const val PET_SAVED_SCREEN = "PetSavedScreen"
+
 
     const val JOIN_THE_PACK = "joinThePack"
     const val PHONE_AUTH_SCREEN = "phoneAuth"
