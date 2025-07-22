@@ -38,7 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
 
 
 @Composable

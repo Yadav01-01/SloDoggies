@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -49,10 +49,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonBlueButton
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonWhiteButton
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CustomOutlinedTextField
-import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.PetProfileScreen
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
 import com.joelkanyi.jcomposecountrycodepicker.component.KomposeCountryCodePicker
 import com.joelkanyi.jcomposecountrycodepicker.component.rememberKomposeCountryCodePickerState
 

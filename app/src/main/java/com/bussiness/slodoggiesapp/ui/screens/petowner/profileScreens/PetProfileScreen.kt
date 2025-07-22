@@ -61,9 +61,8 @@ import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.ProfileItem
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBar
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBarProfile
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog.PetInfoDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBarProfile
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.PetInfoDialog
 import kotlinx.coroutines.delay
 
 // Sample photo URLs - replace with your actual image URLs

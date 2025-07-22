@@ -5,7 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.DiscoverScreen
+
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetHomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetServicesScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditPetProfileScreen

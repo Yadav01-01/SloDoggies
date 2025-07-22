@@ -64,8 +64,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog.Comment
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog.CommentsDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.component.shareApp
 
 

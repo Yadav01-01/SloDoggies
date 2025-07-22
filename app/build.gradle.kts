@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.testing)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,6 +73,6 @@ dependencies {
     implementation (libs.androidx.media3.ui.v131)
     //coil
     implementation(libs.coil.compose)
-    implementation("io.github.joelkanyi:komposecountrycodepicker:1.4.3")
+    implementation(libs.komposecountrycodepicker)
 
 }

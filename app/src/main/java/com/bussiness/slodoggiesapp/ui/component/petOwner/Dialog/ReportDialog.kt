@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonBlueButton
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonWhiteButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 
 
 @Composable

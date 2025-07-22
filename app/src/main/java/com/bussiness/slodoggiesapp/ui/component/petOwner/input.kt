@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:app/src/main/java/com/bussiness/slodoggiesapp/ui/component/petOwner/input.kt
 package com.bussiness.slodoggiesapp.ui.component.petOwner
-========
-package com.bussiness.slodoggiesapp.ui.component.PetOwner
->>>>>>>> vipinBranch:app/src/main/java/com/bussiness/slodoggiesapp/ui/component/PetOwner/input.kt
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -31,20 +27,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-<<<<<<<< HEAD:app/src/main/java/com/bussiness/slodoggiesapp/ui/component/petOwner/input.kt
-========
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
->>>>>>>> vipinBranch:app/src/main/java/com/bussiness/slodoggiesapp/ui/component/PetOwner/input.kt
 
 
 @Composable

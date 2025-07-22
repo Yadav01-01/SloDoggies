@@ -19,7 +19,10 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.*
 import com.bussiness.slodoggiesapp.ui.screens.petowner.LocationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.NotificationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.NotificationsScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.PetHomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetMainScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.PetServicesScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
@@ -53,7 +56,11 @@ fun NavGraph(navController: NavHostController) {
             }
 
             // petOwner
-            composable(Routes.NOTIFICATION_PERMISSION_SCREEN) { NotificationPermissionScreen(navController) }
+            composable(Routes.NOTIFICATION_PERMISSION_SCREEN) {
+                NotificationPermissionScreen(
+                    navController
+                )
+            }
             composable(Routes.LOCATION_PERMISSION_SCREEN) { LocationPermissionScreen(navController) }
             composable(Routes.PET_MAIN_SCREEN) { PetMainScreen(navController) }
             composable(Routes.PET_MAIN_SCREEN) {

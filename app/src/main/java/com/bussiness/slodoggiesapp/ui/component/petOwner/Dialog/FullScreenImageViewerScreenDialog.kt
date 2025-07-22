@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
