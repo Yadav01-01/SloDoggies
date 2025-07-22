@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog.FullScreenImageViewerScreen
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.FullScreenImageViewerScreen
 
 
 @Composable

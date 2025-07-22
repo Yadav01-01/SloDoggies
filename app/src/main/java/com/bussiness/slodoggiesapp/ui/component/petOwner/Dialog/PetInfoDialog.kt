@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -18,8 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,10 +38,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.PetInfo
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonBlueButton
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonWhiteButton
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CustomDropdownMenu
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CustomOutlinedTextField
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
 
 
 @Composable

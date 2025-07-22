@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
 
 
 

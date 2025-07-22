@@ -30,6 +30,7 @@ import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 
+
 @Composable
 fun LocationPermissionScreen(navController: NavHostController) {
     Box(

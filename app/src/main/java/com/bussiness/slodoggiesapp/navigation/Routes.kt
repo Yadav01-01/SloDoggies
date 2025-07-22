@@ -31,7 +31,7 @@ object Routes {
     const val SERVICE_PROVIDER_DETAILS = "serviceProviderDetails"
     const val PROFILE_FOLLOWER_FOLLOWING = "ProfileFollowerAndFollowingScreen"
     const val EDIT_PET_PROFILE_SCREEN = "EditPetProfileScreen"
-    const val EDIT_PROFILE_SCREEN = "EditProfileScreen"
+    const val PET_EDIT_PROFILE_SCREEN = "PetEditProfileScreen"
     const val PET_SETTINGS_SCREEN = "PetSettingsScreen"
     const val PET_SAVED_SCREEN = "PetSavedScreen"
 }

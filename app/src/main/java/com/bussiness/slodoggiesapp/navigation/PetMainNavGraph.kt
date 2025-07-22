@@ -5,7 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.DiscoverScreen
+
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetHomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetServicesScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditPetProfileScreen
@@ -39,7 +40,7 @@ fun PetMainNavGraph(
         composable(Routes.EDIT_PET_PROFILE_SCREEN) {
             EditPetProfileScreen(navController)
         }
-        composable(Routes.EDIT_PROFILE_SCREEN) {
+        composable(Routes.PET_EDIT_PROFILE_SCREEN) {
             EditProfileScreen(navController)
         }
         composable(Routes.PET_SETTINGS_SCREEN) {

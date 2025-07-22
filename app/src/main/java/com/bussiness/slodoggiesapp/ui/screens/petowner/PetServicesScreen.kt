@@ -2,7 +2,6 @@ package com.bussiness.slodoggiesapp.ui.screens.petowner
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -51,8 +50,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBar
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.SearchBar
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.component.petOwner.SearchBar
 
 @Composable
 fun PetServicesScreen(navController: NavHostController) {

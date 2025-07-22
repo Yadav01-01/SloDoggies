@@ -55,10 +55,7 @@ import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBar
-import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ReviewInterface
-import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ServicesContent
-import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.SwitchButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
 
 @Composable
 fun ProfileFollowerAndFollowingScreen(

@@ -61,9 +61,8 @@ import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.ProfileItem
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBar
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBarProfile
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog.PetInfoDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBarProfile
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.PetInfoDialog
 import kotlinx.coroutines.delay
 
 // Sample photo URLs - replace with your actual image URLs
@@ -365,7 +364,7 @@ fun PetProfileScreen(
                                     painter = painterResource(id = R.drawable.ic_edit_icon),
                                     contentDescription = "Edit",
                                     modifier = Modifier.size(18.dp).clickable {
-                                        navController.navigate(Routes.EDIT_PROFILE_SCREEN)
+                                        navController.navigate(Routes.PET_EDIT_PROFILE_SCREEN)
                                     }
                                 )
                             }
@@ -707,7 +706,7 @@ fun PetProfileScreen(
                                     painter = painterResource(id = R.drawable.ic_edit_icon),
                                     contentDescription = "Edit",
                                     modifier = Modifier.size(18.dp).clickable {
-                                        navController.navigate(Routes.EDIT_PROFILE_SCREEN)
+                                        navController.navigate(Routes.PET_EDIT_PROFILE_SCREEN)
                                     }
                                 )
                             }

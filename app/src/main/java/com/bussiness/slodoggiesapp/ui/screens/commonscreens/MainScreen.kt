@@ -38,7 +38,7 @@ fun MainScreen(authNavController: NavHostController) {
                     }
                 },
                 onCenterClick = {
-                    // Handle center FAB click (e.g., navigate to Add screen)
+                    navController.navigate(Routes.POST_SCREEN)
                 }
             )
         }

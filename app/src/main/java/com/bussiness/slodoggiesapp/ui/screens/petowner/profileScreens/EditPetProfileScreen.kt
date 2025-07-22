@@ -1,6 +1,5 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -45,18 +44,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonBlueButton
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBar
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CommonTopAppBarProfile
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.CustomOutlinedTextField
-import com.bussiness.slodoggiesapp.ui.component.PetOwner.Dialog.CustomDropdownMenuUpdated
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBarProfile
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CustomDropdownMenuUpdated
 import com.bussiness.slodoggiesapp.ui.component.saveBitmapToCache
-import java.io.File
 
 @Composable
 fun EditPetProfileScreen(navController: NavController = rememberNavController()) {
