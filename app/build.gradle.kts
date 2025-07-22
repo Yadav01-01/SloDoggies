@@ -68,11 +68,10 @@ dependencies {
     //exoplayer
     implementation (libs.androidx.media3.exoplayer)
     implementation (libs.androidx.media3.ui)
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
     implementation (libs.androidx.media3.exoplayer.v131)
     implementation (libs.androidx.media3.ui.v131)
     //coil
     implementation(libs.coil.compose)
-
+    implementation("io.github.joelkanyi:komposecountrycodepicker:1.4.3")
 
 }

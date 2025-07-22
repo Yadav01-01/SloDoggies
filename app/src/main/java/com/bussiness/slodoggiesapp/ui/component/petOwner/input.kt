@@ -1,6 +1,14 @@
+<<<<<<<< HEAD:app/src/main/java/com/bussiness/slodoggiesapp/ui/component/petOwner/input.kt
 package com.bussiness.slodoggiesapp.ui.component.petOwner
+========
+package com.bussiness.slodoggiesapp.ui.component.PetOwner
+>>>>>>>> vipinBranch:app/src/main/java/com/bussiness/slodoggiesapp/ui/component/PetOwner/input.kt
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,9 +26,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
+<<<<<<<< HEAD:app/src/main/java/com/bussiness/slodoggiesapp/ui/component/petOwner/input.kt
+========
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.Dp
+>>>>>>>> vipinBranch:app/src/main/java/com/bussiness/slodoggiesapp/ui/component/PetOwner/input.kt
 
 
 @Composable
@@ -34,7 +58,7 @@ fun CommonBlueButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .height(45.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF258694)
         ),
@@ -199,3 +223,172 @@ fun CustomDropdownMenu(
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CommonTopAppBar(
+    title: String,
+    onBackClick: () -> Unit,
+    titleColor: Color = Color(0xFF3F393F),
+    backIconTint: Color = Color(0xFF258694),
+    dividerColor: Color = Color(0xFF656565),
+    containerColor: Color = Color.White,
+    titleFontFamily: FontFamily = FontFamily(Font(R.font.outfit_medium)),
+    titleFontSize: TextUnit = 18.sp
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                fontSize = titleFontSize,
+                fontFamily = titleFontFamily,
+                color = titleColor
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = backIconTint
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = containerColor
+        )
+    )
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(4.dp)
+            .background(dividerColor)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CommonTopAppBarProfile(
+    title: String,
+    onBackClick: () -> Unit,
+    onSettingsClick: () -> Unit = {},
+    titleColor: Color = Color(0xFF3F393F),
+    backIconTint: Color = Color(0xFF258694),
+    settingsIconTint: Color = Color(0xFF3F393F),
+    dividerColor: Color = Color(0xFF656565),
+    containerColor: Color = Color.White,
+    titleFontFamily: FontFamily = FontFamily(Font(R.font.outfit_medium)),
+    titleFontSize: TextUnit = 18.sp
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = title,
+                fontSize = titleFontSize,
+                fontFamily = titleFontFamily,
+                color = titleColor
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    tint = backIconTint
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_setting_icons),
+                    contentDescription = "Settings",
+                    tint = settingsIconTint
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = containerColor
+        )
+    )
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(4.dp)
+            .background(dividerColor)
+    )
+}
+
+
+
+@Composable
+fun SearchBar(
+    modifier: Modifier = Modifier,
+    searchText: String = "",
+    onSearchTextChange: (String) -> Unit = {},
+    placeholder: String = "Search",
+    enabled: Boolean = true,
+    leadingIcon: (@Composable () -> Unit)? = {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_search), // Replace with your search icon
+            contentDescription = "Search",
+            tint = Color.Gray,
+            modifier = Modifier.size(20.dp)
+        )
+    },
+    trailingIcon: (@Composable () -> Unit)? = null,
+    backgroundColor: Color = Color(0xFFF5F5F5),
+    cornerRadius: Dp = 25.dp,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = backgroundColor,
+                shape = RoundedCornerShape(cornerRadius)
+            )
+            .padding(contentPadding),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Leading icon (search icon)
+        leadingIcon?.invoke()
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // Search text field
+        BasicTextField(
+            value = searchText,
+            onValueChange = onSearchTextChange,
+            enabled = enabled,
+            modifier = Modifier.weight(1f),
+            textStyle = TextStyle(
+                fontSize = 16.sp,
+                color = Color.Black
+            ),
+            decorationBox = { innerTextField ->
+                if (searchText.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        color = Color.Gray,
+                        fontSize = 16.sp
+                    )
+                }
+                innerTextField()
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Search
+            )
+        )
+
+        // Trailing icon (optional)
+        trailingIcon?.let {
+            Spacer(modifier = Modifier.width(12.dp))
+            it()
+        }
+    }
+}
+
