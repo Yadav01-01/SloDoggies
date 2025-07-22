@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,8 +39,10 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.ChoosePostTypeB
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.SettingToggleItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.VisibilityOptionsSelector
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.CategoryInputField
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.UploadPlaceholder
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
@@ -75,7 +78,7 @@ fun PostScreen(navController: NavHostController) {
         when (selected) {
             "Post" -> PostScreenContent(onClickLocation = { }, onClickPost = { })
             "Event" -> EventScreenContent( onClickLocation = { },onClickSubmit = { })
-//            "Promotion" -> PromotionScreenContent()
+            "Promotion" -> PromotionScreenContent(onClickLocation = { },onClickSave = { })
         }
 
     }
@@ -153,14 +156,14 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit ) {
     }
 }
 
-
 @Composable
 fun EventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit) {
 
     var eventTitle by remember { mutableStateOf("") }
     var eventDescription by remember { mutableStateOf("") }
     var postalCode by remember { mutableStateOf("") }
-    var visibility by remember { mutableStateOf("Public") }
+    var rsvpRequired by rememberSaveable { mutableStateOf(false) }
+    var enableComments by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -228,13 +231,111 @@ fun EventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit) {
 
         Spacer(Modifier.height(10.dp))
 
-        VisibilityOptionsSelector(selected = visibility, onOptionSelected = { visibility = it })
+        SettingToggleItem(label = "RSVP Required?", checked = rsvpRequired, onToggle = { rsvpRequired = it })
+
+        SettingToggleItem(label = "Enable Comments", checked = enableComments, onToggle = { enableComments = it })
 
         Spacer(Modifier.height(15.dp))
 
         SubmitButton(modifier = Modifier, buttonText = "Post Event", onClickButton = { onClickSubmit() })
     }
 }
+
+@Composable
+fun PromotionScreenContent(onClickLocation: () -> Unit,onClickSave: () -> Unit) {
+    var title by remember { mutableStateOf("") }
+    var adDescription by remember { mutableStateOf("") }
+    var postalCode by remember { mutableStateOf("") }
+    var visibility by remember { mutableStateOf("Public") }
+    var termsAndConditions by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp)
+    ) {
+        FormHeadingText("Upload Media")
+
+        Spacer(Modifier.height(10.dp))
+
+        UploadPlaceholder()
+
+        Spacer(Modifier.height(15.dp))
+
+        FormHeadingText("Ad Title")
+
+        Spacer(Modifier.height(10.dp))
+
+        InputField(modifier = Modifier.height(106.dp), placeholder = "Enter Title", input = title, onValueChange ={ title = it})
+
+        Spacer(Modifier.height(15.dp))
+
+        FormHeadingText("Ad Description")
+
+        Spacer(Modifier.height(10.dp))
+
+        InputField(placeholder = "Enter Description", input = adDescription, onValueChange ={ adDescription = it})
+
+        Spacer(Modifier.height(15.dp))
+
+        FormHeadingText("Category")
+
+        Spacer(Modifier.height(10.dp))
+
+        CategoryInputField()
+
+        Spacer(Modifier.height(15.dp))
+
+        FormHeadingText("Expiry Date And Time")
+
+        Spacer(Modifier.height(10.dp))
+
+        InputField(input = title, onValueChange = { title = it}, placeholder = "Select Date And Time")
+
+        Spacer(Modifier.height(15.dp))
+
+        FormHeadingText("Terms & Conditions")
+
+        Spacer(Modifier.height(10.dp))
+
+        InputField(input = termsAndConditions, onValueChange = { termsAndConditions = it}, placeholder = "Enter here")
+
+        FormHeadingText("Location")
+
+        Spacer(Modifier.height(5.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { onClickLocation() }) {
+            Icon(
+                painter = painterResource(id = R.drawable.precise_loc),
+                contentDescription = null,
+                tint = Color.Gray,
+                modifier = Modifier.wrapContentSize()
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(text = "use my current location", fontFamily = FontFamily(Font(R.font.poppins)), fontSize = 12.sp, color = Color.Black)
+        }
+
+        Spacer(Modifier.height(10.dp))
+
+        InputField(placeholder = "Postal Code", input = postalCode, onValueChange ={ postalCode = it})
+
+        Spacer(Modifier.height(15.dp))
+
+        FormHeadingText("Privacy Settings")
+
+        Spacer(Modifier.height(10.dp))
+
+        VisibilityOptionsSelector(selected = visibility, onOptionSelected = { visibility = it })
+
+        Spacer(Modifier.height(15.dp))
+
+        SubmitButton(modifier = Modifier, buttonText = "Save & Next", onClickButton = { onClickSave() })
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable
