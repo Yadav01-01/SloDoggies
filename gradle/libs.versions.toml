@@ -4,6 +4,7 @@ accompanistPager = "0.36.0"
 agp = "8.10.1"
 coilCompose = "2.4.0"
 coreSplashscreen = "1.0.1"
+komposecountrycodepicker = "1.4.3"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -17,7 +18,6 @@ media3ExoplayerVersion = "1.3.1"
 media3Ui = "1.3.1"
 navigationCompose = "2.9.1"
 composeTesting = "1.0.0-alpha04"
-
 
 [libraries]
 accompanist-flowlayout = { module = "com.google.accompanist:accompanist-flowlayout", version.ref = "accompanistFlowlayout" }
@@ -44,8 +44,8 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+komposecountrycodepicker = { module = "io.github.joelkanyi:komposecountrycodepicker", version.ref = "komposecountrycodepicker" }
 androidx-compose-testing = { group = "androidx.xr.compose", name = "compose-testing", version.ref = "composeTesting" }
-
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
