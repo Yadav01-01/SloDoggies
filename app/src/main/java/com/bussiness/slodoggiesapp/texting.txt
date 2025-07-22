@@ -1,56 +1,35 @@
-@RequiresApi(Build.VERSION_CODES.Q)
+package com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavHostController
+import com.bussiness.slodoggiesapp.ui.component.CommonTopAppBar
+
 @Composable
-fun CustomBottomBar(
-    navController: NavController,
-    items: List<PetOwnerBottomNavItem>,
-    selectedRoute: String,
-    onItemClick: (PetOwnerBottomNavItem) -> Unit
-) {
-    Surface(
-        color = Color.White,
-        shadowElevation = 8.dp
-    ) {
-        Row(
+fun PetProfileScreen(navController: NavHostController) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        CommonTopAppBar(
+            title = "Profile",
+            onBackClick = { navController.popBackStack() },
+            dividerColor = Color(0xFF258694),
+        )
+
+        Column(
             modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceAround, // Evenly distribute items
-            verticalAlignment = Alignment.CenterVertically
+                .padding(16.dp) // optional padding
         ) {
-            items.forEach { item ->
-                val selected = item.route == selectedRoute
-                Column(
-                    modifier = Modifier
-                        .weight(1f) // Use weight instead of fillMaxWidth
-                        .padding(vertical = 8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(if (selected) Color(0xFF5C2C4D) else Color.Transparent),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = item.icon),
-                            contentDescription = item.label,
-                            tint = if (selected) Color.White else Color(0xFF303030),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    if (item.label.isNotEmpty()) { // Only show text if label exists
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = item.label,
-                            color = if (selected) Color(0xFF5C2C4D) else Color(0xFF303030),
-                            fontSize = 10.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            maxLines = 1
-                        )
-                    }
-                }
-            }
+            // TODO: Add your profile content here
+            Text(text = "Pet name: Buddy") // Example content
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Breed: Labrador")
         }
     }
 }

@@ -56,6 +56,11 @@ fun NavGraph(navController: NavHostController) {
             composable(Routes.NOTIFICATION_PERMISSION_SCREEN) { NotificationPermissionScreen(navController) }
             composable(Routes.LOCATION_PERMISSION_SCREEN) { LocationPermissionScreen(navController) }
             composable(Routes.PET_MAIN_SCREEN) { PetMainScreen(navController) }
+            composable(Routes.PET_HOME_SCREEN) { PetHomeScreen(navController)
+            composable(Routes.PET_SERVICES_SCREEN) { PetServicesScreen(navController) }
+            composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
+                }
         }
     }
 }
+
