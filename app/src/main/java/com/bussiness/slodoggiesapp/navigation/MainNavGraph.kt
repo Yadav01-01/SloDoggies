@@ -34,5 +34,6 @@ fun MainNavGraph(
         composable(Routes.SPONSORED_ADS_SCREEN) { SponsoredAdsScreen(navController) }
         composable(Routes.EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
         composable(Routes.POST_SCREEN) { PostScreen(navController) }
+        composable(Routes.POST_SCREEN) { PostScreen(navController) }
     }
 }

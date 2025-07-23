@@ -7,15 +7,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens.MyEventsScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetHomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetServicesScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.chatScreens.EventCommunityScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.chatScreens.PetGroomingChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditPetProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.PetProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.ProfileFollowerAndFollowingScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
-import com.bussiness.slodoggiesapp.ui.screens.settingScreens.PetSavedScreen
-import com.bussiness.slodoggiesapp.ui.screens.settingScreens.PetSettingsScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens.PetSavedScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens.PetSettingsScreen
 
 @Composable
 fun PetMainNavGraph(
@@ -48,6 +51,16 @@ fun PetMainNavGraph(
         }
         composable(Routes.PET_SAVED_SCREEN) {
             PetSavedScreen(navController)
+        }
+        composable(Routes.PET_MY_EVENTS_SCREEN) {
+            MyEventsScreen(navController)
+        }
+        composable(Routes.PET_GROOMING_CHAT_SCREEN) {
+            PetGroomingChatScreen(navController)
+        }
+
+        composable(Routes.PET_EVENT_COMMUNITY_SCREEN) {
+            EventCommunityScreen(navController)
         }
 
     }

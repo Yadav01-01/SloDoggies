@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.settingScreens
+package com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -75,7 +75,7 @@ fun PetSettingsScreen(navController: NavController = rememberNavController()) {
             SettingsItem(
                 icon = R.drawable.ic_calendar_outline,
                 title = "Events",
-                onClick = { /* Handle events click */ }
+                onClick = { navController.navigate(Routes.PET_MY_EVENTS_SCREEN) }
             )
 
             Divider(

@@ -60,6 +60,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBarProfile
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
@@ -139,7 +140,7 @@ fun EditProfileScreen(navController: NavController = rememberNavController()){
             title = "Edit Profile",
             onBackClick = { navController.popBackStack() },
             settingsIconTint= Color.Black,
-            onSettingsClick= { },
+            onSettingsClick= {   navController.navigate(Routes.PET_SETTINGS_SCREEN)},
             dividerColor = Color(0xFF656565),
         )
         Column(

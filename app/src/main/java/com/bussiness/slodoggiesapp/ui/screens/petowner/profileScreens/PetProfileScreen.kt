@@ -459,7 +459,7 @@ fun PetProfileScreen(
                 title = "My Profile",
                 onBackClick = { navController.popBackStack() },
                 settingsIconTint= Color.Black,
-                onSettingsClick= { },
+                onSettingsClick= {   navController.navigate(Routes.PET_SETTINGS_SCREEN)},
                 dividerColor = Color(0xFF656565),
             )
 
@@ -780,7 +780,8 @@ fun BeachPhotoGrid() {
                 model = photo,
                 contentDescription = "Beach photo",
                 modifier = Modifier
-                    .aspectRatio(1f)
+                    .height(130.dp)
+                    .width(80.dp)
                     .clip(RoundedCornerShape(12.dp)),
                 contentScale = ContentScale.Crop
             )

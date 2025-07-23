@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,11 +32,13 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
 @Composable
@@ -137,83 +140,6 @@ fun CustomOutlinedTextField(
         )
     }
 }
-// Input.kt
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomDropdownMenu(
-    value: String,
-    onValueChange: (String) -> Unit,
-    options: List<String>,
-    label: String,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    isExpanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        ExposedDropdownMenuBox(
-            expanded = isExpanded,
-            onExpandedChange = onExpandedChange
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {},
-                readOnly = true,
-                placeholder = {
-                    Text(
-                        placeholder,
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        color = Color(0xFF949494)
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.ArrowDropDown,
-                        contentDescription = "Dropdown",
-                        tint = Color(0xFF949494)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF00ACC1),
-                    unfocusedBorderColor = Color(0xFF949494)
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            ExposedDropdownMenu(
-                expanded = isExpanded,
-                onDismissRequest = { onExpandedChange(false) }
-            ) {
-                options.forEach { option ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                option,
-                                fontFamily = FontFamily(Font(R.font.outfit_regular))
-                            )
-                        },
-                        onClick = {
-                            onValueChange(option)
-                            onExpandedChange(false)
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -248,7 +174,8 @@ fun CommonTopAppBar(
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor
-        )
+        ),
+        windowInsets = WindowInsets(0.dp)
     )
     Spacer(
         modifier = Modifier
@@ -301,7 +228,8 @@ fun CommonTopAppBarProfile(
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor
-        )
+        ),
+        windowInsets = WindowInsets(0.dp)
     )
     Spacer(
         modifier = Modifier
@@ -380,6 +308,34 @@ fun SearchBar(
             Spacer(modifier = Modifier.width(12.dp))
             it()
         }
+    }
+}
+
+@Composable
+fun ChooseTypeButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Button (
+        onClick = onClick,
+        modifier = modifier
+            .height(34.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp)),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) PrimaryColor else Color.White,
+            contentColor = if (isSelected) Color.White else Color.Black
+        ),
+        shape = RoundedCornerShape(10.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            fontFamily = if (isSelected)FontFamily(Font(R.font.outfit_semibold)) else FontFamily(Font(R.font.outfit_regular)),
+            color = if (isSelected) Color.White else Color.Black
+        )
     }
 }
 

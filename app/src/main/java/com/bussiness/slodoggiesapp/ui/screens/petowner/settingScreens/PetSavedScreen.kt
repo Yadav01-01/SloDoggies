@@ -1,5 +1,6 @@
-package com.bussiness.slodoggiesapp.ui.screens.settingScreens
+package com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -56,24 +58,26 @@ private val photos = listOf(
     R.drawable.dummy_person_image3, // Boy with dog in water (duplicate)
     R.drawable.dummy_person_image3  // Black dog with people (duplicate)
 )
+
+
+// Update your MediaItem data structure
 private val mediaItems = listOf(
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
+    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
-    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
-    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
+    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
+    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
+    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
+    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
+    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
+    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
+    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
+    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
     MediaItem(R.drawable.dummy_person_image3, isVideo = false)
-
 )
 
 @Composable
@@ -86,11 +90,11 @@ fun PetSavedScreen(navController: NavController = rememberNavController()){
             onBackClick = { navController.popBackStack() },
             dividerColor = Color(0xFF258694),
         )
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(15.dp))
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 15.dp)
+                .padding(horizontal = 8.dp)
         ) {
             BeachPhotoGrid()
 
@@ -115,7 +119,8 @@ fun BeachPhotoGrid(
         items(mediaItems) { item ->
             Box(
                 modifier = Modifier
-                    .aspectRatio(1f)
+                    .height(130.dp)
+                    .width(80.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .clickable { onMediaClick(item) }
             ) {
@@ -128,10 +133,10 @@ fun BeachPhotoGrid(
 
                 if (item.isVideo) {
                     // Overlay play icon
-                    androidx.compose.material3.Icon(
+                    Image(
                         painter = painterResource(id = R.drawable.ic_play_circle), // ⬅️ your play icon
                         contentDescription = "Play",
-                        tint = Color.White,
+
                         modifier = Modifier
                             .align(Alignment.Center)
                             .size(36.dp)
@@ -143,10 +148,10 @@ fun BeachPhotoGrid(
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun PetSavedScreenPreview() {
-    MaterialTheme {
-        PetSavedScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun PetSavedScreenPreview() {
+//    MaterialTheme {
+//        PetSavedScreen()
+//    }
+//}
