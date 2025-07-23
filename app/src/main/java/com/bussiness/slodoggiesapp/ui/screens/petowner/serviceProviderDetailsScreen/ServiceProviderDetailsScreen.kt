@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -58,6 +59,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
 @Composable
@@ -310,7 +312,7 @@ fun EnhancedExpandableInfoSpinner() {
     var expanded by remember { mutableStateOf(false) }
 
     Surface(
-        shape = RoundedCornerShape(6.dp),
+        shape = RoundedCornerShape(10.dp),
         border = BorderStroke(1.dp, Color(0xFF258694)),
         modifier = Modifier
             .fillMaxWidth()
@@ -334,18 +336,15 @@ fun EnhancedExpandableInfoSpinner() {
             ) {
                 Text(
                     text = "Additional Info.",
-                    color = Color(0xFF0891B2),
-                    fontSize = 15.sp,
+                    color = PrimaryColor,
+                    fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                 )
 
                 Image(
                     painter = painterResource(id = if (expanded) R.drawable.ic_dropdown_open_icon else R.drawable.ic_dropdown_close_icon),
                     contentDescription = null,
-                    //  tint = Color(0xFFFF8C00),
-                    modifier = Modifier
-                        .height(25.dp)
-                        .width(25.dp)
+                    modifier = Modifier.wrapContentSize(),
                 )
             }
 
@@ -358,7 +357,9 @@ fun EnhancedExpandableInfoSpinner() {
                 ) {
                     Text(
                         text = "Business Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        fontSize = 12.sp,
+                        color = Color.Black
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
@@ -368,10 +369,9 @@ fun EnhancedExpandableInfoSpinner() {
                         Image(
                             painter = painterResource(id = R.drawable.ic_phone_icon),
                             contentDescription = null,
-                            modifier = Modifier
-                                .height(25.dp)
-                                .width(25.dp)
+                            modifier = Modifier.wrapContentSize()
                         )
+                        Spacer(Modifier.width(4.dp))
                         Text(
                             text = "Phone:",
                             fontSize = 14.sp,
@@ -386,7 +386,7 @@ fun EnhancedExpandableInfoSpinner() {
                             color = Color.Black,
                             maxLines = 1,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            // Aligns to the end (right) of the Row
+                            fontSize = 12.sp
                         )
                     }
 
@@ -398,10 +398,9 @@ fun EnhancedExpandableInfoSpinner() {
                         Image(
                             painter = painterResource(id = R.drawable.ic_web_icon),
                             contentDescription = null,
-                            modifier = Modifier
-                                .height(25.dp)
-                                .width(25.dp)
+                            modifier = Modifier.wrapContentSize()
                         )
+                        Spacer(Modifier.width(4.dp))
                         Text(
                             text = "Website:",
                             fontSize = 14.sp,
@@ -413,10 +412,11 @@ fun EnhancedExpandableInfoSpinner() {
                         )
                         Text(
                             text = "pawfectpets.com",
-
-                            color = Color.Black,
+                            color = PrimaryColor,
                             maxLines = 1,
-                            fontFamily = FontFamily(Font(R.font.outfit_regular))
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            textDecoration =  TextDecoration.Underline
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -427,10 +427,9 @@ fun EnhancedExpandableInfoSpinner() {
                         Image(
                             painter = painterResource(id = R.drawable.ic_location_icon),
                             contentDescription = null,
-                            modifier = Modifier
-                                .height(25.dp)
-                                .width(25.dp)
+                            modifier = Modifier.wrapContentSize()
                         )
+                        Spacer(Modifier.width(4.dp))
                         Text(
                             text = "Address:",
                             fontSize = 14.sp,
@@ -442,9 +441,9 @@ fun EnhancedExpandableInfoSpinner() {
                         )
                         Text(
                             text = "123 Pet Lane, San Luis Obispo, CA",
-
                             color = Color.Black,
                             maxLines = 1,
+                            fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular))
                         )
                     }

@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.businessprovider
+package com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,13 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.navigation.Routes
@@ -24,12 +23,14 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
+import com.bussiness.slodoggiesapp.viewModel.businessProvider.AddServiceViewModel
 
 @Composable
-fun AddServiceScreen(navController: NavHostController) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
+fun AddServiceScreen(navController: NavHostController, viewModel: AddServiceViewModel = hiltViewModel()) {
+
+    val title by viewModel.title.collectAsState()
+    val description by viewModel.description.collectAsState()
+    val amount by viewModel.amount.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -50,7 +51,7 @@ fun AddServiceScreen(navController: NavHostController) {
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = title, onValueChange = { title = it }, placeholder = "Enter title")
+            InputField(input = title, onValueChange = { viewModel.updateTitle(it) }, placeholder = "Enter title")
 
             Spacer(Modifier.height(15.dp))
 
@@ -58,7 +59,7 @@ fun AddServiceScreen(navController: NavHostController) {
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = description, onValueChange = { description = it }, placeholder = "Type here")
+            InputField(input = description, onValueChange = { viewModel.updateDescription(it) }, placeholder = "Type here")
 
             Spacer(Modifier.height(15.dp))
 
@@ -66,7 +67,7 @@ fun AddServiceScreen(navController: NavHostController) {
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = amount, onValueChange = { amount = it }, placeholder = "Enter amount")
+            InputField(input = amount, onValueChange = { viewModel.updateAmount(it) }, placeholder = "Enter amount")
 
             Spacer(Modifier.height(15.dp))
 

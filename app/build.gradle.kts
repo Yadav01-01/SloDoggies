@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -43,6 +45,7 @@ android {
         }
     }
 
+
 }
 
 dependencies {
@@ -56,7 +59,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.testing)
-    testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -75,12 +78,14 @@ dependencies {
     //exoplayer
     implementation (libs.androidx.media3.exoplayer)
     implementation (libs.androidx.media3.ui)
-    implementation (libs.androidx.media3.exoplayer.v131)
-    implementation (libs.androidx.media3.ui.v131)
+    //countryCodePicker
+    implementation(libs.komposecountrycodepicker)
     //coil
-    implementation(libs.coil.compose)
-    //country picker
-    implementation("io.github.joelkanyi:komposecountrycodepicker:1.4.3")
+    implementation(libs.coil.compose.v260)
+    //hilt
+    implementation (libs.hilt.android)
+    kapt (libs.hilt.compiler)
 
-
+    // Hilt for Jetpack Compose
+    implementation (libs.androidx.hilt.navigation.compose)
 }

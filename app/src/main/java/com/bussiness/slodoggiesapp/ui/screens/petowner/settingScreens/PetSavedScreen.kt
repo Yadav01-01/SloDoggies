@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.settingScreens
+package com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

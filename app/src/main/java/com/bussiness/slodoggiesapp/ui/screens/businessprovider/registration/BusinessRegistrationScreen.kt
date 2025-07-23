@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.businessprovider
+package com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -32,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
@@ -57,17 +58,18 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.businessProvider.BusinessRegistrationViewModel
 import com.google.accompanist.flowlayout.FlowRow
 
 @Composable
-fun BusinessRegistrationScreen(navController: NavHostController){
+fun BusinessRegistrationScreen(navController: NavHostController,viewModel: BusinessRegistrationViewModel = hiltViewModel()){
 
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
-    var url by remember { mutableStateOf("") }
-    var contact by remember { mutableStateOf("") }
-    remember { mutableStateListOf<String>() }
+    val name by viewModel.name.collectAsState()
+    val email by viewModel.email.collectAsState()
+    val location by viewModel.location.collectAsState()
+    val url by viewModel.url.collectAsState()
+    val contact by viewModel.contact.collectAsState()
+
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -88,7 +90,7 @@ fun BusinessRegistrationScreen(navController: NavHostController){
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = name, onValueChange = { name = it}, placeholder = "Enter name")
+            InputField(input = name, onValueChange = { viewModel.updateName(it)}, placeholder = "Enter name")
 
             Spacer(Modifier.height(15.dp))
 
@@ -96,7 +98,7 @@ fun BusinessRegistrationScreen(navController: NavHostController){
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = email, onValueChange = { email = it}, placeholder = "Enter Email")
+            InputField(input = email, onValueChange = { viewModel.updateEmail(it)}, placeholder = "Enter Email")
 
             Spacer(Modifier.height(15.dp))
 
@@ -120,7 +122,7 @@ fun BusinessRegistrationScreen(navController: NavHostController){
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = location, onValueChange = { location = it}, placeholder = "Enter Location")
+            InputField(input = location, onValueChange = { viewModel.updateLocation(it)}, placeholder = "Enter Location")
 
             Spacer(Modifier.height(15.dp))
 
@@ -128,7 +130,7 @@ fun BusinessRegistrationScreen(navController: NavHostController){
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input =url, onValueChange = { url = it}, placeholder = "URL")
+            InputField(input =url, onValueChange = { viewModel.updateUrl(it)}, placeholder = "URL")
 
             Spacer(Modifier.height(15.dp))
 
@@ -136,7 +138,7 @@ fun BusinessRegistrationScreen(navController: NavHostController){
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = contact, onValueChange = { contact = it}, placeholder = "Enter Contact")
+            InputField(input = contact, onValueChange = { viewModel.updateContact(it)}, placeholder = "Enter Contact")
 
             Spacer(Modifier.height(15.dp))
 

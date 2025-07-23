@@ -14,8 +14,8 @@ import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditProfil
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.PetProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.ProfileFollowerAndFollowingScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
-import com.bussiness.slodoggiesapp.ui.screens.settingScreens.PetSavedScreen
-import com.bussiness.slodoggiesapp.ui.screens.settingScreens.PetSettingsScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens.PetSavedScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens.PetSettingsScreen
 
 @Composable
 fun PetMainNavGraph(
