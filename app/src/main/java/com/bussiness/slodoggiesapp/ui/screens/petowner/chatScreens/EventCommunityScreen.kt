@@ -31,6 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,9 +48,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.Participant
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.UpdateNameCommunityDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.EventCommunityScreenHeader
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventCommunityScreen(
     navController: NavController = rememberNavController(),
@@ -57,6 +62,7 @@ fun EventCommunityScreen(
     onEditPressed: () -> Unit = {},
     onParticipantMenuPressed: (String) -> Unit = {}
 ) {
+    val showDialog = remember { mutableStateOf(false) } // Add this line
     val participants = listOf(
         Participant("Lydia Vaccaro", R.drawable.dummy_baby_pic),
         Participant("Anika Torff", R.drawable.dummy_baby_pic),
@@ -70,37 +76,20 @@ fun EventCommunityScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_back_header_arrow),
-                            contentDescription = "Back",
-                            tint = Color(0xFF258694)
 
-                        )
-                    }
+            EventCommunityScreenHeader(
+                textHeading = "",
+                onBackClick = {
+                    navController.popBackStack()
                 },
-                actions = {
-
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_share_icon),
-                            contentDescription = "Share",
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable {
-
-                                }
-                        )
+                onIconClick = {
 
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
-                )
+                rightSideIcon = R.drawable.ic_share_icon,
+
+                displayRightIcon = true
             )
+
         },
         containerColor = Color(0xFFF5F5F5)
     ) { paddingValues ->
@@ -152,17 +141,14 @@ fun EventCommunityScreen(
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                         color = Color.Black
                     )
-                    IconButton(
-                        onClick = onEditPressed,
-                        modifier = Modifier.size(24.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
+
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_edit_icon_again),
+                        contentDescription = "Edit",
+                        modifier = Modifier.size(20.dp).clickable{
+                            showDialog.value = true
+
+                        })
                 }
             }
 
@@ -217,6 +203,17 @@ fun EventCommunityScreen(
                 }
             }
         }
+    }
+
+    if (showDialog.value) {
+        UpdateNameCommunityDialog(
+            onDismiss = { showDialog.value = false },
+            onRename = { newName ->
+                // Handle rename logic here
+                showDialog.value = false
+            },
+            onCancel = { showDialog.value = false }
+        )
     }
 }
 

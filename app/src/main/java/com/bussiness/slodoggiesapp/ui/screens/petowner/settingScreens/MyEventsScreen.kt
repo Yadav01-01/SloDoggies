@@ -45,7 +45,7 @@ import com.bussiness.slodoggiesapp.model.petOwner.EventData
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ChoosePostTypeButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
-import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 
 @Composable
 fun MyEventsScreen(navController: NavController = rememberNavController()) {
@@ -56,11 +56,18 @@ fun MyEventsScreen(navController: NavController = rememberNavController()) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        CommonTopAppBar(
-            title = "My Events",
-            titleFontSize = 19.sp,
-            onBackClick = { navController.popBackStack() },
+        IconHeadingText(
+            textHeading = "My Events",
+            onBackClick = {
+                navController.popBackStack()
+            },
+            onIconClick = {
+
+            },
+            rightSideIcon = R.drawable.ic_check_icon_blue,
+            iconColor = Color(0xFF258694),
             dividerColor = Color(0xFF258694),
+            displayRightIcon = false
         )
         Spacer(Modifier.height(15.dp))
         Column(

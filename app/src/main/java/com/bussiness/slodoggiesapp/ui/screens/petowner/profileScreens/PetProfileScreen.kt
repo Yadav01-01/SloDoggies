@@ -61,8 +61,8 @@ import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.ProfileItem
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBarProfile
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.PetInfoDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.SettingIconHeader
 import kotlinx.coroutines.delay
 
 // Sample photo URLs - replace with your actual image URLs
@@ -93,7 +93,7 @@ private val photos = listOf(
 fun PetProfileScreen(
     navController: NavController = rememberNavController()
 ) {
-    var showPetInfoDialog  by remember { mutableStateOf(false) }
+    var showPetInfoDialog by remember { mutableStateOf(false) }
     var showAddButton by remember { mutableStateOf(true) }
     LaunchedEffect(Unit) {
         delay(3000)
@@ -101,25 +101,22 @@ fun PetProfileScreen(
     }
 
     if (showPetInfoDialog) {
-            PetInfoDialog(
-        "Add Your Pet",
-                onDismiss = { showPetInfoDialog = false },
-                onSaveAndContinue = { petInfo ->
-                    // Handle pet info saving
-                }
-            )
+        PetInfoDialog(
+            "Add Your Pet",
+            onDismiss = { showPetInfoDialog = false },
+            onSaveAndContinue = { petInfo ->
+                // Handle pet info saving
+            }
+        )
 
 
     }
-    if(showAddButton){
+    if (showAddButton) {
         Column(modifier = Modifier.fillMaxSize()) {
-            CommonTopAppBarProfile(
-                title = "My Profile",
+            SettingIconHeader(
+                "My Profile",
                 onBackClick = { navController.popBackStack() },
-                settingsIconTint= Color.Black,
-                onSettingsClick= {   navController.navigate(Routes.PET_SETTINGS_SCREEN)},
-                dividerColor = Color(0xFF656565),
-            )
+                onSettingClick = { navController.navigate(Routes.PET_SETTINGS_SCREEN) })
 
             Column(
                 modifier = Modifier
@@ -239,9 +236,11 @@ fun PetProfileScreen(
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_edit_icon),
                                         contentDescription = "Edit",
-                                        modifier = Modifier.size(18.dp).clickable {
-                                            navController.navigate(Routes.EDIT_PET_PROFILE_SCREEN)
-                                        }
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .clickable {
+                                                navController.navigate(Routes.EDIT_PET_PROFILE_SCREEN)
+                                            }
                                     )
                                 }
 
@@ -304,7 +303,7 @@ fun PetProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    StatItem(number = "0", label = "Posts",navController)
+                    StatItem(number = "0", label = "Posts", navController)
 
                     Box(
                         modifier = Modifier
@@ -313,7 +312,7 @@ fun PetProfileScreen(
                             .background(Color(0xFF258694))
                     )
 
-                    StatItem(number = "0", label = "Followers",navController)
+                    StatItem(number = "0", label = "Followers", navController)
 
                     Box(
                         modifier = Modifier
@@ -322,7 +321,7 @@ fun PetProfileScreen(
                             .background(Color(0xFF258694))
                     )
 
-                    StatItem(number = "0", label = "Following",navController)
+                    StatItem(number = "0", label = "Following", navController)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -334,7 +333,9 @@ fun PetProfileScreen(
                 ) {
                     // Owner Profile Section
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 5.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -363,9 +364,11 @@ fun PetProfileScreen(
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_edit_icon),
                                     contentDescription = "Edit",
-                                    modifier = Modifier.size(18.dp).clickable {
-                                        navController.navigate(Routes.PET_EDIT_PROFILE_SCREEN)
-                                    }
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                        .clickable {
+                                            navController.navigate(Routes.PET_EDIT_PROFILE_SCREEN)
+                                        }
                                 )
                             }
 
@@ -424,7 +427,9 @@ fun PetProfileScreen(
                     Image(
                         painter = painterResource(id = R.drawable.ic_pet_post_icon),
                         contentDescription = "Pet Avatar",
-                        modifier = Modifier.width(80.dp).height(90.dp)
+                        modifier = Modifier
+                            .width(80.dp)
+                            .height(90.dp)
                     )
 
 
@@ -453,15 +458,13 @@ fun PetProfileScreen(
                 }
             }
         }
-    }else{
+    } else {
         Column(modifier = Modifier.fillMaxSize()) {
-            CommonTopAppBarProfile(
-                title = "My Profile",
+
+            SettingIconHeader(
+                "My Profile",
                 onBackClick = { navController.popBackStack() },
-                settingsIconTint= Color.Black,
-                onSettingsClick= {   navController.navigate(Routes.PET_SETTINGS_SCREEN)},
-                dividerColor = Color(0xFF656565),
-            )
+                onSettingClick = { navController.navigate(Routes.PET_SETTINGS_SCREEN) })
 
             Column(
                 modifier = Modifier
@@ -581,9 +584,11 @@ fun PetProfileScreen(
                                     Image(
                                         painter = painterResource(id = R.drawable.ic_edit_icon),
                                         contentDescription = "Edit",
-                                        modifier = Modifier.size(18.dp).clickable {
-                                            navController.navigate(Routes.EDIT_PET_PROFILE_SCREEN)
-                                        }
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .clickable {
+                                                navController.navigate(Routes.EDIT_PET_PROFILE_SCREEN)
+                                            }
                                     )
                                 }
 
@@ -646,7 +651,7 @@ fun PetProfileScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    StatItem(number = "0", label = "Posts",navController)
+                    StatItem(number = "0", label = "Posts", navController)
 
                     Box(
                         modifier = Modifier
@@ -655,7 +660,7 @@ fun PetProfileScreen(
                             .background(Color(0xFF258694))
                     )
 
-                    StatItem(number = "0", label = "Followers",navController)
+                    StatItem(number = "0", label = "Followers", navController)
 
                     Box(
                         modifier = Modifier
@@ -664,7 +669,7 @@ fun PetProfileScreen(
                             .background(Color(0xFF258694))
                     )
 
-                    StatItem(number = "0", label = "Following",navController)
+                    StatItem(number = "0", label = "Following", navController)
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -676,7 +681,9 @@ fun PetProfileScreen(
                 ) {
                     // Owner Profile Section
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 5.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
@@ -705,9 +712,11 @@ fun PetProfileScreen(
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_edit_icon),
                                     contentDescription = "Edit",
-                                    modifier = Modifier.size(18.dp).clickable {
-                                        navController.navigate(Routes.PET_EDIT_PROFILE_SCREEN)
-                                    }
+                                    modifier = Modifier
+                                        .size(18.dp)
+                                        .clickable {
+                                            navController.navigate(Routes.PET_EDIT_PROFILE_SCREEN)
+                                        }
                                 )
                             }
 
@@ -791,15 +800,14 @@ fun BeachPhotoGrid() {
 }
 
 
-
 @Composable
-fun StatItem(number: String, label: String, navController : NavController) {
+fun StatItem(number: String, label: String, navController: NavController) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable{
-            if (label == "Followers"){
+        modifier = Modifier.clickable {
+            if (label == "Followers") {
                 navController.navigate(Routes.PROFILE_FOLLOWER_FOLLOWING)
-            }else if (label == "Followers"){
+            } else if (label == "Followers") {
                 navController.navigate(Routes.PROFILE_FOLLOWER_FOLLOWING)
             }
         }

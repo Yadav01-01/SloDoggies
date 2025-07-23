@@ -50,7 +50,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.SearchBar
 
 @Composable
@@ -61,10 +61,18 @@ fun PetServicesScreen(navController: NavHostController) {
     val serviceTypes = listOf("Search", "Walking", "Grooming", "Sitting / Boarding", "Veterinary")
 
     Column(){
-        CommonTopAppBar(
-            title = "Services",
-            onBackClick = { navController.popBackStack() },
+        IconHeadingText(
+            textHeading = "Services",
+            onBackClick = {
+                navController.popBackStack()
+            },
+            onIconClick = {
+
+            },
+            rightSideIcon = R.drawable.ic_check_icon_blue,
+            iconColor = Color(0xFF258694),
             dividerColor = Color(0xFF258694),
+            displayRightIcon = false
         )
 
         Spacer(modifier = Modifier.height(20.dp))

@@ -38,17 +38,25 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 
 
 @Composable
 fun PetSettingsScreen(navController: NavController = rememberNavController()) {
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-        CommonTopAppBar(
-            title = "Settings",
-            titleFontSize = 19.sp,
-            onBackClick = { navController.popBackStack() },
+
+        IconHeadingText(
+            textHeading = "Settings",
+            onBackClick = {
+                navController.popBackStack()
+            },
+            onIconClick = {
+
+            },
+            rightSideIcon = R.drawable.ic_check_icon_blue,
+            iconColor = Color(0xFF258694),
             dividerColor = Color(0xFF258694),
+            displayRightIcon = false
         )
 
         var notificationsEnabled by remember { mutableStateOf(true) }

@@ -78,7 +78,8 @@ fun CommonWhiteButton(
     fontSize: TextUnit = 16.sp,
     text: String,
     onClick: () -> Unit
-) {
+)
+{
     Button(
         onClick = onClick,
         modifier = modifier
@@ -140,105 +141,6 @@ fun CustomOutlinedTextField(
         )
     }
 }
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CommonTopAppBar(
-    title: String,
-    onBackClick: () -> Unit,
-    titleColor: Color = Color(0xFF3F393F),
-    backIconTint: Color = Color(0xFF258694),
-    dividerColor: Color = Color(0xFF656565),
-    containerColor: Color = Color.White,
-    titleFontFamily: FontFamily = FontFamily(Font(R.font.outfit_medium)),
-    titleFontSize: TextUnit = 18.sp
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                fontSize = titleFontSize,
-                fontFamily = titleFontFamily,
-                color = titleColor
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = backIconTint
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
-        ),
-        windowInsets = WindowInsets(0.dp)
-    )
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(4.dp)
-            .background(dividerColor)
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CommonTopAppBarProfile(
-    title: String,
-    onBackClick: () -> Unit,
-    onSettingsClick: () -> Unit = {},
-    titleColor: Color = Color(0xFF3F393F),
-    backIconTint: Color = Color(0xFF258694),
-    settingsIconTint: Color = Color(0xFF3F393F),
-    dividerColor: Color = Color(0xFF656565),
-    containerColor: Color = Color.White,
-    titleFontFamily: FontFamily = FontFamily(Font(R.font.outfit_medium)),
-    titleFontSize: TextUnit = 18.sp
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                fontSize = titleFontSize,
-                fontFamily = titleFontFamily,
-                color = titleColor
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = backIconTint
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_setting_icons),
-                    contentDescription = "Settings",
-                    tint = settingsIconTint
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
-        ),
-        windowInsets = WindowInsets(0.dp)
-    )
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(4.dp)
-            .background(dividerColor)
-    )
-}
-
 
 
 @Composable

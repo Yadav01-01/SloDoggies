@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.times
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 
 @Composable
 fun ProfileFollowerAndFollowingScreen(
@@ -68,10 +68,19 @@ fun ProfileFollowerAndFollowingScreen(
             .background(Color.White)
     ) {
         // Header with stats
-        CommonTopAppBar(
-            title = "My Profile",
-            onBackClick = { navController.popBackStack() },
+
+        IconHeadingText(
+            textHeading = "My Profile",
+            onBackClick = {
+                navController.popBackStack()
+            },
+            onIconClick = {
+
+            },
+            rightSideIcon = R.drawable.ic_check_icon_blue,
+            iconColor = Color(0xFF258694),
             dividerColor = Color(0xFF258694),
+            displayRightIcon = false
         )
         Row(
             modifier = Modifier

@@ -55,9 +55,9 @@ import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.ChatMessage
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.petOwner.PetGroomingChatScreenHeader
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PetGroomingChatScreen(navController: NavController = rememberNavController()) {
     var messageText by remember { mutableStateOf("") }
@@ -76,60 +76,71 @@ fun PetGroomingChatScreen(navController: NavController = rememberNavController()
             .background(Color(0xFFFFFDFD))
     ) {
         // Top App Bar
-        TopAppBar(
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_community_icons),
-                        contentDescription = "Community Icon"
-                        , modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape))
-                    Spacer(Modifier.width(15.dp))
+//        TopAppBar(
+//            title = {
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Image(
+//                        painter = painterResource(R.drawable.ic_community_icons),
+//                        contentDescription = "Community Icon"
+//                        , modifier = Modifier
+//                        .size(40.dp)
+//                        .clip(CircleShape))
+//                    Spacer(Modifier.width(15.dp))
+//
+//                    Column {
+//                        Text(
+//                            text = "Event Community 1",
+//                            fontSize = 16.sp,
+//                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                            color = Color.Black,
+//                            modifier = Modifier.height(24.dp)
+//                        )
+//                        Row(verticalAlignment = Alignment.CenterVertically){
+//                            Image(
+//                                painter = painterResource(R.drawable.ic_users_group),
+//                                contentDescription = "Community Icon"
+//                                , modifier = Modifier
+//                                    .size(24.dp)
+//                            )
+//                            Spacer(Modifier.width(7.dp))
+//
+//                        Text(
+//                            text = "20 members",
+//                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                            color = Color.Black,
+//                            fontSize = 16.sp,
+//
+//                        )
+//                        }
+//                    }
+//                }
+//            },
+//            navigationIcon = {
+//                IconButton(onClick = {navController.popBackStack()  }) {
+//                    Icon(painter = painterResource(id= R.drawable.ic_back_header_arrow), contentDescription = "Back")
+//                }
+//            },
+//            actions = {
+//                IconButton(onClick = { navController.navigate(Routes.PET_EVENT_COMMUNITY_SCREEN)}) {
+//                    Icon(Icons.Default.MoreVert, contentDescription = "More options",tint= Color.Black)
+//                }
+//            },
+//            colors = TopAppBarDefaults.topAppBarColors(
+//                containerColor = Color.White
+//            )
+//        )
 
-                    Column {
-                        Text(
-                            text = "Event Community 1",
-                            fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            color = Color.Black,
-                            modifier = Modifier.height(24.dp)
-                        )
-                        Row(verticalAlignment = Alignment.CenterVertically){
-                            Image(
-                                painter = painterResource(R.drawable.ic_users_group),
-                                contentDescription = "Community Icon"
-                                , modifier = Modifier
-                                    .size(24.dp)
-                            )
-                            Spacer(Modifier.width(7.dp))
-
-                        Text(
-                            text = "20 members",
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            color = Color.Black,
-                            fontSize = 16.sp,
-
-                        )
-                        }
-                    }
-                }
+        PetGroomingChatScreenHeader(
+            onBackClick= {
+                navController.popBackStack()
             },
-            navigationIcon = {
-                IconButton(onClick = {navController.popBackStack()  }) {
-                    Icon(painter = painterResource(id= R.drawable.ic_back_header_arrow), contentDescription = "Back")
-                }
+            onMenuClick={
+                navController.navigate(Routes.PET_EVENT_COMMUNITY_SCREEN)
             },
-            actions = {
-                IconButton(onClick = { navController.navigate(Routes.PET_EVENT_COMMUNITY_SCREEN)}) {
-                    Icon(Icons.Default.MoreVert, contentDescription = "More options",tint= Color.Black)
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White
-            )
+            communityName = "Event Community 1",
+            memberCount = "20 members"
         )
 
        Divider( color = Color(0xFFE4E4E4D4), thickness = 1.dp)
