@@ -27,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
@@ -54,10 +56,15 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.viewModel.businessProvider.ProfileViewModel
 
 @Composable
 fun ProfileScreen(navController: NavHostController) {
-    val email by remember { mutableStateOf("rosy@slodoggies.com") }
+    val viewModel : ProfileViewModel = hiltViewModel()
+
+    val email by viewModel.email.collectAsState()
+    val description by viewModel.description.collectAsState()
+
     val sampleImages = listOf(
         GalleryItem(R.drawable.dog1),
         GalleryItem(R.drawable.dog2),
@@ -139,7 +146,7 @@ fun ProfileScreen(navController: NavHostController) {
                         )
 
                         Text(
-                            text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed.",
+                            text = description,
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color.Black,

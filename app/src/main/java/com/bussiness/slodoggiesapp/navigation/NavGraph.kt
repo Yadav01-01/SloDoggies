@@ -10,7 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bussiness.slodoggiesapp.model.VerificationType
 import com.bussiness.slodoggiesapp.ui.intro.*
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.*
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.AddServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.BusinessRegistrationScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.*
 import com.bussiness.slodoggiesapp.ui.screens.petowner.*
 import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ServiceProviderDetailsScreen

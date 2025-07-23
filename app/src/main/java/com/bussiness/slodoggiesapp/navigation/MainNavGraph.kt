@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.HomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.ServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.PersonDetailScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.PostScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.EditProfileScreen

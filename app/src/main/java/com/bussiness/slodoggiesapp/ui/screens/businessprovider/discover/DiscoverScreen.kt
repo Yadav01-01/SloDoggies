@@ -1,7 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,26 +15,16 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
@@ -53,11 +42,13 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchResultIte
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SocialEventCard
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.viewModel.businessProvider.DiscoverViewModel
 
 @Composable
 fun DiscoverScreen(navController: NavHostController) {
-    var query by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Pets Near You") }
+    val viewModel : DiscoverViewModel = hiltViewModel()
+    val query by viewModel.query.collectAsState()
+    val selectedCategory by viewModel.category.collectAsState()
     val categories = listOf("Pets Near You", "Events", "Pet Places", "Activities")
 
     val searchResults = remember {
@@ -75,7 +66,7 @@ fun DiscoverScreen(navController: NavHostController) {
             .padding(horizontal = 12.dp)
     ) {
         // Search Bar
-        SearchBar(query = query, onQueryChange = { query = it }, placeholder = "Search")
+        SearchBar(query = query, onQueryChange = { viewModel.updateQuery(it) }, placeholder = "Search")
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -98,7 +89,7 @@ fun DiscoverScreen(navController: NavHostController) {
                 val isSelected = selectedCategory == category
 
                 Box(modifier = Modifier
-                    .clickable { selectedCategory = category }
+                    .clickable { viewModel.selectCategory(category)}
                 ) {
                     FilterChipBox(
                         text = category,

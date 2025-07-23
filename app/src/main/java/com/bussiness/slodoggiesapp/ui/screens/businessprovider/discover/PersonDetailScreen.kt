@@ -50,6 +50,7 @@ import com.bussiness.slodoggiesapp.model.GalleryItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DetailText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FilledCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OutlineCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetOwnerDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
@@ -79,7 +80,7 @@ fun PersonDetailScreen(navController: NavHostController) {
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        TopHeadingText(textHeading = "Jimmi", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = "Jimmi", onBackClick = { navController.popBackStack() })
 
         HorizontalDivider(
             modifier = Modifier

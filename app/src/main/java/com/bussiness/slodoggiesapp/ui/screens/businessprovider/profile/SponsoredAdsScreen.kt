@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -90,8 +92,8 @@ fun SponsoredAdsScreen(navController: NavHostController) {
 fun ActiveScreen() {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+            .fillMaxSize().verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
 
         // Ad Control Section
@@ -159,7 +161,7 @@ fun ActiveScreen() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFE0F7FA), shape = RoundedCornerShape(12.dp))
+                .background(Color(0xFFE5EFF2), shape = RoundedCornerShape(12.dp))
                 .padding(10.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
@@ -197,7 +199,7 @@ fun ActiveScreen() {
             )
 
             rules.forEach {
-                Text("• $it", fontSize = 14.sp, color = Color.Gray)
+                Text("• $it", fontSize = 14.sp, color = Color.Black)
                 Spacer(modifier = Modifier.height(4.dp))
             }
         }
@@ -208,7 +210,7 @@ fun ActiveScreen() {
 fun ExpiredScreen() {
     Column(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize().verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
 
