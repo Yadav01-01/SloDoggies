@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.commonscreens
+package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
@@ -38,15 +40,13 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.VerificationType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.OtpInputField
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
-import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
-fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
-
-    var otp by remember { mutableStateOf("") }
+fun EmailLoginScreen(navController: NavHostController) {
+    var email by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -54,7 +54,6 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
-        // Main content centered
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -66,10 +65,9 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-
-                text = if(type == VerificationType.PHONE) "Verify Your Phone Number" else "Verify Your Email Address",
+                text = "Continue With Email",
                 style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 ),
                 fontFamily = FontFamily(Font(R.font.outfit_semibold)),
@@ -80,9 +78,7 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = if(type == VerificationType.PHONE) "Please enter the 4 digit code sent to \n" +
-                        "+1 555 123 456" else "Please enter the 4 digit code sent to \n" +
-                        "user@slodoggies.com",
+                text = "Please enter your mail to verify your account",
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                 textAlign = TextAlign.Center,
@@ -91,51 +87,52 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            OtpInputField(otp, onOtpTextChange = { otp = it })
+            EmailInputField(email, onValueChange = { email = it })
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(35.dp))
 
-            Text(text = "00:24",Modifier.fillMaxWidth(), textAlign = TextAlign.Center, fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.outfit_bold)), color = Color.Black)
+            ContinueButton(
+                onClick = {
+                    navController.navigate("${Routes.VERIFY_OTP}/${VerificationType.EMAIL.name}")
+                },
+                text = "Continue"
+            )
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(20.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .clickable { navController.navigate(Routes.PHONE_AUTH_SCREEN) },
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(
-                    text = "Didn’t receive the code? ",
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = TextGrey
+                Image(
+                    painter = painterResource(id = R.drawable.phone_ic),
+                    contentDescription = "mail",
+                    modifier = Modifier.size(25.dp)
                 )
 
+                Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
-                    text = "Resend",
-                    modifier = Modifier
-                        .clickable {  },
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = PrimaryColor
-    )
-}
-
-            Spacer(Modifier.height(22.dp))
-
-            ContinueButton ( onClick = { navController.navigate(Routes.BUSINESS_REGISTRATION) }, text = "Verify",backgroundColor = if (otp.length == 4) PrimaryColor else Color(0xFFD9D9D9),
-                textColor = if (otp.length == 4) Color.White else Color(0xFF686868), iconColor = if (otp.length == 4) Color.White else Color(0xFF686868) )
+                    text = "Continue with Phone",
+                    color = TextGrey,
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium))
+                )
+            }
 
             Spacer(Modifier.height(25.dp))
 
             Image(
                 painter = painterResource(id = R.drawable.back_arrow_ic),
                 contentDescription = "backArrow",
-                modifier = Modifier.wrapContentSize().clickable {  }
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clickable { navController.popBackStack() }
             )
-
         }
 
-        // Paw icon positioned bottom-end
         Image(
             painter = painterResource(id = R.drawable.paw_ic),
             contentDescription = null,
@@ -151,7 +148,7 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun VerifyOTPScreenPreview() {
+fun EmailAuthScreenPreview() {
     val dummyNavController = rememberNavController()
-    VerifyOTPScreen(navController = dummyNavController, VerificationType.PHONE)
+    EmailLoginScreen(navController = dummyNavController)
 }

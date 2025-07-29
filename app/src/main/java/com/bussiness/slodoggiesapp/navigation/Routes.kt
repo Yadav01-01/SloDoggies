@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.navigation
 
 object Routes {
+    //Business Provider
     const val SPLASH = "splash"
     const val ONBOARDING = "onboarding"
     const val JOIN_THE_PACK = "joinThePack"
@@ -19,9 +20,20 @@ object Routes {
     const val SPONSORED_ADS_SCREEN = "SponsoredAds"
     const val EDIT_PROFILE_SCREEN = "EditProfile"
     const val POST_SCREEN = "PostScreen"
+    const val EDIT_BUSINESS_SCREEN = "EditBusiness"
+    const val SETTINGS_SCREEN = "SettingsScreen"
+    const val SAVED_ITEM_SCREEN = "SavedItem"
+    const val ABOUT_US_SCREEN = "AboutUs"
+    const val TERMS_AND_CONDITION_SCREEN = "TermsAndCondition"
+    const val PRIVACY_POLICY_SCREEN = "PrivacyPolicy"
+    const val FAQ_SCREEN = "FAQ"
+    const val HELP_AND_SUPPORT_SCREEN = "HelpAndSupport"
+    const val MY_EVENT_SCREEN = "MyEvent"
 
+    //Common
     const val NOTIFICATION_PERMISSION_SCREEN = "notificationAlert"
     const val LOCATION_PERMISSION_SCREEN= "locationAlert"
+    //Pet Owner
     const val PET_HOME_SCREEN = "petHomeScreen"
     const val PET_DISCOVER_SCREEN = "petDiscoverScreen"
     const val PET_POST_SCREEN = "petPostScreen"

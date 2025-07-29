@@ -223,10 +223,8 @@ fun RatingBar(rating: Int, percentage: Float) {
 
         Icon(
             painter = painterResource(id = R.drawable.ic_round_star),
-
-            //  imageVector = Icons.Filled.Star,
             contentDescription = null,
-            tint = Color(0xFFFFA726),
+            tint = Color.Unspecified,
             modifier = Modifier.size(16.dp)
         )
 

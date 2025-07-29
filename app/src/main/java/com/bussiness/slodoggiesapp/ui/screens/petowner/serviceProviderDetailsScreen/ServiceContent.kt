@@ -20,12 +20,19 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -517,6 +524,79 @@ fun EnhancedExpandableBathBrush() {
             }
         }
 
+    }
+}
+
+@Composable
+fun ReviewItem(
+    profileImageUrl: String,
+    userName: String,
+    rating: Float,
+    timeAgo: String,
+    reviewText: String,
+    onReplyClick: () -> Unit
+) {
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = profileImageUrl,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = userName, fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    repeat(5) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star",
+                            tint = if (it < rating.toInt()) Color(0xFFFFB800) else Color.Gray,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = timeAgo,
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
+                }
+            }
+
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "More Options",
+                tint = Color.Gray
+            )
+        }
+
+        Spacer(modifier = Modifier.height(6.dp))
+
+        Text(
+            text = reviewText,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = "Reply",
+            color = Color(0xFF2BA6F1),
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            modifier = Modifier.clickable { onReplyClick() }
+        )
     }
 }
 

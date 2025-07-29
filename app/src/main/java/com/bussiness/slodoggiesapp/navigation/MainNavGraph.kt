@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.EditBusinessScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.HomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
@@ -14,6 +15,14 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.PostScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.EditProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.FollowerScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.SponsoredAdsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AboutUsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.FAQScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.HelpAndSupportScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.MyEventScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.PrivacyPolicyScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SavedItemScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SettingsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.TermsAndConditionsScreen
 
 @Composable
 fun MainNavGraph(
@@ -34,5 +43,15 @@ fun MainNavGraph(
         composable(Routes.SPONSORED_ADS_SCREEN) { SponsoredAdsScreen(navController) }
         composable(Routes.EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
         composable(Routes.POST_SCREEN) { PostScreen(navController) }
+        composable(Routes.EDIT_BUSINESS_SCREEN) { EditBusinessScreen(navController) }
+        composable(Routes.SETTINGS_SCREEN) { SettingsScreen(navController) }
+        composable(Routes.SAVED_ITEM_SCREEN) { SavedItemScreen(navController) }
+        composable(Routes.SAVED_ITEM_SCREEN) { SavedItemScreen(navController) }
+        composable(Routes.ABOUT_US_SCREEN) { AboutUsScreen(navController) }
+        composable(Routes.TERMS_AND_CONDITION_SCREEN) { TermsAndConditionsScreen(navController) }
+        composable(Routes.PRIVACY_POLICY_SCREEN) { PrivacyPolicyScreen(navController) }
+        composable(Routes.FAQ_SCREEN) { FAQScreen(navController) }
+        composable(Routes.HELP_AND_SUPPORT_SCREEN) { HelpAndSupportScreen(navController) }
+        composable(Routes.MY_EVENT_SCREEN) { MyEventScreen(navController) }
     }
 }

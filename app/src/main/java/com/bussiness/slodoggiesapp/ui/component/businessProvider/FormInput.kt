@@ -31,6 +31,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
@@ -55,6 +56,8 @@ fun InputField(
     input: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
+    height: Dp = 56.dp,
+    fontSize: Int = 15,
     modifier: Modifier = Modifier,
 ) {
     androidx.compose.material.OutlinedTextField(
@@ -64,18 +67,18 @@ fun InputField(
             Text(
                 text = placeholder,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                fontSize = 15.sp,
+                fontSize = fontSize.sp,
                 color = Color(0xFFAEAEAE)
             )
         },
         textStyle = TextStyle(
             fontFamily = FontFamily(Font(R.font.outfit_regular)),
-            fontSize = 15.sp,
+            fontSize = fontSize.sp,
             color = Color.Black,
         ),
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp), // Slightly taller for vertical alignment
+            .height(height),
         shape = RoundedCornerShape(8.dp),
         colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
             backgroundColor = Color.White,

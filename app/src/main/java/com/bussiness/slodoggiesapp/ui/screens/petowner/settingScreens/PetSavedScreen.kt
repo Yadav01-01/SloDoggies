@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -128,7 +129,7 @@ fun BeachPhotoGrid(
 
                 if (item.isVideo) {
                     // Overlay play icon
-                    androidx.compose.material3.Icon(
+                    Icon(
                         painter = painterResource(id = R.drawable.ic_play_circle), // ⬅️ your play icon
                         contentDescription = "Play",
                         tint = Color.White,
