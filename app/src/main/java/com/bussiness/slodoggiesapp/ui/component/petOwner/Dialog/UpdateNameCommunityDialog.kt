@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
@@ -81,7 +82,7 @@ fun UpdateNameCommunityDialog( currentName: String = "Event Community",
                         modifier = Modifier
                             .clickable(onClick = onDismiss)
                             .align(Alignment.TopEnd)
-                            .size(50.dp)
+                            .wrapContentSize()
                             .clip(CircleShape)
                             .padding(8.dp)
                     )

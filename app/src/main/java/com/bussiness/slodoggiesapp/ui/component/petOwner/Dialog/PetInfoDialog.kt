@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +42,7 @@ import com.bussiness.slodoggiesapp.model.petOwner.PetInfo
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
 @Composable
@@ -83,11 +85,12 @@ fun PetInfoDialog(title : String,
                     modifier = Modifier
                         .clickable { onDismiss() }
                         .align(Alignment.TopEnd)  // Align to top-end within the Box
-                        .size(40.dp)
+                        .size(37.dp)
                         .clip(CircleShape)
-                        .padding(4.dp)  // Consistent padding all around
+                          // Consistent padding all around
                 )
             }
+            Spacer(Modifier.height(5.dp))
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -113,8 +116,21 @@ fun PetInfoDialog(title : String,
                             color = Color.Black
                         )
 
+                        Text(
+                            text = "Skip",
+                            fontSize = 18.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            color = Color(0xFF258694),
+                            modifier = Modifier.clickable{
+
+                            }
+                        )
+
 
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Divider(thickness = 2.dp, color = Color(0xFF949494))
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -125,7 +141,7 @@ fun PetInfoDialog(title : String,
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(80.dp),
+                                .size(70.dp),
 
 
                             contentAlignment = Alignment.Center
@@ -134,7 +150,7 @@ fun PetInfoDialog(title : String,
                                 painter = painterResource(id = R.drawable.ic_black_profile_icon),
                                 contentDescription = "Add Photo",
 
-                                modifier = Modifier.size(70.dp)
+                                modifier = Modifier.size(65.dp)
                             )
 
 
@@ -142,7 +158,7 @@ fun PetInfoDialog(title : String,
                                 painter = painterResource(id = R.drawable.ic_post_icon),
                                 contentDescription = "Add",
                                 modifier = Modifier
-                                    .size(25.dp)
+                                    .size(18.dp)
                                     .align(Alignment.BottomEnd),
 
                                 )
@@ -153,7 +169,7 @@ fun PetInfoDialog(title : String,
 
                         Text(
                             text = "Add Photo",
-                            fontSize = 15.sp,
+                            fontSize = 14.sp,
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         )

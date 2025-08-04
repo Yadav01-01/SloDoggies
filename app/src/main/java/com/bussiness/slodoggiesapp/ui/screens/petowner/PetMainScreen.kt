@@ -24,6 +24,8 @@ fun PetMainScreen(authNavController: NavHostController) {
     // Determine if bottom bar should be visible
     val showBottomBar = when (currentRoute) {
         Routes.PET_GROOMING_CHAT_SCREEN -> false
+        Routes.PET_EVENT_COMMUNITY_SCREEN -> false
+        Routes.PET_ADD_PARTICIPANTS_SCREEN -> false
         else -> true
     }
     //val currentRoute = getCurrentRoute(navController)

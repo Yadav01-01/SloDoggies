@@ -37,4 +37,5 @@ object Routes {
     const val PET_MY_EVENTS_SCREEN = "PetMyEventsScreen"
     const val PET_GROOMING_CHAT_SCREEN = "PetGroomingChatScreen"
     const val PET_EVENT_COMMUNITY_SCREEN = "EventCommunityScreen"
+    const val PET_ADD_PARTICIPANTS_SCREEN = "PetAddParticipantsScreen"
 }

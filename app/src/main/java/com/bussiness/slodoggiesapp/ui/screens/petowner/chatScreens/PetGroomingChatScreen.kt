@@ -75,62 +75,7 @@ fun PetGroomingChatScreen(navController: NavController = rememberNavController()
             .fillMaxSize()
             .background(Color(0xFFFFFDFD))
     ) {
-        // Top App Bar
-//        TopAppBar(
-//            title = {
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically
-//                ) {
-//                    Image(
-//                        painter = painterResource(R.drawable.ic_community_icons),
-//                        contentDescription = "Community Icon"
-//                        , modifier = Modifier
-//                        .size(40.dp)
-//                        .clip(CircleShape))
-//                    Spacer(Modifier.width(15.dp))
-//
-//                    Column {
-//                        Text(
-//                            text = "Event Community 1",
-//                            fontSize = 16.sp,
-//                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-//                            color = Color.Black,
-//                            modifier = Modifier.height(24.dp)
-//                        )
-//                        Row(verticalAlignment = Alignment.CenterVertically){
-//                            Image(
-//                                painter = painterResource(R.drawable.ic_users_group),
-//                                contentDescription = "Community Icon"
-//                                , modifier = Modifier
-//                                    .size(24.dp)
-//                            )
-//                            Spacer(Modifier.width(7.dp))
-//
-//                        Text(
-//                            text = "20 members",
-//                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-//                            color = Color.Black,
-//                            fontSize = 16.sp,
-//
-//                        )
-//                        }
-//                    }
-//                }
-//            },
-//            navigationIcon = {
-//                IconButton(onClick = {navController.popBackStack()  }) {
-//                    Icon(painter = painterResource(id= R.drawable.ic_back_header_arrow), contentDescription = "Back")
-//                }
-//            },
-//            actions = {
-//                IconButton(onClick = { navController.navigate(Routes.PET_EVENT_COMMUNITY_SCREEN)}) {
-//                    Icon(Icons.Default.MoreVert, contentDescription = "More options",tint= Color.Black)
-//                }
-//            },
-//            colors = TopAppBarDefaults.topAppBarColors(
-//                containerColor = Color.White
-//            )
-//        )
+
 
         PetGroomingChatScreenHeader(
             onBackClick= {

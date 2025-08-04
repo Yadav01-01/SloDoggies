@@ -25,6 +25,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.remember
+import androidx.compose.ui.text.TextStyle
 
 @Composable
 fun CustomDropdownMenuUpdated(
@@ -41,7 +42,7 @@ fun CustomDropdownMenuUpdated(
     Column(modifier = modifier) {
         Text(
             text = label,
-            fontSize = 15.sp,
+            fontSize = 14.sp,
             fontFamily = FontFamily(Font(R.font.outfit_medium)),
             color = Color.Black,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -69,6 +70,12 @@ fun CustomDropdownMenuUpdated(
 //                        disabledBorderColor = Color(0xFF949494),
 //                        disabledTextColor = if (value.isEmpty()) Color(0xFF949494) else Color.Black
 //                    ),
+                    textStyle = TextStyle(
+                        fontSize = 15.sp, // change this size as needed
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+
+                        color = if (value.isEmpty()) Color(0xFF949494) else Color.Black
+                    ),
                     trailingIcon = {
                         Icon(
                             painter = painterResource(
@@ -82,7 +89,7 @@ fun CustomDropdownMenuUpdated(
                         focusedBorderColor = Color(0xFF00ACC1),
                         unfocusedBorderColor = Color(0xFF949494)
                     ),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
                 )
             }
 

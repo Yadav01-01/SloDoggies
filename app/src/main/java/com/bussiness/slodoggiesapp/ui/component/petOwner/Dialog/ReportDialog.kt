@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -89,7 +90,7 @@ fun ReportDialog(
                         modifier = Modifier
                             .clickable(onClick = onDismiss)
                             .align(Alignment.TopEnd)
-                            .size(50.dp)
+                            .wrapContentSize()
                             .clip(CircleShape)
                             .padding(8.dp)
                     )
@@ -98,7 +99,7 @@ fun ReportDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.785f),
+                        .fillMaxHeight(0.785f).padding(10.dp),
                     shape = RoundedCornerShape(
                         topStart = 16.dp,
                         topEnd = 16.dp,
@@ -118,7 +119,7 @@ fun ReportDialog(
                         ) {
                             Text(
                                 text = "Report Comment",
-                                fontSize = 18.sp,
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 color = Color(0xFF212121),
                                 modifier = Modifier.align(Alignment.CenterStart)
@@ -139,8 +140,8 @@ fun ReportDialog(
                             // Question
                             Text(
                                 text = "Why are you reporting this comment?",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 color = Color.Black,
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
@@ -159,8 +160,8 @@ fun ReportDialog(
                             // Message section
                             Text(
                                 text = "Message (Optional)",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 color = Color.Black,
                                 modifier = Modifier.padding(bottom = 8.dp)
                             )
@@ -171,16 +172,16 @@ fun ReportDialog(
                                 onValueChange = { message = it },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(90.dp),
+                                    .height(93.dp),
                                 placeholder = {
                                     Text(
                                         text = "Write something here....",
-                                        color = Color.Gray
+                                        color = Color(0xFF949494)
                                     )
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = Color(0xFF258694),
-                                    unfocusedBorderColor = Color.Gray
+                                    unfocusedBorderColor = Color(0xFF949494)
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             )
@@ -196,6 +197,7 @@ fun ReportDialog(
                             ) {
                                 CommonWhiteButton(
                                     text = "Cancel",
+                                    fontSize = 16.sp,
                                     onClick = {
                                         // Handle skip action
                                     },
@@ -203,7 +205,7 @@ fun ReportDialog(
                                 )
                                 CommonBlueButton(
                                     text = "Send report",
-                                    fontSize = 22.sp,
+                                    fontSize = 15.sp,
                                     onClick = {
                                         // Handle save action
                                     },
@@ -226,7 +228,8 @@ fun ReportReasonOption(
 ) {
     Text(
         text = text,
-        fontSize = 16.sp,
+        fontSize = 14.sp,
+        fontFamily = FontFamily(Font(R.font.outfit_regular)),
         color = if (isSelected) Color.White else Color.Black,
         modifier = Modifier
             .fillMaxWidth()

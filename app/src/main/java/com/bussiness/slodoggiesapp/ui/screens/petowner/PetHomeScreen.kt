@@ -67,7 +67,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
+import com.bussiness.slodoggiesapp.model.petOwner.Comment
+
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.HomeHeader
 import com.bussiness.slodoggiesapp.ui.component.shareApp
@@ -91,12 +92,6 @@ fun PetHomeScreen(authNavController: NavHostController) {
             chatIcon = R.drawable.ic_chat_icon,
         )
 
-//        HorizontalDivider(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(2.dp)
-//                .background(Color(0xFF258694))
-//        )
 
         Divider(
             thickness = 2.dp, color = Color(0xFF258694)
@@ -285,7 +280,7 @@ fun SocialMediaPost(post: PostData) {
     Card(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp),
+            .padding(15.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
@@ -532,7 +527,7 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
                 painter = painterResource(id = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon),
                 contentDescription = "Paw",
                 modifier = Modifier
-                    .size(25.dp)
+                    .size(24.dp)
                     .clickable {
                         isLiked = !isLiked // Toggle the liked state
                     }
@@ -551,7 +546,7 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
                 painter = painterResource(id = R.drawable.ic_chat_bubble_icon),
                 contentDescription = "Comments",
                 modifier = Modifier
-                    .size(25.dp)
+                    .size(24.dp)
                     .clickable {
                         // isLiked = !isLiked // Toggle the liked state
                         showCommentsDialog = true
@@ -570,7 +565,7 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
                 painter = painterResource(id = R.drawable.ic_share_icons),
                 contentDescription = "Shares",
                 modifier = Modifier
-                    .size(25.dp)
+                    .size(24.dp)
                     .clickable {
                         shareApp(context)
                     }

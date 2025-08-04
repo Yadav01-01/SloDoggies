@@ -44,7 +44,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 @Composable
 fun CommonBlueButton(
     modifier: Modifier = Modifier,
-    fontSize: TextUnit = 16.sp,
+    fontSize: TextUnit = 15.sp,
     text: String,
     onClick: () -> Unit
 ) {
@@ -60,12 +60,9 @@ fun CommonBlueButton(
     ) {
         Text(
             text = text,
-
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontFamily = FontFamily(Font(R.font.outfit_bold)),
-               // fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            fontSize = fontSize,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            color = Color.White
         )
     }
 }
@@ -92,11 +89,9 @@ fun CommonWhiteButton(
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontFamily = FontFamily(Font(R.font.outfit_bold)),
-               // fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
+            fontSize = fontSize,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            color = Color.Black
         )
     }
 }
@@ -107,14 +102,14 @@ fun CustomOutlinedTextField(
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
-    fontSize: Int = 14,
+    fontSize: Int = 15,
     label: String? = null
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         label?.let {
             Text(
                 text = it,
-                fontSize = 15.sp,
+                fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                 color = Color.Black,
                 modifier = Modifier.padding(bottom = 8.dp)

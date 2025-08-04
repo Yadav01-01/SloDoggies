@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +29,7 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,6 +52,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,6 +60,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.xr.compose.testing.toDp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.petOwner.Comment
 
 @Composable
 fun CommentsDialog(
@@ -71,13 +75,16 @@ fun CommentsDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false )
+            decorFitsSystemWindows = false
+        )
     ) {
-        Box ( modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars) // Account for system bars
-            .padding(top = 64.dp), // Optional top padding to not stick to very top
-            contentAlignment = Alignment.BottomCenter){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.systemBars) // Account for system bars
+                .padding(top = 64.dp), // Optional top padding to not stick to very top
+            contentAlignment = Alignment.BottomCenter
+        ) {
             Column(
                 modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom,
             ) {
@@ -91,7 +98,7 @@ fun CommentsDialog(
                         modifier = Modifier
                             .clickable(onClick = onDismiss)
                             .align(Alignment.TopEnd)
-                            .size(50.dp)
+                            .wrapContentSize()
                             .clip(CircleShape)
                             .padding(8.dp)
                     )
@@ -99,10 +106,14 @@ fun CommentsDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.7f)
-                    ,
+                        .fillMaxHeight(0.7f),
 
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp,
+                        bottomStart = 16.dp,
+                        bottomEnd = 16.dp
+                    ),
                     color = Color.White
                 ) {
                     Column(
@@ -116,7 +127,7 @@ fun CommentsDialog(
                         ) {
                             Text(
                                 text = "Comments",
-                                fontSize = 18.sp,
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 color = Color(0xFF212121),
                                 modifier = Modifier.align(Alignment.CenterStart)
@@ -224,7 +235,7 @@ fun CommentsDialog(
                                     contentDescription = "Emoji",
                                     tint = Color(0xFF9DA1A3),
                                     modifier = Modifier
-                                        .size(32.dp)
+                                        .size(30.dp)
 
                                 )
 
@@ -237,7 +248,7 @@ fun CommentsDialog(
                                         Text(
                                             if (replyingTo != null) "Type your reply here" else "Type your comment here",
                                             color = Color(0xFF9DA1A3),
-                                            fontSize = 12.sp,
+                                            fontSize = 14.sp,
                                             fontFamily = FontFamily(Font(R.font.outfit_regular))
                                         )
                                     },
@@ -254,7 +265,7 @@ fun CommentsDialog(
                                             painter = painterResource(id = R.drawable.ic_send_icons),
                                             contentDescription = "Send",
                                             modifier = Modifier
-                                                .size(30.dp)
+                                                .size(33.dp)
                                                 .clickable {
                                                     if (newComment.isNotBlank()) {
                                                         // Add comment logic here
@@ -298,7 +309,7 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                 painter = painterResource(id = R.drawable.dummy_person_image2),
                 contentDescription = "Person",
                 modifier = Modifier
-                    .size(38.dp)
+                    .size(35.dp)
                     .clip(CircleShape)
 
             )
@@ -318,13 +329,13 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                         Row {
                             Text(
                                 text = comment.userName,
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 color = Color.Black
                             )
                             Text(
                                 text = comment.timeAgo,
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 modifier = Modifier.padding(start = 10.dp),
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 color = Color(0xFF949494)
@@ -335,7 +346,7 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
 //
                         Text(
                             text = comment.userRole,
-                            fontSize = 9.sp,
+                            fontSize = 8.sp,
                             color = Color(0xFF258694),
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             modifier = Modifier
@@ -382,7 +393,8 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
 //                                                onDismiss = { showReportDialog = false }
 //                                            )
                                         },
-                                        anchorPosition = iconButton.value?.positionInWindow()?.toDpOffset() ?: DpOffset.Zero
+                                        anchorPosition = iconButton.value?.positionInWindow()
+                                            ?.toDpOffset() ?: DpOffset.Zero
                                     )
                                 }
                             }
@@ -418,28 +430,19 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                 horizontalArrangement = Arrangement.End
             ) {
                 if (comment.isLiked) {
-                    IconButton(
-                        onClick = { /* Handle like */ },
-                        modifier = Modifier.size(15.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_paw_like_filled_icon), // Replace with heart icon
-                            contentDescription = "Like",
-                            tint = Color(0xFF00ACC1)
-                        )
-                    }
-                } else {
-                    IconButton(
-                        onClick = { /* Handle like */ },
-                        modifier = Modifier.size(15.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_paw_like_icon), // Replace with heart icon
-                            contentDescription = "Like",
-                            // tint = if (comment.isLiked) Color(0xFF00ACC1) else Color(0xFF949494),
 
-                        )
-                    }
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_paw_like_filled_icon), // Replace with heart icon
+                        contentDescription = "Like", modifier = Modifier
+                            .width(11.dp)
+                            .height(10.dp)
+                    )
+                } else {
+
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_paw_like_icon), // Replace with heart icon
+                        contentDescription = "Like", modifier = Modifier.size(12.dp)
+                    )
                 }
 
 
@@ -505,7 +508,7 @@ fun ReplyItem(
                 painter = painterResource(id = R.drawable.dummy_person_image2),
                 contentDescription = "Person",
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(31.dp)
                     .clip(CircleShape)
             )
 
@@ -537,7 +540,7 @@ fun ReplyItem(
                         }
                         Text(
                             text = reply.userRole,
-                            fontSize = 9.sp,
+                            fontSize = 7.sp,
                             color = Color(0xFF258694),
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             modifier = Modifier
@@ -550,7 +553,7 @@ fun ReplyItem(
                     }
                     Box {
                         IconButton(
-                            onClick = { showOptions = true  },
+                            onClick = { showOptions = true },
                             modifier = Modifier.size(21.dp)
 //                            .onGloballyPositioned { coordinates ->
 //                            iconButton.value = coordinates
@@ -577,7 +580,8 @@ fun ReplyItem(
 //                                        onDismiss = { showReportDialog = false }
 //                                    )
                                 },
-                                anchorPosition = iconButton.value?.positionInWindow()?.toDpOffset() ?: DpOffset.Zero
+                                anchorPosition = iconButton.value?.positionInWindow()?.toDpOffset()
+                                    ?: DpOffset.Zero
                             )
                         }
                     }
@@ -593,10 +597,12 @@ fun ReplyItem(
                 Row {
                     Text(
                         text = reply.text,
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                         color = Color.Black,
-                        modifier = Modifier.widthIn(max = 180.dp).weight(1f)
+                        modifier = Modifier
+                            .widthIn(max = 180.dp)
+                            .weight(1f)
 
                     )
 
@@ -606,28 +612,19 @@ fun ReplyItem(
                         horizontalArrangement = Arrangement.End
                     ) {
                         if (reply.isLiked) {
-                            IconButton(
-                                onClick = { /* Handle like */ },
-                                modifier = Modifier.size(15.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_paw_like_filled_icon), // Replace with heart icon
-                                    contentDescription = "Like",
-                                    tint = Color(0xFF00ACC1)
-                                )
-                            }
-                        } else {
-                            IconButton(
-                                onClick = { /* Handle like */ },
-                                modifier = Modifier.size(15.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_paw_like_icon), // Replace with heart icon
-                                    contentDescription = "Like",
-                                    // tint = if (comment.isLiked) Color(0xFF00ACC1) else Color(0xFF949494),
 
-                                )
-                            }
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_paw_like_filled_icon), // Replace with heart icon
+                                contentDescription = "Like",
+                                modifier = Modifier
+                                    .width(11.dp)
+                                    .height(10.dp)
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_paw_like_icon), // Replace with heart icon
+                                contentDescription = "Like", modifier = Modifier.size(12.dp)
+                            )
                         }
 
 
@@ -661,7 +658,7 @@ fun ReplyItem(
                     ) {
                         Text(
                             text = "Reply",
-                            fontSize = 14.sp,
+                            fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color(0xFF258694)
                         )
@@ -677,28 +674,12 @@ fun ReplyItem(
     }
 }
 
-// Data class for Comment
-data class Comment(
-    val id: String,
-    val userName: String,
-    val userRole: String,
-    val userAvatar: String,
-    val text: String,
-    val timeAgo: String,
-    val likeCount: Int,
-    val isLiked: Boolean,
-    val replies: List<Comment> = emptyList()
-
-)
-
-
-
 
 @Composable
 fun CommentOptionsPopup(
     showPopup: Boolean,
     onDismiss: () -> Unit,
-    onReport:  () -> Unit,
+    onReport: () -> Unit,
     anchorPosition: DpOffset = DpOffset.Zero,
     modifier: Modifier = Modifier
 ) {
@@ -708,7 +689,8 @@ fun CommentOptionsPopup(
             onDismissRequest = onDismiss,
             offset = DpOffset(anchorPosition.x - 160.dp, anchorPosition.y),
             modifier = modifier
-                .width(160.dp)   .background(Color.White, RoundedCornerShape(8.dp))
+                .wrapContentSize()
+                .background(Color.White, RoundedCornerShape(10.dp))
             // .shadow(8.dp, RoundedCornerShape(8.dp))
         ) {
             DropdownMenuItem(
@@ -722,11 +704,15 @@ fun CommentOptionsPopup(
                             painter = painterResource(id = R.drawable.ic_report_icon),
                             contentDescription = "Report",
                             tint = Color(0xFF258694),
-                            modifier = Modifier.size(17.dp)
+                            modifier = Modifier.size(16.dp)
 
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Report Comment", fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.outfit_regular)), color = Color.Black
+                        Text(
+                            "Report Comment",
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            color = Color.Black
                         )
                     }
                 }
@@ -735,6 +721,63 @@ fun CommentOptionsPopup(
         }
     }
 }
+
 fun Offset.toDpOffset(): DpOffset {
     return DpOffset(x.toDp(), y.toDp())
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CommentsDialogPreview() {
+    val sampleComments = listOf(
+        Comment(
+            id = "1",
+            userName = "Dianne Russell",
+            userRole = "Pet Dad",
+            userAvatar = "https://via.placeholder.com/40x40",
+            text = "This place is amazing! My dog loved it",
+            timeAgo = "24 min",
+            likeCount = 2,
+            isLiked = true,
+            replies = listOf(
+                Comment(
+                    id = "1-1",
+                    userName = "Alex Johnson",
+                    userRole = "Pet Owner",
+                    userAvatar = "",
+                    text = "I agree! My poodle had so much fun too!",
+                    timeAgo = "15 min",
+                    likeCount = 1,
+                    isLiked = false
+                )
+            )
+        ),
+        Comment(
+            id = "2",
+            userName = "Jack Roger",
+            userRole = "Pet Dad",
+            userAvatar = "https://via.placeholder.com/40x40",
+            text = "Took my pup here last weekend — 10/10 would recommend! 🐕",
+            timeAgo = "1 day ago",
+            likeCount = 0,
+            isLiked = false
+        )
+    )
+
+    // State for the preview
+    var showDialog by remember { mutableStateOf(true) }
+
+    if (showDialog) {
+        CommentsDialog(
+            comments = sampleComments,
+            onDismiss = { showDialog = false }
+        )
+    } else {
+        // Show a button to reopen the dialog for testing
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Button(onClick = { showDialog = true }) {
+                Text("Show Comments Dialog")
+            }
+        }
+    }
 }

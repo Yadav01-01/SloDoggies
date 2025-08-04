@@ -48,6 +48,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.Participant
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.UpdateNameCommunityDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.EventCommunityScreenHeader
@@ -63,6 +64,7 @@ fun EventCommunityScreen(
     onParticipantMenuPressed: (String) -> Unit = {}
 ) {
     val showDialog = remember { mutableStateOf(false) } // Add this line
+    val showUpdateName = remember { mutableStateOf(false) } // Add this line
     val participants = listOf(
         Participant("Lydia Vaccaro", R.drawable.dummy_baby_pic),
         Participant("Anika Torff", R.drawable.dummy_baby_pic),
@@ -177,7 +179,9 @@ fun EventCommunityScreen(
                         contentDescription = "Add participants",
                         modifier = Modifier
                             .width(20.dp)
-                            .height(21.81.dp)
+                            .height(21.81.dp).clickable{
+                                navController.navigate(Routes.PET_ADD_PARTICIPANTS_SCREEN)
+                            }
                     )
                 }
 
@@ -215,6 +219,7 @@ fun EventCommunityScreen(
             onCancel = { showDialog.value = false }
         )
     }
+
 }
 
 @Composable
