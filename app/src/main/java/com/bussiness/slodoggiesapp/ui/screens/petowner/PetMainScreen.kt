@@ -12,69 +12,42 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.BottomNavItem
 import com.bussiness.slodoggiesapp.navigation.PetMainNavGraph
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.CustomBottomBar
-import androidx.compose.runtime.getValue
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.CustomBottomBar
 
 @Composable
 fun PetMainScreen(authNavController: NavHostController) {
     val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route ?: ""
-
-    // Determine if bottom bar should be visible
-    val showBottomBar = when (currentRoute) {
-        Routes.PET_GROOMING_CHAT_SCREEN -> false
-        Routes.PET_EVENT_COMMUNITY_SCREEN -> false
-        Routes.PET_ADD_PARTICIPANTS_SCREEN -> false
-        else -> true
-    }
-    //val currentRoute = getCurrentRoute(navController)
+    val currentRoute = getCurrentRoute(navController)
     val bottomNavItems = listOf(
         BottomNavItem("Home", R.drawable.home_ic, Routes.PET_HOME_SCREEN, R.drawable.out_home_ic),
-        BottomNavItem(
-            "Discover",
-            R.drawable.discover_ic,
-            Routes.DISCOVER_SCREEN,
-            R.drawable.out_explore_ic
-        ),
-        BottomNavItem(
-            "Services",
-            R.drawable.service_ic,
-            Routes.PET_SERVICES_SCREEN,
-            R.drawable.out_service_ic
-        ),
-        BottomNavItem(
-            "Profile",
-            R.drawable.profile_ic,
-            Routes.PET_PROFILE_SCREEN,
-            R.drawable.out_profile_ic
-        )
+        BottomNavItem("Discover", R.drawable.discover_ic, Routes.DISCOVER_SCREEN, R.drawable.out_explore_ic),
+        BottomNavItem("Services", R.drawable.service_ic, Routes.PET_SERVICES_SCREEN, R.drawable.out_service_ic),
+        BottomNavItem("Profile", R.drawable.profile_ic, Routes.PET_PROFILE_SCREEN, R.drawable.out_profile_ic)
     )
 
     Scaffold(
         bottomBar = {
-            if (showBottomBar) {
-                CustomBottomBar(
-                    navController = navController,
-                    items = bottomNavItems,
-                    selectedRoute = currentRoute,
-                    onItemClick = { navItem ->
-                        navController.navigate(navItem.route) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    onCenterClick = {
-                        // Handle center FAB click (e.g., navigate to Add screen)
+            CustomBottomBar(
+                navController = navController,
+                items = bottomNavItems,
+                selectedRoute = currentRoute,
+                onItemClick = { navItem ->
+                    navController.navigate(navItem.route) {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
                     }
-                )
-            }
+                },
+                onCenterClick = {
+                    // Handle center FAB click (e.g., navigate to Add screen)
+                }
+            )
         }
-    ) { innerPadding ->
+    ){ innerPadding ->
         PetMainNavGraph(navController = navController, modifier = Modifier.padding(innerPadding))
     }
 }
+
 
 
 @Composable

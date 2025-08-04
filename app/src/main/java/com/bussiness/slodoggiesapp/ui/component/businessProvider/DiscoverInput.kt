@@ -357,10 +357,10 @@ fun PetOwnerDetail(
 
 
 @Composable
-fun GalleryItemCard(item: GalleryItem) {
+fun GalleryItemCard(item: GalleryItem,height: Int = 150) {
     Box(
         modifier = Modifier
-            .height(150.dp) // You can adjust height here
+            .height(height.dp) // You can adjust height here
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(Color.LightGray)

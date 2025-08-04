@@ -9,16 +9,23 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Phone
@@ -35,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -42,7 +50,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.ServicePackage
 import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.EnhancedExpandableInfoSpinner
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
@@ -186,6 +196,170 @@ fun TypeButton(
         )
     }
 }
+
+@Composable
+fun ServicePackageCard(
+    data: ServicePackage,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .background(Color.White, RoundedCornerShape(6.dp))
+            .border(1.dp, Color(0xFFE5EFF2), RoundedCornerShape(6.dp))
+            .padding(8.dp)
+    ) {
+        // Title + Action Icons
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Top
+        ) {
+            Row {
+                Icon(
+                    painter = painterResource(R.drawable.ic_paw_like_filled_icon),
+                    contentDescription = null,
+                    modifier = Modifier.wrapContentSize(),
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = data.title,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        fontSize = 14.sp,
+                        color = Color.Black
+                    )
+                )
+            }
+            Row {
+                Icon(
+                    painter = painterResource(R.drawable.edit_ic_p),
+                    contentDescription = null,
+                    modifier = Modifier.clickable { onEdit() },
+                )
+                Spacer(modifier = Modifier.width(15.dp))
+                Icon(
+                    painter = painterResource(R.drawable.ic_delete_icon),
+                    contentDescription = null,
+                    tint = Color(0xFFDD0B00),
+                    modifier = Modifier.clickable { onDelete() },
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Description
+        Text(
+            text = data.description,
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Normal,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                fontSize = 12.sp,
+                lineHeight = 17.sp,
+                color = Color.Black
+            )
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Amount Section
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = "Amount",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+            )
+            Text(
+                text = data.amount,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Photos label
+        Text(
+            text = "Photos",
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Medium,
+                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                fontSize = 14.sp,
+                color = Color.Black
+            )
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Photos Row
+        val maxDisplay = 5
+        val photosToShow = data.photos.take(maxDisplay)
+        val remaining = data.photos.size - maxDisplay
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(90.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            userScrollEnabled = true // Disable scrolling since it's 1 row
+        ) {
+            items(photosToShow) { photo ->
+                Image(
+                    painter = rememberAsyncImagePainter(photo),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(10.dp))
+                )
+            }
+
+            if (remaining > 0) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.LightGray),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "+$remaining",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 20.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                color = Color.White
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+
+    }
+}
+
+
 
 @Preview(showBackground = true)
 @Composable

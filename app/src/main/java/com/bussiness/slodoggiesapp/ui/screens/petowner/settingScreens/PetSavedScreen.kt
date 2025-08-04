@@ -1,6 +1,5 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,15 +7,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,13 +25,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.MediaItem
-import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
 
 private val photos = listOf(
     R.drawable.dummy_person_image3,  // Woman with dog on beach
@@ -54,51 +57,41 @@ private val photos = listOf(
     R.drawable.dummy_person_image3, // Boy with dog in water (duplicate)
     R.drawable.dummy_person_image3  // Black dog with people (duplicate)
 )
-
-
-// Update your MediaItem data structure
 private val mediaItems = listOf(
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
+    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
-    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
-    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
+    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
+    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
     MediaItem(R.drawable.dummy_person_image3, isVideo = false),
-    MediaItem(R.drawable.dummy_person_image3, isVideo = true), // Use actual thumbnail image
+    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
+    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
+    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
+    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
+    MediaItem(R.drawable.dummy_person_image3, isVideo = false),
+    MediaItem(R.raw.dummy_video_thumbnail, isVideo = true), // A video
     MediaItem(R.drawable.dummy_person_image3, isVideo = false)
+
 )
 
 @Composable
 fun PetSavedScreen(navController: NavController = rememberNavController()){
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-
-        IconHeadingText(
-            textHeading = "Saved",
-            onBackClick = {
-                navController.popBackStack()
-            },
-            onIconClick = {
-
-            },
-            rightSideIcon = R.drawable.ic_check_icon_blue,
-            iconColor = Color(0xFF258694),
+        CommonTopAppBar(
+            title = "Saved",
+            titleFontSize = 19.sp,
+            onBackClick = { navController.popBackStack() },
             dividerColor = Color(0xFF258694),
-            displayRightIcon = false
         )
-        Spacer(Modifier.height(15.dp))
+        Spacer(Modifier.height(20.dp))
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp)
+                .padding(horizontal = 15.dp)
         ) {
             BeachPhotoGrid()
 
@@ -123,8 +116,7 @@ fun BeachPhotoGrid(
         items(mediaItems) { item ->
             Box(
                 modifier = Modifier
-                    .height(130.dp)
-                    .width(80.dp)
+                    .aspectRatio(1f)
                     .clip(RoundedCornerShape(12.dp))
                     .clickable { onMediaClick(item) }
             ) {
@@ -137,10 +129,10 @@ fun BeachPhotoGrid(
 
                 if (item.isVideo) {
                     // Overlay play icon
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.ic_play_circle), // ⬅️ your play icon
                         contentDescription = "Play",
-
+                        tint = Color.White,
                         modifier = Modifier
                             .align(Alignment.Center)
                             .size(36.dp)
@@ -152,10 +144,10 @@ fun BeachPhotoGrid(
 }
 
 
-//@Preview(showBackground = true)
-//@Composable
-//fun PetSavedScreenPreview() {
-//    MaterialTheme {
-//        PetSavedScreen()
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun PetSavedScreenPreview() {
+    MaterialTheme {
+        PetSavedScreen()
+    }
+}
