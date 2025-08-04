@@ -12,7 +12,7 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.BottomNavItem
 import com.bussiness.slodoggiesapp.navigation.PetMainNavGraph
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.CustomBottomBar
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.CustomBottomBar
 
 @Composable
 fun PetMainScreen(authNavController: NavHostController) {

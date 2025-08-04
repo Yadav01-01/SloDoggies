@@ -76,7 +76,7 @@ fun ProfileScreen(navController: NavHostController) {
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        ScreenHeadingText(textHeading = "My Profile", onBackClick = { navController.popBackStack() }, onSettingClick = {  })
+        ScreenHeadingText(textHeading = "My Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 

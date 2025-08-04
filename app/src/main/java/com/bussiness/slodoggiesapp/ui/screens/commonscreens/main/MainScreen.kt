@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.commonscreens
+package com.bussiness.slodoggiesapp.ui.screens.commonscreens.main
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold

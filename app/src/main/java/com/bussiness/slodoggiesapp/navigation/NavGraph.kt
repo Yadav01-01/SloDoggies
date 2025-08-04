@@ -12,10 +12,11 @@ import com.bussiness.slodoggiesapp.model.VerificationType
 import com.bussiness.slodoggiesapp.ui.intro.*
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.AddServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.BusinessRegistrationScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.*
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.EmailLoginScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.PhoneAuthScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.VerifyOTPScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.JoinThePackScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.MainScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.*
 import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
 
