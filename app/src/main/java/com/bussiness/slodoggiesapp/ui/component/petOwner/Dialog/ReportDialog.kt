@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,6 +47,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.sheet.ReportReasonOption
 
 
 @Composable
@@ -71,8 +73,8 @@ fun ReportDialog(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.systemBars)
+                .wrapContentSize()
+           .windowInsetsPadding(WindowInsets.systemBars)
                 .padding(top = 64.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
@@ -85,7 +87,7 @@ fun ReportDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_cross_icon),
+                        painter = painterResource(id = R.drawable.ic_cross_iconx),
                         contentDescription = "Close",
                         modifier = Modifier
                             .clickable(onClick = onDismiss)
@@ -99,7 +101,7 @@ fun ReportDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.785f).padding(10.dp),
+                        .wrapContentHeight().padding(10.dp),
                     shape = RoundedCornerShape(
                         topStart = 16.dp,
                         topEnd = 16.dp,
@@ -109,7 +111,7 @@ fun ReportDialog(
                     color = Color.White
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.wrapContentSize()
                     ) {
                         // Header
                         Box(
@@ -134,7 +136,7 @@ fun ReportDialog(
                         // Content
                         Column(
                             modifier = Modifier
-                                .fillMaxSize()
+                                .wrapContentSize()
                                 .padding(16.dp)
                         ) {
                             // Question
@@ -176,7 +178,8 @@ fun ReportDialog(
                                 placeholder = {
                                     Text(
                                         text = "Write something here....",
-                                        color = Color(0xFF949494)
+                                        color = Color(0xFF949494),
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular))
                                     )
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
@@ -186,13 +189,13 @@ fun ReportDialog(
                                 shape = RoundedCornerShape(8.dp)
                             )
 
-                            Spacer(modifier = Modifier.weight(1f))
+                            Spacer(modifier = Modifier.height(30.dp))
 
                             // Buttons
                             Row(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 16.dp),
+                                    .fillMaxWidth(),
+                                //       .padding(vertical = 16.dp),
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 CommonWhiteButton(
@@ -241,6 +244,7 @@ fun ReportReasonOption(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     )
 }
+
 
 @Preview
 @Composable

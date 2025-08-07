@@ -77,7 +77,7 @@ fun UpdateNameCommunityDialog( currentName: String = "Event Community",
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_cross_icon),
+                        painter = painterResource(id = R.drawable.ic_cross_iconx),
                         contentDescription = "Close",
                         modifier = Modifier
                             .clickable(onClick = onDismiss)

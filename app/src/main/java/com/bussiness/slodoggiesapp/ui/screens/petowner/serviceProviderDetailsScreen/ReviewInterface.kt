@@ -62,24 +62,22 @@ fun ReviewInterface() {
         // Reviews List
         ReviewsList()
 
-        Spacer(modifier = Modifier.height(32.dp))
-
+        Spacer(modifier = Modifier.height(10.dp))
         // Rate & Review Section
         Text(
             text = "Rate & Review",
-            fontSize = 18.sp,
+            fontSize = 14.sp,
             fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            color = Color.Black
+            color = Color.Black,
         )
         Divider(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 16.dp),
-            color = Color(0xFFE6EFF2),
+            color = Color(0xFFE9EAEB),
             thickness = 1.dp
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Star Rating
         StarRating(
@@ -98,12 +96,12 @@ fun ReviewInterface() {
                     text = "Type Here.....",
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
 
-                    color = Color(0xFF252E3280)
+                    color = Color(0xFF949494)
                 )
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
+                .height(90.dp),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF949494),
                 unfocusedBorderColor = Color(0xFF949494)
@@ -126,7 +124,7 @@ fun ReviewInterface() {
         ) {
             Text(
                 text = "Submit",
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_bold)),
                 color = Color.White
             )
@@ -183,7 +181,7 @@ fun RatingSummary() {
                         painter = painterResource(id = R.drawable.ic_round_star),
                         // imageVector = Icons.Filled.Star,
                         contentDescription = null,
-                        tint = Color(0xFFFFA726),
+                        tint = Color.Unspecified,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -234,7 +232,7 @@ fun RatingBar(rating: Int, percentage: Float) {
             modifier = Modifier
                 .height(8.dp)
                 .width(120.dp)
-                .background(Color(0xFFFFFFFF), RoundedCornerShape(4.dp))
+                .background(Color(0xFFF8F9FA), RoundedCornerShape(4.dp))
         ) {
             Box(
                 modifier = Modifier
@@ -291,7 +289,7 @@ fun ReviewItem(
                 contentScale = ContentScale.FillBounds,
                 //  tint = Color(0xFFFF8C00),
                 modifier = Modifier
-                    .size(45.dp) // Use size() instead of separate height/width for square dimensions
+                    .size(38.dp) // Use size() instead of separate height/width for square dimensions
                     .background(
                         color = Color.Transparent, // Add color parameter
                         shape = CircleShape // Use CircleShape directly instead of RoundedCornerShape
@@ -348,7 +346,7 @@ fun ReviewItem(
                     Spacer(Modifier.width(10.dp))
                     Text(
                         text = timeAgo,
-                        fontSize = 12.sp,
+                        fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                         color = Color(0xFF949494)
                     )
@@ -356,27 +354,12 @@ fun ReviewItem(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-//            Text(
-//                text = review,
-//                fontSize = 14.sp,
-//                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-//                color = Color.Black,
-//                lineHeight = 20.sp
-//            )
-//
-//            Divider(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 16.dp),
-//                color = Color(0xFFE6EFF2),
-//                thickness = 1.dp
-//            )
             }
         }
 
         Text(
             text = review,
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             fontFamily = FontFamily(Font(R.font.outfit_regular)),
             color = Color.Black,
             lineHeight = 20.sp
@@ -402,7 +385,7 @@ fun StarRating(
             Image(painter = painterResource(id = if (i <= rating)  R.drawable.ic_round_star else R.drawable.ic_black_outlined_star ),
                 contentDescription = "Rate $i stars",
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(if (i <= rating) 32.dp else 25.dp)
                     .clickable { onRatingChanged(i) }
                     .padding(2.dp))
         }

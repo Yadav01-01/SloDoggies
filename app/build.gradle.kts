@@ -88,4 +88,6 @@ dependencies {
 
     // Hilt for Jetpack Compose
     implementation (libs.androidx.hilt.navigation.compose)
+
+    implementation ("com.google.android.material:material:1.9.0")
 }

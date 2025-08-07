@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -95,10 +96,10 @@ fun ServiceProviderDetailsScreen(navController: NavHostController) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
+                        .padding(horizontal = 16.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     SwitchButton(
                         selectedOption = selectedOption, // Pass the current state
@@ -126,10 +127,10 @@ fun ProviderDetails() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp),
+            .padding(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RoundedCornerShape(10.dp)
+        shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
 
@@ -155,18 +156,21 @@ fun ProviderDetails() {
                         .wrapContentSize()
                         .padding(vertical = 8.dp)
                         .align(Alignment.TopEnd), // Outer spacing,
-
                 ) {
-                    Text(
-                        text = "Grooming",
-                        fontSize = 9.sp, // Slightly larger font size to match appearance
-                        color = Color(0xFF8A8894), // Soft gray text color
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        modifier = Modifier.padding(
-                            horizontal = 6.dp,
-                            vertical = 4.dp
-                        ) // Inner padding
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .width(71.dp)
+                            .height(25.dp)
+                    ) {
+                        Text(
+                            text = "Grooming",
+                            fontSize = 10.sp, // Slightly larger font size to match appearance
+                            color = Color(0xFF8A8894), // Soft gray text color
+                            textAlign = TextAlign.Center,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        )
+                    }
                 }
 
             }
@@ -178,10 +182,10 @@ fun ProviderDetails() {
                     .fillMaxWidth()
             ) {
                 Column(modifier = Modifier.align(Alignment.TopStart)) {
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Pawfect Pet Care",
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
                         color = Color.Black,
                         maxLines = 1,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -203,7 +207,7 @@ fun ProviderDetails() {
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = "4.8/5",
-                            fontSize = 14.sp,
+                            fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontWeight = FontWeight.Medium,
                             color = Color.Black
@@ -212,41 +216,34 @@ fun ProviderDetails() {
                 }
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Surface(
-                    shape = RoundedCornerShape(6.dp),
-                    border = BorderStroke(1.dp, Color(0xFF258694)),
+                Row(
                     modifier = Modifier
-                        .width(130.dp)
-                        .padding(
-                            vertical = 10.dp,
-                            horizontal = 4.dp
+                        .width(121.dp).align(Alignment.TopEnd)
+                        .clickable { /* Handle inquiry */ }
+                        .border(
+                            width = 1.dp,
+                            color = Color(0xFF258694),
+                            shape = RoundedCornerShape(5.dp)
                         )
-                        .align(Alignment.TopEnd) // Optional: add padding if needed
+                        .padding( vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        modifier = Modifier.padding(
-                            horizontal = 14.dp,
-                            vertical = 8.dp
-                        ) // Add internal padding
-                    ) {
-                        // Chat bubble icon
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_inform_checked),
-                            contentDescription = null,
-                            tint = Color(0xFF0891B2),
-                            modifier = Modifier.size(16.dp)
-                        )
 
-                        Text(
-                            text = "Inquire now",
-                            color = Color(0xFF0891B2),
-                            fontSize = 12.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_inform_checked),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Inquire now",
+                        color = Color(0xFF258694),
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
             // Service Name
@@ -267,17 +264,17 @@ fun ProviderDetails() {
                         painter = painterResource(id = R.drawable.dummy_person_image2),
                         contentDescription = "Person",
                         modifier = Modifier
-                            .size(26.dp)
+                            .size(30.dp)
                             .clip(CircleShape)
 
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
                         text = "Provider Name",
-                        fontSize = 10.sp,
+                        fontSize = 14.sp,
                         color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        //modifier = Modifier.weight(1f)
+
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Image(
@@ -287,12 +284,12 @@ fun ProviderDetails() {
                     )
                 }
                 Surface(
-                    color = Color(0xFF258694), // White background
+                    color = PrimaryColor, // White background
                     shape = RoundedCornerShape(8.dp),
                     border = BorderStroke(1.dp, Color(0xFFCDCDCD)), // Light gray border
                     modifier = Modifier
-                        .width(130.dp)
-                        .padding(vertical = 10.dp, horizontal = 4.dp)
+                        .width(121.dp)
+                        .padding(vertical = 10.dp)
                         .align(Alignment.CenterEnd) // Outer spacing
                 ) {
 
@@ -336,7 +333,7 @@ fun EnhancedExpandableInfoSpinner() {
             modifier = Modifier
                 .animateContentSize()
         ) {
-            // Header
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -345,6 +342,7 @@ fun EnhancedExpandableInfoSpinner() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+
                 Text(
                     text = "Additional Info.",
                     color = PrimaryColor,
@@ -477,7 +475,6 @@ fun SwitchButton(
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(horizontal = 15.dp, vertical = 4.dp)
             .background(
                 color = Color(0xFFE5EFF2),
                 shape = RoundedCornerShape(12.dp)
@@ -493,14 +490,14 @@ fun SwitchButton(
 
         BoxWithConstraints {
             val containerWidth = maxWidth
-            val indicatorWidth = (containerWidth - 8.dp) / 2
+            val indicatorWidth = (containerWidth - 4.dp) / 2
 
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(indicatorWidth)
                     .offset(x = animatedOffset * indicatorWidth)
-                    .padding(vertical = 10.dp, horizontal = 5.dp)
+                    .padding(vertical = 10.dp, horizontal = 10.dp)
                     .background(
                         color = Color(0xFF258694),
                         shape = RoundedCornerShape(8.dp)
@@ -530,8 +527,8 @@ fun SwitchButton(
                     Text(
                         text = option,
                         color = if (selectedOption == option) Color.White else Color.Black,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
+                        fontSize = 13.sp,
+                        fontFamily = if (selectedOption == option) FontFamily(Font(R.font.outfit_medium)) else FontFamily(Font(R.font.outfit_regular)),
                     )
                 }
             }

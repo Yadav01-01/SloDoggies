@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -52,6 +54,7 @@ import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -61,6 +64,10 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.xr.compose.testing.toDp
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.Comment
+import com.bussiness.slodoggiesapp.ui.component.BottomSheetDialog
+import com.bussiness.slodoggiesapp.ui.component.BottomSheetDialogProperties
+import com.bussiness.slodoggiesapp.ui.component.petOwner.sheet.ReportSheet
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
 fun CommentsDialog(
@@ -93,7 +100,7 @@ fun CommentsDialog(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_cross_icon),
+                        painter = painterResource(id = R.drawable.ic_cross_iconx),
                         contentDescription = "Close",
                         modifier = Modifier
                             .clickable(onClick = onDismiss)
@@ -106,7 +113,8 @@ fun CommentsDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.7f),
+                        .fillMaxHeight(0.7f)
+                        .padding(5.dp),
 
                     shape = RoundedCornerShape(
                         topStart = 16.dp,
@@ -204,7 +212,8 @@ fun CommentsDialog(
                                             text = "Replying to $userName",
                                             fontSize = 12.sp,
                                             color = Color(0xFF258694),
-                                            modifier = Modifier.weight(1f)
+                                            modifier = Modifier.weight(1f),
+                                            fontFamily = FontFamily(Font(R.font.outfit_medium))
                                         )
 
                                         IconButton(
@@ -365,22 +374,39 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                         ) {
 
                             Box {
-                                IconButton(
-                                    onClick = { showOptions = true },
-                                    modifier = Modifier.size(21.dp)
-//                                        .onGloballyPositioned { coordinates ->
-//                                            iconButton.value = coordinates
-//                                            coordinates.positionInWindow().run {
-//                                                anchorPosition = DpOffset(x.toDp(), y.toDp())
-//                                            }
-                                    //    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.MoreVert, // Replace with three dots icon
-                                        contentDescription = "More options",
-                                        tint = Color.Black
-                                    )
+                                Row {
+                                    if (comment.myComment) {
+                                        Image(
+                                            painter = painterResource(R.drawable.ic_edit_icon_again),
+                                            contentDescription = "",
+                                            modifier = Modifier.size(18.dp)
+                                        )
+
+                                        Spacer(Modifier.width(10.dp))
+
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_delete_icon),
+                                            contentDescription = "",
+                                            modifier = Modifier.size(18.dp),
+                                            tint = PrimaryColor
+                                        )
+
+                                    } else {
+                                        IconButton(
+                                            onClick = { showOptions = true },
+                                            modifier = Modifier.size(21.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.MoreVert, // Replace with three dots icon
+                                                contentDescription = "More options",
+                                                tint = Color.Black
+                                            )
+                                        }
+                                    }
                                 }
+
+
+
                                 if (showOptions) {
                                     CommentOptionsPopup(
                                         showPopup = showOptions,
@@ -399,9 +425,10 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                                 }
                             }
                             if (showReportDialog) {
+
                                 ReportDialog(
-                                    onDismiss = { showReportDialog = false }
-                                )
+                                       onDismiss = { showReportDialog = false }
+                                    )
                             }
                         }
                         Spacer(modifier = Modifier.height(10.dp))
@@ -434,8 +461,8 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_paw_like_filled_icon), // Replace with heart icon
                         contentDescription = "Like", modifier = Modifier
-                            .width(11.dp)
-                            .height(10.dp)
+                            .width(12.dp)
+                            .height(12.dp)
                     )
                 } else {
 
@@ -451,7 +478,7 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                         text = comment.likeCount.toString(),
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        color = Color(0xFF949494),
+                        color = if (comment.isLiked) PrimaryColor else Color(0xFF949494),
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 } else {
@@ -466,21 +493,22 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
             }
         }
 
-        // Spacer(modifier = Modifier.height(5.dp))
 
+        Spacer(modifier = Modifier.height(1.dp))
         Row(
-            verticalAlignment = Alignment.CenterVertically
+           // verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
         ) {
-            TextButton(
-                onClick = onReply,
-            ) {
-                Text(
-                    text = "Reply",
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    color = Color(0xFF258694)
-                )
-            }
+
+            Text(
+                text = "Reply",
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                color = Color(0xFF258694),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.clickable{onReply
+                }
+            )
 
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -586,9 +614,11 @@ fun ReplyItem(
                         }
                     }
                     if (showReportDialog) {
+
                         ReportDialog(
                             onDismiss = { showReportDialog = false }
                         )
+
                     }
                 }
 
@@ -648,25 +678,28 @@ fun ReplyItem(
                     }
                 }
 
-                // Spacer(modifier = Modifier.height(5.dp))
+                 Spacer(modifier = Modifier.height(1.dp))
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+
+                            horizontalArrangement = Arrangement.Start
                 ) {
-                    TextButton(
-                        onClick = onReply,
-                    ) {
+
                         Text(
                             text = "Reply",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            color = Color(0xFF258694)
+                            textAlign = TextAlign.Start,
+
+                            color = Color(0xFF258694),
+                            modifier = Modifier.clickable{
+                                onReply
+                            }
                         )
-                    }
+
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-//
                 }
             }
         }
@@ -722,6 +755,8 @@ fun CommentOptionsPopup(
     }
 }
 
+
+
 fun Offset.toDpOffset(): DpOffset {
     return DpOffset(x.toDp(), y.toDp())
 }
@@ -748,9 +783,11 @@ fun CommentsDialogPreview() {
                     text = "I agree! My poodle had so much fun too!",
                     timeAgo = "15 min",
                     likeCount = 1,
-                    isLiked = false
+                    isLiked = false,
+                    myComment = false
                 )
-            )
+            ),
+            myComment = true
         ),
         Comment(
             id = "2",
@@ -760,7 +797,8 @@ fun CommentsDialogPreview() {
             text = "Took my pup here last weekend — 10/10 would recommend! 🐕",
             timeAgo = "1 day ago",
             likeCount = 0,
-            isLiked = false
+            isLiked = false,
+                    myComment = false
         )
     )
 

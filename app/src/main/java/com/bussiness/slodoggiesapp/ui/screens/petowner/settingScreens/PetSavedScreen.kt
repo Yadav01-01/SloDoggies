@@ -33,7 +33,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.MediaItem
-import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+//import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
 
 private val photos = listOf(
     R.drawable.dummy_person_image3,  // Woman with dog on beach
@@ -81,12 +81,12 @@ private val mediaItems = listOf(
 fun PetSavedScreen(navController: NavController = rememberNavController()){
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        CommonTopAppBar(
-            title = "Saved",
-            titleFontSize = 19.sp,
-            onBackClick = { navController.popBackStack() },
-            dividerColor = Color(0xFF258694),
-        )
+//        CommonTopAppBar(
+//            title = "Saved",
+//            titleFontSize = 19.sp,
+//            onBackClick = { navController.popBackStack() },
+//            dividerColor = Color(0xFF258694),
+//        )
         Spacer(Modifier.height(20.dp))
         Column(
             modifier = Modifier

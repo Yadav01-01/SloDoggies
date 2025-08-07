@@ -52,7 +52,7 @@ fun RemoveFollowerDialog(
         ) {
             // Main card content
             Image(
-                painter = painterResource(id = R.drawable.ic_cross_icon),
+                painter = painterResource(id = R.drawable.ic_cross_iconx),
                 contentDescription = "Close",
 
                 modifier = Modifier

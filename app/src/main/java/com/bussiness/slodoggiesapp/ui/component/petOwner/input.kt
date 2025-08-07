@@ -25,6 +25,7 @@ import com.bussiness.slodoggiesapp.R
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -149,8 +150,8 @@ fun SearchBar(
         Icon(
             painter = painterResource(id = R.drawable.ic_search), // Replace with your search icon
             contentDescription = "Search",
-            tint = Color.Gray,
-            modifier = Modifier.size(20.dp)
+            tint = Color.Unspecified,
+            modifier = Modifier.wrapContentSize()
         )
     },
     trailingIcon: (@Composable () -> Unit)? = null,
@@ -181,6 +182,7 @@ fun SearchBar(
             modifier = Modifier.weight(1f),
             textStyle = TextStyle(
                 fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.poppins)),
                 color = Color.Black
             ),
             decorationBox = { innerTextField ->

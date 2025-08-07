@@ -9,6 +9,7 @@ data class Comment(
     val timeAgo: String,
     val likeCount: Int,
     val isLiked: Boolean,
-    val replies: List<Comment> = emptyList()
+    val replies: List<Comment> = emptyList(),
+    val myComment : Boolean
 
 )

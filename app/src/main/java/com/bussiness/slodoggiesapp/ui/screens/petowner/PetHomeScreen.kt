@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -59,6 +61,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -160,10 +163,43 @@ fun SocialMediaFeed() {
             comments = 20,
             shares = 10,
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
                 MediaItem(
                     R.drawable.dummy_person_image3,
+                    MediaType.VIDEO,
+                    R.raw.dummy_video_thumbnail
+                )
+            )
+        ),
+        PostData(
+            user = "John Doe with Max",
+            role = "Pet Dad",
+            time = "15 Min.",
+            caption = "Enjoying the sunny day!",
+            description = "Max loves playing in the park with his friends",
+            likes = 85,
+            comments = 12,
+            shares = 5,
+            mediaList = listOf(
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE)
+            )
+        ),
+        PostData(
+            user = "Lydia Vaccaro with Wixx",
+            role = "Pet Mom",
+            time = "5 Min.",
+            caption = "🐾 Meet Wixx - our brown bundle of joy!",
+            description = "From tail wags to beach days, life with this 3-year-old",
+            likes = 120,
+            comments = 20,
+            shares = 10,
+            mediaList = listOf(
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(
+                    R.drawable.dummy_baby_pic,
                     MediaType.VIDEO,
                     R.raw.dummy_video_thumbnail
                 )
@@ -193,8 +229,8 @@ fun SocialMediaFeed() {
             comments = 20,
             shares = 10,
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
                 MediaItem(
                     R.drawable.dummy_person_image3,
                     MediaType.VIDEO,
@@ -212,41 +248,8 @@ fun SocialMediaFeed() {
             comments = 12,
             shares = 5,
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE)
-            )
-        ),
-        PostData(
-            user = "Lydia Vaccaro with Wixx",
-            role = "Pet Mom",
-            time = "5 Min.",
-            caption = "🐾 Meet Wixx - our brown bundle of joy!",
-            description = "From tail wags to beach days, life with this 3-year-old",
-            likes = 120,
-            comments = 20,
-            shares = 10,
-            mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(
-                    R.drawable.dummy_person_image3,
-                    MediaType.VIDEO,
-                    R.raw.dummy_video_thumbnail
-                )
-            )
-        ),
-        PostData(
-            user = "John Doe with Max",
-            role = "Pet Dad",
-            time = "15 Min.",
-            caption = "Enjoying the sunny day!",
-            description = "Max loves playing in the park with his friends",
-            likes = 85,
-            comments = 12,
-            shares = 5,
-            mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE)
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE)
             )
         ),
         // Add more posts as needed
@@ -329,6 +332,7 @@ data class PostData(
 // Modified PostHeader to accept parameters
 @Composable
 private fun PostHeader(user: String, role: String, time: String) {
+    var isFollowing by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -380,25 +384,20 @@ private fun PostHeader(user: String, role: String, time: String) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-//                    Text(
-//                        text = user,
-//                        fontSize = 14.sp,
-//                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-//                        color = Color.Black
-//                    )
+
                     Text(
                         text = user,
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         color = Color.Black,
-                        modifier = Modifier.widthIn(max = 150.dp), // Adjust the max width as needed
+                        modifier = Modifier.widthIn(max = 120.dp), // Adjust the max width as needed
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Button(
-                        onClick = { },
+                        onClick = { isFollowing = !isFollowing },
                         modifier = Modifier
                             .height(24.dp)
                             .padding(horizontal = 10.dp),
@@ -409,7 +408,7 @@ private fun PostHeader(user: String, role: String, time: String) {
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp)
                     ) {
                         Text(
-                            text = "Follow",
+                            text = if (isFollowing) "Following" else "Follow",
                             fontSize = 12.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Medium
@@ -417,19 +416,24 @@ private fun PostHeader(user: String, role: String, time: String) {
                     }
                 }
                 Row {
-                    Box(contentAlignment = Alignment.Center,modifier = Modifier.height(16.dp).width(47.dp)
-                        .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
-                        ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(47.dp)
+                            .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
+                    ) {
                         Text(
                             text = role,
                             fontSize = 8.sp,
                             color = Color(0xFF258694),
+                            textAlign = TextAlign.Center,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
 
-                        )
+                            )
                     }
 
-
+                    Spacer(Modifier.width(10.dp))
                     Text(
                         text = " $time",
                         fontSize = 12.sp,
@@ -449,7 +453,7 @@ private fun PostHeader(user: String, role: String, time: String) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
                 contentDescription = "More options",
-                tint = Color.Gray
+                tint = Color.Black
             )
         }
     }
@@ -510,6 +514,7 @@ private fun PostCaption(caption: String, description: String) {
 @Composable
 private fun PostLikes(likes: Int, comments: Int, shares: Int) {
     var isLiked by remember { mutableStateOf(false) }
+    var isBookMarked by remember { mutableStateOf(false) }
     var showCommentsDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Row(
@@ -523,7 +528,7 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
-            Icon(
+            Image(
                 painter = painterResource(id = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon),
                 contentDescription = "Paw",
                 modifier = Modifier
@@ -578,19 +583,22 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
         }
 
         // Bookmark icon aligned to end
-        IconButton(
-            onClick = { /* Handle bookmark */ },
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_bookmark_icon),
-                contentDescription = "Bookmark",
-                modifier = Modifier.size(24.dp)
-            )
-        }
+//        IconButton(
+//            onClick = { /* Handle bookmark */ },
+//            modifier = Modifier.size(32.dp)
+//        ) {
+//            Icon(
+//                painter = painterResource(id = R.drawable.ic_bookmark_icon),
+//                contentDescription = "Bookmark",
+//                modifier = Modifier.size(24.dp)
+//            )
+//        }
+
+        Image( painter = painterResource(id = if(!isBookMarked) R.drawable.ic_bookmark_icon else R.drawable.ic_bookmark_selected),
+            contentDescription = "Bookmark",
+            modifier = Modifier.size(24.dp).clickable{isBookMarked = !isBookMarked  })
     }
     if (showCommentsDialog) {
-
 
         val sampleComments = listOf(
             Comment(
@@ -611,9 +619,11 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
                         text = "I agree! My poodle had so much fun too!",
                         timeAgo = "15 min",
                         likeCount = 1,
-                        isLiked = false
+                        isLiked = false,
+                        myComment = false
                     )
-                )
+                ),
+                myComment = true
             ),
             Comment(
                 id = "2",
@@ -623,7 +633,8 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
                 text = "Took my pup here last weekend — 10/10 would recommend! 🐕",
                 timeAgo = "1 day ago",
                 likeCount = 0,
-                isLiked = false
+                isLiked = false,
+                myComment = false
             )
         )
         CommentsDialog(
@@ -733,17 +744,14 @@ private fun PostImage(
                                         currentVideoPage = page
                                     },
                                     modifier = Modifier
-                                        .size(60.dp)
-                                        .background(
-                                            Color.Black.copy(alpha = 0.6f),
-                                            CircleShape
-                                        )
+                                        .size(44.dp)
+
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.PlayArrow,
+                                        painter = painterResource(id = R.drawable.ic_play_circle),
                                         contentDescription = "Play video",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(32.dp)
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 }
                             }
@@ -759,10 +767,10 @@ private fun PostImage(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp)
-                    .background(
-                        Color.Black.copy(alpha = 0.3f),
-                        RoundedCornerShape(12.dp)
-                    )
+//                    .background(
+//                        Color.Black.copy(alpha = 0.3f),
+//                        RoundedCornerShape(12.dp)
+//                    )
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Row(
