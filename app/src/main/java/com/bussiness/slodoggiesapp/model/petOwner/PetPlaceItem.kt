@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.model
+package com.bussiness.slodoggiesapp.model.petOwner
 
 data class PetPlaceItem(
     val image :  Int,

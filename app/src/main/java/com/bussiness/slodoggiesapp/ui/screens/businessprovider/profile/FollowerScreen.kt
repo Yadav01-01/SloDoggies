@@ -13,11 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.AudienceData
+import com.bussiness.slodoggiesapp.model.businessProvider.AudienceData
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AudienceListItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AudienceSelection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchBar
+import com.bussiness.slodoggiesapp.ui.dialog.RemoveParticipantDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
@@ -25,6 +26,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 fun FollowerScreen(navController: NavHostController) {
     var selectedOption by remember { mutableStateOf("Follower") }
     var query by remember { mutableStateOf("") }
+    var removeParticipantDialog by remember { mutableStateOf(false) }
 
     val followersList = listOf(
         AudienceData(R.drawable.profile1, "Adison Dias", true),
@@ -95,9 +97,20 @@ fun FollowerScreen(navController: NavHostController) {
                     data = data,
                     isFollower = selectedOption == "Follower",
                     onPrimaryClick = { /* Handle follow/message click */ },
-                    onRemoveClick = { /* Handle remove click */ }
+                    onRemoveClick = { removeParticipantDialog = true }
                 )
             }
+
+            if (removeParticipantDialog){
+                RemoveParticipantDialog(
+                    onDismiss = { removeParticipantDialog = false},
+                    onClickRemove = { },
+                    text = "Remove Follower?",
+                    description = "We won’t tell Zain Dorwart they were removed from your followers.",
+                    iconResId = R.drawable.remove_ic_user
+                )
+            }
+
         }
     }
 }

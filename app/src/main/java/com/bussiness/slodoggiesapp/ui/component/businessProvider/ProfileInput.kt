@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -36,10 +38,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.AudienceData
+import com.bussiness.slodoggiesapp.model.businessProvider.AudienceData
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
@@ -110,7 +113,8 @@ fun AudienceListItem(
             onClick = onPrimaryClick,
             shape = RoundedCornerShape(10),
             border = BorderStroke(1.dp, PrimaryColor),
-            contentPadding = PaddingValues(horizontal = 18.dp)
+            modifier = Modifier.wrapContentWidth().height(30.dp),
+            contentPadding = PaddingValues(horizontal = 18.dp, vertical = 0.dp)
         ) {
             Text(
                 text = if (isFollower) "Follow Back" else "Message",
@@ -131,7 +135,7 @@ fun AudienceListItem(
             tint = Color.Unspecified
         )
     }
-    Spacer(modifier = Modifier.height(10.dp))
+    Spacer(modifier = Modifier.height(15.dp))
     HorizontalDivider(modifier = Modifier
             .fillMaxWidth()
             .height(1.dp)
@@ -231,7 +235,7 @@ fun HeadingTextWithIcon(textHeading: String, onBackClick: () -> Unit) {
             end = 15.dp,
             top = 15.dp,
             bottom = 18.dp
-        )
+        ) .background(Color.White)
 
     ) {
         Icon(
@@ -255,3 +259,23 @@ fun HeadingTextWithIcon(textHeading: String, onBackClick: () -> Unit) {
     }
 }
 
+@Composable
+fun DialogButton(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
+    Text(
+        text = text,
+        fontFamily = if (selected) FontFamily(Font(R.font.outfit_bold)) else FontFamily(Font(R.font.outfit_medium)),
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center,
+        color = if (selected) Color.White else Color.Black,
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (selected) PrimaryColor else Color.White)
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    )
+}

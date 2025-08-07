@@ -13,8 +13,14 @@ import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
 fun SettingsItemArrow(
@@ -95,6 +102,51 @@ fun SettingsItem(
             color = Color.Black,
             fontFamily = FontFamily(Font(R.font.outfit_regular)),
             modifier = Modifier.padding(start = 16.dp)
+        )
+    }
+    HorizontalDivider(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFFDBDBDB)))
+
+}
+
+@Composable
+fun ToggleItem(
+    icon: Int,
+    text: String,
+    isEnabled: Boolean,
+    onToggle: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onToggle(!isEnabled) } // toggle when row is clicked
+            .padding(horizontal = 16.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = "Notifications",
+            tint = Color.Black,
+            modifier = Modifier.size(24.dp)
+        )
+
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            color = Color.Black,
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp)
+        )
+
+        Switch(
+            checked = isEnabled,
+            onCheckedChange = { onToggle(it) },
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = PrimaryColor,
+                uncheckedThumbColor = Color.White,
+                uncheckedTrackColor = Color.Gray
+            )
         )
     }
     HorizontalDivider(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFFDBDBDB)))

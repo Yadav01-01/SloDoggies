@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.model
+package com.bussiness.slodoggiesapp.model.businessProvider
 
 data class GalleryItem(
     val imageResId: Int,

@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.PetOwnerBottomNavItem
+import com.bussiness.slodoggiesapp.model.petOwner.PetOwnerBottomNavItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
@@ -377,7 +377,7 @@ fun PreviewCustomBottomBar() {
 //import androidx.navigation.NavController
 //import androidx.navigation.compose.rememberNavController
 //import com.bussiness.slodoggiesapp.R
-//import com.bussiness.slodoggiesapp.model.PetOwnerBottomNavItem
+//import com.bussiness.slodoggiesapp.model.petOwner.PetOwnerBottomNavItem
 //import com.bussiness.slodoggiesapp.navigation.Routes
 //
 //val bottomNavItems = listOf(

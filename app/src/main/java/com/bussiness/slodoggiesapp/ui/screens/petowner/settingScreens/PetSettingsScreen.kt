@@ -39,6 +39,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
 @Composable
@@ -113,7 +114,7 @@ fun PetSettingsScreen(navController: NavController = rememberNavController()) {
                     onCheckedChange = { notificationsEnabled = it },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
-                        checkedTrackColor = Color(0xFF258694),
+                        checkedTrackColor = PrimaryColor,
                         uncheckedThumbColor = Color.White,
                         uncheckedTrackColor = Color.Gray
                     )

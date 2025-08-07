@@ -2,7 +2,7 @@ package com.bussiness.slodoggiesapp.viewModel.common
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.bussiness.slodoggiesapp.model.FAQItem
+import com.bussiness.slodoggiesapp.model.common.FAQItem
 import javax.inject.Inject
 
 class FAQViewModel @Inject constructor() : ViewModel() {

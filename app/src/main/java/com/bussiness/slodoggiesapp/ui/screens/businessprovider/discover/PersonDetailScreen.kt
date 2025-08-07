@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.GalleryItem
+import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DetailText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FilledCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
@@ -54,7 +54,6 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWith
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OutlineCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetOwnerDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 

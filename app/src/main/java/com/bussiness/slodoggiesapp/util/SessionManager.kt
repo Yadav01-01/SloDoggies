@@ -2,7 +2,7 @@ package com.bussiness.slodoggiesapp.util
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.bussiness.slodoggiesapp.model.UserType
+import com.bussiness.slodoggiesapp.model.main.UserType
 import androidx.core.content.edit
 import com.bussiness.slodoggiesapp.util.AppConstant.KEY_IS_LOGGED_IN
 import com.bussiness.slodoggiesapp.util.AppConstant.KEY_IS_SKIP_LOGIN

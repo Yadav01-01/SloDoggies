@@ -29,6 +29,13 @@ object Routes {
     const val FAQ_SCREEN = "FAQ"
     const val HELP_AND_SUPPORT_SCREEN = "HelpAndSupport"
     const val MY_EVENT_SCREEN = "MyEvent"
+    const val COMMUNITY_CHAT_SCREEN = "CommunityChat"
+    const val NOTIFICATION_SCREEN = "NotificationScreen"
+    const val MESSAGE_SCREEN = "MessageScreen"
+    const val CHAT_SCREEN = "ChatScreen"
+    const val SUBSCRIPTION_SCREEN = "SubscriptionScreen"
+    const val COMMUNITY_PROFILE_SCREEN = "CommunityProfileScreen"
+    const val ADD_PARTICIPANTS_SCREEN = "AddParticipantsScreen"
 
     //Common
     const val NOTIFICATION_PERMISSION_SCREEN = "notificationAlert"

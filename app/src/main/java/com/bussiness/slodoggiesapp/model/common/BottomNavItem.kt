@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.model
+package com.bussiness.slodoggiesapp.model.common
 
 data class BottomNavItem(
     val label: String,

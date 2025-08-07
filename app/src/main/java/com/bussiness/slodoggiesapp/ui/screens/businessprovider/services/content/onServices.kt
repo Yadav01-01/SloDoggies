@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ServicePackageCard
-import com.bussiness.slodoggiesapp.model.ServicePackage
+import com.bussiness.slodoggiesapp.model.businessProvider.ServicePackage
 
 @Composable
 fun ServicePackageSection(servicePackage: ServicePackage) {

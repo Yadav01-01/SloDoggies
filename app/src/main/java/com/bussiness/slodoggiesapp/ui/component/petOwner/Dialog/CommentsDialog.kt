@@ -99,9 +99,7 @@ fun CommentsDialog(
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.7f)
-                    ,
-
+                        .fillMaxHeight(0.7f),
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
                     color = Color.White
                 ) {

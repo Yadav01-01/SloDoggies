@@ -12,6 +12,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,11 +25,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileImageWithUpload
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
+import com.bussiness.slodoggiesapp.ui.dialog.ProfileUpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.ProfileViewModel
 
@@ -36,10 +41,11 @@ fun EditProfileScreen(navController: NavHostController) {
     val viewModel: ProfileViewModel = hiltViewModel()
     val providerName by viewModel.providerName.collectAsState()
     val bio by viewModel.bio.collectAsState()
+    var showDialog by remember { mutableStateOf(false) }
 
     Column (modifier = Modifier.fillMaxSize().background(Color.White).padding( vertical = 8.dp)) {
 
-        ScreenHeadingText("Edit Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { /* Handle Setting Click */ })
+        ScreenHeadingText("Edit Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN) })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 
@@ -67,7 +73,10 @@ fun EditProfileScreen(navController: NavHostController) {
 
         Spacer(Modifier.height(35.dp))
 
-        SubmitButton(modifier = Modifier.padding(horizontal = 20.dp), buttonText = "Save Changes", onClickButton = { /* Handle Submit Click */ }, buttonTextSize = 16)
+        SubmitButton(modifier = Modifier.padding(horizontal = 20.dp), buttonText = "Save Changes", onClickButton = { showDialog = true }, buttonTextSize = 16)
+    }
+    if (showDialog) {
+        ProfileUpdatedDialogWithExternalClose(onDismiss = { showDialog = false }, iconResId = R.drawable.ic_sucess_p, text = "Profile Updated!", description = "Your information has been saved.\n Thanks for keeping things up to date!")
     }
 }
 
