@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.OnboardingPage
+import com.bussiness.slodoggiesapp.model.common.OnboardingPage
 import com.bussiness.slodoggiesapp.navigation.Routes
 import kotlinx.coroutines.launch
 

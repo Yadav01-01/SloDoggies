@@ -28,10 +28,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.EventPost
-import com.bussiness.slodoggiesapp.model.PetPlaceItem
-import com.bussiness.slodoggiesapp.model.SearchResult
-import com.bussiness.slodoggiesapp.model.SocialPost
+import com.bussiness.slodoggiesapp.model.businessProvider.EventPost
+import com.bussiness.slodoggiesapp.model.petOwner.PetPlaceItem
+import com.bussiness.slodoggiesapp.model.businessProvider.SearchResult
+import com.bussiness.slodoggiesapp.model.businessProvider.SocialPost
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ActivityPostCard
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FilterChipBox

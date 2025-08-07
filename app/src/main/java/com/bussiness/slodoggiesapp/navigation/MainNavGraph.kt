@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.EditBusinessScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.HomeScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.SubscriptionScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.PersonDetailScreen
@@ -15,6 +16,7 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.PostScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.EditProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.FollowerScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.SponsoredAdsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AboutUsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.FAQScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.HelpAndSupportScreen
@@ -23,6 +25,11 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.PrivacyPoli
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SavedItemScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SettingsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.TermsAndConditionsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.notification.NotificationScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
 
 @Composable
 fun MainNavGraph(
@@ -53,5 +60,12 @@ fun MainNavGraph(
         composable(Routes.FAQ_SCREEN) { FAQScreen(navController) }
         composable(Routes.HELP_AND_SUPPORT_SCREEN) { HelpAndSupportScreen(navController) }
         composable(Routes.MY_EVENT_SCREEN) { MyEventScreen(navController) }
+        composable(Routes.COMMUNITY_CHAT_SCREEN) { CommunityChatScreen(navController) }
+        composable(Routes.NOTIFICATION_SCREEN) { NotificationScreen(navController) }
+        composable(Routes.MESSAGE_SCREEN) { MessageScreen(navController) }
+        composable(Routes.CHAT_SCREEN) { ChatScreen(navController) }
+        composable(Routes.SUBSCRIPTION_SCREEN) { SubscriptionScreen(navController) }
+        composable(Routes.COMMUNITY_PROFILE_SCREEN) { CommunityProfileScreen(navController) }
+        composable(Routes.ADD_PARTICIPANTS_SCREEN) { AddParticipantsScreen(navController) }
     }
 }

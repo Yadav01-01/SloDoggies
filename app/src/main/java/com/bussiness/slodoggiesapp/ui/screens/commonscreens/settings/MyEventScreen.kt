@@ -1,12 +1,79 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.bussiness.slodoggiesapp.model.businessProvider.Event
+import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
+import com.bussiness.slodoggiesapp.ui.component.common.EventCard
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
 fun MyEventScreen(navController: NavHostController) {
-    Column {
+    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
+        val sampleEvents = listOf(
+            Event(
+                id = "1",
+                imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+1",
+                title = "Puppy Party",
+                description = "Bring your puppy to play",
+                dateTime = "Aug 10, 3:00 PM",
+                duration = "45 Mins.",
+                location = "Los Angeles County",
+                buttonText = "Join Chat"
+            ),
+            Event(
+                id = "2",
+                imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+2",
+                title = "Adoption Drive",
+                description = "Meet adoptable dogs",
+                dateTime = "Aug 15, 2:00 PM",
+                duration = "60 Mins.",
+                location = "San Diego County",
+                buttonText = "Community Chat"
+            ), Event(
+                id = "2",
+                imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+2",
+                title = "Adoption Drive",
+                description = "Meet adoptable dogs",
+                dateTime = "Aug 15, 2:00 PM",
+                duration = "60 Mins.",
+                location = "San Diego County",
+                buttonText = "Community Chat"
+            )
+        )
+
+        HeadingTextWithIcon(textHeading = "My Events", onBackClick = { navController.popBackStack() })
+
+        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(horizontal = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            items(sampleEvents) { event ->
+                EventCard(event = event) { clickedEvent ->
+                     navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+                }
+            }
+        }
     }
+
 }

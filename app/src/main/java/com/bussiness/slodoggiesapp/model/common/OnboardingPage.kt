@@ -1,6 +1,4 @@
-package com.bussiness.slodoggiesapp.model
-
-import com.bussiness.slodoggiesapp.R
+package com.bussiness.slodoggiesapp.model.common
 
 data class OnboardingPage(
     val imageRes: Int,

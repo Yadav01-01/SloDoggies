@@ -9,7 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.BottomNavItem
+import com.bussiness.slodoggiesapp.model.common.BottomNavItem
 import com.bussiness.slodoggiesapp.navigation.PetMainNavGraph
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.CustomBottomBar
