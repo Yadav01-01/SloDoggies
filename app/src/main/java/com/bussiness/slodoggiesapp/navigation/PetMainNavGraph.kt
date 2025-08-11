@@ -13,6 +13,7 @@ import com.bussiness.slodoggiesapp.ui.screens.petowner.PetServicesScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.chatScreens.AddParticipantsScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.chatScreens.EventCommunityScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.chatScreens.PetGroomingChatScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.PetNewPostScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditPetProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.PetProfileScreen
@@ -65,6 +66,9 @@ fun PetMainNavGraph(
         }
         composable(Routes.PET_ADD_PARTICIPANTS_SCREEN) {
             AddParticipantsScreen(navController)
+        }
+        composable(Routes.PET_NEW_POST_SCREEN) {
+            PetNewPostScreen(navController)
         }
 
     }

@@ -100,7 +100,7 @@ fun FollowerScreen(navController: NavHostController) {
                     onRemoveClick = { removeParticipantDialog = true }
                 )
             }
-
+/*
             if (removeParticipantDialog){
                 RemoveParticipantDialog(
                     onDismiss = { removeParticipantDialog = false},
@@ -110,6 +110,8 @@ fun FollowerScreen(navController: NavHostController) {
                     iconResId = R.drawable.remove_ic_user
                 )
             }
+
+ */
 
         }
     }

@@ -44,6 +44,7 @@ object Routes {
     const val PET_HOME_SCREEN = "petHomeScreen"
     const val PET_DISCOVER_SCREEN = "petDiscoverScreen"
     const val PET_POST_SCREEN = "petPostScreen"
+    const val PET_NEW_POST_SCREEN = "petNewPostScreen"
     const val PET_SERVICES_SCREEN = "petServicesScreen"
     const val PET_PROFILE_SCREEN = "petProfileScreen"
     const val PET_MAIN_SCREEN = "PetMainScreen"

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -70,11 +71,18 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.businessProvider.EventPost
+import com.bussiness.slodoggiesapp.model.common.MediaItem
+import com.bussiness.slodoggiesapp.model.common.MediaType
+import com.bussiness.slodoggiesapp.model.common.PostData
 import com.bussiness.slodoggiesapp.model.petOwner.Comment
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.IconWithCount
 
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.HomeHeader
 import com.bussiness.slodoggiesapp.ui.component.shareApp
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
 @Composable
@@ -266,18 +274,7 @@ fun SocialMediaFeed() {
 
 }
 
-data class MediaItem(
-    val resourceId: Int,
-    val type: MediaType,
-    val videoResourceId: Int? = null,
-    val thumbnailResourceId: Int? = null
-)
 
-enum class MediaType {
-    IMAGE, VIDEO
-}
-
-// Modified SocialMediaPost to accept PostData parameter
 @Composable
 fun SocialMediaPost(post: PostData) {
     Card(
@@ -289,6 +286,8 @@ fun SocialMediaPost(post: PostData) {
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
+
+
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -316,18 +315,10 @@ fun SocialMediaPost(post: PostData) {
     }
 }
 
-// Data class for post information
-data class PostData(
-    val user: String,
-    val role: String,
-    val time: String,
-    val caption: String,
-    val description: String,
-    val likes: Int,
-    val comments: Int,
-    val shares: Int,
-    val mediaList: List<MediaItem>
-)
+
+
+
+
 
 // Modified PostHeader to accept parameters
 @Composable
@@ -644,15 +635,6 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
     }
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun PetHomeScreenPreview() {
-    val navController = rememberNavController()
-    PetHomeScreen(authNavController = navController)
-}
-
-
 @Composable
 private fun PostImage(
     mediaList: List<MediaItem> = listOf(
@@ -865,4 +847,13 @@ private fun PostImage(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun PetHomeScreenPreview() {
+    val navController = rememberNavController()
+    PetHomeScreen(authNavController = navController)
+}
+
+
 

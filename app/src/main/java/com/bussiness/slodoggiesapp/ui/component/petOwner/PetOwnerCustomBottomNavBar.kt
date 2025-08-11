@@ -45,7 +45,7 @@ import androidx.compose.runtime.remember
 val bottomNavItems = listOf(
     PetOwnerBottomNavItem("Home", R.drawable.pet_ic_home, Routes.PET_HOME_SCREEN),
     PetOwnerBottomNavItem("Discover", R.drawable.pet_ic_discover, Routes.PET_DISCOVER_SCREEN),
-    PetOwnerBottomNavItem("", R.drawable.pet_ic_post, Routes.PET_POST_SCREEN),
+    PetOwnerBottomNavItem("Post", R.drawable.pet_ic_post, Routes.PET_NEW_POST_SCREEN),
     PetOwnerBottomNavItem("Services", R.drawable.pet_ic_sevice, Routes.PET_SERVICES_SCREEN),
     PetOwnerBottomNavItem("Profile", R.drawable.pet_ic_profile, Routes.PET_PROFILE_SCREEN)
 )
