@@ -39,17 +39,22 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
 @Composable
-fun FormHeadingText(text: String){
+fun FormHeadingText(
+    text: String,
+    modifier: Modifier = Modifier
+) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleLarge.copy(
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_medium))
         ),
-        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-        color = Color.Black
+        color = Color.Black,
+        modifier = modifier
     )
 }
+
 
 @Composable
 fun InputField(

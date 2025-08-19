@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -40,14 +43,20 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.main.VerificationType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.PhoneNumberInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
+import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
-fun PhoneAuthScreen(navController: NavHostController) {
+fun SignUpScreen(navController: NavHostController) {
 
-    var phone by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var cnfPassword by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -67,7 +76,7 @@ fun PhoneAuthScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Phone Number",
+                text = "Create your account",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 18.sp
@@ -79,17 +88,27 @@ fun PhoneAuthScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = "Please enter your phone number to verify your account",
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                textAlign = TextAlign.Center,
-                color = TextGrey
-            )
+            FormHeadingText("Email", modifier = Modifier.align(Alignment.Start))
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            PhoneNumberInputField(phone, onValueChange = { phone = it}, checkIcon = true)
+            EmailInputField(email, onValueChange = { email = it })
+
+            Spacer(Modifier.height(15.dp))
+
+            FormHeadingText("Password",modifier = Modifier.align(Alignment.Start))
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            PasswordInput(password, onPasswordChange = { password = it })
+
+            Spacer(Modifier.height(15.dp))
+
+            FormHeadingText("Confirm Password",modifier = Modifier.align(Alignment.Start))
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            PasswordInput(cnfPassword, onPasswordChange = { cnfPassword = it })
 
             Spacer(Modifier.height(35.dp))
 
@@ -97,41 +116,50 @@ fun PhoneAuthScreen(navController: NavHostController) {
                 onClick = {
                     navController.navigate("${Routes.VERIFY_OTP}/${VerificationType.PHONE.name}")
                 },
-                text = "Continue"
+                text = "Create Account"
             )
 
+            Spacer(Modifier.height(10.dp))
 
-            Spacer(Modifier.height(20.dp))
+            val annotatedText = buildAnnotatedString {
 
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .clickable { navController.navigate(Routes.EMAIL_AUTH_SCREEN) },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.mail_ic),
-                    contentDescription = "mail",
-                    modifier = Modifier.size(20.dp)
+                pushStyle(
+                    SpanStyle(
+                        color = TextGrey,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium))
+                    )
                 )
+                append("Already have an account? ")
+                pop()
 
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = "Continue with mail",
-                    color = TextGrey,
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium))
+                // Create an Account (Primary color)
+                pushStringAnnotation(tag = "LOGIN", annotation = "Login")
+                pushStyle(
+                    SpanStyle(
+                        color = PrimaryColor,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium))
+                    )
                 )
+                append("Login")
+                pop()
+                pop()
             }
 
-            Spacer(Modifier.height(25.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.back_arrow_ic),
-                contentDescription = "backArrow",
-                modifier = Modifier.wrapContentSize()
-                    .clickable { navController.popBackStack()   }
+            ClickableText(
+                text = annotatedText,
+                onClick = { offset ->
+                    annotatedText.getStringAnnotations(
+                        tag = "LOGIN",
+                        start = offset,
+                        end = offset
+                    ).firstOrNull()?.let {
+                        navController.navigate(Routes.LOGIN_SCREEN) // Navigate
+                    }
+                }
             )
 
         }
@@ -154,5 +182,5 @@ fun PhoneAuthScreen(navController: NavHostController) {
 @Composable
 fun PhoneAuthScreenPreview() {
     val dummyNavController = rememberNavController()
-    PhoneAuthScreen(navController = dummyNavController)
+    SignUpScreen(navController = dummyNavController)
 }

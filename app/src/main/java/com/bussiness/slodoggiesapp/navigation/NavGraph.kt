@@ -1,6 +1,8 @@
 package com.bussiness.slodoggiesapp.navigation
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -9,15 +11,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bussiness.slodoggiesapp.model.main.VerificationType
-import com.bussiness.slodoggiesapp.ui.intro.*
+import com.bussiness.slodoggiesapp.ui.intro.OnboardingScreen
+import com.bussiness.slodoggiesapp.ui.intro.SplashScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.AddServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.BusinessRegistrationScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.EmailLoginScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.PhoneAuthScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.ForgotPasswordScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.LoginScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.NewPasswordScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.SignUpScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.VerifyOTPScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.JoinThePackScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.MainScreen
-import com.bussiness.slodoggiesapp.ui.screens.petowner.*
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.LocationPermissionScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.NotificationPermissionScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.PetHomeScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.PetMainScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.PetServicesScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
 
 @Composable
@@ -46,8 +55,10 @@ fun NavGraph(navController: NavHostController) {
             }
 
             composable(Routes.JOIN_THE_PACK) { JoinThePackScreen(navController) }
-            composable(Routes.PHONE_AUTH_SCREEN) { PhoneAuthScreen(navController) }
-            composable(Routes.EMAIL_AUTH_SCREEN) { EmailLoginScreen(navController) }
+            composable(Routes.LOGIN_SCREEN) { LoginScreen(navController) }
+            composable(Routes.SIGNUP_SCREEN) { SignUpScreen(navController) }
+            composable(Routes.FORGOT_PASSWORD_SCREEN) { ForgotPasswordScreen(navController) }
+            composable(Routes.NEW_PASSWORD_SCREEN) { NewPasswordScreen(navController) }
 
             composable(
                 route = "${Routes.VERIFY_OTP}/{type}",

@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -62,7 +64,8 @@ fun SearchResultItem(
     imageRes: Int,
     onRemove: () -> Unit,
     onItemClick: () -> Unit,
-    labelVisibility : Boolean
+    labelVisibility : Boolean,
+    crossVisibility : Boolean
 ) {
     Row(
         modifier = Modifier
@@ -111,14 +114,16 @@ fun SearchResultItem(
 
         }
 
-        Icon(
-            painter = painterResource(id = R.drawable.close_ic),
-            contentDescription = "Remove",
-            tint = Color.Unspecified,
-            modifier = Modifier
-                .wrapContentSize()
-                .clickable { onRemove() }
-        )
+        if (crossVisibility){
+            Icon(
+                painter = painterResource(id = R.drawable.close_ic),
+                contentDescription = "Remove",
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clickable { onRemove() }
+            )
+        }
     }
     Divider(Modifier.height(1.dp).background(color = Color(0xFFE5EFF2)))
 }
@@ -374,7 +379,7 @@ fun GalleryItemCard(item: GalleryItem, height: Int = 150) {
 }
 
 @Composable
-fun PetPlaceCard(placeItem: PetPlaceItem) {
+fun PetPlaceCard(placeItem: PetPlaceItem,onItemClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -383,6 +388,7 @@ fun PetPlaceCard(placeItem: PetPlaceItem) {
             .background(Color.White)
             .border(1.dp, Color(0xFFE6F0F2), RoundedCornerShape(10.dp))
             .padding(10.dp)
+            .clickable { onItemClick() }
     ) {
         Image(
             painter = painterResource(id = placeItem.image),
@@ -738,3 +744,38 @@ fun IconWithCount(imageRes: Int, count: String,onItemClick: () -> Unit) {
     }
 }
 
+
+
+@Composable
+fun HashtagSection() {
+    val hashtags = listOf("#DogYoga", "#PupWalk2025", "#VetPicnic", "#PetGala", "#rain")
+
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(hashtags) { tag ->
+            HashtagChip(tag)
+        }
+    }
+}
+
+@Composable
+fun CategorySection(
+    categories: List<String>,
+    selectedCategory: String,
+    onCategorySelected: (String) -> Unit
+) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        items(categories) { category ->
+            val isSelected = selectedCategory == category
+            Box(
+                modifier = Modifier.clickable { onCategorySelected(category) }
+            ) {
+                FilterChipBox(
+                    text = category,
+                    borderColor = if (isSelected) PrimaryColor else TextGrey,
+                    backgroundColor = if (isSelected) PrimaryColor else Color.White,
+                    textColor = if (isSelected) Color.White else TextGrey
+                )
+            }
+        }
+    }
+}

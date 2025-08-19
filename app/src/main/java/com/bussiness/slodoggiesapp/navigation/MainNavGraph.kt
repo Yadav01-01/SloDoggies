@@ -3,11 +3,13 @@ package com.bussiness.slodoggiesapp.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.EditBusinessScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.HomeScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.HomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.SubscriptionScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
@@ -27,6 +29,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SettingsScr
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.TermsAndConditionsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.notification.NotificationScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit.EditAddServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
@@ -67,5 +70,13 @@ fun MainNavGraph(
         composable(Routes.SUBSCRIPTION_SCREEN) { SubscriptionScreen(navController) }
         composable(Routes.COMMUNITY_PROFILE_SCREEN) { CommunityProfileScreen(navController) }
         composable(Routes.ADD_PARTICIPANTS_SCREEN) { AddParticipantsScreen(navController) }
+        composable(
+            route = "${Routes.EDIT_ADD_SERVICE_SCREEN}/{type}",
+            arguments = listOf(navArgument("type") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val type = backStackEntry.arguments?.getString("type") ?: "add"
+            EditAddServiceScreen(navController,type)
+        }
+
     }
 }

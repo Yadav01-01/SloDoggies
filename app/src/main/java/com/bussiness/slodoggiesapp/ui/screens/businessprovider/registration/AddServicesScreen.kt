@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,13 +28,16 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgress
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.AddServiceViewModel
 
 @Composable
-fun AddServiceScreen(navController: NavHostController, viewModel: AddServiceViewModel = hiltViewModel()) {
+fun AddServiceScreen(
+    navController: NavHostController,
+    viewModel: AddServiceViewModel = hiltViewModel()
+) {
 
     val title by viewModel.title.collectAsState()
     val description by viewModel.description.collectAsState()
     val amount by viewModel.amount.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
 
         TopHeadingText(textHeading = "Add Services", onBackClick = { navController.popBackStack() })
 
@@ -43,6 +48,7 @@ fun AddServiceScreen(navController: NavHostController, viewModel: AddServiceView
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
+                .background(Color.White)
         ) {
 
             Spacer(Modifier.height(10.dp))

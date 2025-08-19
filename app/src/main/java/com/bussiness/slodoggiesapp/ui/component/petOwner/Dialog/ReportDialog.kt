@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -34,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -45,11 +47,15 @@ import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
 @Composable
 fun ReportDialog(
-    onDismiss: () -> Unit = {}
+    onDismiss: () -> Unit = {},
+    onCancel : () -> Unit,
+    onSendReport : () -> Unit
 ) {
     var selectedReason by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
@@ -89,7 +95,7 @@ fun ReportDialog(
                         modifier = Modifier
                             .clickable(onClick = onDismiss)
                             .align(Alignment.TopEnd)
-                            .size(50.dp)
+                            .wrapContentSize()
                             .clip(CircleShape)
                             .padding(8.dp)
                     )
@@ -117,10 +123,10 @@ fun ReportDialog(
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = "Report Comment",
-                                fontSize = 18.sp,
+                                text = stringResource(R.string.report_comment),
+                                fontSize = 20.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                color = Color(0xFF212121),
+                                color = Color.Black,
                                 modifier = Modifier.align(Alignment.CenterStart)
                             )
                         }
@@ -138,8 +144,9 @@ fun ReportDialog(
                         ) {
                             // Question
                             Text(
-                                text = "Why are you reporting this comment?",
-                                fontSize = 16.sp,
+                                text = stringResource(R.string.Why_are_you_reporting_this_comment),
+                                fontSize = 14.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 fontWeight = FontWeight.Medium,
                                 color = Color.Black,
                                 modifier = Modifier.padding(bottom = 16.dp)
@@ -158,7 +165,7 @@ fun ReportDialog(
 
                             // Message section
                             Text(
-                                text = "Message (Optional)",
+                                text = stringResource(R.string.message_optional),
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = Color.Black,
@@ -174,13 +181,15 @@ fun ReportDialog(
                                     .height(90.dp),
                                 placeholder = {
                                     Text(
-                                        text = "Write something here....",
-                                        color = Color.Gray
+                                        text = stringResource(R.string.Write_something_here),
+                                        color = TextGrey,
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                        fontSize = 15.sp
                                     )
                                 },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedBorderColor = Color(0xFF258694),
-                                    unfocusedBorderColor = Color.Gray
+                                    unfocusedBorderColor = TextGrey
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             )
@@ -195,17 +204,17 @@ fun ReportDialog(
                                 horizontalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
                                 CommonWhiteButton(
-                                    text = "Cancel",
+                                    text = stringResource(R.string.cancel),
                                     onClick = {
-                                        // Handle skip action
+                                        onCancel()
                                     },
                                     modifier = Modifier.weight(1f),
                                 )
                                 CommonBlueButton(
-                                    text = "Send report",
-                                    fontSize = 22.sp,
+                                    text = stringResource(R.string.send_report),
+                                    fontSize = 16.sp,
                                     onClick = {
-                                        // Handle save action
+                                      onSendReport()
                                     },
                                     modifier = Modifier.weight(1f),
                                 )
@@ -226,13 +235,13 @@ fun ReportReasonOption(
 ) {
     Text(
         text = text,
-        fontSize = 16.sp,
+        fontSize = 14.sp,
         color = if (isSelected) Color.White else Color.Black,
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
             .background(
-                color = if (isSelected) Color(0xFF258694) else Color.Transparent,
+                color = if (isSelected) PrimaryColor else Color.Transparent,
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -242,14 +251,10 @@ fun ReportReasonOption(
 @Preview
 @Composable
 fun ReportCommentDialogPreview() {
-//    ReportCommentDialog(
-//        onDismiss = {},
-//        onReport = { reason, message ->
-//            println("Report submitted: $reason - $message")
-//        }
-//    )
     var showReportDialog by remember { mutableStateOf(false) }
     ReportDialog(
-        onDismiss = { showReportDialog = false }
+        onDismiss = { showReportDialog = false },
+        onCancel = { showReportDialog = false },
+        onSendReport = { showReportDialog = false }
     )
 }

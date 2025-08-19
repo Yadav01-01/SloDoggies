@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.Community
+import com.bussiness.slodoggiesapp.model.common.AddParticipant
 import com.bussiness.slodoggiesapp.model.common.Participants
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
@@ -289,6 +290,53 @@ fun ParticipantsItem(
         }
 
         HorizontalDivider(thickness = 1.dp, color = Color(0xFFCBDFE3))
+    }
+}
+
+
+@Composable
+fun CommunityHeadingText(
+    textHeading: String,
+    selectedParticipants: List<AddParticipant>,
+    onBackClick: () -> Unit,
+    onDone: (List<AddParticipant>) -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(horizontal = 15.dp, vertical = 15.dp)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.back_ic),
+            contentDescription = "Back",
+            tint = PrimaryColor,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { onBackClick() }
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Text(
+            text = textHeading,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp
+            ),
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            color = Color.Black,
+            modifier = Modifier.weight(1f) // Pushes trailing icon to the right
+        )
+
+        IconButton(onClick = { onDone(selectedParticipants) }) {
+            Icon(
+                painter = painterResource(id = R.drawable.tick_ic),
+                contentDescription = "Done",
+                tint = PrimaryColor
+            )
+        }
     }
 }
 

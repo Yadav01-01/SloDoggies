@@ -33,9 +33,11 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
 @Composable
@@ -49,7 +51,7 @@ fun CommonBlueButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(45.dp),
+            .height(50.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color(0xFF258694)
         ),
@@ -57,11 +59,11 @@ fun CommonBlueButton(
     ) {
         Text(
             text = text,
-
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontFamily = FontFamily(Font(R.font.outfit_bold)),
-               // fontWeight = FontWeight.Bold,
-                color = Color.White
+                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                fontWeight = FontWeight.Medium,
+                color = Color.White,
+                fontSize = fontSize
             )
         )
     }
@@ -89,8 +91,9 @@ fun CommonWhiteButton(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontFamily = FontFamily(Font(R.font.outfit_bold)),
-               // fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
                 color = Color.Black
             )
         )
@@ -128,11 +131,11 @@ fun CustomOutlinedTextField(
                     color = Color(0xFF949494)
                 )
             },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().height(50.dp),
             shape = RoundedCornerShape(12.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF00ACC1),
-                unfocusedBorderColor = Color(0xFF949494)
+                focusedBorderColor = TextGrey,
+                unfocusedBorderColor = TextGrey
             )
         )
     }

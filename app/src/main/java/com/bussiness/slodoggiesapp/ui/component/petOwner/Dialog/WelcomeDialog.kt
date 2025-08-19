@@ -128,7 +128,7 @@ fun WelcomeDialog(
                     ) {
                         Text(
                             text = button,
-                            fontSize = 13.sp,
+                            fontSize = 14.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             fontWeight = FontWeight.Medium,
                             color = Color.White

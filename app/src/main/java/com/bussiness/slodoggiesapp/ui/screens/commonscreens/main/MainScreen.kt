@@ -26,7 +26,7 @@ fun MainScreen(authNavController: NavHostController) {
     )
 
     val bottomNavRoutes = bottomNavItems.map { it.route }
-        .plus(Routes.POST_SCREEN)
+//        .plus(Routes.POST_SCREEN)
 
     Scaffold(
         bottomBar = {
@@ -43,8 +43,13 @@ fun MainScreen(authNavController: NavHostController) {
                         }
                     },
                     onCenterClick = {
-                        navController.navigate(Routes.POST_SCREEN)
+                        navController.navigate(Routes.POST_SCREEN) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
+
                 )
             }
         }

@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +24,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.ServicePackage
+import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.AddServiceButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetSitterCard
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TypeButton
@@ -89,9 +92,16 @@ fun ServiceScreen(navController: NavHostController) {
 
             item {
                 when (selected) {
-                    "Services" -> ServicePackageSection(servicePackage = apiData)
+                    "Services" -> ServicePackageSection(navController,servicePackage = apiData)
 //                    "Rating & Reviews" ->
                 }
+            }
+
+            item { Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AddServiceButton(onClickButton = { navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/${"add"}") }, modifier = Modifier) }
             }
         }
 

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.Participants
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.common.CommunityParticipantsText
 import com.bussiness.slodoggiesapp.ui.component.common.CommunityProfileSection
 import com.bussiness.slodoggiesapp.ui.component.common.ParticipantsItem
@@ -67,7 +68,7 @@ fun CommunityProfileScreen(navController: NavHostController) {
 
         Spacer(Modifier.height(18.dp))
 
-        CommunityParticipantsText(onAddIconClick = { /* Add participant action */ })
+        CommunityParticipantsText(onAddIconClick = { navController.navigate(Routes.ADD_PARTICIPANTS_SCREEN) })
 
         LazyColumn(
             contentPadding = PaddingValues(vertical = 0.dp)

@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,6 +9,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -26,7 +28,8 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 fun FollowerScreen(navController: NavHostController) {
     var selectedOption by remember { mutableStateOf("Follower") }
     var query by remember { mutableStateOf("") }
-    var removeParticipantDialog by remember { mutableStateOf(false) }
+    var removeDialog by remember { mutableStateOf(false) }
+    var context =  LocalContext.current
 
     val followersList = listOf(
         AudienceData(R.drawable.profile1, "Adison Dias", true),
@@ -97,20 +100,19 @@ fun FollowerScreen(navController: NavHostController) {
                     data = data,
                     isFollower = selectedOption == "Follower",
                     onPrimaryClick = { /* Handle follow/message click */ },
-                    onRemoveClick = { removeParticipantDialog = true }
+                    onRemoveClick = { removeDialog = true }
                 )
             }
 
-            if (removeParticipantDialog){
-                RemoveParticipantDialog(
-                    onDismiss = { removeParticipantDialog = false},
-                    onClickRemove = { },
-                    text = "Remove Follower?",
-                    description = "We won’t tell Zain Dorwart they were removed from your followers.",
-                    iconResId = R.drawable.remove_ic_user
-                )
-            }
-
+        }
+        if (removeDialog){
+            RemoveParticipantDialog(
+                onDismiss = { removeDialog = false},
+                onClickRemove = { Toast.makeText(context    , "Removed", Toast.LENGTH_SHORT).show() },
+                text = "Remove Follower?",
+                description = "We won’t tell Zain Dorwart they were removed from your followers.",
+                iconResId = R.drawable.remove_ic_user
+            )
         }
     }
 }

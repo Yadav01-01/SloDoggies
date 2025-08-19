@@ -1,3 +1,43 @@
 <resources>
     <string name="app_name">Slodoggies App</string>
+    <string name="placeholder_pet_name">Enter pet name</string>
+    <string name="label_pet_name">Pet Name</string>
+    <string name="placeholder_pet_breed">Enter Breed</string>
+    <string name="label_pet_breed" />
+    <string name="label_pet_age">Pet Age</string>
+    <string name="placeholder_pet_age">Enter pet age</string>
+    <string name="placeholder_pet_bio">Enter Bio</string>
+    <string name="label_pet_bio">Pet Bio</string>
+    <string name="label_managed_by" />
+    <string name="continue_btn">Continue</string>
+    <string name="add_pet">Add Pet</string>
+    <string name="cd_pet_photo">Add Photo</string>
+    <string name="cd_add_photo">Add\n</string>
+    <string name="add_photo">Add Photo</string>
+    <string name="skip">Skip</string>
+    <string name="add_your_details">Add Your Details</string>
+    <string name="name">Name</string>
+    <string name="enter_name">Enter name</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
+    <string name="verify">Verify</string>
+    <string name="bio">Bio</string>
+    <string name="enter_bio">Enter Bio...</string>
+    <string name="submit">Submit</string>
+    <string name="profileCreateTitle">Profile Created!</string>
+    <string name="profileCreateDes">You\'re officially part of the SloDoggies pack! Let\'s keep the tail wagging!</string>
+    <string name="explore_now">Explore Now</string>
+    <string name="overview">Overview</string>
+    <string name="expanded_text">There’s 1 dog-friendly beach in Avila Beach, and 7 more nearby. Use the links below to get an overview of each one, see pictures, print directions, and even read reviews from other dog owners. Coming from out of town? Get a discounted rate on pet friendly hotels in Avila Beach.\n</string>
+    <string name="edit">Edit\n</string>
+    <string name="delete">Delete\n</string>
+    <string name="Why_are_you_reporting_this_comment">Why are you reporting this comment?</string>
+    <string name="report_comment">Report Comment</string>
+    <string name="message_optional">Message (Optional)</string>
+    <string name="Write_something_here">Write something here....\n</string>
+    <string name="cancel">Cancel</string>
+    <string name="send_report">Send report</string>
+
+
 </resources>

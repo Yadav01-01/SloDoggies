@@ -1,6 +1,13 @@
 package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
 
+import android.app.AlertDialog
+import android.content.Context
+import android.graphics.Bitmap
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,15 +18,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,71 +38,78 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.PetInfo
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.viewModel.petOwner.PetInfoViewModel
+import java.io.File
 
 
 @Composable
-fun PetInfoDialog(title : String,
+fun PetInfoDialog(
+    title: String,
     onDismiss: () -> Unit = {},
     onSaveAndContinue: (PetInfo) -> Unit = {}
 ) {
-    var petName by remember { mutableStateOf("") }
-    var petBreed by remember { mutableStateOf("") }
-    var petAge by remember { mutableStateOf("") }
-    var petBio by remember { mutableStateOf("") }
-    var managedBy by remember { mutableStateOf("Pet Mom") }
-    var showAgeDropdown by remember { mutableStateOf(false) }
-    var showManagedByDropdown by remember { mutableStateOf(false) }
-
-    val ageOptions =
-        listOf("Puppy (0-1 year)", "Young (1-3 years)", "Adult (3-7 years)", "Senior (7+ years)")
-    val managedByOptions = listOf("Pet Mom", "Pet Dad", "Family Member", "Caregiver")
+    val viewModel: PetInfoViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
 
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false )
+            decorFitsSystemWindows = false
+        )
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
 
         ) {
-            // Main card content
             Spacer(Modifier.height(45.dp))
 
-            // This Box will contain our close button aligned to top-end
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            // Close button
+            Box(Modifier.fillMaxWidth()) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_cross_icon),
-                    contentDescription = "Close",
+                    contentDescription = null,
                     modifier = Modifier
-                        .clickable { onDismiss() }
-                        .align(Alignment.TopEnd)  // Align to top-end within the Box
-                        .size(40.dp)
+                        .align(Alignment.TopEnd)
+                        .wrapContentSize()
                         .clip(CircleShape)
-                        .padding(4.dp)  // Consistent padding all around
+                        .clickable { onDismiss() }
+                        .padding(4.dp)
                 )
             }
+
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 5.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                color = Color.White
             ) {
                 Column(
                     modifier = Modifier
@@ -100,164 +117,220 @@ fun PetInfoDialog(title : String,
                         .padding(14.dp)
                         .verticalScroll(rememberScrollState())
                 ) {
-                    // Header with close button
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = title,
-                            fontSize = 18.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            color = Color.Black
-                        )
-
-
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Add Photo Section
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(80.dp),
-
-
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_black_profile_icon),
-                                contentDescription = "Add Photo",
-
-                                modifier = Modifier.size(70.dp)
-                            )
-
-
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_post_icon),
-                                contentDescription = "Add",
-                                modifier = Modifier
-                                    .size(25.dp)
-                                    .align(Alignment.BottomEnd),
-
-                                )
-
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "Add Photo",
-                            fontSize = 15.sp,
+                            style = MaterialTheme.typography.titleMedium,
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        Text(
+                            text = stringResource(id = R.string.skip),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = PrimaryColor,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.clickable { onDismiss() }
                         )
                     }
 
+
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    HorizontalDivider(thickness = 1.dp, color = TextGrey)
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Add Photo
+                    AddPhotoSection(
+                        onPhotoSelected = { uri ->
+                            viewModel.setSelectedPhoto(uri)
+                        }
+                    )
+
+
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Pet Name Field
-
                     CustomOutlinedTextField(
-                        value = petName,
-                        onValueChange = { petName = it },
-                        placeholder = "Enter pet name",
-                        label = "Pet Name"
+                        value = uiState.petName,
+                        onValueChange = { viewModel.updatePetName(it) },
+                        placeholder = stringResource(R.string.placeholder_pet_name),
+                        label = stringResource(R.string.label_pet_name)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Pet Breed Field
-
                     CustomOutlinedTextField(
-                        value = petBreed,
-                        onValueChange = { petBreed = it },
-                        placeholder = "Enter Breed",
-                        label = "Pet Breed"
+                        value = uiState.petBreed,
+                        onValueChange = { viewModel.updatePetBreed(it) },
+                        placeholder = stringResource(R.string.placeholder_pet_breed),
+                        label = stringResource(R.string.label_pet_breed)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    // Pet Age Dropdown
 
                     CustomDropdownMenuUpdated(
-                        value = petAge,
-                        onValueChange = { petAge = it },
-                        options = ageOptions,
-                        label = "Pet Age",
-                        placeholder = "Enter pet age",
-                        isExpanded = showAgeDropdown,
-                        onExpandedChange = { showAgeDropdown = it },
-
-                        )
-
+                        value = uiState.petAge,
+                        onValueChange = { viewModel.updatePetAge(it) },
+                        options = viewModel.ageOptions,
+                        label = stringResource(R.string.label_pet_age),
+                        placeholder = stringResource(R.string.placeholder_pet_age),
+                        isExpanded = uiState.showAgeDropdown,
+                        onExpandedChange = { viewModel.toggleAgeDropdown(it) }
+                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    // Pet Bio Field
-
 
                     CustomOutlinedTextField(
-                        value = petBio,
-                        onValueChange = { petBio = it },
-                        placeholder = "Enter Bio",
-                        label = "Pet Bio"
+                        value = uiState.petBio,
+                        onValueChange = { viewModel.updatePetBio(it) },
+                        placeholder = stringResource(R.string.placeholder_pet_bio),
+                        label = stringResource(R.string.label_pet_bio)
                     )
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Managed By Dropdown
-
-                    CustomDropdownMenuUpdated(
-                        value = managedBy,
-                        onValueChange = { managedBy = it },
-                        options = managedByOptions,
-                        label = "Managed By",
-                        placeholder = "Select relationship",
-                        isExpanded = showManagedByDropdown,
-                        onExpandedChange = { showManagedByDropdown = it }
-                    )
                     Spacer(modifier = Modifier.height(32.dp))
 
-                    // Bottom Buttons
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // Skip Button
-
                         CommonWhiteButton(
-                            text = "Skip",
-                            onClick = {
-                                //  navController.navigate(Routes.LOCATION_ALERT)  // Also changed this for consistency
-                            },
-                            modifier = Modifier.weight(1f),
+                            text = stringResource(R.string.continue_btn),
+                            onClick = onDismiss,
+                            modifier = Modifier.weight(1f)
                         )
                         CommonBlueButton(
-                            text = "Save & Continue ",
+                            text = stringResource(R.string.add_pet),
                             fontSize = 22.sp,
-                            onClick = {
-                                //  navController.navigate(Routes.PET_MAIN_SCREEN)  // Now using navController instead of authNavController
-                            },
-                            modifier = Modifier.weight(1f),
+                            onClick = { onSaveAndContinue(uiState.toPetInfo()) },
+                            modifier = Modifier.weight(1f)
                         )
-
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-
         }
     }
 }
 
+@Composable
+fun AddPhotoSection(
+    modifier: Modifier = Modifier,
+    onPhotoSelected: (Uri?) -> Unit
+) {
+    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    val context = LocalContext.current
 
+    // Camera launcher
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        bitmap?.let {
+            val uri = saveBitmapToCache(context, it)
+            selectedImageUri = uri
+            onPhotoSelected(uri)
+        }
+    }
+
+    // Gallery launcher
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        selectedImageUri = uri
+        onPhotoSelected(uri)
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .size(80.dp)
+                .clickable {
+                    showPhotoPickerDialog(
+                        context,
+                        onCameraClick = { cameraLauncher.launch(null) },
+                        onGalleryClick = { galleryLauncher.launch("image/*") }
+                    )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            if (selectedImageUri != null) {
+                AsyncImage(
+                    model = selectedImageUri,
+                    contentDescription = stringResource(R.string.cd_pet_photo),
+                    placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
+                    error = painterResource(id = R.drawable.ic_black_profile_icon),
+                    modifier = Modifier
+                        .size(70.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_black_profile_icon),
+                    contentDescription = stringResource(R.string.cd_pet_photo),
+                    modifier = Modifier.size(70.dp)
+                )
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_post_icon),
+                contentDescription = stringResource(R.string.cd_add_photo),
+                modifier = Modifier
+                    .size(25.dp)
+                    .align(Alignment.BottomEnd)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = stringResource(R.string.add_photo),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Black,
+            fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_medium))
+        )
+    }
+}
+
+fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {
+    val file = File(context.cacheDir, "temp_${System.currentTimeMillis()}.jpg")
+    file.outputStream().use { out ->
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+    }
+    return FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+}
+
+fun showPhotoPickerDialog(
+    context: Context,
+    onCameraClick: () -> Unit,
+    onGalleryClick: () -> Unit
+) {
+    AlertDialog.Builder(context)
+        .setTitle("Select Option")
+        .setItems(arrayOf("Camera", "Gallery")) { dialog, which ->
+            when (which) {
+                0 -> onCameraClick()
+                1 -> onGalleryClick()
+            }
+            dialog.dismiss()
+        }
+        .show()
+}
 
 
 

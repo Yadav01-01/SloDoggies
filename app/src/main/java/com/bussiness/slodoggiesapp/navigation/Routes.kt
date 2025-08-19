@@ -5,9 +5,11 @@ object Routes {
     const val SPLASH = "splash"
     const val ONBOARDING = "onboarding"
     const val JOIN_THE_PACK = "joinThePack"
-    const val PHONE_AUTH_SCREEN = "phoneAuth"
-    const val EMAIL_AUTH_SCREEN = "emailAuth"
+    const val LOGIN_SCREEN = "login"
+    const val SIGNUP_SCREEN = "signup"
+    const val FORGOT_PASSWORD_SCREEN = "forgotPassword"
     const val VERIFY_OTP = "verifyOTP/{type}"
+    const val NEW_PASSWORD_SCREEN = "newPassword"
     const val BUSINESS_REGISTRATION = "businessRegistration"
     const val ADD_SERVICE = "addServices"
     const val HOME_SCREEN = "home"
@@ -36,6 +38,7 @@ object Routes {
     const val SUBSCRIPTION_SCREEN = "SubscriptionScreen"
     const val COMMUNITY_PROFILE_SCREEN = "CommunityProfileScreen"
     const val ADD_PARTICIPANTS_SCREEN = "AddParticipantsScreen"
+    const val EDIT_ADD_SERVICE_SCREEN = "EditAddServiceScreen"
 
     //Common
     const val NOTIFICATION_PERMISSION_SCREEN = "notificationAlert"

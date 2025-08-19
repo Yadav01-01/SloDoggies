@@ -105,7 +105,7 @@ fun JoinThePackScreen(
                     onClick = {
                         selectedOption = "Pet Professional"
                         sessionManager.setUserType(UserType.BUSINESS_PROVIDER)
-                        navController.navigate(Routes.PHONE_AUTH_SCREEN)
+                        navController.navigate(Routes.LOGIN_SCREEN)
                     }
                 )
 
@@ -117,7 +117,7 @@ fun JoinThePackScreen(
                     onClick = {
                         selectedOption = "Pet Owner"
                         sessionManager.setUserType(UserType.PET_OWNER)
-                        navController.navigate(Routes.PET_MAIN_SCREEN)
+                        navController.navigate(Routes.LOGIN_SCREEN)
                     }
                 )
             }

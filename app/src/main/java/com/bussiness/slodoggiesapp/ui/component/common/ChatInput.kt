@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,7 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.ChatMessage
@@ -34,8 +39,8 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 @Composable
 fun BottomMessageBar(
     modifier: Modifier = Modifier,
-    onAttachmentClick: () -> Unit = {},
-    onSendClick: () -> Unit = {},
+    onAttachmentClick: () -> Unit ,
+    onSendClick: () -> Unit ,
     message: String,
     onMessageChange: (String) -> Unit
 ) {
@@ -56,7 +61,7 @@ fun BottomMessageBar(
                 modifier = Modifier
                     .weight(1f)
                     .background(Color(0xFFE8F0F2), shape = RoundedCornerShape(12.dp))
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -114,6 +119,12 @@ fun BottomMessageBar(
 
 @Composable
 fun ChatBubble(message: ChatMessage) {
+
+    val bubbleShape = if (message.isUser) {
+        RoundedCornerShape(topStart = 10.dp, topEnd = 0.dp, bottomEnd = 10.dp, bottomStart = 10.dp)
+    } else {
+        RoundedCornerShape(topStart = 0.dp, topEnd = 10.dp, bottomEnd = 10.dp, bottomStart = 10.dp)
+    }
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start
@@ -130,18 +141,23 @@ fun ChatBubble(message: ChatMessage) {
 
         Box(
             modifier = Modifier
+                .clip(bubbleShape)
                 .background(
-                    color = if (message.isUser) Color(0xFF00BFA6) else Color(0xFFF2F2F2),
-                    shape = RoundedCornerShape(10.dp)
+                    color = if (message.isUser) Color(0xFF00BFA6) else Color(0xFFF2F2F2)
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)
                 .widthIn(max = 250.dp)
         ) {
             Text(
                 text = message.text,
-                color = if (message.isUser) Color.White else Color.Black,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = if (message.isUser) Color.White else Color.Black,
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontWeight = FontWeight.Normal
+                )
             )
         }
+
     }
 }

@@ -2,19 +2,13 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,22 +25,22 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.main.VerificationType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
-import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
 
 @Composable
-fun EmailLoginScreen(navController: NavHostController) {
-    var email by remember { mutableStateOf("") }
+fun NewPasswordScreen(navController: NavHostController) {
+
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -65,7 +59,7 @@ fun EmailLoginScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Continue With Email",
+                text = "New Password",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
@@ -77,60 +71,29 @@ fun EmailLoginScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = "Please enter your mail to verify your account",
-                style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                textAlign = TextAlign.Center,
-                color = TextGrey
-            )
+            FormHeadingText("New Password", modifier = Modifier.align(Alignment.Start))
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            EmailInputField(email, onValueChange = { email = it })
+            PasswordInput(password, onPasswordChange = { password = it })
 
-            Spacer(Modifier.height(35.dp))
+            Spacer(Modifier.height(15.dp))
+
+            FormHeadingText("Confirm Password",modifier = Modifier.align(Alignment.Start))
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            PasswordInput(confirmPassword, onPasswordChange = { confirmPassword = it })
+
+            Spacer(Modifier.height(20.dp))
 
             ContinueButton(
                 onClick = {
                     navController.navigate("${Routes.VERIFY_OTP}/${VerificationType.EMAIL.name}")
                 },
-                text = "Continue"
+                text = "Update Password"
             )
 
-            Spacer(Modifier.height(20.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth()
-                    .clickable { navController.navigate(Routes.PHONE_AUTH_SCREEN) },
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.phone_ic),
-                    contentDescription = "mail",
-                    modifier = Modifier.size(25.dp)
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Text(
-                    text = "Continue with Phone",
-                    color = TextGrey,
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium))
-                )
-            }
-
-            Spacer(Modifier.height(25.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.back_arrow_ic),
-                contentDescription = "backArrow",
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clickable { navController.popBackStack() }
-            )
         }
 
         Image(
@@ -143,12 +106,4 @@ fun EmailLoginScreen(navController: NavHostController) {
                 .wrapContentWidth()
         )
     }
-}
-
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun EmailAuthScreenPreview() {
-    val dummyNavController = rememberNavController()
-    EmailLoginScreen(navController = dummyNavController)
 }

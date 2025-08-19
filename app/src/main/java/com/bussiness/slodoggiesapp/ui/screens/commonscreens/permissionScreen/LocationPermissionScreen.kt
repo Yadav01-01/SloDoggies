@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.petowner
+package com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,7 +32,7 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 
 
 @Composable
-fun NotificationPermissionScreen(navController: NavHostController ) {
+fun LocationPermissionScreen(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -47,15 +47,15 @@ fun NotificationPermissionScreen(navController: NavHostController ) {
         ) {
             // Bell Icon
             Image(
-                painter = painterResource(id = R.drawable.notification_icon),
-                contentDescription = "Notification Icon",
+                painter = painterResource(id = R.drawable.location_icon),
+                contentDescription = "Location Icon",
                 modifier = Modifier.size(120.dp)
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Turn on Notifications",
+                text = "Turn on Location",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontFamily = FontFamily(Font(R.font.outfit_semibold)),
                     color = Color.Black
@@ -65,7 +65,8 @@ fun NotificationPermissionScreen(navController: NavHostController ) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Please enable notifications to receive\nupdates and reminders",
+                text = "Allow maps to access your\n" +
+                        "location while you use the app?",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     color = Color.Black,
@@ -76,14 +77,13 @@ fun NotificationPermissionScreen(navController: NavHostController ) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            CommonBlueButton(text = "Turn On", fontSize = 22.sp, onClick = { navController.navigate(Routes.LOCATION_PERMISSION_SCREEN) })
+            CommonBlueButton(text = "Turn On", fontSize = 22.sp, onClick = { navController.navigate(Routes.MAIN_SCREEN) })
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CommonWhiteButton(text = "NOT NOW", onClick = { navController.navigate(Routes.LOCATION_PERMISSION_SCREEN)  })
+            CommonWhiteButton(text = "NOT NOW", onClick = { navController.navigate(Routes.MAIN_SCREEN) })
         }
 
-        // Paw image at bottom right
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -100,10 +100,10 @@ fun NotificationPermissionScreen(navController: NavHostController ) {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun NotificationPermissionScreenPreview() {
+fun  LocationPreview(){
     val navController = rememberNavController()
-    NotificationPermissionScreen(navController = navController)  // Updated parameter name
+    LocationPermissionScreen(navController)
 }
+

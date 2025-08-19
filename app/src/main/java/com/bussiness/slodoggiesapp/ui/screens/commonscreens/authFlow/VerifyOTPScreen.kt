@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,17 +25,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.model.main.VerificationType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
@@ -42,11 +49,15 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.OtpInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.util.SessionManager
+import com.bussiness.slodoggiesapp.viewModel.common.VerifyOTPViewModel
 
 @Composable
-fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
+fun VerifyOTPScreen(navController: NavHostController,type: VerificationType,viewModel: VerifyOTPViewModel = hiltViewModel()) {
 
-    var otp by remember { mutableStateOf("") }
+    val otp by viewModel.otp.collectAsState()
+    val context = LocalContext.current
+    val sessionManager = remember { SessionManager(context) }
 
     Box(
         modifier = Modifier
@@ -67,7 +78,7 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
 
             Text(
 
-                text = if(type == VerificationType.PHONE) "Verify Your Phone Number" else "Verify Your Email Address",
+                text = "Verify Your Account",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 18.sp
@@ -80,18 +91,26 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = if(type == VerificationType.PHONE) "Please enter the 4 digit code sent to \n" +
-                        "+1 555 123 456" else "Please enter the 4 digit code sent to \n" +
-                        "user@slodoggies.com",
+                text = buildAnnotatedString {
+                    append("Please enter the 4 digit code sent to \n")
+                    withStyle(
+                        style = SpanStyle(
+                            color = PrimaryColor
+                        )
+                    ) {
+                        append("Enter OTP (One-Time-Password)")
+                    }
+                },
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                 textAlign = TextAlign.Center,
                 color = TextGrey
             )
 
+
             Spacer(modifier = Modifier.height(15.dp))
 
-            OtpInputField(otp, onOtpTextChange = { otp = it })
+            OtpInputField(otp, onOtpTextChange = { viewModel.updateOtp(it) })
 
             Spacer(Modifier.height(10.dp))
 
@@ -122,16 +141,9 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType) {
 
             Spacer(Modifier.height(22.dp))
 
-            ContinueButton ( onClick = { navController.navigate(Routes.BUSINESS_REGISTRATION) }, text = "Verify",backgroundColor = if (otp.length == 4) PrimaryColor else Color(0xFFD9D9D9),
+            ContinueButton ( onClick = { if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) navController.navigate(Routes.BUSINESS_REGISTRATION)
+            else navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) }, text = "Verify",backgroundColor = if (otp.length == 4) PrimaryColor else Color(0xFFD9D9D9),
                 textColor = if (otp.length == 4) Color.White else Color(0xFF686868), iconColor = if (otp.length == 4) Color.White else Color(0xFF686868) )
-
-            Spacer(Modifier.height(25.dp))
-
-            Image(
-                painter = painterResource(id = R.drawable.back_arrow_ic),
-                contentDescription = "backArrow",
-                modifier = Modifier.wrapContentSize().clickable {  }
-            )
 
         }
 

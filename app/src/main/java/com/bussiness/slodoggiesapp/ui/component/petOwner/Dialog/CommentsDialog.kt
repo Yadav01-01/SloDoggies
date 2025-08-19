@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -48,8 +49,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,6 +60,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.xr.compose.testing.toDp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
 fun CommentsDialog(
@@ -119,8 +123,6 @@ fun CommentsDialog(
                                 color = Color(0xFF212121),
                                 modifier = Modifier.align(Alignment.CenterStart)
                             )
-
-
                         }
 
                         Divider(
@@ -138,7 +140,9 @@ fun CommentsDialog(
                             itemsIndexed(comments) { index, comment ->
                                 CommentItem(
                                     comment = comment,
-                                    onReply = { replyingTo = comment.userName })
+                                    onReply = { replyingTo = comment.userName },
+                                    onEditClick = {},
+                                    onDeleteClick = {})
 
 
                                 // Replies
@@ -164,9 +168,6 @@ fun CommentsDialog(
                                 }
                             }
                         }
-
-//
-//
 
                         Column(
                             modifier = Modifier
@@ -246,8 +247,6 @@ fun CommentsDialog(
                                         unfocusedBorderColor = Color(0xFFE0E0E0),
                                     ),
                                     trailingIcon = {
-//
-
                                         Image(
                                             painter = painterResource(id = R.drawable.ic_send_icons),
                                             contentDescription = "Send",
@@ -277,35 +276,28 @@ fun CommentsDialog(
 }
 
 @Composable
-fun CommentItem(comment: Comment, onReply: () -> Unit) {
+fun CommentItem(comment: Comment, onReply: () -> Unit, onEditClick : () -> Unit, onDeleteClick : () -> Unit) {
     var showOptions by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }
     val iconButton = remember { mutableStateOf<LayoutCoordinates?>(null) }
 
     Column {
-
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
         ) {
-
-
             Image(
                 painter = painterResource(id = R.drawable.dummy_person_image2),
                 contentDescription = "Person",
                 modifier = Modifier
                     .size(38.dp)
                     .clip(CircleShape)
-
             )
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -329,12 +321,10 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                             )
                         }
 
-
-//
                         Text(
                             text = comment.userRole,
                             fontSize = 9.sp,
-                            color = Color(0xFF258694),
+                            color = PrimaryColor,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             modifier = Modifier
                                 .background(
@@ -344,60 +334,25 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                                 .padding(horizontal = 12.dp, vertical = 4.dp)
                         )
                     }
-                    Column {
-
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-
-                            Box {
-                                IconButton(
-                                    onClick = { showOptions = true },
-                                    modifier = Modifier.size(21.dp)
-//                                        .onGloballyPositioned { coordinates ->
-//                                            iconButton.value = coordinates
-//                                            coordinates.positionInWindow().run {
-//                                                anchorPosition = DpOffset(x.toDp(), y.toDp())
-//                                            }
-                                    //    }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.MoreVert, // Replace with three dots icon
-                                        contentDescription = "More options",
-                                        tint = Color.Black
-                                    )
-                                }
-                                if (showOptions) {
-                                    CommentOptionsPopup(
-                                        showPopup = showOptions,
-                                        onDismiss = { showOptions = false },
-                                        onReport = {
-                                            println("Reported comment: ${comment.id}")
-
-                                            showReportDialog = true
-//                                            ReportDialog(
-//                                                onDismiss = { showReportDialog = false }
-//                                            )
-                                        },
-                                        anchorPosition = iconButton.value?.positionInWindow()?.toDpOffset() ?: DpOffset.Zero
-                                    )
-                                }
-                            }
-                            if (showReportDialog) {
-                                ReportDialog(
-                                    onDismiss = { showReportDialog = false }
-                                )
-                            }
+                    Row(verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End) {
+                        IconButton(onClick = { onEditClick() }, modifier = Modifier.wrapContentSize()) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.edit_ic_p),
+                                contentDescription = stringResource(R.string.edit),
+                                tint = Color.Unspecified
+                            )
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-
-
+                        IconButton(onClick = { onDeleteClick() }, modifier = Modifier.wrapContentSize()) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.delete_mi),
+                                contentDescription = stringResource(R.string.delete),
+                                tint = Color.Unspecified
+                            )
+                        }
                     }
                 }
-
                 Spacer(modifier = Modifier.height(4.dp))
-
             }
         }
         Row {
@@ -406,13 +361,11 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 color = Color.Black,
-                //modifier = Modifier.widthIn(max = 250.dp)
                 modifier = Modifier.weight(1f)
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                // modifier = Modifier.padding(start = 15.dp),
                 horizontalArrangement = Arrangement.End
             ) {
                 if (comment.isLiked) {
@@ -434,12 +387,9 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_paw_like_icon), // Replace with heart icon
                             contentDescription = "Like",
-                            // tint = if (comment.isLiked) Color(0xFF00ACC1) else Color(0xFF949494),
-
                         )
                     }
                 }
-
 
                 if (comment.likeCount > 0) {
                     Text(
@@ -461,14 +411,8 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
             }
         }
 
-        // Spacer(modifier = Modifier.height(5.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextButton(
-                onClick = onReply,
-            ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = onReply,) {
                 Text(
                     text = "Reply",
                     fontSize = 14.sp,
@@ -476,10 +420,7 @@ fun CommentItem(comment: Comment, onReply: () -> Unit) {
                     color = Color(0xFF258694)
                 )
             }
-
             Spacer(modifier = Modifier.width(16.dp))
-
-//
         }
     }
 }
@@ -550,12 +491,6 @@ fun ReplyItem(
                         IconButton(
                             onClick = { showOptions = true  },
                             modifier = Modifier.size(21.dp)
-//                            .onGloballyPositioned { coordinates ->
-//                            iconButton.value = coordinates
-//                            coordinates.positionInWindow().run {
-//                                anchorPosition = DpOffset(x.toDp(), y.toDp())
-//                            }
-//                        }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -569,11 +504,7 @@ fun ReplyItem(
                                 onDismiss = { showOptions = false },
                                 onReport = {
                                     println("Reported comment: ${reply.id}")
-
                                     showReportDialog = true
-//                                    ReportDialog(
-//                                        onDismiss = { showReportDialog = false }
-//                                    )
                                 },
                                 anchorPosition = iconButton.value?.positionInWindow()?.toDpOffset() ?: DpOffset.Zero
                             )
@@ -581,7 +512,9 @@ fun ReplyItem(
                     }
                     if (showReportDialog) {
                         ReportDialog(
-                            onDismiss = { showReportDialog = false }
+                            onDismiss = { showReportDialog = false },
+                            onCancel = { showReportDialog = false },
+                            onSendReport = { showReportDialog = false }
                         )
                     }
                 }
@@ -622,12 +555,9 @@ fun ReplyItem(
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_paw_like_icon), // Replace with heart icon
                                     contentDescription = "Like",
-                                    // tint = if (comment.isLiked) Color(0xFF00ACC1) else Color(0xFF949494),
-
                                 )
                             }
                         }
-
 
                         if (reply.likeCount > 0) {
                             Text(
@@ -649,8 +579,6 @@ fun ReplyItem(
                     }
                 }
 
-                // Spacer(modifier = Modifier.height(5.dp))
-
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -664,10 +592,7 @@ fun ReplyItem(
                             color = Color(0xFF258694)
                         )
                     }
-
                     Spacer(modifier = Modifier.width(16.dp))
-
-//
                 }
             }
         }
@@ -689,9 +614,6 @@ data class Comment(
 
 )
 
-
-
-
 @Composable
 fun CommentOptionsPopup(
     showPopup: Boolean,
@@ -707,7 +629,6 @@ fun CommentOptionsPopup(
             offset = DpOffset(anchorPosition.x - 160.dp, anchorPosition.y),
             modifier = modifier
                 .width(160.dp)   .background(Color.White, RoundedCornerShape(8.dp))
-            // .shadow(8.dp, RoundedCornerShape(8.dp))
         ) {
             DropdownMenuItem(
                 onClick = {
@@ -735,4 +656,49 @@ fun CommentOptionsPopup(
 }
 fun Offset.toDpOffset(): DpOffset {
     return DpOffset(x.toDp(), y.toDp())
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun CommentsDialogPreview() {
+    val sampleComments = listOf(
+        Comment(
+            id = "1",
+            userName = "Dianne Russell",
+            userRole = "Pet Dad",
+            userAvatar = "https://via.placeholder.com/40x40",
+            text = "This place is amazing! My dog loved it",
+            timeAgo = "24 min",
+            likeCount = 2,
+            isLiked = true,
+            replies = listOf(
+                Comment(
+                    id = "1-1",
+                    userName = "Alex Johnson",
+                    userRole = "Pet Owner",
+                    userAvatar = "https://via.placeholder.com/40x40",
+                    text = "I agree! My poodle had so much fun too!",
+                    timeAgo = "15 min",
+                    likeCount = 1,
+                    isLiked = false
+                )
+            )
+        ),
+        Comment(
+            id = "2",
+            userName = "Jack Roger",
+            userRole = "Pet Dad",
+            userAvatar = "https://via.placeholder.com/40x40",
+            text = "Took my pup here last weekend — 10/10 would recommend! 🐕",
+            timeAgo = "1 day ago",
+            likeCount = 0,
+            isLiked = false
+        )
+    )
+
+    CommentsDialog(
+        comments = sampleComments,
+        onDismiss = { /* preview me kuch nahi karna */ }
+    )
 }

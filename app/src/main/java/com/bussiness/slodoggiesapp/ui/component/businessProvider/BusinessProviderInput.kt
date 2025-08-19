@@ -109,7 +109,7 @@ fun EmailInputField(
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = "Enter your mail",
+                text = "Enter Email",
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = 14.sp,
                 color = TextGrey
@@ -147,23 +147,12 @@ fun ContinueButton(
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = text,
-                color = textColor,
-                fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.outfit_medium))
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Image(
-                painter = painterResource(id = R.drawable.right_arrow_ic),
-                contentDescription = "Arrow",
-                modifier = Modifier.wrapContentSize(),
-                colorFilter = ColorFilter.tint(iconColor)
-            )
-        }
+        Text(
+            text = text,
+            color = textColor,
+            fontSize = 15.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_medium))
+        )
     }
 }
 

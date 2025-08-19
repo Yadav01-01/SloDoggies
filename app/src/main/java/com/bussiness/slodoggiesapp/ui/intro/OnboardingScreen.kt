@@ -121,7 +121,7 @@ fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
 
             // Always present "Skip" button (hidden with alpha on last page)
             Button(
-                onClick = onFinish,
+                onClick = { navController.navigate(Routes.JOIN_THE_PACK) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
