@@ -39,7 +39,7 @@ fun PetMainScreen(authNavController: NavHostController) {
                     }
                 },
                 onCenterClick = {
-                    // Handle center FAB click (e.g., navigate to Add screen)
+                    navController.navigate(Routes.PET_NEW_POST_SCREEN)
                 }
             )
         }

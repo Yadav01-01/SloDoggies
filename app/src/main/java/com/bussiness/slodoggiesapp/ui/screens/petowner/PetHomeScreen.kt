@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,12 +22,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
@@ -34,6 +39,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -56,6 +62,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,59 +71,43 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
+import com.bussiness.slodoggiesapp.model.businessProvider.EventPost
+import com.bussiness.slodoggiesapp.model.common.MediaItem
+import com.bussiness.slodoggiesapp.model.common.MediaType
+import com.bussiness.slodoggiesapp.model.common.PostData
+import com.bussiness.slodoggiesapp.model.petOwner.Comment
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.IconWithCount
+
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.HomeHeader
 import com.bussiness.slodoggiesapp.ui.component.shareApp
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PetHomeScreen(authNavController: NavHostController){
+fun PetHomeScreen(authNavController: NavHostController) {
     val showSuccessDialog by remember { mutableStateOf(true) }
-    val showPetInfoDialog  by remember { mutableStateOf(true) }
-    Column(modifier = Modifier.fillMaxSize()
-        .background(Color(0xFFB9D4DB))) {
-        TopAppBar(
-            title = {
-                Text(
-                    text = "SloDooggies",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF212121)
-                )
-            },
-            actions = {
-                // Notification icon
-                IconButton(onClick = { /* Handle notification click */ }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_notification_bell),
-                        contentDescription = "Notifications",
-                        tint = Color.Black
-                    )
-                }
+    val showPetInfoDialog by remember { mutableStateOf(true) }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFB9D4DB))
+    ) {
 
-                // Chat/Message icon
-                IconButton(onClick = { /* Handle chat click */ }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_chat_icon),
-                        contentDescription = "Messages",
-                        tint = Color.Black
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color(0xFFFFFFFF),
-                titleContentColor = Color.Black,
-                actionIconContentColor = Color.Black
-            )
+        HomeHeader(
+            textHeading = "SloDooggies",
+            onNotificationClick = { },
+            onChatClick = { },
+            notificationIcon = R.drawable.ic_notification_bell,
+            chatIcon = R.drawable.ic_chat_icon,
         )
 
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(3.dp)
-                .background(Color(0xFF258694))
+
+        Divider(
+            thickness = 2.dp, color = Color(0xFF258694)
         )
+
 
         // Replace SocialMediaPost() with SocialMediaFeed()
         SocialMediaFeed()
@@ -142,7 +133,8 @@ fun PetHomeScreen(authNavController: NavHostController){
 //                    description = "We're excited you're here!  Rather than excited to have you. Thanks",
 //                    button = "Get Started"
 //                )
-            }}
+            }
+        }
         if (showPetInfoDialog) {
 //            PetInfoDialog(
             //"Tell us about your pet!",
@@ -179,9 +171,13 @@ fun SocialMediaFeed() {
             comments = 20,
             shares = 10,
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(
+                    R.drawable.dummy_person_image3,
+                    MediaType.VIDEO,
+                    R.raw.dummy_video_thumbnail
+                )
             )
         ),
         PostData(
@@ -194,36 +190,8 @@ fun SocialMediaFeed() {
             comments = 12,
             shares = 5,
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE)
-            )
-        ), PostData(
-            user = "Lydia Vaccaro with Wixx",
-            role = "Pet Mom",
-            time = "5 Min.",
-            caption = "🐾 Meet Wixx - our brown bundle of joy!",
-            description = "From tail wags to beach days, life with this 3-year-old",
-            likes = 120,
-            comments = 20,
-            shares = 10,
-            mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
-            )
-        ),
-        PostData(
-            user = "John Doe with Max",
-            role = "Pet Dad",
-            time = "15 Min.",
-            caption = "Enjoying the sunny day!",
-            description = "Max loves playing in the park with his friends",
-            likes = 85,
-            comments = 12,
-            shares = 5,
-            mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE)
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE)
             )
         ),
         PostData(
@@ -236,9 +204,13 @@ fun SocialMediaFeed() {
             comments = 20,
             shares = 10,
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(
+                    R.drawable.dummy_baby_pic,
+                    MediaType.VIDEO,
+                    R.raw.dummy_video_thumbnail
+                )
             )
         ),
         PostData(
@@ -253,6 +225,39 @@ fun SocialMediaFeed() {
             mediaList = listOf(
                 MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
                 MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE)
+            )
+        ),
+        PostData(
+            user = "Lydia Vaccaro with Wixx",
+            role = "Pet Mom",
+            time = "5 Min.",
+            caption = "🐾 Meet Wixx - our brown bundle of joy!",
+            description = "From tail wags to beach days, life with this 3-year-old",
+            likes = 120,
+            comments = 20,
+            shares = 10,
+            mediaList = listOf(
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(
+                    R.drawable.dummy_person_image3,
+                    MediaType.VIDEO,
+                    R.raw.dummy_video_thumbnail
+                )
+            )
+        ),
+        PostData(
+            user = "John Doe with Max",
+            role = "Pet Dad",
+            time = "15 Min.",
+            caption = "Enjoying the sunny day!",
+            description = "Max loves playing in the park with his friends",
+            likes = 85,
+            comments = 12,
+            shares = 5,
+            mediaList = listOf(
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE)
             )
         ),
         // Add more posts as needed
@@ -268,28 +273,21 @@ fun SocialMediaFeed() {
 
 
 }
-data class MediaItem(
-    val resourceId: Int,
-    val type: MediaType,
-    val videoResourceId: Int? = null,
-    val thumbnailResourceId: Int? = null
-)
 
-enum class MediaType {
-    IMAGE, VIDEO
-}
-// Modified SocialMediaPost to accept PostData parameter
+
 @Composable
 fun SocialMediaPost(post: PostData) {
     Card(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp),
+            .fillMaxSize()
+            .padding(15.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
+
+
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -317,22 +315,15 @@ fun SocialMediaPost(post: PostData) {
     }
 }
 
-// Data class for post information
-data class PostData(
-    val user: String,
-    val role: String,
-    val time: String,
-    val caption: String,
-    val description: String,
-    val likes: Int,
-    val comments: Int,
-    val shares: Int,
-    val mediaList: List<MediaItem>
-)
+
+
+
+
 
 // Modified PostHeader to accept parameters
 @Composable
 private fun PostHeader(user: String, role: String, time: String) {
+    var isFollowing by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -345,14 +336,17 @@ private fun PostHeader(user: String, role: String, time: String) {
         ) {
 
 
-
-            Box(Modifier.width(65.dp).height(52.dp)) {
+            Box(
+                Modifier
+                    .width(45.dp)
+                    .height(40.dp)
+            ) {
                 // Back image (woman with greenery)
                 Image(
                     painter = painterResource(id = R.drawable.dummy_person_image2),
                     contentDescription = "Person",
                     modifier = Modifier
-                        .size(43.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
                         .align(Alignment.TopStart)
                 )
@@ -362,10 +356,10 @@ private fun PostHeader(user: String, role: String, time: String) {
                     painter = painterResource(id = R.drawable.dummy_person_image1),
                     contentDescription = "Dog",
                     modifier = Modifier
-                        .size(43.dp)
+                        .size(28.dp)
                         .clip(CircleShape)
 
-                        .border(4.dp, Color.White, CircleShape)
+                        .border(2.dp, Color.White, CircleShape)
                         .align(Alignment.BottomEnd)
 
                     // REMOVED: colorFilter = ColorFilter.colorMatrix(grayMatrix)
@@ -381,25 +375,20 @@ private fun PostHeader(user: String, role: String, time: String) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-//                    Text(
-//                        text = user,
-//                        fontSize = 14.sp,
-//                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-//                        color = Color.Black
-//                    )
+
                     Text(
                         text = user,
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         color = Color.Black,
-                        modifier = Modifier.widthIn(max = 150.dp), // Adjust the max width as needed
+                        modifier = Modifier.widthIn(max = 120.dp), // Adjust the max width as needed
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 
                     Button(
-                        onClick = { },
+                        onClick = { isFollowing = !isFollowing },
                         modifier = Modifier
                             .height(24.dp)
                             .padding(horizontal = 10.dp),
@@ -410,27 +399,35 @@ private fun PostHeader(user: String, role: String, time: String) {
                         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp)
                     ) {
                         Text(
-                            text = "Follow",
-                            fontSize = 11.sp,
+                            text = if (isFollowing) "Following" else "Follow",
+                            fontSize = 12.sp,
                             color = Color.White,
                             fontWeight = FontWeight.Medium
                         )
                     }
                 }
                 Row {
-                    Text(
-                        text = role,
-                        fontSize = 9.sp,
-                        color = Color(0xFF258694),
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    Box(
+                        contentAlignment = Alignment.Center,
                         modifier = Modifier
+                            .fillMaxHeight()
+                            .width(47.dp)
                             .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
-                            .padding(horizontal = 12.dp, vertical = 4.dp)
-                    )
+                    ) {
+                        Text(
+                            text = role,
+                            fontSize = 8.sp,
+                            color = Color(0xFF258694),
+                            textAlign = TextAlign.Center,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
 
+                            )
+                    }
+
+                    Spacer(Modifier.width(10.dp))
                     Text(
                         text = " $time",
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         color = Color(0xFF949494),
                         modifier = Modifier
                             .padding(vertical = 2.dp),
@@ -447,7 +444,7 @@ private fun PostHeader(user: String, role: String, time: String) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
                 contentDescription = "More options",
-                tint = Color.Gray
+                tint = Color.Black
             )
         }
     }
@@ -464,15 +461,16 @@ private fun PostCaption(caption: String, description: String) {
     ) {
         Text(
             text = caption,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
+            fontSize = 12.sp,
+            fontFamily = FontFamily(Font(R.font.inter_regular)),
             color = Color.Black
         )
 
         Text(
             text = description,
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             color = Color.Black,
+            fontFamily = FontFamily(Font(R.font.inter_regular)),
             maxLines = if (showFullText) Int.MAX_VALUE else 1,
             overflow = if (showFullText) TextOverflow.Visible else TextOverflow.Ellipsis
         )
@@ -481,9 +479,9 @@ private fun PostCaption(caption: String, description: String) {
         if (!showFullText) {
             Text(
                 text = "Read More",
-                fontSize = 14.sp,
+                fontSize = 12.sp,
                 color = Color(0xFF0077B5),
-                fontWeight = FontWeight.Medium,
+                fontFamily = FontFamily(Font(R.font.inter_regular)),
                 modifier = Modifier.clickable {
                     showFullText = true
                 }
@@ -507,7 +505,8 @@ private fun PostCaption(caption: String, description: String) {
 @Composable
 private fun PostLikes(likes: Int, comments: Int, shares: Int) {
     var isLiked by remember { mutableStateOf(false) }
-    var showCommentsDialog  by remember { mutableStateOf(false) }
+    var isBookMarked by remember { mutableStateOf(false) }
+    var showCommentsDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Row(
         modifier = Modifier
@@ -520,12 +519,14 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
-            Icon(
-                painter = painterResource(  id = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon),
+            Image(
+                painter = painterResource(id = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon),
                 contentDescription = "Paw",
-                modifier = Modifier.size(25.dp).clickable {
-                    isLiked = !isLiked // Toggle the liked state
-                }
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        isLiked = !isLiked // Toggle the liked state
+                    }
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
@@ -540,10 +541,12 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_chat_bubble_icon),
                 contentDescription = "Comments",
-                modifier = Modifier.size(25.dp).clickable {
-                   // isLiked = !isLiked // Toggle the liked state
-                    showCommentsDialog = true
-                }
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        // isLiked = !isLiked // Toggle the liked state
+                        showCommentsDialog = true
+                    }
             )
 
             Spacer(modifier = Modifier.width(4.dp))
@@ -557,9 +560,11 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_share_icons),
                 contentDescription = "Shares",
-                modifier = Modifier.size(25.dp).clickable {
-                    shareApp(context)
-                }
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable {
+                        shareApp(context)
+                    }
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
@@ -569,19 +574,22 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
         }
 
         // Bookmark icon aligned to end
-        IconButton(
-            onClick = { /* Handle bookmark */ },
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_bookmark_icon),
-                contentDescription = "Bookmark",
-                modifier = Modifier.size(24.dp)
-            )
-        }
+//        IconButton(
+//            onClick = { /* Handle bookmark */ },
+//            modifier = Modifier.size(32.dp)
+//        ) {
+//            Icon(
+//                painter = painterResource(id = R.drawable.ic_bookmark_icon),
+//                contentDescription = "Bookmark",
+//                modifier = Modifier.size(24.dp)
+//            )
+//        }
+
+        Image( painter = painterResource(id = if(!isBookMarked) R.drawable.ic_bookmark_icon else R.drawable.ic_bookmark_selected),
+            contentDescription = "Bookmark",
+            modifier = Modifier.size(24.dp).clickable{isBookMarked = !isBookMarked  })
     }
     if (showCommentsDialog) {
-
 
         val sampleComments = listOf(
             Comment(
@@ -602,9 +610,11 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
                         text = "I agree! My poodle had so much fun too!",
                         timeAgo = "15 min",
                         likeCount = 1,
-                        isLiked = false
+                        isLiked = false,
+                        myComment = false
                     )
-                )
+                ),
+                myComment = true
             ),
             Comment(
                 id = "2",
@@ -614,7 +624,8 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
                 text = "Took my pup here last weekend — 10/10 would recommend! 🐕",
                 timeAgo = "1 day ago",
                 likeCount = 0,
-                isLiked = false
+                isLiked = false,
+                myComment = false
             )
         )
         CommentsDialog(
@@ -623,15 +634,6 @@ private fun PostLikes(likes: Int, comments: Int, shares: Int) {
         )
     }
 }
-
-
-@Preview(showBackground = true)
-@Composable
-fun PetHomeScreenPreview() {
-    val navController = rememberNavController()
-    PetHomeScreen(authNavController = navController)
-}
-
 
 @Composable
 private fun PostImage(
@@ -677,6 +679,7 @@ private fun PostImage(
                             contentScale = ContentScale.Crop
                         )
                     }
+
                     MediaType.VIDEO -> {
                         if (isVideoPlaying && currentVideoPage == page) {
                             // Video player
@@ -702,7 +705,9 @@ private fun PostImage(
                         } else {
                             // Video thumbnail
                             Image(
-                                painter = painterResource(id = mediaItem.thumbnailResourceId ?: mediaItem.resourceId),
+                                painter = painterResource(
+                                    id = mediaItem.thumbnailResourceId ?: mediaItem.resourceId
+                                ),
                                 contentDescription = "Video thumbnail ${page + 1}",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop
@@ -721,17 +726,14 @@ private fun PostImage(
                                         currentVideoPage = page
                                     },
                                     modifier = Modifier
-                                        .size(60.dp)
-                                        .background(
-                                            Color.Black.copy(alpha = 0.6f),
-                                            CircleShape
-                                        )
+                                        .size(44.dp)
+
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Default.PlayArrow,
+                                        painter = painterResource(id = R.drawable.ic_play_circle),
                                         contentDescription = "Play video",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(32.dp)
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 }
                             }
@@ -747,10 +749,10 @@ private fun PostImage(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp)
-                    .background(
-                        Color.Black.copy(alpha = 0.3f),
-                        RoundedCornerShape(12.dp)
-                    )
+//                    .background(
+//                        Color.Black.copy(alpha = 0.3f),
+//                        RoundedCornerShape(12.dp)
+//                    )
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Row(
@@ -788,7 +790,8 @@ private fun PostImage(
 
         // Media type indicator (shows for video when not playing)
         if (mediaList.getOrNull(currentIndex)?.type == MediaType.VIDEO &&
-            !(isVideoPlaying && currentVideoPage == currentIndex)) {
+            !(isVideoPlaying && currentVideoPage == currentIndex)
+        ) {
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -844,4 +847,13 @@ private fun PostImage(
         }
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun PetHomeScreenPreview() {
+    val navController = rememberNavController()
+    PetHomeScreen(authNavController = navController)
+}
+
+
 

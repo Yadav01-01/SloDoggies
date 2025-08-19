@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen
 
+import android.R.attr.maxWidth
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -18,6 +19,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -47,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -63,10 +68,9 @@ fun ServicesContent() {
     ) {
         Text(
             text = "Available Services",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 14.sp,
             color = Color.Black,
-            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            fontFamily = FontFamily(Font(R.font.outfit_semibold)),
             modifier = Modifier.padding(vertical = 8.dp)
         )
 
@@ -129,10 +133,12 @@ fun EnhancedExpandableFullGroomingPackage() {
                 )
             }
             if (expanded) {
+                Column {
+
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     Text(
                         text = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloramque laudantium, totam ram apertam, eaque ipsa quae ab illo inventore veritatis et.",
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         color = Color(0xFF666666),
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                         modifier = Modifier.padding(bottom = 16.dp)
@@ -153,13 +159,14 @@ fun EnhancedExpandableFullGroomingPackage() {
 
                         Text(
                             text = "$100",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.outfit_medium))
                         )
                     }
 
+
+                    Spacer(Modifier.height(20.dp))
 
                     Text(
                         text = "Photos",
@@ -168,17 +175,19 @@ fun EnhancedExpandableFullGroomingPackage() {
                         fontFamily = FontFamily(Font(R.font.outfit_medium))
                     )
 
-                    Divider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        color = Color(0xFFEEEEEE),
-                        thickness = 1.dp
-                    )
-
-                    ImageGalleryScreen()
 
                 }
+
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    color = Color(0xFFEEEEEE),
+                    thickness = 1.dp
+                )
+
+                ImageGalleryScreen()
+            }
             }
         }
 
@@ -206,7 +215,7 @@ fun ImageGalleryScreen() {
         )
 
     val maxVisibleImages = 6
-    val gridHeight = 300.dp
+    val gridHeight = 220.dp
 
     Box(modifier = Modifier.fillMaxWidth().height(gridHeight)) {
         LazyVerticalGrid(
@@ -247,8 +256,8 @@ fun ImageGalleryScreen() {
                         // Overlay showing remaining count
                         Box(
                             modifier = Modifier
-                                .width(300.dp)
-                                .height(80.dp)
+                                .fillMaxWidth()
+                                .height(90.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .background(Color.Black.copy(alpha = 0.7f))
                                 .clickable {
@@ -288,7 +297,7 @@ fun ImageGridItem(
     onClick: () -> Unit,
     showOverlay: Boolean = false
 ) {
-    BoxWithConstraints(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
@@ -296,8 +305,8 @@ fun ImageGridItem(
         val size = maxWidth
         Card(
             modifier = Modifier
-                .width(size)
-                .height(size)
+                .fillMaxWidth()
+                .height(90.dp)
                 .clip(RoundedCornerShape(8.dp)),
             elevation = if (showOverlay) CardDefaults.cardElevation(0.dp)
             else CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -388,13 +397,13 @@ fun EnhancedExpandableNailTrimming() {
 
                         Text(
                             text = "$100",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.outfit_medium))
                         )
                     }
 
+                    Spacer(Modifier.height(10.dp))
 
                     Text(
                         text = "Photos",
@@ -527,6 +536,15 @@ fun EnhancedExpandableBathBrush() {
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ServicesContentPreview(){
+    ServicesContent()
+}
+
+
+/*
+
 @Composable
 fun ReviewItem(
     profileImageUrl: String,
@@ -599,4 +617,6 @@ fun ReviewItem(
         )
     }
 }
+
+ */
 

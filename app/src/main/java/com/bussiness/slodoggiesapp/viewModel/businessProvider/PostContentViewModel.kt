@@ -1,6 +1,8 @@
 package com.bussiness.slodoggiesapp.viewModel.businessProvider
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -102,6 +104,19 @@ class PostContentViewModel @Inject constructor() : ViewModel() {
 
     fun updateTermsAndConditions(newTermsAndConditions: String) {
         _termsAndConditions.value = newTermsAndConditions
+    }
+
+
+
+    private val _selectedPeople = mutableStateListOf<Person>()
+    val selectedPeople: List<Person> get() = _selectedPeople
+
+    fun addPerson(person: Person) {
+        _selectedPeople.add(person)
+    }
+
+    fun removePerson(person: Person) {
+        _selectedPeople.remove(person)
     }
 
 

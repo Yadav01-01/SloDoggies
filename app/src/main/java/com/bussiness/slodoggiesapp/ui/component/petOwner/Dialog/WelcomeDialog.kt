@@ -54,7 +54,7 @@ fun WelcomeDialog(
         ) {
             // Main card content
             Image(
-                painter = painterResource(id = R.drawable.ic_cross_icon),
+                painter = painterResource(id = R.drawable.ic_cross_iconx),
                 contentDescription = "Close",
 
                 modifier = Modifier
@@ -62,7 +62,7 @@ fun WelcomeDialog(
                         onDismiss()
                     }
                     .align(Alignment.TopEnd)
-                    .size(40.dp)
+                    .size(37.dp)
                     .clip(CircleShape)
                     .padding(bottom = 8.dp)
                     .align(Alignment.TopStart)
@@ -88,10 +88,10 @@ fun WelcomeDialog(
 
 
                     Image(
-                        painter = painterResource(id = R.drawable.ic_party_popper_icon),
+                        painter = painterResource(id = R.drawable.ic_party_joy_icon),
                         contentDescription = "Close",
                         modifier = Modifier
-                            .size(70.dp)
+                            .size(55.dp)
 
                     )
 
@@ -107,7 +107,7 @@ fun WelcomeDialog(
                     // Description
                     Text(
                         text = description,
-                        fontSize = 14.sp,
+                        fontSize = 15.sp,
                         textAlign = TextAlign.Center,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                         color = Color(0xFF000000),
@@ -120,8 +120,8 @@ fun WelcomeDialog(
                         onClick = onSubmitClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(40.dp),
-                        shape = RoundedCornerShape(8.dp),
+                            .height(42.dp),
+                        shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFF2E8B8B) // Teal color
                         )

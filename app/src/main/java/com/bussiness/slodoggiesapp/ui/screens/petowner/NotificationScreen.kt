@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 
 data class NotificationItem(
     val id: Int,
@@ -38,7 +39,6 @@ data class NotificationItem(
     val isFollowAction: Boolean = false
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsScreen(navController: NavHostController) {
     val notifications = remember {
@@ -115,35 +115,21 @@ fun NotificationsScreen(navController: NavHostController) {
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Top App Bar
-        TopAppBar(
-            title = {
-                Text(
-                    text = "Notifications",
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = Color(0xFF3F393F)
-                )
+
+        IconHeadingText(
+            textHeading = "Notifications",
+            onBackClick = {
+
             },
-            navigationIcon = {
-                IconButton(onClick = { /* Handle back navigation */ }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color(0xFF258694)
-                    )
-                }
+            onIconClick = {
+
             },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White
-            )
+            rightSideIcon = R.drawable.ic_check_icon_blue,
+            iconColor = Color(0xFF258694),
+            dividerColor = Color(0xFF656565),
+            displayRightIcon = false
         )
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(5.dp)
-                .background(Color(0xFF656565))
-        )
+
 
         // Today section header
         Text(

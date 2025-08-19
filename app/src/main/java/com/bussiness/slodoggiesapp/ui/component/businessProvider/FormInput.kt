@@ -257,4 +257,3 @@ fun ScreenHeadingText(textHeading: String, onBackClick: () -> Unit,onSettingClic
 }
 
 
-

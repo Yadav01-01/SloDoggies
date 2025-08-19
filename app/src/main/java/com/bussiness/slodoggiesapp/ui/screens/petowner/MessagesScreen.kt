@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.packInts
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 
 data class  MessageItem(
     val id: Int,
@@ -48,7 +49,7 @@ data class  MessageItem(
     val profileImageRes: Int
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun   MessageScreen(){
     val messages = remember {
@@ -82,34 +83,21 @@ fun   MessageScreen(){
     Column(modifier = Modifier.fillMaxSize()
         .background(Color.White))
     {
-        TopAppBar(
-            title = {
-                androidx.compose.material3.Text(
-                    text = "Messages",
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = Color(0xFF3F393F)
-                )
+
+        IconHeadingText(
+            textHeading = "Messages",
+            onBackClick = {
+
             },
-            navigationIcon = {
-                IconButton(onClick = { /* Handle back navigation */ }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
-                        tint = Color(0xFF258694)
-                    )
-                }
+            onIconClick = {
+
             },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White
-            )
+            rightSideIcon = R.drawable.ic_check_icon_blue,
+            iconColor = Color(0xFF258694),
+            dividerColor = Color(0xFF656565),
+            displayRightIcon = false
         )
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height((2).dp)
-                .background(Color(0xFF656565))
-        )
+
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()

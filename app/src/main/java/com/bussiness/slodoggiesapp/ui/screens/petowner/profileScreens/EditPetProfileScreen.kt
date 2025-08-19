@@ -48,10 +48,13 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
-import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBarProfile
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CustomDropdownMenuUpdated
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
+import com.bussiness.slodoggiesapp.ui.component.petOwner.SettingIconHeader
 import com.bussiness.slodoggiesapp.ui.component.saveBitmapToCache
 
 @Composable
@@ -116,13 +119,8 @@ fun EditPetProfileScreen(navController: NavController = rememberNavController())
             .fillMaxSize()
             .background(Color.White)
     ) {
-        CommonTopAppBarProfile(
-            title = "Edit Pet Profile",
-            onBackClick = { navController.popBackStack() },
-            settingsIconTint= Color.Black,
-            onSettingsClick= { },
-            dividerColor = Color(0xFF656565),
-        )
+
+        SettingIconHeader("Edit Pet Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { /* Handle Setting Click */ })
 
         Column(
             modifier = Modifier

@@ -2,6 +2,8 @@ package com.bussiness.slodoggiesapp.ui.screens.petowner
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -50,7 +52,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonTopAppBar
+import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.SearchBar
 
 @Composable
@@ -61,10 +63,18 @@ fun PetServicesScreen(navController: NavHostController) {
     val serviceTypes = listOf("Search", "Walking", "Grooming", "Sitting / Boarding", "Veterinary")
 
     Column(){
-        CommonTopAppBar(
-            title = "Services",
-            onBackClick = { navController.popBackStack() },
+        IconHeadingText(
+            textHeading = "Services",
+            onBackClick = {
+                navController.popBackStack()
+            },
+            onIconClick = {
+
+            },
+            rightSideIcon = R.drawable.ic_check_icon_blue,
+            iconColor = Color(0xFF258694),
             dividerColor = Color(0xFF258694),
+            displayRightIcon = false
         )
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -202,7 +212,7 @@ fun PetServiceCard(service: PetService,navController: NavHostController) {
             ) {
                 Text(
                     text = service.providerName,
-                    fontSize = 8.sp,
+                    fontSize = 10.sp,
                     color = Color.Black,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     //modifier = Modifier.weight(1f)
@@ -242,15 +252,15 @@ fun PetServiceCard(service: PetService,navController: NavHostController) {
             // Service Type Chip
             Surface(
                 color = Color.White, // White background
-                shape = RoundedCornerShape(8.dp),
+                shape = RoundedCornerShape(6.dp),
                 border = BorderStroke(1.dp, Color(0xFFCDCDCD)), // Light gray border
                 modifier = Modifier
                     .wrapContentSize()
-                    .padding(vertical = 10.dp, horizontal = 4.dp) // Outer spacing
+
             ) {
                 Text(
                     text = service.serviceType,
-                    fontSize = 12.sp, // Slightly larger font size to match appearance
+                    fontSize = 11.sp, // Slightly larger font size to match appearance
                     color = Color(0xFF8A8894), // Soft gray text color
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp) // Inner padding
@@ -258,30 +268,35 @@ fun PetServiceCard(service: PetService,navController: NavHostController) {
             }
 
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Inquire Now Button
-            Button(
-                onClick = { /* Handle inquiry */ },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
-                    contentColor = Color(0xFF258694)
-                ),
-                border = BorderStroke(1.dp, Color(0xFF258694)),
-                shape = RoundedCornerShape(8.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { /* Handle inquiry */ }
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFF258694),
+                        shape = RoundedCornerShape(5.dp)
+                    )
+                    .padding( vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
+
                 Icon(
                     painter = painterResource(id = R.drawable.ic_inform_checked),
                     contentDescription = null,
-                    modifier = Modifier.size(16.dp)
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = "Inquire now",
                     color = Color(0xFF258694),
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    fontSize = 12.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Medium
                 )
             }

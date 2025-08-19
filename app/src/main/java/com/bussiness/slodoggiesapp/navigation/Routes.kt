@@ -47,6 +47,7 @@ object Routes {
     const val PET_HOME_SCREEN = "petHomeScreen"
     const val PET_DISCOVER_SCREEN = "petDiscoverScreen"
     const val PET_POST_SCREEN = "petPostScreen"
+    const val PET_NEW_POST_SCREEN = "petNewPostScreen"
     const val PET_SERVICES_SCREEN = "petServicesScreen"
     const val PET_PROFILE_SCREEN = "petProfileScreen"
     const val PET_MAIN_SCREEN = "PetMainScreen"
@@ -56,4 +57,8 @@ object Routes {
     const val PET_EDIT_PROFILE_SCREEN = "PetEditProfileScreen"
     const val PET_SETTINGS_SCREEN = "PetSettingsScreen"
     const val PET_SAVED_SCREEN = "PetSavedScreen"
+    const val PET_MY_EVENTS_SCREEN = "PetMyEventsScreen"
+    const val PET_GROOMING_CHAT_SCREEN = "PetGroomingChatScreen"
+    const val PET_EVENT_COMMUNITY_SCREEN = "EventCommunityScreen"
+    const val PET_ADD_PARTICIPANTS_SCREEN = "PetAddParticipantsScreen"
 }

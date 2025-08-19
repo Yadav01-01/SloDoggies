@@ -7,8 +7,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.settingScreens.MyEventsScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetHomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.PetServicesScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.chatScreens.AddParticipantsScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.chatScreens.EventCommunityScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.chatScreens.PetGroomingChatScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.PetNewPostScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditPetProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.PetProfileScreen
@@ -48,6 +53,22 @@ fun PetMainNavGraph(
         }
         composable(Routes.PET_SAVED_SCREEN) {
             PetSavedScreen(navController)
+        }
+        composable(Routes.PET_MY_EVENTS_SCREEN) {
+            MyEventsScreen(navController)
+        }
+        composable(Routes.PET_GROOMING_CHAT_SCREEN) {
+            PetGroomingChatScreen(navController)
+        }
+
+        composable(Routes.PET_EVENT_COMMUNITY_SCREEN) {
+            EventCommunityScreen(navController)
+        }
+        composable(Routes.PET_ADD_PARTICIPANTS_SCREEN) {
+            AddParticipantsScreen(navController)
+        }
+        composable(Routes.PET_NEW_POST_SCREEN) {
+            PetNewPostScreen(navController)
         }
 
     }
