@@ -16,6 +16,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.AudienceData
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AudienceListItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AudienceSelection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
@@ -25,11 +26,11 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
 @Composable
-fun FollowerScreen(navController: NavHostController) {
-    var selectedOption by remember { mutableStateOf("Follower") }
+fun FollowerScreen(navController: NavHostController, type: String) {
+    var selectedOption by remember { mutableStateOf(type) }
     var query by remember { mutableStateOf("") }
     var removeDialog by remember { mutableStateOf(false) }
-    var context =  LocalContext.current
+    val context =  LocalContext.current
 
     val followersList = listOf(
         AudienceData(R.drawable.profile1, "Adison Dias", true),
@@ -53,7 +54,7 @@ fun FollowerScreen(navController: NavHostController) {
         ScreenHeadingText(
             textHeading = "My Profile",
             onBackClick = { navController.popBackStack() },
-            onSettingClick = { /* Handle Setting Click */ }
+            onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN) }
         )
 
         HorizontalDivider(
@@ -121,5 +122,5 @@ fun FollowerScreen(navController: NavHostController) {
 @Composable
 fun FollowerScreenPreview() {
     val navController = rememberNavController()
-    FollowerScreen(navController)
+    FollowerScreen(navController, "Follower")
 }

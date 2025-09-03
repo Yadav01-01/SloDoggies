@@ -1,5 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.post
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,21 +19,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ChoosePostTypeButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
+import com.bussiness.slodoggiesapp.ui.dialog.PostSuccessDialog
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PetEventScreenContent
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PetPostScreenContent
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PetNewPostScreen(navController: NavHostController) {
 
     var selected by remember { mutableStateOf("Post") }
+    var successDialog by remember { mutableStateOf(false) }
+    var eventSuccess by remember { mutableStateOf(false) }
 
     Column ( modifier = Modifier.fillMaxSize().background(Color.White)) {
 
@@ -44,7 +52,7 @@ fun PetNewPostScreen(navController: NavHostController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 10.dp, horizontal = 16.dp),
+                .padding(vertical = 0.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             listOf("Post", "Event").forEach { label ->
@@ -58,18 +66,27 @@ fun PetNewPostScreen(navController: NavHostController) {
         }
 
         when (selected) {
-            "Post" -> PetPostScreenContent(onClickLocation = { }, onClickPost = { })
-            "Event" -> PetEventScreenContent( onClickLocation = { },onClickSubmit = { })
+            "Post" -> PetPostScreenContent(onClickLocation = { }, onClickPost = { successDialog = true }, addPetClick = {  })
+            "Event" -> PetEventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
         }
-
     }
-
-
-
+    if (successDialog){
+        PostSuccessDialog(
+            onDismiss = { successDialog = false },
+            text =  "Post Created!"
+        )
+    }
+    if (eventSuccess){
+        PostSuccessDialog(
+            onDismiss = { eventSuccess = false },
+            text =  "Event Created!"
+        )
+    }
 
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun PetNewPostScreenPreview() {

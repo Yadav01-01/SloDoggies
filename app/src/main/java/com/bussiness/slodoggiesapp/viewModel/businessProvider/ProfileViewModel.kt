@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.viewModel.businessProvider
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,9 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
 
     private val _providerName = MutableStateFlow("")
     val providerName: StateFlow<String> = _providerName
+
+    private val _imageUri = MutableStateFlow<Uri?>(null)
+    val imageUri: StateFlow<Uri?> = _imageUri
 
     private val _bio = MutableStateFlow("")
     val bio: StateFlow<String> = _bio
@@ -36,6 +40,11 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
     fun updateBio(newBio: String) {
         _bio.value = newBio
     }
+
+    fun selectImage(uri: Uri?) {
+        _imageUri.value = uri
+    }
+
 
 
 }

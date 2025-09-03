@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,16 +26,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +43,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -54,6 +52,7 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DialogButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
@@ -82,7 +81,7 @@ fun EditCommunityName(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_cross_icon),
+                        painter = painterResource(id = R.drawable.ic_cross_iconx),
                         contentDescription = "Close",
                         modifier = Modifier
                             .clickable(onClick = onDismiss)
@@ -113,6 +112,8 @@ fun EditCommunityName(
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 color = Color.Black,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier.align(Alignment.CenterStart)
                             )
                         }
@@ -162,14 +163,16 @@ fun RemoveParticipantDialog(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(10.dp),
+            contentAlignment = Alignment.Center
         ) {
             val maxWidthPx = maxWidth
 
             Box(
                 modifier = Modifier
                     .widthIn(max = maxWidthPx * 0.9f) // 90% of screen width
-                    .wrapContentHeight()
+                    .wrapContentHeight(),
+
             ) {
                 // Main Dialog Card
                 Column(
@@ -243,7 +246,7 @@ fun RemoveParticipantDialog(
 
                 // External Cross (X) Button
                 Icon(
-                    painter = painterResource(R.drawable.ic_cross_icon),
+                    painter = painterResource(R.drawable.ic_cross_iconx),
                     contentDescription = "Close",
                     tint = Color.Unspecified,
                     modifier = Modifier
@@ -253,6 +256,202 @@ fun RemoveParticipantDialog(
                         .background(Color(0xFFF0F0F0), CircleShape)
                         .clickable { onDismiss() }
                 )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun DeleteChatDialog(
+    onDismiss: () -> Unit,
+    onClickRemove: () -> Unit,
+    @DrawableRes iconResId: Int,
+    text: String,
+    description: String
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        BoxWithConstraints(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            val maxWidthPx = maxWidth
+
+            Box(
+                modifier = Modifier
+                    .widthIn(max = maxWidthPx * 0.9f) // 90% of screen width
+                    .wrapContentHeight(),
+
+                ) {
+                // Main Dialog Card
+                Column(
+                    modifier = Modifier
+                        .background(Color.White, shape = RoundedCornerShape(12.dp))
+                        .padding(horizontal = 10.dp, vertical = 10.dp)
+                        .align(Alignment.Center)
+                ) {
+                    Icon(
+                        painter = painterResource(id = iconResId),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(50.dp)
+                            .align(Alignment.CenterHorizontally)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center,
+                            color = Color.Black
+                        ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text(
+                        text = description,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            color = Color.Black
+                        ),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Buttons
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        DialogButton(
+                            text = "Delete",
+                            selected = true,
+                            onClick = {
+                                onClickRemove()
+                                onDismiss()
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                        DialogButton(
+                            text = "Cancel",
+                            selected = false,
+                            onClick = {
+                                onDismiss()
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+
+                // External Cross (X) Button
+                Icon(
+                    painter = painterResource(R.drawable.ic_cross_iconx),
+                    contentDescription = "Close",
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .offset(x = 0.dp, y = (-50).dp)
+                        .wrapContentSize()
+                        .background(Color(0xFFF0F0F0), CircleShape)
+                        .clickable { onDismiss() }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BottomToast(
+    isBlocked: Boolean,
+    onToggle: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.systemBars)
+                .padding(bottom = 15.dp),
+            contentAlignment = Alignment.BottomCenter // Centered horizontally
+        ) {
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clickable { onToggle() }, // Toggle on click
+                shape = RoundedCornerShape(10.dp),
+                color = PrimaryColor
+            ) {
+                Text(
+                    text = if (isBlocked) "Unblock Jane" else "Block Jane",
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    fontSize = 15.sp,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ReportBottomToast(
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.systemBars)
+                .padding(bottom = 15.dp),
+            contentAlignment = Alignment.BottomCenter // Centered horizontally
+        ) {
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize(),
+                shape = RoundedCornerShape(10.dp),
+                color = Color.White
+            ) {
+
+                Row {
+                    Text(
+                        text = "Report Sent!| Admin will get back to you.",
+                        color = Color.Black,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(12.dp)
+                    )
+
+                    IconButton(onClick = { onDismiss() }) {
+                        Icon(
+                            imageVector = androidx.compose.material.icons.Icons.Default.Close,
+                            contentDescription = "Close",
+                            tint = PrimaryColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+
             }
         }
     }

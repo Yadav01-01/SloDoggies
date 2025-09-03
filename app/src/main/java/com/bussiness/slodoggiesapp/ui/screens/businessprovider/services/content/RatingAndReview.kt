@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.Review
-import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.RatingBar
+import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.RatingBar
 
 //@Composable
 //fun RatingAndReviews(

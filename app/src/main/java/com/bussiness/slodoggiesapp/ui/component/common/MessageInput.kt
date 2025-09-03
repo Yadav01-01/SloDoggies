@@ -111,7 +111,8 @@ fun ChatHeaderItem(
     onBackClick: () -> Unit = {},
     onDeleteClick: () -> Unit,
     onReportClick: () -> Unit,
-    onBlockClick: () -> Unit
+    onBlockClick: () -> Unit,
+    onFeedbackClick: () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -202,6 +203,10 @@ fun ChatHeaderItem(
                 onBlockClick = {
                     menuExpanded = false
                     onBlockClick()
+                },
+                onFeedbackClick = {
+                    menuExpanded = false
+                    onFeedbackClick()
                 }
             )
         }
@@ -216,6 +221,7 @@ fun OnMenuClick(
     onDeleteClick: () -> Unit,
     onReportClick: () -> Unit,
     onBlockClick: () -> Unit,
+    onFeedbackClick: () -> Unit
 ) {
     DropdownMenu(
         expanded = menuExpanded,
@@ -249,6 +255,15 @@ fun OnMenuClick(
             onClick = {
                 onDismiss()
                 onBlockClick()
+            }
+        )
+
+        MenuItem(
+            iconRes = R.drawable.ic_report_icon,
+            label = "Give Feedback",
+            onClick = {
+                onDismiss()
+                onFeedbackClick()
             }
         )
     }

@@ -64,12 +64,6 @@ fun CustomDropdownMenuUpdated(
                     readOnly = true,
                     enabled = false,
                     modifier = Modifier.fillMaxWidth(),
-//                    colors = OutlinedTextFieldDefaults.colors(
-//                        focusedBorderColor = Color(0xFF00ACC1),
-//                        unfocusedBorderColor = Color(0xFF949494),
-//                        disabledBorderColor = Color(0xFF949494),
-//                        disabledTextColor = if (value.isEmpty()) Color(0xFF949494) else Color.Black
-//                    ),
                     textStyle = TextStyle(
                         fontSize = 15.sp, // change this size as needed
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),

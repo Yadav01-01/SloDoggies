@@ -30,8 +30,8 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
+import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.ui.dialog.ServiceAdEditDialog
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.UploadPlaceholder
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.AddServiceViewModel
 
@@ -91,7 +91,7 @@ fun EditAddServiceScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            UploadPlaceholder()
+            MediaUploadSection()
 
             Spacer(Modifier.height(25.dp))
 

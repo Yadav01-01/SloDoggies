@@ -32,12 +32,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.common.FAQViewModel
 
 @Composable
-fun FAQScreen(navController: NavHostController,viewModel: FAQViewModel = FAQViewModel()) {
+fun FAQScreen(navController: NavHostController,viewModel: FAQViewModel = hiltViewModel()) {
     val faqList = viewModel.faqItems
 
     Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
@@ -68,24 +69,27 @@ fun FAQScreen(navController: NavHostController,viewModel: FAQViewModel = FAQView
 
 @Composable
 fun FAQItemCard(faq: FAQItem, isExpanded: Boolean, onClick: () -> Unit) {
-    Card(
-        shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isExpanded) Color.Gray else PrimaryColor
-        ),
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .padding(vertical = 4.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        // Header Section
+        Card(
+            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = if (isExpanded) 0.dp else 10.dp, bottomEnd = if (isExpanded) 0.dp else 10.dp),
+            elevation = CardDefaults.cardElevation(4.dp),
+            colors = CardDefaults.cardColors(containerColor = PrimaryColor),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.padding(16.dp)
             ) {
                 Text(
                     text = faq.question,
-                    color = Color.White ,
+                    color = Color.White,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -97,21 +101,29 @@ fun FAQItemCard(faq: FAQItem, isExpanded: Boolean, onClick: () -> Unit) {
                     tint = Color.Unspecified
                 )
             }
+        }
 
-            if (isExpanded) {
-                Spacer(modifier = Modifier.height(8.dp))
+        // Expanded Content Section
+        if (isExpanded) {
+            Card(
+                shape = RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp),
+                elevation = CardDefaults.cardElevation(2.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE5EFF2)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = faq.answer,
-                    color = Color.Black ,
+                    color = Color.Black,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
+                    lineHeight = 18.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    modifier = Modifier.padding(16.dp)
                 )
             }
         }
     }
 }
-
 
 @Preview
 @Composable

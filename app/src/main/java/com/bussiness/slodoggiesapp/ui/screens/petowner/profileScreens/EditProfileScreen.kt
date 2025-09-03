@@ -3,7 +3,6 @@ package com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,8 +10,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,11 +20,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -35,12 +33,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,57 +42,42 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberImagePainter
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
+import com.bussiness.slodoggiesapp.ui.component.common.EmailTextField
+import com.bussiness.slodoggiesapp.ui.component.common.PhoneNumber
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CustomDropdownMenuUpdated
-import com.bussiness.slodoggiesapp.ui.component.petOwner.SettingIconHeader
 import com.bussiness.slodoggiesapp.ui.component.saveBitmapToCache
-import com.joelkanyi.jcomposecountrycodepicker.component.KomposeCountryCodePicker
-import com.joelkanyi.jcomposecountrycodepicker.component.rememberKomposeCountryCodePickerState
+import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.petOwner.EditProfileViewModel
 
 
 @Composable
-fun EditProfileScreen(navController: NavController = rememberNavController()){
-    var name by remember { mutableStateOf("") }
-    var mobileNumber by remember { mutableStateOf("+1 (555) 123 456") }
-    var email by remember { mutableStateOf("merrysglobalogales.com") }
-    var bio by remember { mutableStateOf("") }
-    var relation by remember { mutableStateOf("") }
-    var showRelationDropdown by remember { mutableStateOf(false) }
-    val relationOptions =
-        listOf("Father", "Mother", "Partner", "Etc")
-    var phoneNumber by rememberSaveable { mutableStateOf("") }
-    var isMobileVerified by remember { mutableStateOf(false) }
-    var isEmailVerified by remember { mutableStateOf(false) }
-    val state = rememberKomposeCountryCodePickerState(
-//            limitedCountries = listOf("KE", "UG", "TZ", "RW", "SS", "Togo", "+260", "250", "+211", "Mali", "Malawi"),
-//            priorityCountries = listOf("SA", "KW", "BH", "QA"),
-//            showCountryCode = true,
-//            showCountryFlag = true,
-//            defaultCountryCode = "KE",
-    )
-    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
-    var showImagePickerDialog by remember { mutableStateOf(false) }
+fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfileViewModel = hiltViewModel(),) {
 
+    val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
     val launcherGallery = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        profileImageUri = uri
+        uiState.profileImageUri = uri
     }
 
     val launcherCamera = rememberLauncherForActivityResult(
@@ -106,7 +85,7 @@ fun EditProfileScreen(navController: NavController = rememberNavController()){
     ) { bitmap: Bitmap? ->
         bitmap?.let {
             val uri = saveBitmapToCache(context, it)
-            profileImageUri = uri
+            uiState.profileImageUri = uri
         }
     }
 
@@ -137,7 +116,12 @@ fun EditProfileScreen(navController: NavController = rememberNavController()){
             .background(Color.White)
     ) {
 
-        SettingIconHeader("Edit Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { /* Handle Setting Click */ })
+        ScreenHeadingText(textHeading = "My Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
+
+        HorizontalDivider(modifier = Modifier
+            .fillMaxWidth()
+            .height(2.dp)
+            .background(PrimaryColor))
 
         Column(
             modifier = Modifier
@@ -145,8 +129,6 @@ fun EditProfileScreen(navController: NavController = rememberNavController()){
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-
-
             // Add Photo Section
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -160,21 +142,14 @@ fun EditProfileScreen(navController: NavController = rememberNavController()){
                         modifier = Modifier
                             .size(130.dp)
                             .clip(CircleShape)
-                            .border(width = 3.dp,  color = Color(0xFF949494),shape = CircleShape)
+                            .border(width = 3.dp, color = Color(0xFF949494), shape = CircleShape)
                     ) {
-                        profileImageUri?.let { uri ->
-                            Image(
-                                painter = rememberImagePainter(uri),
-                                contentDescription = "Pet Photo",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-
-                            )
-                        } ?: Icon(
-                            painter = painterResource(id = R.drawable.ic_black_profile_icon),
-                            contentDescription = "Add Photo",
+                        AsyncImage(
+                            model = uiState.profileImageUri,
+                            contentDescription = "Parent Photo",
+                            contentScale = ContentScale.Crop,
+                            placeholder =  painterResource(id = R.drawable.ic_black_profile_icon),
+                            error =  painterResource(id = R.drawable.ic_black_profile_icon),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(CircleShape)
@@ -190,7 +165,7 @@ fun EditProfileScreen(navController: NavController = rememberNavController()){
                             .size(35.dp)
                             .align(Alignment.BottomEnd)
                             .clickable {
-                                showImagePickerDialog = true
+                                viewModel.toggleImagePickerDialog()
                             }
                     )
                 }
@@ -201,222 +176,104 @@ fun EditProfileScreen(navController: NavController = rememberNavController()){
 
             // Name Field
             CustomOutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                placeholder = "Enter name",
-                label = "Pet Parent Name"
+                value = uiState.name,
+                onValueChange = { viewModel.updateName(it) },
+                placeholder = stringResource(R.string.enter_name),
+                label = stringResource(R.string.pet_parent_name)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Column {
-                Text(
-                    text = "Mobile Number",
-                    fontSize = 15.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = Color.Black,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+            FormHeadingText(stringResource(R.string.mobile_number))
 
-                KomposeCountryCodePicker(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 1.dp,
-                            color = Color(0xFF949494), // Border color
-                            shape = RoundedCornerShape(12.dp) // Rounded corners
-                        ),
-                    text = phoneNumber,
+            Spacer(Modifier.height(8.dp))
 
-                    onValueChange = { phoneNumber = it },
-                    placeholder = {
-                        Text(
-                            text = "Phone Number",
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            color = Color(0xFF949494)
-
-                        )
-                    },
-                    shape = MaterialTheme.shapes.medium,
-                    colors =
-                        OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color(0xFF00ACC1),
-                            unfocusedBorderColor = Color(0xFF949494),
-                            focusedContainerColor = Color(0xFFE5EFF2),
-                            unfocusedContainerColor = Color.White,
-
-                            ),
-                    state = state,
-
-                    interactionSource = remember { MutableInteractionSource() }.also { interactionSource ->
-                        LaunchedEffect(interactionSource) {
-                            interactionSource.interactions.collect {
-                                if (it is PressInteraction.Release) {
-                                    Log.e(
-                                        "CountryCodePicker",
-                                        "clicked",
-                                    )
-                                }
-                            }
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Next,
-                    ),
-                    textStyle = TextStyle(
-                        color = Color(0xFF949494) // Teal color for country code
-                    ), trailingIcon = {
-
-                        if (isMobileVerified) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_verified_icon), // Replace with your check icon
-                                contentDescription = "Verified",
-                                tint = Color(0xFF258694), // Green color for verified
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .padding(end = 5.dp)
-                            )
-                        } else {
-
-                            TextButton(
-                                onClick = {
-                                    isMobileVerified = true // Set to verified when clicked
-
-                                },
-                                modifier = Modifier.padding(end = 4.dp)
-                            ) {
-                                Text(
-                                    text = "verify", // lowercase as shown in image
-                                    color = Color(0xFF258694),
-                                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                    fontSize = 14.sp
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-
+            PhoneNumber(
+                phone = uiState.mobileNumber,
+                onPhoneChange = { viewModel.updateMobileNumber(it) },
+                onVerify = viewModel::verifyMobile,
+                isVerified = uiState.isMobileVerified
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Email Field (read-only with verify button)
-            Column {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Email",
-                        fontSize = 15.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        color = Color.Black
-                    )
+            FormHeadingText(stringResource(R.string.email))
+
+            Spacer(Modifier.height(8.dp))
+
+            EmailTextField(
+                email = uiState.email,
+                onEmailChange = { viewModel.updateEmail(it) },
+                onVerify = viewModel::verifyEmail,
+                isVerified = uiState.isEmailVerified,
+                placeholder = "merry@Slodoggies.com"
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            FormHeadingText(stringResource(R.string.relation_to_pet))
+
+            Spacer(Modifier.height(8.dp))
+
+            CustomDropdownBox(
+                label = uiState.relation.ifEmpty { "Select" },
+                items = uiState.relationOptions,
+                selectedItem = uiState.relation, // Current selected value
+                onItemSelected = { selected ->
+                    viewModel.updateRelation(selected)
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = "merry@slodoggies.com",
-                    onValueChange = {},
-                    readOnly = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    textStyle = TextStyle(
-                        color = Color(0xFF949494),
-                        fontFamily = FontFamily(Font(R.font.outfit_regular))
-                    ),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = Color(0xFF00ACC1),
-                        unfocusedBorderColor = Color(0xFF949494)
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    trailingIcon = {
-
-                        if (isEmailVerified) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_verified_icon), // Replace with your check icon
-                                contentDescription = "Verified",
-                                tint = Color(0xFF258694), // Green color for verified
-                                modifier = Modifier
-                                    .size(30.dp)
-                                    .padding(end = 5.dp)
-                            )
-                        } else {
-
-                            TextButton(
-                                onClick = {
-                                    isEmailVerified = true // Set to verified when clicked
-
-                                },
-                                modifier = Modifier.padding(end = 4.dp)
-                            ) {
-                                Text(
-                                    text = "verify", // lowercase as shown in image
-                                    color = Color(0xFF258694),
-                                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                    fontSize = 14.sp
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            CustomDropdownMenuUpdated(
-                value = relation,
-                onValueChange = { relation = it },
-                options = relationOptions,
-                label = "Relation to Pet",
-                placeholder = "Select",
-                isExpanded = showRelationDropdown,
-                onExpandedChange = { showRelationDropdown = it },
             )
+
+            Spacer(Modifier.height(16.dp))
+
             // Bio Field
             CustomOutlinedTextField(
-                value = bio,
-                onValueChange = { bio = it },
-                placeholder = "Enter Bio",
-                label = "Bio"
+                value = uiState.bio,
+                onValueChange = { viewModel.updateBio(it) },
+                placeholder = stringResource(R.string.enter_bio),
+                label =stringResource(R.string.bio),
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
             // Bottom Buttons
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                CommonBlueButton(
-                    text = "Save Changes",
-                    fontSize = 22.sp,
-                    onClick = {
-                        // navController.navigate(Routes.PET_MAIN_SCREEN)
-                    },
-                    modifier = Modifier.padding(horizontal = 45.dp),
-                )
-            }
+            CommonBlueButton(
+                text = stringResource(R.string.save_changes),
+                fontSize = 15.sp,
+                onClick = { viewModel.toggleUpdateProfileDialog() },
+                modifier = Modifier.padding(horizontal = 45.dp),
+            )
         }
 
     }
-    if (showImagePickerDialog) {
+    if (uiState.updateProfileDialog){
+        UpdatedDialogWithExternalClose(
+            onDismiss = { viewModel.hideUpdateProfileDialog(navController) },
+            iconResId = R.drawable.ic_sucess_p,
+            text = "Profile Updated!",
+            description = "Your information has been saved.\n" +
+                    "Thanks for keeping things up to date!"
+        )
+    }
+    if (uiState.showImagePickerDialog) {
         androidx.compose.material.AlertDialog(
-            onDismissRequest = { showImagePickerDialog = false },
+            onDismissRequest = { viewModel.hideImagePickerDialog() },
             title = { Text("Select Option") },
             buttons = {
-                Column(Modifier.padding(16.dp)) {
-                    Text("Camera", Modifier.clickable {
-                        showImagePickerDialog = false
-                        launchCameraWithPermissionCheck()
-                    }.padding(8.dp))
+                Column(Modifier.fillMaxWidth().wrapContentHeight().padding(16.dp)) {
+                    Text("Camera", Modifier
+                        .clickable {
+                            viewModel.hideImagePickerDialog()
+                            launchCameraWithPermissionCheck()
+                        }.fillMaxWidth()
+                        .padding(8.dp))
 
-                    Text("Gallery", Modifier.clickable {
-                        showImagePickerDialog = false
-                        launcherGallery.launch("image/*")
-                    }.padding(8.dp))
+                    Text("Gallery", Modifier
+                        .clickable {
+                            viewModel.hideImagePickerDialog()
+                            launcherGallery.launch("image/*")
+                        }.fillMaxWidth()
+                        .padding(8.dp))
                 }
             }
         )
@@ -425,10 +282,15 @@ fun EditProfileScreen(navController: NavController = rememberNavController()){
 }
 
 
+
+
+
 @Preview(showBackground = true)
 @Composable
 fun EditProfileScreenPreview() {
+    val viewModel : EditProfileViewModel = hiltViewModel()
+    val navController = NavHostController(LocalContext.current)
     MaterialTheme {
-        EditProfileScreen()
+        EditProfileScreenPet(navController,viewModel)
     }
 }

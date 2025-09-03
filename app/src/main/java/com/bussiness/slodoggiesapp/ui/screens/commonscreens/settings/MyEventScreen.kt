@@ -69,7 +69,7 @@ fun MyEventScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             items(sampleEvents) { event ->
-                EventCard(event = event) { clickedEvent ->
+                EventCard(event = event, selectedOption = "") { clickedEvent ->
                      navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
                 }
             }

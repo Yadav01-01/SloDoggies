@@ -25,6 +25,7 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
+import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.AddServiceViewModel
 
 @Composable
@@ -81,7 +82,7 @@ fun AddServiceScreen(
             
             Spacer(Modifier.height(10.dp))
 
-            UploadPlaceholder()
+            MediaUploadSection()
 
             Spacer(Modifier.height(25.dp))
 

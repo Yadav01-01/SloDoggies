@@ -30,6 +30,18 @@ class HomeViewModel @Inject constructor(
     private val _profileCreatedUiState = MutableStateFlow(false)
     val profileCreatedUiState: StateFlow<Boolean> = _profileCreatedUiState
 
+    private val _showContinueAddPetDialog = MutableStateFlow(false)
+    val showContinueAddPetDialog: StateFlow<Boolean> = _showContinueAddPetDialog
+
+    private val _showReportDialog = MutableStateFlow(false)
+    val showReportDialog: StateFlow<Boolean> = _showReportDialog
+
+    private val _showReportToast = MutableStateFlow(false)
+    val showReportToast: StateFlow<Boolean> = _showReportToast
+
+    private val _showShareContent = MutableStateFlow(false)
+    val showShareContent: StateFlow<Boolean> = _showShareContent
+
     init {
         loadPosts()
         checkWelcomeDialog()
@@ -58,6 +70,11 @@ class HomeViewModel @Inject constructor(
         )
     }
 
+    fun showContinueAddPetDialog() {
+        _showPetInfoDialog.value = false
+        _showContinueAddPetDialog.value = true
+    }
+
     fun dismissWelcomeDialog() {
         _welcomeUiState.value = _welcomeUiState.value.copy(showDialog = false)
         if (sessionManager.getUserType() == UserType.PET_OWNER) {
@@ -81,6 +98,25 @@ class HomeViewModel @Inject constructor(
         _profileCreatedUiState.value = true
     }
 
+    fun showPetInfoDialog() {
+        _showPetInfoDialog.value = true
+    }
+
+    fun showReportDialog() {
+        _showReportDialog.value = true
+    }
+
+    fun showShareContent() {
+        _showShareContent.value = true
+    }
+
+    fun dismissShareContent() {
+        _showShareContent.value = false
+    }
+
+    fun dismissReportDialog() {
+        _showReportDialog.value = false
+    }
 
     fun dismissPetInfoDialog() {
         _showPetInfoDialog.value = false
@@ -93,5 +129,30 @@ class HomeViewModel @Inject constructor(
 
     fun dismissProfileCreatedDialog() {
         _profileCreatedUiState.value = false
+    }
+
+    fun dismissContinueAddPetDialog() {
+        _showContinueAddPetDialog.value = false
+        _showUserDetailsDialog.value = true
+    }
+
+    fun showReportToast() {
+        _showReportDialog.value = false
+        _showReportToast.value = true
+    }
+
+    fun dismissReportToast() {
+        _showReportToast.value = false
+    }
+
+    private val _petInfoDialogCount = MutableStateFlow(0)
+    val petInfoDialogCount: StateFlow<Int> = _petInfoDialogCount
+
+    fun incrementPetInfoDialogCount() {
+        _petInfoDialogCount.value++
+    }
+
+    fun resetPetInfoDialogCount() {
+        _petInfoDialogCount.value = 0
     }
 }

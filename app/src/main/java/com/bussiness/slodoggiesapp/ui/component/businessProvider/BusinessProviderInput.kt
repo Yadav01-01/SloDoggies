@@ -6,11 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,8 +22,10 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -37,16 +41,19 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import java.time.format.TextStyle
 
 @Composable
 fun TopIndicatorBar(){
@@ -117,7 +124,7 @@ fun EmailInputField(
         },
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .height(52.dp),
         shape = RoundedCornerShape(10.dp),
         colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
             backgroundColor = Color.White,
@@ -128,6 +135,47 @@ fun EmailInputField(
         singleLine = true
     )
 }
+
+@Composable
+fun UserNameInputField(
+    input: String,
+    placeholder: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    androidx.compose.material.OutlinedTextField(
+        value = input,
+        onValueChange = onValueChange,
+        placeholder = {
+            Text(
+                text = placeholder,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                fontSize = 14.sp,
+                color = TextGrey,
+                modifier = Modifier.padding(vertical = 0.dp) // text ko center me rakhta hai
+            )
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp),
+        shape = RoundedCornerShape(10.dp),
+        colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+            backgroundColor = Color.White,
+            focusedBorderColor = TextGrey,
+            unfocusedBorderColor = TextGrey,
+            textColor = Color.Black,
+            cursorColor = Color.Black
+        ),
+        singleLine = true,
+        textStyle = androidx.compose.ui.text.TextStyle(
+            fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+            color = Color.Black
+        )
+    )
+}
+
+
 
 
 @Composable
@@ -163,14 +211,12 @@ fun OtpInputField(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    // Main clickable row that requests focus when clicked
+    // Clickable Column without ripple effect
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .clickable {
-                focusRequester.requestFocus()
-            },
+            .pointerInput(Unit) { detectTapGestures { focusRequester.requestFocus() } },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -204,11 +250,10 @@ fun OtpInputField(
                         color = Color.Black
                     )
                 }
-
             }
         }
 
-        // Hidden BasicTextField to actually handle the input
+        // Hidden BasicTextField to handle numeric input only
         BasicTextField(
             value = otpText,
             onValueChange = {
@@ -221,10 +266,14 @@ fun OtpInputField(
                 .alpha(0f)
                 .fillMaxWidth()
                 .height(1.dp)
-                .focusable()
+                .focusable(),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.NumberPassword
+            )
         )
     }
 }
+
 
 @Composable
 fun     SubmitButton(modifier: Modifier = Modifier,buttonText : String, onClickButton : () -> Unit,buttonTextSize : Int = 15){

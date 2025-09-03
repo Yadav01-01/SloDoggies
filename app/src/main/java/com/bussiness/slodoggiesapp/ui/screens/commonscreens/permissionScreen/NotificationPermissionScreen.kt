@@ -76,7 +76,7 @@ fun NotificationPermissionScreen(navController: NavHostController ) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            CommonBlueButton(text = "Turn On", fontSize = 22.sp, onClick = { navController.navigate(Routes.LOCATION_PERMISSION_SCREEN) })
+            CommonBlueButton(text = "Turn On", fontSize = 18.sp, onClick = { navController.navigate(Routes.LOCATION_PERMISSION_SCREEN) })
 
             Spacer(modifier = Modifier.height(16.dp))
 

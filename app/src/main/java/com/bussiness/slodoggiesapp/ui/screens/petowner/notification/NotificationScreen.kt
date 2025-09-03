@@ -1,16 +1,27 @@
-package com.bussiness.slodoggiesapp.ui.screens.petowner
+package com.bussiness.slodoggiesapp.ui.screens.petowner.notification
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,8 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 data class NotificationItem(
     val id: Int,
@@ -40,7 +54,7 @@ data class NotificationItem(
 )
 
 @Composable
-fun NotificationsScreen(navController: NavHostController) {
+fun PetNotificationsScreen(navController: NavHostController) {
     val notifications = remember {
         listOf(
             NotificationItem(
@@ -115,46 +129,25 @@ fun NotificationsScreen(navController: NavHostController) {
             .fillMaxSize()
             .background(Color.White)
     ) {
+        HeadingTextWithIcon(textHeading = "Notifications", onBackClick = { navController.popBackStack() })
 
-        IconHeadingText(
-            textHeading = "Notifications",
-            onBackClick = {
-
-            },
-            onIconClick = {
-
-            },
-            rightSideIcon = R.drawable.ic_check_icon_blue,
-            iconColor = Color(0xFF258694),
-            dividerColor = Color(0xFF656565),
-            displayRightIcon = false
-        )
-
-
-        // Today section header
-        Text(
-            text = "Today",
-            fontSize = 16.sp,
-            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-            color = Color.Black,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height((1.5).dp)
-                .padding(
-                    horizontal = 17.dp
-                )
-                .background(Color(0xFF258694))
-        )
+        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 
         // Notifications List
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
+            item {
+                Text(
+                    "Today",
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                HorizontalDivider(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color.Black))
+
+            }
+
             items(notifications) { notification ->
                 NotificationItemRow(
                     notification = notification,
@@ -177,15 +170,18 @@ fun NotificationItemRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Profile Image
-        Image(
-            painter = painterResource(id = notification.profileImageRes),
+        AsyncImage(
+            model = notification.profileImageRes,
             contentDescription = "Profile picture",
+            placeholder = painterResource(id = R.drawable.ic_person_icon1),
+            error = painterResource(id = R.drawable.ic_person_icon1),
             modifier = Modifier
                 .size(44.dp)
                 .clip(CircleShape)
                 .background(Color.Gray.copy(alpha = 0.2f)),
             contentScale = ContentScale.Crop
         )
+
 
         Spacer(modifier = Modifier.width(12.dp))
 
@@ -201,14 +197,16 @@ fun NotificationItemRow(
                     text = notification.username,
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    fontWeight = FontWeight.Medium,
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = notification.action,
-                    fontSize = 12.sp,
-                    color = Color(0xFF949494),
+                    fontSize = 14.sp,
+                    color = TextGrey,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontWeight = FontWeight.Normal,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -242,14 +240,17 @@ fun NotificationItemRow(
                     text = "Follow back",
                     fontSize = 12.sp,
                     color = Color.White,
-                    fontWeight = FontWeight.Medium
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontWeight = FontWeight.Normal
                 )
             }
         } else {
             notification.postImageRes?.let { imageRes ->
-                Image(
-                    painter = painterResource(id = imageRes),
+                AsyncImage(
+                    model = imageRes, // Can be String (URL) or Int (resId)
                     contentDescription = "Post image",
+                    placeholder = painterResource(id = android.R.drawable.ic_menu_gallery),
+                    error = painterResource(id = android.R.drawable.ic_menu_gallery),
                     modifier = Modifier
                         .size(37.dp)
                         .clip(RoundedCornerShape(4.dp))
@@ -257,6 +258,7 @@ fun NotificationItemRow(
                     contentScale = ContentScale.Crop
                 )
             }
+
         }
     }
 }
@@ -266,6 +268,6 @@ fun NotificationItemRow(
 fun NotificationsScreenPreview() {
     val navController = rememberNavController()
     MaterialTheme {
-    NotificationsScreen(navController)
+    PetNotificationsScreen(navController)
     }
 }

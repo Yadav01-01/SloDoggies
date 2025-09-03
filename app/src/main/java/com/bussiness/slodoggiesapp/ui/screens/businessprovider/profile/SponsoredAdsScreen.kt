@@ -122,7 +122,7 @@ fun ActiveScreen() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row {
+            Row (verticalAlignment = Alignment.CenterVertically){
                 Icon(
                     painter = painterResource(R.drawable.msg_ic),
                     contentDescription = "message icon",

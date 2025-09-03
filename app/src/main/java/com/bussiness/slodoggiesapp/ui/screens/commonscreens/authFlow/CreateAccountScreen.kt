@@ -1,62 +1,62 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.VerificationType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.PhoneNumberInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.UserNameInputField
+import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
 import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
+import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.SignUpViewModel
 
 @Composable
-fun SignUpScreen(navController: NavHostController) {
-
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var cnfPassword by remember { mutableStateOf("") }
+fun SignUpScreen(
+    navController: NavHostController,
+    viewModel: SignUpViewModel = hiltViewModel()
+) {
+    val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -64,7 +64,8 @@ fun SignUpScreen(navController: NavHostController) {
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
-        // Main content centered
+        AuthBackButton(navController, modifier = Modifier.align(Alignment.TopStart))
+
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -76,7 +77,7 @@ fun SignUpScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Create your account",
+                text = stringResource(R.string.Create_your_account),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 18.sp
@@ -86,43 +87,60 @@ fun SignUpScreen(navController: NavHostController) {
                 color = Color.Black
             )
 
-            Spacer(modifier = Modifier.height(12.dp))
+            FormHeadingText(stringResource(R.string.username), modifier = Modifier.align(Alignment.Start))
+            Spacer(modifier = Modifier.height(5.dp))
+            UserNameInputField(
+                input = state.userName,
+                placeholder = stringResource(R.string.enter_username),
+                onValueChange = { viewModel.onUserNameChange(it) }
+            )
 
-            FormHeadingText("Email", modifier = Modifier.align(Alignment.Start))
+            Spacer(modifier = Modifier.height(15.dp))
 
-            Spacer(modifier = Modifier.height(10.dp))
-
-            EmailInputField(email, onValueChange = { email = it })
+            FormHeadingText(stringResource(R.string.email_and_phone), modifier = Modifier.align(Alignment.Start))
+            Spacer(modifier = Modifier.height(5.dp))
+            EmailInputField(
+                email = state.email,
+                onValueChange = { viewModel.onEmailChange(it) }
+            )
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Password",modifier = Modifier.align(Alignment.Start))
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            PasswordInput(password, onPasswordChange = { password = it })
+            FormHeadingText(stringResource(R.string.password), modifier = Modifier.align(Alignment.Start))
+            Spacer(modifier = Modifier.height(5.dp))
+            PasswordInput(
+                password = state.password,
+                onPasswordChange = { viewModel.onPasswordChange(it) }
+            )
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Confirm Password",modifier = Modifier.align(Alignment.Start))
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            PasswordInput(cnfPassword, onPasswordChange = { cnfPassword = it })
+            FormHeadingText(stringResource(R.string.confirm_password), modifier = Modifier.align(Alignment.Start))
+            Spacer(modifier = Modifier.height(5.dp))
+            PasswordInput(
+                password = state.confirmPassword,
+                onPasswordChange = { viewModel.onConfirmPasswordChange(it) }
+            )
 
             Spacer(Modifier.height(35.dp))
 
             ContinueButton(
                 onClick = {
-                    navController.navigate("${Routes.VERIFY_OTP}/${VerificationType.PHONE.name}")
+                    viewModel.createAccount(
+                        onSuccess = {
+                            navController.navigate("${Routes.VERIFY_OTP}?type=signUp")
+                        },
+                        onError = { message ->
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 },
-                text = "Create Account"
+                text = stringResource(R.string.create_account)
             )
 
             Spacer(Modifier.height(10.dp))
 
             val annotatedText = buildAnnotatedString {
-
                 pushStyle(
                     SpanStyle(
                         color = TextGrey,
@@ -131,21 +149,20 @@ fun SignUpScreen(navController: NavHostController) {
                         fontFamily = FontFamily(Font(R.font.outfit_medium))
                     )
                 )
-                append("Already have an account? ")
+                append(stringResource(R.string.already_have_account))
                 pop()
 
-                // Create an Account (Primary color)
                 pushStringAnnotation(tag = "LOGIN", annotation = "Login")
                 pushStyle(
                     SpanStyle(
                         color = PrimaryColor,
                         fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium))
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        textDecoration = TextDecoration.Underline
                     )
                 )
-                append("Login")
-                pop()
+                append(stringResource(R.string.login))
                 pop()
             }
 
@@ -157,14 +174,12 @@ fun SignUpScreen(navController: NavHostController) {
                         start = offset,
                         end = offset
                     ).firstOrNull()?.let {
-                        navController.navigate(Routes.LOGIN_SCREEN) // Navigate
+                        navController.navigate(Routes.LOGIN_SCREEN)
                     }
                 }
             )
-
         }
 
-        // Paw icon positioned bottom-end
         Image(
             painter = painterResource(id = R.drawable.paw_ic),
             contentDescription = null,
@@ -175,7 +190,9 @@ fun SignUpScreen(navController: NavHostController) {
                 .wrapContentWidth()
         )
     }
+
 }
+
 
 
 @Preview(showSystemUi = true, showBackground = true)

@@ -27,10 +27,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,10 +41,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DetailText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FilledCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
@@ -56,30 +55,22 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetOwnerDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.viewModel.common.PersonDetailViewModel
 
 @Composable
-fun PersonDetailScreen(navController: NavHostController) {
-    var selectedIndex by remember { mutableStateOf(0) }
+fun PersonDetailScreen(
+    navController: NavHostController,
+    viewModel: PersonDetailViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
 
-    val images = listOf(
-        R.drawable.sample_user,
-        R.drawable.sample_user,
-        R.drawable.sample_user,
-        R.drawable.sample_user,
-    )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
-    val sampleImages = listOf(
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2, isVideo = true),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2)
-    )
-
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-
-        HeadingTextWithIcon(textHeading = "Jimmi", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = uiState.name, onBackClick = { navController.popBackStack() })
 
         HorizontalDivider(
             modifier = Modifier
@@ -100,8 +91,8 @@ fun PersonDetailScreen(navController: NavHostController) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                itemsIndexed(images) { index, imageRes ->
-                    val isSelected = index == selectedIndex
+                itemsIndexed(uiState.profileImages) { index, imageRes ->
+                    val isSelected = index == uiState.selectedImageIndex
 
                     Image(
                         painter = painterResource(id = imageRes),
@@ -114,7 +105,7 @@ fun PersonDetailScreen(navController: NavHostController) {
                                 color = if (isSelected) PrimaryColor else Color(0xFFE5EFF2),
                                 shape = CircleShape
                             )
-                            .clickable { selectedIndex = index }
+                            .clickable { viewModel.selectProfileImage(index) }
                     )
                 }
             }
@@ -132,9 +123,11 @@ fun PersonDetailScreen(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Image(
-                    painter = painterResource(R.drawable.dog_ic),
+                AsyncImage(
+                    model = "painterResource(R.drawable.dog_ic)",
                     contentDescription = "dog image",
+                    placeholder = painterResource(R.drawable.ic_pet_face_iconss),
+                    error = painterResource(R.drawable.ic_pet_face_iconss),
                     modifier = Modifier
                         .size(90.dp)
                         .clip(CircleShape)
@@ -146,7 +139,7 @@ fun PersonDetailScreen(navController: NavHostController) {
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Jimmi",
+                        text = uiState.name,
                         color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         fontSize = 18.sp,
@@ -156,15 +149,15 @@ fun PersonDetailScreen(navController: NavHostController) {
                     Spacer(Modifier.height(6.dp))
 
                     Row {
-                        DetailText("Golden Retriever", Color(0xFFE5EFF2), PrimaryColor)
+                        DetailText(uiState.breed, Color(0xFFE5EFF2), PrimaryColor)
                         Spacer(Modifier.width(6.dp))
-                        DetailText("6 Years Old", Color(0xFFFFF1E8), Color(0xFFFF771C))
+                        DetailText(uiState.age , Color(0xFFFFF1E8), Color(0xFFFF771C))
                     }
 
                     Spacer(Modifier.height(6.dp))
 
                     Text(
-                        text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed.",
+                        text = uiState.bio,
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                         color = Color.Black,
@@ -176,22 +169,21 @@ fun PersonDetailScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row (modifier = Modifier.fillMaxWidth(),
-                Arrangement.SpaceEvenly) {
-
-                ProfileDetail(label = "20", value = "Posts", onDetailClick = {})
-
+            // Stats
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                ProfileDetail(label = uiState.posts, value = "Posts", onDetailClick = {})
                 VerticalDivider(Modifier.width(2.dp).height(44.dp).background(PrimaryColor))
-
-                ProfileDetail(label = "27k", value = "Followers", onDetailClick = {})
-
+                ProfileDetail(label = uiState.followers, value = "Followers", onDetailClick = {})
                 VerticalDivider(Modifier.width(2.dp).height(44.dp).background(PrimaryColor))
-
-                ProfileDetail(label = "219", value = "Following" , onDetailClick =  { })
-
+                ProfileDetail(label = uiState.following, value = "Following", onDetailClick = {})
             }
+
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Follow & Message
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -199,25 +191,21 @@ fun PersonDetailScreen(navController: NavHostController) {
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 FilledCustomButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(35.dp),
+                    modifier = Modifier.weight(1f).height(35.dp),
                     buttonText = "Follow",
-                    onClickFilled = { /* Handle Follow */ },
+                    onClickFilled = { viewModel.follow() },
                     buttonTextSize = 14
                 )
-
                 OutlineCustomButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(35.dp),
+                    modifier = Modifier.weight(1f).height(35.dp),
                     text = "Message",
-                    onClick = { /* Handle Message */ }
+                    onClick = { viewModel.message() }
                 )
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
+            // Pet Owners
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -226,32 +214,24 @@ fun PersonDetailScreen(navController: NavHostController) {
                     .border(1.dp, Color(0xFFE5EFF2), RoundedCornerShape(20.dp))
                     .padding(12.dp)
             ) {
-                PetOwnerDetail(
-                    name = "Justin Bator",
-                    label = "Pet Dad",
-                    imageRes = R.drawable.sample_user,
-                    description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed."
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                HorizontalDivider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(1.dp)
-                        .background(PrimaryColor)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                PetOwnerDetail(
-                    name = "Makenna Bator",
-                    label = "Pet Mom",
-                    imageRes = R.drawable.sample_user,
-                    description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed."
-                )
+                uiState.petOwners.forEachIndexed { i, owner ->
+                    PetOwnerDetail(
+                        name = owner.name,
+                        label = owner.label,
+                        imageRes = owner.imageRes,
+                        description = owner.description
+                    )
+                    if (i < uiState.petOwners.lastIndex) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        HorizontalDivider(
+                            modifier = Modifier.fillMaxWidth().height(1.dp).background(PrimaryColor)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
             }
 
+            // Gallery
             Text(
                 text = "Gallery",
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -262,9 +242,7 @@ fun PersonDetailScreen(navController: NavHostController) {
             )
 
             Spacer(Modifier.height(15.dp))
-
             HorizontalDivider(thickness = 1.dp, color = TextGrey)
-
             Spacer(Modifier.height(15.dp))
 
             LazyVerticalGrid(
@@ -273,10 +251,9 @@ fun PersonDetailScreen(navController: NavHostController) {
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(sampleImages.size) { index ->
-                    GalleryItemCard(item = sampleImages[index])
+                items(uiState.gallery.size) { index ->
+                    GalleryItemCard(item = uiState.gallery[index])
                 }
-
             }
         }
     }

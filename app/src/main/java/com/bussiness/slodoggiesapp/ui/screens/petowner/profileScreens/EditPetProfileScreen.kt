@@ -10,10 +10,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,10 +21,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,66 +38,55 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import coil.compose.rememberImagePainter
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CustomDropdownMenuUpdated
-import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.SettingIconHeader
-import com.bussiness.slodoggiesapp.ui.component.saveBitmapToCache
+import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.petOwner.PetProfileViewModel
 
 @Composable
-fun EditPetProfileScreen(navController: NavController = rememberNavController()) {
+fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfileViewModel = hiltViewModel()) {
 
-    var petName by remember { mutableStateOf("") }
-    var petBreed by remember { mutableStateOf("") }
-    var petAge by remember { mutableStateOf("") }
-    var petBio by remember { mutableStateOf("") }
-    var managedBy by remember { mutableStateOf("Pet Mom") }
-    var showAgeDropdown by remember { mutableStateOf(false) }
-    var showManagedByDropdown by remember { mutableStateOf(false) }
-
-
-    val ageOptions =
-        listOf("Puppy (0-1 year)", "Young (1-3 years)", "Adult (3-7 years)", "Senior (7+ years)")
-    val managedByOptions = listOf("Pet Mom", "Pet Dad", "Family Member", "Caregiver")
-
-    var profileImageUri by remember { mutableStateOf<Uri?>(null) }
-    var showImagePickerDialog by remember { mutableStateOf(false) }
-
+    val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    var selectedAge by remember { mutableStateOf("") }
+    var managedBy by remember { mutableStateOf("") }
 
+    // Gallery launcher
     val launcherGallery = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        profileImageUri = uri
+        viewModel.setImageUri(uri)
     }
 
+    // Camera launcher
     val launcherCamera = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap: Bitmap? ->
-        bitmap?.let {
-            val uri = saveBitmapToCache(context, it)
-            profileImageUri = uri
-        }
+        bitmap?.let { viewModel.saveBitmapAndSetUri(it) }
     }
 
+    // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            launcherCamera.launch(null) // Launch camera if permission granted
+            launcherCamera.launch(null)
         } else {
             Toast.makeText(context, "Camera permission is required", Toast.LENGTH_SHORT).show()
         }
@@ -108,9 +97,7 @@ fun EditPetProfileScreen(navController: NavController = rememberNavController())
             ContextCompat.checkSelfPermission(context, android.Manifest.permission.CAMERA) -> {
                 launcherCamera.launch(null)
             }
-            else -> {
-                permissionLauncher.launch(android.Manifest.permission.CAMERA)
-            }
+            else -> permissionLauncher.launch(android.Manifest.permission.CAMERA)
         }
     }
 
@@ -119,152 +106,113 @@ fun EditPetProfileScreen(navController: NavController = rememberNavController())
             .fillMaxSize()
             .background(Color.White)
     ) {
+        ScreenHeadingText(stringResource(R.string.edit_pet_profile), onBackClick = { navController.popBackStack() }, onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN) })
 
-        SettingIconHeader("Edit Pet Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { /* Handle Setting Click */ })
+        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(14.dp)
+                .padding(horizontal = 14.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header with close button
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "",
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = Color.Black
-                )
-            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Add Photo Section
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier.size(110.dp),
-                    contentAlignment = Alignment.Center
-                ) {
+            // Profile Image
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+                Box(modifier = Modifier.size(110.dp), contentAlignment = Alignment.Center) {
                     Box(
                         modifier = Modifier
                             .size(130.dp)
                             .clip(CircleShape)
-                            .border(width = 3.dp,  color = Color(0xFF949494),shape = CircleShape)
+                            .border(3.dp, Color(0xFF949494), CircleShape)
                     ) {
-                        profileImageUri?.let { uri ->
-                            Image(
-                                painter = rememberImagePainter(uri),
-                                contentDescription = "Pet Photo",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-
-                            )
-                        } ?: Icon(
-                            painter = painterResource(id = R.drawable.ic_black_profile_icon),
-                            contentDescription = "Add Photo",
+                        AsyncImage(
+                            model = uiState.profileImageUri,
+                            contentDescription = "Pet Photo",
+                            contentScale = ContentScale.Crop,
+                            placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
+                            error = painterResource(id = R.drawable.ic_black_profile_icon),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .clip(CircleShape)
-
                         )
                     }
 
-                    // Camera icon to trigger image selection
                     Image(
                         painter = painterResource(id = R.drawable.ic_post_icon),
                         contentDescription = "Add Photo",
                         modifier = Modifier
                             .size(35.dp)
                             .align(Alignment.BottomEnd)
-                            .clickable {
-                                showImagePickerDialog = true
-                            }
+                            .clickable { viewModel.toggleImagePicker(true) }
                     )
                 }
-
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Pet Name Field
+            // Fields
             CustomOutlinedTextField(
-                value = petName,
-                onValueChange = { petName = it },
+                value = uiState.petName,
+                onValueChange = viewModel::onPetNameChange,
                 placeholder = "Enter pet name",
                 label = "Pet Name"
             )
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pet Breed Field
             CustomOutlinedTextField(
-                value = petBreed,
-                onValueChange = { petBreed = it },
+                value = uiState.petBreed,
+                onValueChange = viewModel::onPetBreedChange,
                 placeholder = "Enter Breed",
                 label = "Pet Breed"
             )
-
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pet Age Dropdown
-            CustomDropdownMenuUpdated(
-                value = petAge,
-                onValueChange = { petAge = it },
-                options = ageOptions,
-                label = "Pet Age",
-                placeholder = "Enter pet age",
-                isExpanded = showAgeDropdown,
-                onExpandedChange = { showAgeDropdown = it },
+            FormHeadingText("Pet Age")
+
+            Spacer(Modifier.height(5.dp))
+
+            CustomDropdownBox(
+                label = selectedAge.ifEmpty { "Enter pet age" },
+                items = listOf("0-5 Years", "5-10 Years", "10-20 Years"),
+                selectedItem = selectedAge,
+                onItemSelected = { selectedAge = it }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pet Bio Field
             CustomOutlinedTextField(
-                value = petBio,
-                onValueChange = { petBio = it },
+                value = uiState.petBio,
+                onValueChange = viewModel::onPetBioChange,
                 placeholder = "Enter Bio",
                 label = "Pet Bio"
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Managed By Dropdown
-            CustomDropdownMenuUpdated(
-                value = managedBy,
-                onValueChange = { managedBy = it },
-                options = managedByOptions,
-                label = "Managed By",
-                placeholder = "Select relationship",
-                isExpanded = showManagedByDropdown,
-                onExpandedChange = { showManagedByDropdown = it }
+            FormHeadingText("Managed by")
+
+            Spacer(Modifier.height(5.dp))
+
+            CustomDropdownBox(
+                label = managedBy.ifEmpty { "Pet Mom" },
+                items = listOf("Pet Mom", "Pet Dad"),
+                selectedItem = managedBy,
+                onItemSelected = { managedBy = it }
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Bottom Buttons
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
+            // Save Button
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                 CommonBlueButton(
                     text = "Save Changes",
-                    fontSize = 22.sp,
-                    onClick = {
-                        // navController.navigate(Routes.PET_MAIN_SCREEN)
-                    },
-                    modifier = Modifier.padding(horizontal = 45.dp),
+                    fontSize = 15.sp,
+                    onClick = { viewModel.showConfirmationDialog(true) },
+                    modifier = Modifier.padding(horizontal = 45.dp)
                 )
             }
 
@@ -272,36 +220,54 @@ fun EditPetProfileScreen(navController: NavController = rememberNavController())
         }
     }
 
+    if(uiState.showConfirmationDialog){
+        UpdatedDialogWithExternalClose(onDismiss = { viewModel.showConfirmationDialog(false)
+            viewModel.saveChanges()}, iconResId = R.drawable.ic_sucess_p, text = "Pet Profile Updated!",
+            description = "Your pet information has been saved. Thanks for keeping things up to date!")
+    }
 
-
-    if (showImagePickerDialog) {
+    // Image Picker Dialog
+    if (uiState.showImagePickerDialog) {
         androidx.compose.material.AlertDialog(
-            onDismissRequest = { showImagePickerDialog = false },
+            onDismissRequest = { viewModel.toggleImagePicker(false) },
             title = { Text("Select Option") },
             buttons = {
-                Column(Modifier.padding(16.dp)) {
-                    Text("Camera", Modifier.clickable {
-                        showImagePickerDialog = false
-                        launchCameraWithPermissionCheck()
-                    }.padding(8.dp))
-
-                    Text("Gallery", Modifier.clickable {
-                        showImagePickerDialog = false
-                        launcherGallery.launch("image/*")
-                    }.padding(8.dp))
+                Column(Modifier.padding(16.dp).fillMaxWidth()) {
+                    Text("Camera", Modifier
+                        .clickable {
+                            viewModel.toggleImagePicker(false)
+                            launchCameraWithPermissionCheck()
+                        }.fillMaxWidth()
+                        .padding(8.dp)
+                    )
+                    Text("Gallery", Modifier
+                        .clickable {
+                            viewModel.toggleImagePicker(false)
+                            launcherGallery.launch("image/*")
+                        }.fillMaxWidth()
+                        .padding(8.dp)
+                    )
                 }
             }
         )
     }
 
+    // Navigation
+    if (uiState.navigateToProfile) {
+        LaunchedEffect(Unit) {
+            navController.navigate(Routes.PET_PROFILE_SCREEN)
+            viewModel.resetNavigation()
+        }
+    }
 }
 
 
 @Preview(showBackground = true)
 @Composable
 fun EditPetProfileScreenPreview() {
+    val navController = NavHostController(LocalContext.current)
     MaterialTheme {
-        EditPetProfileScreen()
+        EditPetProfileScreen(navController)
     }
 }
 

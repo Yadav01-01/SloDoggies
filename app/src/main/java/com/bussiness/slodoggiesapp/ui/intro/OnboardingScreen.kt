@@ -42,6 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.OnboardingPage
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import kotlinx.coroutines.launch
 
 val onboardingPages = listOf(
@@ -127,7 +128,7 @@ fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
                     .height(48.dp)
                     .alpha(if (isLastPage) 0f else 1f), // Hide visually, reserve space
                 shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFECEBEB)),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                 enabled = !isLastPage // Disable interaction when invisible
             ) {
                 Text(
@@ -135,7 +136,7 @@ fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = Color(0xFF949494)
+                    color = TextGrey
                 )
             }
 

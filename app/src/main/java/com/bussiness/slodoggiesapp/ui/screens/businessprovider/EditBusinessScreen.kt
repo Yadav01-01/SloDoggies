@@ -16,19 +16,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategoryInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileImageWithUpload
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.CategoryInputField
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.UploadPlaceholder
+import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.EditBusinessViewModel
 
@@ -41,9 +42,9 @@ fun EditBusinessScreen(navController: NavHostController,viewModel: EditBusinessV
     val url by viewModel.url.collectAsState()
     val contact by viewModel.contact.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        TopHeadingText(textHeading = "Edit Business", onBackClick = { navController.popBackStack()})
+        TopHeadingText(textHeading = stringResource(R.string.Edit_Business), onBackClick = { navController.popBackStack()})
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 
@@ -52,12 +53,15 @@ fun EditBusinessScreen(navController: NavHostController,viewModel: EditBusinessV
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
+                .background(Color.White)
         ) {
 
             Spacer(Modifier.height(5.dp))
 
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                ProfileImageWithUpload(imagePainter = painterResource(R.drawable.lady_ic), onUploadClick = { /* Handle Upload Click */ })
+                ProfileImageWithUpload( onPhotoSelected = { uri ->
+                    viewModel.selectImage(uri)
+                })
             }
 
             FormHeadingText("Business name")
@@ -120,7 +124,7 @@ fun EditBusinessScreen(navController: NavHostController,viewModel: EditBusinessV
 
             Spacer(Modifier.height(10.dp))
 
-            UploadPlaceholder()
+            MediaUploadSection()
 
             Spacer(Modifier.height(20.dp))
 

@@ -1,7 +1,5 @@
 package com.bussiness.slodoggiesapp.model.common
 
-import com.bussiness.slodoggiesapp.ui.screens.petowner.MediaItem
-
 sealed class PostItem {
     data class NormalPost(   val user: String,
                              val role: String,

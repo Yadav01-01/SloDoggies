@@ -1,9 +1,12 @@
 package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -51,12 +54,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.PetInfo
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
@@ -70,10 +75,13 @@ import java.io.File
 fun PetInfoDialog(
     title: String,
     onDismiss: () -> Unit = {},
-    onSaveAndContinue: (PetInfo) -> Unit = {}
+    addPet: (PetInfo) -> Unit = {},
+    onContinueClick : () -> Unit ,
+    onProfile : Boolean = false
 ) {
     val viewModel: PetInfoViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    var selectedAge by remember { mutableStateOf("") }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -93,7 +101,7 @@ fun PetInfoDialog(
             // Close button
             Box(Modifier.fillMaxWidth()) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_cross_icon),
+                    painter = painterResource(id = R.drawable.ic_cross_iconx),
                     contentDescription = null,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -132,16 +140,19 @@ fun PetInfoDialog(
                             modifier = Modifier.weight(1f)
                         )
 
-                        Text(
-                            text = stringResource(id = R.string.skip),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = PrimaryColor,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.clickable { onDismiss() }
-                        )
+                        if (!onProfile){
+                            Text(
+                                text = stringResource(id = R.string.skip),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = PrimaryColor,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.clickable { onDismiss() }
+                            )
+                        }
+
                     }
 
 
@@ -165,7 +176,7 @@ fun PetInfoDialog(
                         value = uiState.petName,
                         onValueChange = { viewModel.updatePetName(it) },
                         placeholder = stringResource(R.string.placeholder_pet_name),
-                        label = stringResource(R.string.label_pet_name)
+                        label = stringResource(R.string.label_pet_name),
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -179,14 +190,15 @@ fun PetInfoDialog(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    CustomDropdownMenuUpdated(
-                        value = uiState.petAge,
-                        onValueChange = { viewModel.updatePetAge(it) },
-                        options = viewModel.ageOptions,
-                        label = stringResource(R.string.label_pet_age),
-                        placeholder = stringResource(R.string.placeholder_pet_age),
-                        isExpanded = uiState.showAgeDropdown,
-                        onExpandedChange = { viewModel.toggleAgeDropdown(it) }
+                    FormHeadingText("Pet Age")
+
+                    Spacer(Modifier.height(8.dp))
+
+                    CustomDropdownBox(
+                        label = selectedAge.ifEmpty { "Enter pet age" },
+                        items = listOf("0-5 Years", "5-10 Years", "10-20 Years"),
+                        selectedItem = selectedAge,
+                        onItemSelected = { selectedAge = it }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -205,14 +217,14 @@ fun PetInfoDialog(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         CommonWhiteButton(
-                            text = stringResource(R.string.continue_btn),
-                            onClick = onDismiss,
+                            text = if (onProfile) stringResource(R.string.cancel)  else stringResource(R.string.continue_btn),
+                            onClick = { onContinueClick() },
                             modifier = Modifier.weight(1f)
                         )
                         CommonBlueButton(
                             text = stringResource(R.string.add_pet),
-                            fontSize = 22.sp,
-                            onClick = { onSaveAndContinue(uiState.toPetInfo()) },
+                            fontSize = 16.sp,
+                            onClick = { addPet(uiState.toPetInfo()) },
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -243,6 +255,17 @@ fun AddPhotoSection(
         }
     }
 
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            cameraLauncher.launch(null)
+        } else {
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     // Gallery launcher
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -261,30 +284,31 @@ fun AddPhotoSection(
                 .clickable {
                     showPhotoPickerDialog(
                         context,
-                        onCameraClick = { cameraLauncher.launch(null) },
+                        onCameraClick = {
+                            if (ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.CAMERA
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                cameraLauncher.launch(null)
+                            } else {
+                                permissionLauncher.launch(Manifest.permission.CAMERA)
+                            }
+                        },
                         onGalleryClick = { galleryLauncher.launch("image/*") }
                     )
                 },
             contentAlignment = Alignment.Center
         ) {
-            if (selectedImageUri != null) {
-                AsyncImage(
-                    model = selectedImageUri,
-                    contentDescription = stringResource(R.string.cd_pet_photo),
-                    placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
-                    error = painterResource(id = R.drawable.ic_black_profile_icon),
-                    modifier = Modifier
-                        .size(70.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_black_profile_icon),
-                    contentDescription = stringResource(R.string.cd_pet_photo),
-                    modifier = Modifier.size(70.dp)
-                )
-            }
+            AsyncImage(
+                model = selectedImageUri,
+                contentDescription = stringResource(R.string.cd_pet_photo),
+                placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
+                error = painterResource(id = R.drawable.ic_black_profile_icon),
+                modifier = Modifier
+                    .size(70.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
 
             Image(
                 painter = painterResource(id = R.drawable.ic_post_icon),
@@ -306,6 +330,7 @@ fun AddPhotoSection(
         )
     }
 }
+
 
 fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {
     val file = File(context.cacheDir, "temp_${System.currentTimeMillis()}.jpg")
@@ -338,6 +363,11 @@ fun showPhotoPickerDialog(
 @Composable
 fun PetInfoDialogPreview() {
     MaterialTheme {
-        PetInfoDialog("Tell us about your pet!")
+        PetInfoDialog(
+            "Tell us about your pet!",
+            onDismiss = TODO(),
+            addPet = TODO(),
+            onContinueClick = TODO()
+        )
     }
 }

@@ -34,10 +34,10 @@ class PetInfoViewModel @Inject constructor() : ViewModel() {
     )
     val managedByOptions = listOf("Pet Mom", "Pet Dad", "Family Member", "Caregiver")
 
-    fun updatePetName(name: String) = update { it.copy(petName = name) }
+    fun updatePetName(name: String) = update { it.copy(petName = name.take(24)) }
     fun updatePetBreed(breed: String) = update { it.copy(petBreed = breed) }
     fun updatePetAge(age: String) = update { it.copy(petAge = age) }
-    fun updatePetBio(bio: String) = update { it.copy(petBio = bio) }
+    fun updatePetBio(bio: String) = update { it.copy(petBio = bio.take(150)) }
     fun updateManagedBy(value: String) = update { it.copy(managedBy = value) }
 
     fun toggleAgeDropdown(expanded: Boolean) = update { it.copy(showAgeDropdown = expanded) }

@@ -77,7 +77,12 @@ fun LocationPermissionScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            CommonBlueButton(text = "Turn On", fontSize = 22.sp, onClick = { navController.navigate(Routes.MAIN_SCREEN) })
+            CommonBlueButton(text = "Turn On", fontSize = 18.sp, onClick = {
+                navController.navigate(Routes.MAIN_SCREEN){
+                    popUpTo(Routes.LOGIN_SCREEN) { inclusive = true }
+                    launchSingleTop = true
+                }
+            })
 
             Spacer(modifier = Modifier.height(16.dp))
 

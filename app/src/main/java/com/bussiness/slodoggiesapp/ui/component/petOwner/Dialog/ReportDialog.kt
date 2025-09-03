@@ -13,11 +13,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -53,26 +54,19 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
 fun ReportDialog(
-    onDismiss: () -> Unit = {},
-    onCancel : () -> Unit,
-    onSendReport : () -> Unit
+    title: String,
+    reasons: List<String>,
+    selectedReason: String,
+    message: String,
+    onReasonSelected: (String) -> Unit,
+    onMessageChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onCancel: () -> Unit,
+    onSendReport: () -> Unit
 ) {
-    var selectedReason by remember { mutableStateOf("") }
-    var message by remember { mutableStateOf("") }
-
-    val reportReasons = listOf(
-        "Bullying or unwanted contact",
-        "Violence, hate or exploitation",
-        "False Information",
-        "Scam, fraud or spam"
-    )
-
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
     ) {
         Box(
             modifier = Modifier
@@ -83,149 +77,162 @@ fun ReportDialog(
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Bottom,
+                verticalArrangement = Arrangement.Bottom
             ) {
-                // Close button at top-right
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_cross_icon),
-                        contentDescription = "Close",
-                        modifier = Modifier
-                            .clickable(onClick = onDismiss)
-                            .align(Alignment.TopEnd)
-                            .wrapContentSize()
-                            .clip(CircleShape)
-                            .padding(8.dp)
-                    )
-                }
+                CloseButton(onDismiss)
 
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
                         .fillMaxHeight(0.785f),
-                    shape = RoundedCornerShape(
-                        topStart = 16.dp,
-                        topEnd = 16.dp,
-                        bottomStart = 16.dp,
-                        bottomEnd = 16.dp
-                    ),
+                    shape = RoundedCornerShape(16.dp),
                     color = Color.White
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        // Header
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.report_comment),
-                                fontSize = 20.sp,
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                color = Color.Black,
-                                modifier = Modifier.align(Alignment.CenterStart)
-                            )
-                        }
-
-                        Divider(
-                            color = Color(0xFF258694),
-                            thickness = 1.dp
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        DialogHeader(title)
+                        Divider(color = PrimaryColor, thickness = 1.dp)
+                        DialogContent(
+                            reasons = reasons,
+                            selectedReason = selectedReason,
+                            onReasonSelected = onReasonSelected,
+                            message = message,
+                            onMessageChange = onMessageChange,
+                            onCancel = onCancel,
+                            onSendReport = onSendReport
                         )
-
-                        // Content
-                        Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp)
-                        ) {
-                            // Question
-                            Text(
-                                text = stringResource(R.string.Why_are_you_reporting_this_comment),
-                                fontSize = 14.sp,
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                fontWeight = FontWeight.Medium,
-                                color = Color.Black,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-
-                            // Report reasons
-                            reportReasons.forEach { reason ->
-                                ReportReasonOption(
-                                    text = reason,
-                                    isSelected = selectedReason == reason,
-                                    onClick = { selectedReason = reason }
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            // Message section
-                            Text(
-                                text = stringResource(R.string.message_optional),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Color.Black,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-
-                            // Text field
-                            OutlinedTextField(
-                                value = message,
-                                onValueChange = { message = it },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(90.dp),
-                                placeholder = {
-                                    Text(
-                                        text = stringResource(R.string.Write_something_here),
-                                        color = TextGrey,
-                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                        fontSize = 15.sp
-                                    )
-                                },
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = Color(0xFF258694),
-                                    unfocusedBorderColor = TextGrey
-                                ),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            // Buttons
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                CommonWhiteButton(
-                                    text = stringResource(R.string.cancel),
-                                    onClick = {
-                                        onCancel()
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                )
-                                CommonBlueButton(
-                                    text = stringResource(R.string.send_report),
-                                    fontSize = 16.sp,
-                                    onClick = {
-                                      onSendReport()
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                )
-                            }
-                        }
                     }
                 }
             }
         }
     }
 }
+
+@Composable
+private fun CloseButton(onDismiss: () -> Unit) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_cross_iconx),
+            contentDescription = "Close",
+            modifier = Modifier
+                .clickable(onClick = onDismiss)
+                .align(Alignment.TopEnd)
+                .clip(CircleShape)
+                .padding(8.dp)
+        )
+    }
+}
+
+@Composable
+private fun DialogHeader(title: String = "Report Comment") {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = title,
+            fontSize = 20.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            color = Color.Black,
+            modifier = Modifier.align(Alignment.CenterStart)
+        )
+    }
+}
+
+@Composable
+private fun DialogContent(
+    reasons: List<String>,
+    selectedReason: String,
+    onReasonSelected: (String) -> Unit,
+    message: String,
+    onMessageChange: (String) -> Unit,
+    onCancel: () -> Unit,
+    onSendReport: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.Why_are_you_reporting_this_comment),
+            fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f), // Makes list scrollable without pushing buttons
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(reasons) { reason ->
+                ReportReasonOption(
+                    text = reason,
+                    isSelected = selectedReason == reason,
+                    onClick = { onReasonSelected(reason) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = stringResource(R.string.message_optional),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color.Black,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        OutlinedTextField(
+            value = message,
+            onValueChange ={ onMessageChange(it) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 90.dp),
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.Write_something_here),
+                    color = TextGrey,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontSize = 15.sp
+                )
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = PrimaryColor,
+                unfocusedBorderColor = TextGrey
+            ),
+            shape = RoundedCornerShape(8.dp),
+            singleLine = false,
+            maxLines = 4
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            CommonWhiteButton(
+                text = stringResource(R.string.cancel),
+                onClick = onCancel,
+                modifier = Modifier.weight(1f),
+            )
+            CommonBlueButton(
+                text = stringResource(R.string.send_report),
+                fontSize = 16.sp,
+                onClick = onSendReport,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+
 
 @Composable
 fun ReportReasonOption(
@@ -242,9 +249,8 @@ fun ReportReasonOption(
             .clickable { onClick() }
             .background(
                 color = if (isSelected) PrimaryColor else Color.Transparent,
-                shape = RoundedCornerShape(8.dp)
             )
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 0.dp, vertical = 5.dp)
     )
 }
 
@@ -255,6 +261,12 @@ fun ReportCommentDialogPreview() {
     ReportDialog(
         onDismiss = { showReportDialog = false },
         onCancel = { showReportDialog = false },
-        onSendReport = { showReportDialog = false }
+        onSendReport = { showReportDialog = false },
+        reasons = listOf("Spam", "Harassment", "Hateful Content"),
+        selectedReason = "",
+        message = "",
+        onReasonSelected = { /* Handle reason selection */ },
+        onMessageChange = { /* Handle message change */ },
+        title = "Report Comment"
     )
 }

@@ -37,22 +37,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.common.MediaItem
+import com.bussiness.slodoggiesapp.model.common.MediaType
 import com.bussiness.slodoggiesapp.model.common.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
-import com.bussiness.slodoggiesapp.ui.screens.petowner.MediaItem
-import com.bussiness.slodoggiesapp.ui.screens.petowner.MediaType
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
-fun SponsoredPostItem(post: PostItem.SponsoredPost) {
+fun SponsoredPostItem(post: PostItem.SponsoredPost,onReportClick: () -> Unit,onShareClick: () -> Unit) {
 
     Card(
         modifier = Modifier
@@ -63,17 +65,16 @@ fun SponsoredPostItem(post: PostItem.SponsoredPost) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            PostHeader(user = post.user, time = post.time)
+            PostHeader(user = post.user, time = post.time, onReportClick = { onReportClick()})
             PostCaption(caption = post.caption, description = post.description)
             PostMedia(mediaList = post.mediaList)
-            PostActions(likes = post.likes, comments = post.comments, shares = post.shares)
+            PostActions(likes = post.likes, comments = post.comments, shares = post.shares,onShareClick = onShareClick)
         }
     }
-
 }
 
 @Composable
-private fun PostHeader(user: String, time: String) {
+private fun PostHeader(user: String, time: String, onReportClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,11 +83,13 @@ private fun PostHeader(user: String, time: String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Image(
-                painter = painterResource(id = R.drawable.dummy_person_image1),
+            AsyncImage(
+                model = "painterResource(id = R.drawable.dummy_person_image1)",
+                placeholder = painterResource(R.drawable.ic_person_icon),
+                error =  painterResource(R.drawable.ic_person_icon),
                 contentDescription = "Profile",
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(35.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
@@ -111,11 +114,10 @@ private fun PostHeader(user: String, time: String) {
             }
         }
 
-        IconButton(onClick = { /* TODO */ }) {
-            Icon(Icons.Default.MoreVert, contentDescription = "More", tint = Color.Black)
-        }
+        PostOptionsMenu(onReportClick = onReportClick)
     }
 }
+
 
 @Composable
 private fun PostCaption(caption: String, description: String) {
@@ -177,9 +179,8 @@ private fun PostMedia(mediaList: List<MediaItem>) {
 
 
 @Composable
-private fun PostActions(likes: Int, comments: Int, shares: Int) {
+private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit) {
     var isLiked by remember { mutableStateOf(false) }
-    var isBookmarked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
 
     Row(
@@ -203,36 +204,21 @@ private fun PostActions(likes: Int, comments: Int, shares: Int) {
             IconTextButton(
                 iconRes = R.drawable.ic_chat_bubble_icon,
                 text = comments.toString(),
-                onClick = { showCommentsDialog = true }
+                onClick = { showCommentsDialog = true },
+
             )
 
             Spacer(modifier = Modifier.width(20.dp))
 
             // Share
             IconTextButton(
+                modifier = Modifier.clickable { onShareClick() },
                 iconRes = R.drawable.ic_share_icons,
-                text = shares.toString()
-            )
-        }
-
-        // Bookmark
-        IconButton(
-            onClick = { isBookmarked = !isBookmarked },
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(
-                painter = painterResource(
-                    id = if (isBookmarked) R.drawable.filled_bm else R.drawable.ic_bookmark_icon
-                ),
-                contentDescription = "Bookmark",
-                modifier = Modifier.size(24.dp),
-                tint = Color.Unspecified
+                text = shares.toString(),
             )
         }
     }
     if (showCommentsDialog) {
-
-
         val sampleComments = listOf(
             Comment(
                 id = "1",
@@ -276,15 +262,17 @@ private fun PostActions(likes: Int, comments: Int, shares: Int) {
 
 @Composable
 private fun IconTextButton(
+    modifier: Modifier = Modifier,
     @DrawableRes iconRes: Int,
     text: String,
     tint: Color = Color.Black,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
+        modifier = modifier
+            .then(if (onClick != null) Modifier else Modifier)
     ) {
         Icon(
             painter = painterResource(id = iconRes),
@@ -318,6 +306,6 @@ fun SponsoredPostPreview() {
     )
 
     Column(modifier = Modifier.background(Color(0xFFF5F5F5)).fillMaxSize()) {
-        SponsoredPostItem(post = dummyPost)
+        SponsoredPostItem(post = dummyPost, onReportClick = { }, onShareClick = { })
     }
 }

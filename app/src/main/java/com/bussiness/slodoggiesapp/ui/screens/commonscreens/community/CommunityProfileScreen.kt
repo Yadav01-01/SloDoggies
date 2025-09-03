@@ -1,8 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.community
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -15,19 +13,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.Participants
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.common.CommunityParticipantsText
 import com.bussiness.slodoggiesapp.ui.component.common.CommunityProfileSection
@@ -36,14 +34,18 @@ import com.bussiness.slodoggiesapp.ui.dialog.BottomDialogWrapper
 import com.bussiness.slodoggiesapp.ui.dialog.EditCommunityName
 import com.bussiness.slodoggiesapp.ui.dialog.RemoveParticipantDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityProfileViewModel
 
 @Composable
-fun CommunityProfileScreen(navController: NavHostController) {
-
-    var menuDialog by remember { mutableStateOf(false) }
-    var showEditNameDialog by remember { mutableStateOf(false) }
-    var communityName by remember { mutableStateOf("") }
-    var removeDialog by remember { mutableStateOf(false) }
+fun CommunityProfileScreen(
+    navController: NavHostController,
+    viewModel: CommunityProfileViewModel = hiltViewModel()
+) {
+    val communityName by viewModel.communityName.collectAsState()
+    val participants by viewModel.participants.collectAsState()
+    val menuDialog by viewModel.menuDialog.collectAsState()
+    val showEditNameDialog by viewModel.showEditNameDialog.collectAsState()
+    val removeDialog by viewModel.removeDialog.collectAsState()
 
     Column(
         modifier = Modifier
@@ -51,84 +53,71 @@ fun CommunityProfileScreen(navController: NavHostController) {
             .background(Color.White)
             .padding(15.dp)
     ) {
-        Icon(
-            imageVector = Icons.Default.ArrowBack,
-            contentDescription = null,
-            tint = PrimaryColor,
-            modifier = Modifier
-                .size(24.dp)
-                .clickable { navController.popBackStack() }
-        )
+        // Back Button
+        IconButton(onClick = { navController.popBackStack() }) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = null,
+                tint = PrimaryColor,
+                modifier = Modifier.size(24.dp)
+            )
+        }
 
+        // Profile Section
         CommunityProfileSection(
-            communityName = "Event Community 1",
-            onEditClick = { showEditNameDialog = true },
+            communityName = communityName,
+            onEditClick = { viewModel.toggleEditNameDialog(true) },
             image = "https://picsum.photos/200/300"
         )
 
         Spacer(Modifier.height(18.dp))
 
-        CommunityParticipantsText(onAddIconClick = { navController.navigate(Routes.ADD_PARTICIPANTS_SCREEN) })
+        // Participants Header
+        CommunityParticipantsText(
+            onAddIconClick = { navController.navigate(Routes.ADD_PARTICIPANTS_SCREEN) }
+        )
 
-        LazyColumn(
-            contentPadding = PaddingValues(vertical = 0.dp)
-        ) {
-            items(participantsList) { participant ->
-                ParticipantsItem(participants = participant, onMenuClick = { menuDialog = true })
+        // Participants List
+        LazyColumn(contentPadding = PaddingValues(vertical = 0.dp)) {
+            items(participants) { participant ->
+                ParticipantsItem(
+                    participants = participant,
+                    onMenuClick = { viewModel.toggleMenuDialog(true) }
+                )
             }
         }
 
-
+        // Menu Dialog
         if (menuDialog) {
             BottomDialogWrapper(
-                onDismissRequest = { menuDialog = false },
-                onRemoveUserClick = { removeDialog = true },
-                onViewProfileClick = {
-                    // Your logic
-                }
+                onDismissRequest = { viewModel.toggleMenuDialog(false) },
+                onRemoveUserClick = { viewModel.toggleRemoveDialog(true) },
+                onViewProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) }
             )
         }
 
+        // Edit Name Dialog
         if (showEditNameDialog) {
             EditCommunityName(
                 communityName = communityName,
-                onDismiss = { showEditNameDialog = false },
-                onClickSubmit = {
-                    // Do something with communityName
-                    showEditNameDialog = false
-                },
-                onNameChange = { communityName = it }
+                onDismiss = { viewModel.toggleEditNameDialog(false) },
+                onClickSubmit = { viewModel.toggleEditNameDialog(false) },
+                onNameChange = { viewModel.updateCommunityName(it) }
             )
         }
 
+        // Remove Participant Dialog
         if (removeDialog) {
             RemoveParticipantDialog(
-                onDismiss = { removeDialog = false },
-                onClickRemove = {
-                    // Your logic
-                },
+                onDismiss = { viewModel.toggleRemoveDialog(false) },
+                onClickRemove = { participants.toMutableList().removeAt(0) },
                 iconResId = R.drawable.remove_ic_user,
-                text = "Are you sure?",
+                text = stringResource(R.string.are_you_sure),
                 description = "You want to remove Lydia Vaccaro?"
             )
         }
-
-
     }
 }
-
-
-val participantsList = listOf(
-    Participants(R.drawable.lady_dm, "Lydia Vaccaro"),
-    Participants(R.drawable.lady_dm, "Anika Torff"),
-    Participants(R.drawable.lady_dm, "Zain Dorwart"),
-    Participants(R.drawable.lady_ic, "Lydia Vaccaro"),
-    Participants(R.drawable.lady_dm, "Kierra Westervelt"),
-    Participants(R.drawable.lady_dm, "Ryan Dias"),
-    Participants(R.drawable.lady_ic, "Lydia Vaccaro"),
-    Participants(R.drawable.lady_dm, "Ryan Dias"),
-    Participants(R.drawable.lady_dm, "Kierra Westervelt"),
-)
 
 
 @Preview

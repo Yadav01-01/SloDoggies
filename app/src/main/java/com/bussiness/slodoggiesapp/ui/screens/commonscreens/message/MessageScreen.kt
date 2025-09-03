@@ -16,14 +16,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchBar
 import com.bussiness.slodoggiesapp.ui.component.common.MessageItem
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.MessageViewModel
 
 @Composable
@@ -31,6 +34,7 @@ fun MessageScreen(navController: NavHostController, viewModel: MessageViewModel 
 
     val allMessages by viewModel.messages.collectAsState()
     val query by viewModel.query.collectAsState()
+    val sessionManager = SessionManager.getInstance(LocalContext.current)
     // Filtered list based on search query
     val filteredMessages = allMessages.filter {
         it.username.contains(query, ignoreCase = true) || it.description.contains(query, ignoreCase = true)
@@ -52,8 +56,10 @@ fun MessageScreen(navController: NavHostController, viewModel: MessageViewModel 
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             item {
-                SearchBar(query = query, onQueryChange = { viewModel.updateQuery(it) }, placeholder = "Search")
-                Spacer(Modifier.height(10.dp))
+                if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER){
+                    SearchBar(query = query, onQueryChange = { viewModel.updateQuery(it) }, placeholder = "Search")
+                    Spacer(Modifier.height(10.dp))
+                }
             }
 
             items(filteredMessages) { message ->

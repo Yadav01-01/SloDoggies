@@ -8,6 +8,6 @@ data class Event(
     val dateTime: String,
     val duration: String,
     val location: String,
-    val buttonText: String
+    val buttonText: String? = null
 )
 

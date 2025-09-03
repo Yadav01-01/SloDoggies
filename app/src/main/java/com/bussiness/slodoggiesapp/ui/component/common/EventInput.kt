@@ -40,6 +40,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 @Composable
 fun EventCard(
     event: Event,
+    selectedOption: String,
     onButtonClick: (Event) -> Unit
 ) {
     Card(
@@ -160,7 +161,8 @@ fun EventCard(
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
-                    Text(text = event.buttonText, color = Color.White,fontWeight = FontWeight.Medium,
+                    Text(text = if (selectedOption == "My Events") "View Community Chats" else "Join Community Chats"
+                        , color = Color.White,fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         fontSize = 14.sp)
                 }
@@ -180,7 +182,6 @@ fun PreviewEventCard() {
         dateTime = "May 25, 4:00 PM",
         duration = "30 Mins.",
         location = "San Luis Obispo County",
-        buttonText = "Community Chats"
     )
-    EventCard(event = sampleEvent, onButtonClick = {})
+    EventCard(event = sampleEvent, selectedOption = "My Events", onButtonClick = {})
 }

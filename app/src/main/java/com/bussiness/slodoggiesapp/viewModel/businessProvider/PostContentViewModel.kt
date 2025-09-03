@@ -1,6 +1,9 @@
 package com.bussiness.slodoggiesapp.viewModel.businessProvider
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,14 +71,6 @@ class PostContentViewModel @Inject constructor() : ViewModel() {
         _eventPostalCode.value = newEventPostalCode
     }
 
-    fun updateRsvpRequired(newRsvpRequired: Boolean) {
-        _rsvpRequired.value = newRsvpRequired
-    }
-
-    fun updateEnableComments(newEnableComments: Boolean) {
-        _enableComments.value = newEnableComments
-    }
-
     //promotion Screen
 
     private val _title = MutableStateFlow("")
@@ -106,19 +101,29 @@ class PostContentViewModel @Inject constructor() : ViewModel() {
         _termsAndConditions.value = newTermsAndConditions
     }
 
+    ///////
+    var selectedPet by mutableStateOf<Person?>(null)
+        private set
 
+    var allPets by mutableStateOf(listOf<Person>())
+        private set
 
-    private val _selectedPeople = mutableStateListOf<Person>()
-    val selectedPeople: List<Person> get() = _selectedPeople
+    var isSelecting by mutableStateOf(false)
 
-    fun addPerson(person: Person) {
-        _selectedPeople.add(person)
+    fun startSelecting() {
+        isSelecting = true
     }
 
-    fun removePerson(person: Person) {
-        _selectedPeople.remove(person)
+    fun selectPerson(pet: Person) {
+        selectedPet = pet
+        isSelecting = false
+    }
+
+    fun setPets(pets: List<Person>) {
+        allPets = pets
     }
 
 
 
 }
+

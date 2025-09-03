@@ -1,5 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.post
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,19 +25,23 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ChoosePostTypeButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
+import com.bussiness.slodoggiesapp.ui.dialog.PostSuccessDialog
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.EventScreenContent
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.PostScreenContent
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.PromotionScreenContent
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PostScreen(navController: NavHostController) {
 
     var selected by remember { mutableStateOf("Post") }
+    var successDialog by remember { mutableStateOf(false) }
+    var eventSuccess by remember { mutableStateOf(false) }
 
     Column ( modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        HeadingTextWithIcon(textHeading = "New post", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = if (selected == "Post") "New post" else if (selected == "Event") "New Event" else "New Promotion ", onBackClick = { navController.popBackStack() })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 
@@ -47,7 +53,7 @@ fun PostScreen(navController: NavHostController) {
                 .padding(vertical = 10.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            listOf("Post", "Event", "Promotion").forEach { label ->
+            listOf("Post", "Event", "Ads.").forEach { label ->
                 ChoosePostTypeButton(
                     modifier = Modifier.weight(1f),
                     text = label,
@@ -58,9 +64,21 @@ fun PostScreen(navController: NavHostController) {
         }
 
         when (selected) {
-            "Post" -> PostScreenContent(onClickLocation = { }, onClickPost = { })
-            "Event" -> EventScreenContent( onClickLocation = { },onClickSubmit = { })
-            "Promotion" -> PromotionScreenContent(onClickLocation = { },onClickSave = { })
+            "Post" -> PostScreenContent(onClickLocation = { }, onClickPost = { successDialog = true })
+            "Event" -> EventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
+            "Ads." -> PromotionScreenContent(onClickLocation = { },onClickSave = { })
+        }
+        if (successDialog){
+            PostSuccessDialog(
+                onDismiss = { successDialog = false },
+                text =  "Post Created!"
+            )
+        }
+        if (eventSuccess){
+            PostSuccessDialog(
+                onDismiss = { eventSuccess = false },
+                text =  "Event Created!"
+            )
         }
 
     }
@@ -69,6 +87,7 @@ fun PostScreen(navController: NavHostController) {
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun NewPostScreenPreview() {

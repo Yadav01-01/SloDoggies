@@ -48,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -66,6 +67,7 @@ private val BorderGray = Color(0xFF949494)
 @Composable
 fun DateTimePickerScreen(
     modifier: Modifier = Modifier,
+    textHeading : String,
     onDateTimeSelected: (LocalDateTime) -> Unit = {}
 ) {
     val isCalendarVisible = remember { mutableStateOf(false) }
@@ -98,11 +100,14 @@ fun DateTimePickerScreen(
     ) {
         // Header
         Text(
-            text = "Event Date And Time",
-            fontSize = 14.sp,
+            text = textHeading,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_medium))
+            ),
             color = Color.Black,
-            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 10.dp)
         )
 
         // Selected Date and Time Display
@@ -118,7 +123,7 @@ fun DateTimePickerScreen(
             placeholder = {
                 Text(
                     "Select Date And Time",
-                    color = Color(0xFFAEAEAE),
+                    color = TextGrey,
                     fontSize = 13.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular))
                 )
@@ -141,17 +146,19 @@ fun DateTimePickerScreen(
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp).clickable{
+                .clickable{
                     isCalendarVisible.value = true
                 }
         )
 
         // Calendar Section
         if (isCalendarVisible.value) {
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
+                    .border(width = 1.dp, color = TextGrey, shape = RoundedCornerShape(12.dp))
                     .background(Color.White)
                     .padding(13.dp)
             ) {
@@ -172,8 +179,10 @@ fun DateTimePickerScreen(
             // Time Selection Section
             Row(
                 modifier = Modifier
-                    .fillMaxWidth().padding(horizontal = 20.dp)
-                    .padding(top = 10.dp),
+                    .fillMaxWidth()
+                    .padding(top = 10.dp)
+                    .border(width = 1.dp, color = TextGrey, shape = RoundedCornerShape(12.dp)),
+
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -504,6 +513,6 @@ private fun generateCalendarWeeks(yearMonth: YearMonth): List<List<LocalDate?>> 
 @Composable
 fun DateTimePickerPreview() {
     MaterialTheme {
-        DateTimePickerScreen()
+        DateTimePickerScreen(textHeading = " Event date and time")
     }
 }

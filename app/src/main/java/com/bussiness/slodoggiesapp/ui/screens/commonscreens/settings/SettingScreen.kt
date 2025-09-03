@@ -33,7 +33,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
-fun SettingsScreen(navController: NavHostController) {
+fun SettingsScreen(navController: NavHostController, authNavController: NavHostController) {
     var isNotificationEnabled by remember { mutableStateOf(true) }
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
@@ -55,7 +55,8 @@ fun SettingsScreen(navController: NavHostController) {
         ) {
             item { SettingsItem(icon = R.drawable.ic_bookmark_icon, title = "Saved", onClick = { navController.navigate(Routes.SAVED_ITEM_SCREEN) }) }
 
-            item { SettingsItem(icon = R.drawable.ic_calendar_outline, title = "My Events", onClick = { navController.navigate(Routes.MY_EVENT_SCREEN) }) }
+            item { SettingsItem(icon = R.drawable.ic_calendar_outline, title = "My Events", onClick = { if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER)
+                navController.navigate(Routes.MY_EVENT_SCREEN) else navController.navigate(Routes.PET_EVENT_SCREEN)}) }
 
             if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
                 item {
@@ -87,7 +88,8 @@ fun SettingsScreen(navController: NavHostController) {
                 iconResId = R.drawable.delete_ic,
                 onClickDelete = {
                     showDeleteDialog = false
-                }
+                },
+                context
             )
         }
         if (showLogoutDialog){
@@ -95,6 +97,8 @@ fun SettingsScreen(navController: NavHostController) {
                 onDismiss = { showLogoutDialog = false },
                 onClickLogout = {
                     showLogoutDialog = false
+                    sessionManager.clearSession()
+                    authNavController.navigate(Routes.JOIN_THE_PACK)
                 }
             )
         }
@@ -104,5 +108,8 @@ fun SettingsScreen(navController: NavHostController) {
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen(navController = NavHostController(LocalContext.current))
+    SettingsScreen(
+        navController = NavHostController(LocalContext.current),
+        authNavController = NavHostController(LocalContext.current)
+    )
 }

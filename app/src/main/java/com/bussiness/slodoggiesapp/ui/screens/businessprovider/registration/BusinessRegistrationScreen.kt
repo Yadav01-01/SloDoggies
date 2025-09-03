@@ -1,9 +1,15 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration
 
 import android.annotation.SuppressLint
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +21,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -33,12 +41,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -50,13 +62,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategoryInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
+import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.BusinessRegistrationViewModel
 import com.google.accompanist.flowlayout.FlowRow
@@ -73,7 +88,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        TopHeadingText(textHeading = "Business Registration", onBackClick = { navController.popBackStack()})
+        TopHeadingText(textHeading = stringResource(R.string.business_registration), onBackClick = { navController.popBackStack()})
 
         TopStepProgressBar(currentStep = 1, totalSteps = 3, modifier = Modifier)
 
@@ -86,31 +101,31 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             Spacer(Modifier.height(5.dp))
 
-            FormHeadingText("Business name")
+            FormHeadingText(stringResource(R.string.business_name))
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = name, onValueChange = { viewModel.updateName(it)}, placeholder = "Enter name")
+            InputField(input = name, onValueChange = { viewModel.updateName(it)}, placeholder = stringResource(R.string.enter_name))
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Email")
+            FormHeadingText(stringResource(R.string.email))
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = email, onValueChange = { viewModel.updateEmail(it)}, placeholder = "Enter Email")
+            InputField(input = email, onValueChange = { viewModel.updateEmail(it)}, placeholder = stringResource(R.string.enter_email))
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Upload Business Logo")
+            FormHeadingText(stringResource(R.string.Upload_business_logo))
 
             Spacer(Modifier.height(10.dp))
 
-            UploadPlaceholder()
+            MediaUploadSection()
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Category")
+            FormHeadingText(stringResource(R.string.Category))
 
             Spacer(Modifier.height(10.dp))
 
@@ -118,15 +133,15 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Location")
+            FormHeadingText(stringResource(R.string.location))
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = location, onValueChange = { viewModel.updateLocation(it)}, placeholder = "Enter Location")
+            InputField(input = location, onValueChange = { viewModel.updateLocation(it)}, placeholder = stringResource(R.string.Enter_Location))
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Website")
+            FormHeadingText(stringResource(R.string.website_))
 
             Spacer(Modifier.height(10.dp))
 
@@ -134,7 +149,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Contact Number")
+            FormHeadingText(stringResource(R.string.contact_number))
 
             Spacer(Modifier.height(10.dp))
 
@@ -142,7 +157,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Available Days/Hours")
+            FormHeadingText(stringResource(R.string.available_days))
 
             Spacer(Modifier.height(10.dp))
 
@@ -150,177 +165,21 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Upload Verification Docs. (Optional)")
+            FormHeadingText(stringResource(R.string.Upload_verification_docs))
 
             Spacer(Modifier.height(10.dp))
 
-            UploadPlaceholder()
+            MediaUploadSection()
 
             Spacer(Modifier.height(20.dp))
 
-            SubmitButton(modifier = Modifier,buttonText = "Submit", onClickButton = { navController.navigate(Routes.ADD_SERVICE) }, buttonTextSize = 15)
+            SubmitButton(modifier = Modifier,buttonText = stringResource(R.string.submit), onClickButton = { navController.navigate(Routes.ADD_SERVICE) }, buttonTextSize = 15)
 
         }
     }
 }
 
-@Composable
-fun UploadPlaceholder() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(85.dp)
-            .background(color = Color(0xFFE5EFF2))
-            .dashedBorder(
-                strokeWidth = 1.dp,
-                color = PrimaryColor,
-                cornerRadius = 10.dp,
-                dashLength = 10.dp,
-                gapLength = 8.dp
-            )
-            .clickable { /* Open file picker */ },
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-           Icon(painter = painterResource(R.drawable.upload_ic), contentDescription = "upload",Modifier.wrapContentSize().clickable {  }
-           , tint = PrimaryColor)
-            Spacer(Modifier.height(3.dp))
-            Text("Upload Here",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp
-                ),
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                color = PrimaryColor)
-        }
-    }
-}
 
-@SuppressLint("SuspiciousModifierThen")
-fun Modifier.dashedBorder(
-    strokeWidth: Dp,
-    color: Color,
-    cornerRadius: Dp = 0.dp,
-    dashLength: Dp = 10.dp,
-    gapLength: Dp = 5.dp
-): Modifier = this.then(
-    drawBehind {
-        val stroke = Stroke(
-            width = strokeWidth.toPx(),
-            pathEffect = PathEffect.dashPathEffect(
-                floatArrayOf(dashLength.toPx(), gapLength.toPx()), 0f
-            )
-        )
-
-        val corner = CornerRadius(cornerRadius.toPx(), cornerRadius.toPx())
-        drawRoundRect(
-            color = color,
-            style = stroke,
-            cornerRadius = corner,
-            size = size
-        )
-    }
-)
-
-@Composable
-fun CategoryInputField() {
-    var text by remember { mutableStateOf("") }
-    val categories = remember { mutableStateListOf<String>() }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        // Input Box
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .background(Color.White, shape = RoundedCornerShape(8.dp))
-                .border(1.dp, Color(0xFFAEAEAE), shape = RoundedCornerShape(8.dp)),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp)
-            ) {
-                BasicTextField(
-                    value = text,
-                    onValueChange = { text = it },
-                    singleLine = true,
-                    textStyle = TextStyle(
-                        color = Color.Black,
-                        fontSize = 15.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular))
-                    ),
-                    modifier = Modifier.weight(1f)
-                ) { innerTextField ->
-                    if (text.isEmpty()) {
-                        Text(
-                            text = "Category name",
-                            color = Color(0xFFAEAEAE),
-                            fontSize = 15.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_regular))
-                        )
-                    }
-                    innerTextField()
-                }
-
-                // Check Icon to add
-                if (text.isNotBlank()) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.check_ic),
-                        contentDescription = "Add Category",
-                        tint = Color(0xFF00B4D8),
-                        modifier = Modifier
-                            .size(18.dp)
-                            .clickable {
-                                if (text.isNotBlank() && !categories.contains(text.trim())) {
-                                    categories.add(text.trim())
-                                    text = ""
-                                }
-                            }
-                    )
-                }
-            }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Category Chips
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            mainAxisSpacing = 8.dp,
-            crossAxisSpacing = 8.dp
-        ) {
-            categories.forEach { category ->
-                Box(
-                    modifier = Modifier
-                        .background(Color(0xFFEAF3F6), RoundedCornerShape(16.dp))
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = category,
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium))
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Remove",
-                            modifier = Modifier
-                                .size(16.dp)
-                                .clickable {
-                                    categories.remove(category)
-                                }
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

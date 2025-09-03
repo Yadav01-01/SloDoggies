@@ -43,17 +43,6 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
     /** Get user login state */
     fun isLoggedIn(): Boolean = preferences.getBoolean(KEY_IS_LOGGED_IN, false)
 
-    /** Save skip login state */
-    fun setSkipLogin(value: Boolean) {
-        preferences.edit {
-            putBoolean(KEY_IS_SKIP_LOGIN, value)
-            if (value) putBoolean(KEY_IS_LOGGED_IN, false)
-        }
-    }
-
-    /** Get skip login state */
-    fun isSkipLogin(): Boolean = preferences.getBoolean(KEY_IS_SKIP_LOGIN, false)
-
     /** Save user type (OWNER or PROFESSIONAL) */
     fun setUserType(userType: UserType) {
         preferences.edit { putString(KEY_USER_TYPE, userType.name) }

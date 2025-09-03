@@ -46,7 +46,7 @@ fun BottomMessageBar(
 ) {
     Box(
         modifier = modifier
-            .fillMaxSize()
+            .wrapContentSize()
     ) {
         Row(
             modifier = Modifier
@@ -113,51 +113,5 @@ fun BottomMessageBar(
                 )
             }
         }
-    }
-}
-
-
-@Composable
-fun ChatBubble(message: ChatMessage) {
-
-    val bubbleShape = if (message.isUser) {
-        RoundedCornerShape(topStart = 10.dp, topEnd = 0.dp, bottomEnd = 10.dp, bottomStart = 10.dp)
-    } else {
-        RoundedCornerShape(topStart = 0.dp, topEnd = 10.dp, bottomEnd = 10.dp, bottomStart = 10.dp)
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = if (message.isUser) Arrangement.End else Arrangement.Start
-    ) {
-        if (!message.isUser) {
-            AsyncImage(
-                model = "",
-                contentDescription = "User Image",
-                modifier = Modifier
-                    .size(45.dp)
-                    .clip(RoundedCornerShape(10.dp))
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .clip(bubbleShape)
-                .background(
-                    color = if (message.isUser) Color(0xFF00BFA6) else Color(0xFFF2F2F2)
-                )
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-                .widthIn(max = 250.dp)
-        ) {
-            Text(
-                text = message.text,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = if (message.isUser) Color.White else Color.Black,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    fontWeight = FontWeight.Normal
-                )
-            )
-        }
-
     }
 }

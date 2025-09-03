@@ -1,5 +1,7 @@
 package com.bussiness.slodoggiesapp.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -10,7 +12,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.bussiness.slodoggiesapp.model.main.VerificationType
 import com.bussiness.slodoggiesapp.ui.intro.OnboardingScreen
 import com.bussiness.slodoggiesapp.ui.intro.SplashScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.AddServiceScreen
@@ -24,11 +25,11 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.JoinThePackScre
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.MainScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.LocationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.NotificationPermissionScreen
-import com.bussiness.slodoggiesapp.ui.screens.petowner.PetHomeScreen
-import com.bussiness.slodoggiesapp.ui.screens.petowner.PetMainScreen
-import com.bussiness.slodoggiesapp.ui.screens.petowner.PetServicesScreen
-import com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
 
+import com.bussiness.slodoggiesapp.ui.screens.petowner.service.PetServicesScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(navController: NavHostController) {
     Box(
@@ -42,18 +43,8 @@ fun NavGraph(navController: NavHostController) {
         ) {
 
             // --- Intro / Auth Screens ---
-            composable(Routes.SPLASH) {
-                SplashScreen(onNavigateToNext = {
-                    navController.navigate(Routes.ONBOARDING) {
-                        popUpTo(Routes.SPLASH) { inclusive = true }
-                    }
-                })
-            }
-
-            composable(Routes.ONBOARDING) {
-                OnboardingScreen(navController, onFinish = { /* TODO: handle finish */ })
-            }
-
+            composable(Routes.SPLASH) { SplashScreen(navController) }
+            composable(Routes.ONBOARDING) { OnboardingScreen(navController, onFinish = { /* TODO: handle finish */ }) }
             composable(Routes.JOIN_THE_PACK) { JoinThePackScreen(navController) }
             composable(Routes.LOGIN_SCREEN) { LoginScreen(navController) }
             composable(Routes.SIGNUP_SCREEN) { SignUpScreen(navController) }
@@ -61,11 +52,11 @@ fun NavGraph(navController: NavHostController) {
             composable(Routes.NEW_PASSWORD_SCREEN) { NewPasswordScreen(navController) }
 
             composable(
-                route = "${Routes.VERIFY_OTP}/{type}",
+                route = "${Routes.VERIFY_OTP}?type={type}",
                 arguments = listOf(navArgument("type") { type = NavType.StringType })
             ) { backStackEntry ->
-                val type = backStackEntry.arguments?.getString("type") ?: "phone"
-                VerifyOTPScreen(navController, type = VerificationType.valueOf(type.uppercase()))
+                val type = backStackEntry.arguments?.getString("type") ?: "default"
+                VerifyOTPScreen(navController, type = type)
             }
 
             // --- Business Provider Screens ---
@@ -76,8 +67,6 @@ fun NavGraph(navController: NavHostController) {
             // --- Pet Owner Screens ---
             composable(Routes.NOTIFICATION_PERMISSION_SCREEN) { NotificationPermissionScreen(navController) }
             composable(Routes.LOCATION_PERMISSION_SCREEN) { LocationPermissionScreen(navController) }
-            composable(Routes.PET_MAIN_SCREEN) { PetMainScreen(navController) }
-            composable(Routes.PET_HOME_SCREEN) { PetHomeScreen(navController) }
             composable(Routes.PET_SERVICES_SCREEN) { PetServicesScreen(navController) }
             composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
         }

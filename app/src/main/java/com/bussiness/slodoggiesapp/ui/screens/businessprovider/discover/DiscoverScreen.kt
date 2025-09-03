@@ -47,6 +47,7 @@ import com.bussiness.slodoggiesapp.ui.dialog.PetPlaceDialog
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.content.ActivityCard
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.content.PetPlacesResults
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.content.ShowPetsNearYou
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.ShareContentDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.DiscoverViewModel
@@ -57,6 +58,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
     val selectedCategory by viewModel.category.collectAsState()
     val petPlaceDialog by viewModel.petPlaceDialog.collectAsState()
     val searchResults by viewModel.searchResults.collectAsState()
+    val shareContentDialog by viewModel.showShareContent.collectAsState()
     val categories = listOf("Pets Near You", "Events", "Pet Places", "Activities")
 
     Column(
@@ -82,8 +84,8 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
         when (selectedCategory) {
             "Pets Near You" -> ShowPetsNearYou(searchResults, navController)
             "Pet Places" -> PetPlacesResults( onItemClick = { viewModel.showPetPlaceDialog()})
-            "Activities" -> ActivityCard()
-            "Events" -> EventsResult()
+            "Activities" -> ActivityCard(onShareClick = { viewModel.showShareContent()})
+            "Events" -> EventsResult(onClickMore = { }, onShareClick = { viewModel.showShareContent() })
             else -> ShowGeneralResults(searchResults, navController)
         }
     }
@@ -93,11 +95,16 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
             onDismiss = { viewModel.dismissPetPlaceDialog() }
         )
     }
+    if (shareContentDialog) {
+        ShareContentDialog {
+            viewModel.dismissShareContent()
+        }
+    }
 }
 
 
 @Composable
-fun EventsResult() {
+fun EventsResult(onClickMore: () -> Unit,onShareClick: () -> Unit) {
 
     val sampleEvents = listOf(
         EventPost(
@@ -115,7 +122,10 @@ fun EventsResult() {
             eventDate = "May 25, 4:00 PM",
             onClickLike = {},
             onClickComment = {},
-            onClickShare = {}
+            onClickShare = {},
+            likes = 120,
+            comments = 20,
+            shares = 10
         ),
         EventPost(
             userName = "Lydia Vaccaro with Wixx",
@@ -132,7 +142,10 @@ fun EventsResult() {
             eventDate = "May 25, 4:00 PM",
             onClickLike = {},
             onClickComment = {},
-            onClickShare = {}
+            onClickShare = {},
+            likes = 120,
+            comments = 20,
+            shares = 10
         ),
         EventPost(
             userName = "Lydia Vaccaro with Wixx",
@@ -149,7 +162,10 @@ fun EventsResult() {
             eventDate = "May 25, 4:00 PM",
             onClickLike = {},
             onClickComment = {},
-            onClickShare = {}
+            onClickShare = {},
+            likes = 120,
+            comments = 20,
+            shares = 10
         ),
         EventPost(
             userName = "Lydia Vaccaro with Wixx",
@@ -166,7 +182,10 @@ fun EventsResult() {
             eventDate = "May 25, 4:00 PM",
             onClickLike = {},
             onClickComment = {},
-            onClickShare = {}
+            onClickShare = {},
+            likes = 120,
+            comments = 20,
+            shares = 10
         ),
 
         )
@@ -175,7 +194,7 @@ fun EventsResult() {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(sampleEvents) { event ->
-            SocialEventCard( event = event )
+            SocialEventCard( event = event , onReportClick = { onClickMore() }, onShareClick = { onShareClick() })
         }
     }
 }

@@ -9,8 +9,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.DateTimePickerScreen
 import java.time.LocalDateTime
 
@@ -32,7 +34,8 @@ fun DateTimePickerDialog(
                     modifier = Modifier
                         .padding(2.dp)
                         .fillMaxWidth(),
-                    onDateTimeSelected = onDateTimeSelected
+                    onDateTimeSelected = onDateTimeSelected,
+                    textHeading = stringResource(R.string.event_sdate)
                 )
             }
         }

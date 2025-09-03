@@ -33,9 +33,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.common.DisplaySupportData
+import com.bussiness.slodoggiesapp.ui.component.common.SupportContactFAQTextCard
 import com.bussiness.slodoggiesapp.ui.component.common.SupportContactTextCard
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -68,9 +70,9 @@ fun HelpAndSupportScreen(navController: NavHostController,viewModel: HelpAndSupp
                     .border(
                         width = 1.dp,
                         color = PrimaryColor,
-                        shape = RoundedCornerShape(20.dp)
+                        shape = RoundedCornerShape(10.dp)
                     )
-                    .clip(RoundedCornerShape(20.dp))
+                    .clip(RoundedCornerShape(10.dp))
                     .background(Color.White)
                     .padding(24.dp)
             ) {
@@ -110,7 +112,7 @@ fun HelpAndSupportScreen(navController: NavHostController,viewModel: HelpAndSupp
             }
             Spacer(modifier = Modifier.height(15.dp))
 
-            SupportContactTextCard(heading = "Need Quick Answers?", subHeading = "Check out our [FAQ section] for common questions about using the app, managing your account, or promoting your pet business.")
+            SupportContactFAQTextCard(heading = "Need Quick Answers?", onFaqClick = { navController.navigate(Routes.FAQ_SCREEN)})
 
             Spacer(modifier = Modifier.height(15.dp))
 

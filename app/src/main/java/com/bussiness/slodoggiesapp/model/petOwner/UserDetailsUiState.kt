@@ -6,5 +6,6 @@ data class UserDetailsUiState(
     val phoneNumber: String = "",
     val email: String = "",
     val isEmailVerified: Boolean = false,
+    val isPhoneVerified: Boolean = false,
     val bio: String = ""
 )

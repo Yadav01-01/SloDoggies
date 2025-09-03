@@ -1,5 +1,7 @@
 package com.bussiness.slodoggiesapp.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -8,17 +10,23 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.EditBusinessScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.HomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.SubscriptionScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.PersonDetailScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.notification.NotificationScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.PostScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.EditProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.FollowerScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.SponsoredAdsScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit.EditAddServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.HomeScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AboutUsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.FAQScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.HelpAndSupportScreen
@@ -27,16 +35,20 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.PrivacyPoli
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SavedItemScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SettingsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.TermsAndConditionsScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.notification.NotificationScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit.EditAddServiceScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.event.EventScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.notification.PetNotificationsScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.PetNewPostScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditPetProfileScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditProfileScreenPet
+import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.PetProfileScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.service.PetServicesScreen
+import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainNavGraph(
     navController: NavHostController,
+    authNavController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -49,12 +61,12 @@ fun MainNavGraph(
         composable(Routes.SERVICES_SCREEN) { ServiceScreen(navController) }
         composable(Routes.PROFILE_SCREEN) { ProfileScreen(navController) }
         composable(Routes.PERSON_DETAIL_SCREEN) { PersonDetailScreen(navController) }
-        composable(Routes.FOLLOWER_SCREEN) { FollowerScreen(navController) }
+//        composable(Routes.FOLLOWER_SCREEN) { FollowerScreen(navController, type) }
         composable(Routes.SPONSORED_ADS_SCREEN) { SponsoredAdsScreen(navController) }
         composable(Routes.EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
         composable(Routes.POST_SCREEN) { PostScreen(navController) }
         composable(Routes.EDIT_BUSINESS_SCREEN) { EditBusinessScreen(navController) }
-        composable(Routes.SETTINGS_SCREEN) { SettingsScreen(navController) }
+        composable(Routes.SETTINGS_SCREEN) { SettingsScreen(navController,authNavController) }
         composable(Routes.SAVED_ITEM_SCREEN) { SavedItemScreen(navController) }
         composable(Routes.SAVED_ITEM_SCREEN) { SavedItemScreen(navController) }
         composable(Routes.ABOUT_US_SCREEN) { AboutUsScreen(navController) }
@@ -70,12 +82,32 @@ fun MainNavGraph(
         composable(Routes.SUBSCRIPTION_SCREEN) { SubscriptionScreen(navController) }
         composable(Routes.COMMUNITY_PROFILE_SCREEN) { CommunityProfileScreen(navController) }
         composable(Routes.ADD_PARTICIPANTS_SCREEN) { AddParticipantsScreen(navController) }
+        composable(Routes.PET_NEW_POST_SCREEN) { PetNewPostScreen(navController) }
+        composable(Routes.PET_SERVICES_SCREEN) { PetServicesScreen(navController) }
+        composable(Routes.PET_PROFILE_SCREEN) { PetProfileScreen(navController) }
+        composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
+        composable(Routes.EDIT_PET_PROFILE_SCREEN) { EditPetProfileScreen(navController) }
+        composable(Routes.PET_EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
+        composable(Routes.PET_ADD_PARTICIPANTS_SCREEN) { AddParticipantsScreen(navController) }
+        composable(Routes.EDIT_PROFILE_SCREEN_PET) { EditProfileScreenPet(navController) }
+        composable(Routes.EDIT_PROFILE_SCREEN_PET) { EditProfileScreenPet(navController) }
+        composable(Routes.PET_NOTIFICATION_SCREEN) { PetNotificationsScreen(navController) }
+        composable(Routes.PET_EVENT_SCREEN) { EventScreen(navController) }
+
         composable(
             route = "${Routes.EDIT_ADD_SERVICE_SCREEN}/{type}",
             arguments = listOf(navArgument("type") { type = NavType.StringType })
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "add"
             EditAddServiceScreen(navController,type)
+        }
+
+        composable(
+            route = "${Routes.FOLLOWER_SCREEN}/{type}",
+            arguments = listOf(navArgument("type") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val type = backStackEntry.arguments?.getString("type") ?: "Follower"
+            FollowerScreen(navController,type)
         }
 
     }

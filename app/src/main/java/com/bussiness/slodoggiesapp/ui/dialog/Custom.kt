@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.dialog
 
-import android.app.Dialog
+import android.content.Context
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -72,7 +74,7 @@ fun CustomToast(message: String) {
 }
 
 @Composable
-fun ProfileUpdatedDialogWithExternalClose(
+fun UpdatedDialogWithExternalClose(
     onDismiss: () -> Unit,
     @DrawableRes iconResId: Int,
     text: String,
@@ -82,7 +84,8 @@ fun ProfileUpdatedDialogWithExternalClose(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(10.dp),
+            contentAlignment = Alignment.Center
         ) {
             val maxWidthPx = maxWidth
 
@@ -95,7 +98,7 @@ fun ProfileUpdatedDialogWithExternalClose(
                 Column(
                     modifier = Modifier
                         .background(Color.White, shape = RoundedCornerShape(12.dp))
-                        .padding(horizontal = 24.dp, vertical = 32.dp)
+                        .padding(horizontal = 10.dp, vertical = 32.dp)
                         .align(Alignment.Center)
                 ) {
                     Icon(
@@ -138,7 +141,7 @@ fun ProfileUpdatedDialogWithExternalClose(
 
                 // External Cross (X) Button
                 Icon(
-                    painter = painterResource(R.drawable.ic_cross_icon),
+                    painter = painterResource(R.drawable.ic_cross_iconx),
                     contentDescription = "Close",
                     tint = Color.Unspecified,
                     modifier = Modifier
@@ -157,7 +160,8 @@ fun ProfileUpdatedDialogWithExternalClose(
 fun DeleteDialog(
     onDismiss: () -> Unit,
     @DrawableRes iconResId: Int,
-    onClickDelete: () -> Unit
+    onClickDelete: () -> Unit,
+    context: Context
 ) {
     var deleteInput by remember { mutableStateOf("") }
 
@@ -200,7 +204,7 @@ fun DeleteDialog(
 
                         // Title
                         Text(
-                            text = "Are you sure you want to delete your account?",
+                            text = stringResource(R.string.delete_desc),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Normal,
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -215,7 +219,7 @@ fun DeleteDialog(
 
                         // Description
                         Text(
-                            text = "This action is permanent and will erase all your saved reflections and progress.",
+                            text = stringResource(R.string.delete_warning),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 fontSize = 14.sp,
@@ -229,7 +233,7 @@ fun DeleteDialog(
 
                         // Prompt
                         Text(
-                            text = "Please type “DELETE” to confirm",
+                            text = stringResource(R.string.delete_hint),
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 fontSize = 14.sp,
@@ -249,29 +253,32 @@ fun DeleteDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 4.dp),
-                            height = 45.dp
+                            height = 50.dp
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Buttons
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp) // optional spacing between buttons
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             DialogButton(
-                                text = "Cancel",
+                                text = stringResource(R.string.cancel),
                                 selected = false,
                                 onClick = onDismiss,
                                 modifier = Modifier.weight(1f)
                             )
                             DialogButton(
-                                text = "Delete",
+                                text = stringResource(R.string.delete),
                                 selected = true,
                                 onClick = {
                                     if (deleteInput.trim() == "DELETE") {
                                         onClickDelete()
+                                        onDismiss()
+                                    }else{
+                                        Toast.makeText(context, "Invalid,Please Try Again", Toast.LENGTH_SHORT).show()
+                                        deleteInput = ""
                                         onDismiss()
                                     }
                                 },
@@ -279,10 +286,11 @@ fun DeleteDialog(
                             )
                         }
 
+
                     }
 
                     Icon(
-                        painter = painterResource(R.drawable.ic_cross_icon),
+                        painter = painterResource(R.drawable.ic_cross_iconx),
                         contentDescription = "Close",
                         tint = Color.Unspecified,
                         modifier = Modifier
@@ -382,7 +390,7 @@ fun LogoutDialog(
                     }
 
                     Icon(
-                        painter = painterResource(R.drawable.ic_cross_icon),
+                        painter = painterResource(R.drawable.ic_cross_iconx),
                         contentDescription = "Close",
                         tint = Color.Unspecified,
                         modifier = Modifier

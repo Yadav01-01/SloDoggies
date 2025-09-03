@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.petowner.serviceProviderDetailsScreen
+package com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.animateContentSize
@@ -34,9 +34,11 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -56,78 +59,74 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-
-import com.bussiness.slodoggiesapp.ui.component.petOwner.IconHeadingText
+import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-
-
+import com.bussiness.slodoggiesapp.viewModel.petOwner.servicesVM.ServiceDetailViewModel
 
 @Composable
-fun ServiceProviderDetailsScreen(navController: NavHostController) {
+fun ServiceProviderDetailsScreen(navController: NavHostController,viewModel: ServiceDetailViewModel = hiltViewModel()) {
     var selectedOption by remember { mutableStateOf("Services") }
-    Column(modifier = Modifier.fillMaxSize()) {
-        IconHeadingText(
-            textHeading = "Services",
-            onBackClick = {
-                navController.popBackStack()
-            },
-            onIconClick = {
+    val serviceDetail by viewModel.serviceDetail.collectAsState()
+    Column(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
 
-            },
-            rightSideIcon = R.drawable.ic_check_icon_blue,
-            iconColor = Color(0xFF258694),
-            dividerColor = Color(0xFF258694),
-            displayRightIcon = false
-        )
+        HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = { navController.popBackStack() })
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
+        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+
+        Column(modifier = Modifier.weight(1f).background(Color.White).padding(horizontal = 15.dp)) {
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            ProviderDetails(
+                serviceType = "Grooming",
+                cardRating = "4",
+                personImage = " "  ,
+                providerName = "John Doe",
+                userVerified = true,
+                businessDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad ",
+                phoneNumber = "(805) 123 4567",
+                website = "pawfectpets.com",
+                address = "123 Pet Lane, San Luis Obispo, CA",
+                onClickInquire = {navController.navigate(Routes.CHAT_SCREEN)}
             )
-            {
-                Spacer(modifier = Modifier.height(20.dp))
-                ProviderDetails()
 
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    SwitchButton(
-                        selectedOption = selectedOption, // Pass the current state
-                        onOptionSelected = { newOption ->
-                            selectedOption = newOption // Update the state when clicked
-                        }
-                    )
-                    when (selectedOption) {
-                        "Services" -> {
-                            ServicesContent()
-                        }
+            Spacer(Modifier.height(20.dp))
 
-                        "Rating & Reviews" -> {
-                            ReviewInterface()
-                        }
-                    }
-
+            SwitchButton(
+                selectedOption = selectedOption, // Pass the current state
+                onOptionSelected = { newOption ->
+                    selectedOption = newOption // Update the state when clicked
                 }
+            )
+            when (selectedOption) {
+                "Services" -> { ServicesContent() }
+                "Rating & Reviews" -> { ReviewInterface() }
             }
+        }
     }
 }
 
 @Composable
-fun ProviderDetails() {
+fun ProviderDetails(
+    serviceType : String,
+    cardRating : String,
+    personImage : String,
+    providerName : String,
+    userVerified : Boolean,
+    businessDescription: String,
+    phoneNumber: String,
+    website: String,
+    address: String,
+    onClickInquire: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(12.dp)
@@ -164,9 +163,9 @@ fun ProviderDetails() {
                             .height(25.dp)
                     ) {
                         Text(
-                            text = "Grooming",
-                            fontSize = 10.sp, // Slightly larger font size to match appearance
-                            color = Color(0xFF8A8894), // Soft gray text color
+                            text = serviceType,
+                            fontSize = 10.sp,
+                            color = Color(0xFF8A8894),
                             textAlign = TextAlign.Center,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         )
@@ -175,8 +174,8 @@ fun ProviderDetails() {
 
             }
 
-
             Spacer(modifier = Modifier.height(8.dp))
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -206,7 +205,7 @@ fun ProviderDetails() {
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "4.8/5",
+                            text = "$cardRating/5",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontWeight = FontWeight.Medium,
@@ -219,7 +218,7 @@ fun ProviderDetails() {
                 Row(
                     modifier = Modifier
                         .width(121.dp).align(Alignment.TopEnd)
-                        .clickable { /* Handle inquiry */ }
+                        .clickable { onClickInquire() }
                         .border(
                             width = 1.dp,
                             color = Color(0xFF258694),
@@ -239,8 +238,8 @@ fun ProviderDetails() {
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "Inquire now",
-                        color = Color(0xFF258694),
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        color = PrimaryColor,
+                        fontFamily = FontFamily(Font(R.font.outfit_semibold)),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium
                     )
@@ -260,28 +259,29 @@ fun ProviderDetails() {
                         .align(Alignment.CenterStart),
 
                     ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.dummy_person_image2),
+                    AsyncImage(
+                        model = personImage,
                         contentDescription = "Person",
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-
+                        placeholder = painterResource(R.drawable.ic_person_icon),
+                        error = painterResource(R.drawable.ic_person_icon),
+                        modifier = Modifier.size(30.dp).clip(CircleShape)
                     )
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Provider Name",
+                        text = providerName,
                         fontSize = 14.sp,
                         color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
-
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_check_mark),
-                        contentDescription = "Verified",
-                        modifier = Modifier.size(14.dp)
-                    )
+                    if (userVerified){
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_check_mark),
+                            contentDescription = stringResource(R.string.verify),
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
+                    
                 }
                 Surface(
                     color = PrimaryColor, // White background
@@ -294,19 +294,17 @@ fun ProviderDetails() {
                 ) {
 
                     Text(
-                        text = "Follow",
+                        text = stringResource(R.string.follow),
                         fontSize = 12.sp,
                         color = Color(0xFFFFFFFF),
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        textAlign = TextAlign.Center, // This aligns the text within the Text composable
-                        modifier = Modifier
-                            .fillMaxWidth() // Make the text take full width
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                        textAlign = TextAlign.Center, 
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
             }
 
-            EnhancedExpandableInfoSpinner()
+            EnhancedExpandableInfoSpinner(phoneNumber = phoneNumber, website = website, address = address, businessDescription = businessDescription)
         }
 
 
@@ -316,7 +314,12 @@ fun ProviderDetails() {
 
 
 @Composable
-fun EnhancedExpandableInfoSpinner() {
+fun EnhancedExpandableInfoSpinner(
+    businessDescription: String,
+    phoneNumber: String,
+    website: String,
+    address: String
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Surface(
@@ -344,7 +347,7 @@ fun EnhancedExpandableInfoSpinner() {
             ) {
 
                 Text(
-                    text = "Additional Info.",
+                    text = stringResource(R.string.additional_info),
                     color = PrimaryColor,
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -365,7 +368,7 @@ fun EnhancedExpandableInfoSpinner() {
                         .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     Text(
-                        text = "Business Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad",
+                        text = "$ Business Description:$businessDescription",
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         fontSize = 12.sp,
                         color = Color.Black
@@ -382,7 +385,7 @@ fun EnhancedExpandableInfoSpinner() {
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            text = "Phone:",
+                            text = stringResource(R.string.phone),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
@@ -391,7 +394,7 @@ fun EnhancedExpandableInfoSpinner() {
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            text = "(805) 123 4567",
+                            text = phoneNumber,
                             color = Color.Black,
                             maxLines = 1,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -411,7 +414,7 @@ fun EnhancedExpandableInfoSpinner() {
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            text = "Website:",
+                            text = stringResource(R.string.website),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
@@ -420,7 +423,7 @@ fun EnhancedExpandableInfoSpinner() {
                             modifier = Modifier.weight(1f)
                         )
                         Text(
-                            text = "pawfectpets.com",
+                            text = website,
                             color = PrimaryColor,
                             maxLines = 1,
                             fontSize = 12.sp,
@@ -440,7 +443,7 @@ fun EnhancedExpandableInfoSpinner() {
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            text = "Address:",
+                            text = stringResource(R.string.address),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
@@ -449,7 +452,7 @@ fun EnhancedExpandableInfoSpinner() {
                             modifier = Modifier.weight(0.5f)
                         )
                         Text(
-                            text = "123 Pet Lane, San Luis Obispo, CA",
+                            text = address,
                             color = Color.Black,
                             maxLines = 1,
                             fontSize = 12.sp,
@@ -527,7 +530,7 @@ fun SwitchButton(
                     Text(
                         text = option,
                         color = if (selectedOption == option) Color.White else Color.Black,
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         fontFamily = if (selectedOption == option) FontFamily(Font(R.font.outfit_medium)) else FontFamily(Font(R.font.outfit_regular)),
                     )
                 }

@@ -14,11 +14,14 @@ class DiscoverViewModel @Inject constructor() : ViewModel() {
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query
 
-    private val _category = MutableStateFlow("Pets Near You")
+    private val _category = MutableStateFlow("")
     val category: StateFlow<String> = _category
 
     private val _petPlaceDialog = MutableStateFlow(false)
     val petPlaceDialog: MutableStateFlow<Boolean> = _petPlaceDialog
+
+    private val _showShareContent = MutableStateFlow(false)
+    val showShareContent: StateFlow<Boolean> = _showShareContent
 
     // In real project -> Replace with Repository call (Flow from API)
     private val _searchResults = MutableStateFlow(
@@ -45,6 +48,14 @@ class DiscoverViewModel @Inject constructor() : ViewModel() {
 
     fun dismissPetPlaceDialog() {
         _petPlaceDialog.value = false
+    }
+
+    fun showShareContent() {
+        _showShareContent.value = true
+    }
+
+    fun dismissShareContent() {
+        _showShareContent.value = false
     }
 }
 

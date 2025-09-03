@@ -1,9 +1,18 @@
 package com.bussiness.slodoggiesapp.model.businessProvider
 
 data class Review(
-    val profileImage: String,
-    val userName: String,
+    val name: String,
     val rating: Int,
     val timeAgo: String,
-    val text: String
+    val review: String,
+    val avatar: Int,
+    var reply: ReviewReply? = null
+)
+
+data class ReviewReply(
+    val providerName: String,
+    val providerImage: String,
+    val providerRole: String,
+    val pTimeAgo: String,
+    val pMessage: String
 )

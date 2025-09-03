@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -30,6 +32,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -47,6 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -56,33 +61,35 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.common.MediaItem
+import com.bussiness.slodoggiesapp.model.common.MediaType
 import com.bussiness.slodoggiesapp.model.common.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.component.shareApp
-import com.bussiness.slodoggiesapp.ui.screens.petowner.MediaItem
-import com.bussiness.slodoggiesapp.ui.screens.petowner.MediaType
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
-fun NormalPostItem(postItem: PostItem.NormalPost) {
+fun NormalPostItem(postItem: PostItem.NormalPost,onReportClick: () -> Unit,onShareClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            PostHeader(user = postItem.user, role = postItem.role, time = postItem.time)
+            PostHeader(user = postItem.user, role = postItem.role, time = postItem.time, onReportClick = { onReportClick()})
             PostCaption(caption = postItem.caption, description = postItem.description)
             PostImage(mediaList = postItem.mediaList)
-            PostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares)
+            PostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares,onShareClick)
         }
     }
 }
 
 @Composable
-private fun PostHeader(user: String, role: String, time: String) {
+private fun PostHeader(user: String, role: String, time: String,onReportClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,22 +124,18 @@ private fun PostHeader(user: String, role: String, time: String) {
                 )
             }
 
-
-
-
             Spacer(modifier = Modifier.width(12.dp))
 
             Column {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Text(
                         text = user,
                         fontSize = 13.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         color = Color.Black,
-                        modifier = Modifier.widthIn(max = 150.dp), // Adjust the max width as needed
+                        modifier = Modifier.widthIn(max = 150.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -160,17 +163,17 @@ private fun PostHeader(user: String, role: String, time: String) {
                 Row {
                     Text(
                         text = role,
-                        fontSize = 9.sp,
+                        fontSize = 8.sp,
                         color = Color(0xFF258694),
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         modifier = Modifier
                             .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
-                            .padding(horizontal = 12.dp, vertical = 0.dp)
+                            .padding(horizontal = 10.dp, vertical = 0.dp)
                     )
 
                     Text(
                         text = " $time",
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         color = Color(0xFF949494),
                         modifier = Modifier
                             .padding(vertical = 2.dp),
@@ -180,18 +183,55 @@ private fun PostHeader(user: String, role: String, time: String) {
             }
         }
 
+        PostOptionsMenu (onReportClick = onReportClick)
+    }
+}
+
+@Composable
+fun PostOptionsMenu(
+    onReportClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.wrapContentSize().background(Color.White)) {
         IconButton(
-            onClick = { /* Handle menu */ },
+            onClick = { expanded = true },
             modifier = Modifier.size(24.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.MoreVert,
                 contentDescription = "More options",
-                tint = Color.Gray
+                tint = Color.Black
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            containerColor = Color.White
+        ) {
+            DropdownMenuItem(
+                text = { Text(text = "Report Post",
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    color = Color.Black,
+                    fontSize = 16.sp)},
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_report_icon),
+                        contentDescription = "Report",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(18.dp)
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onReportClick()
+                }
             )
         }
     }
 }
+
 
 
 @Composable
@@ -245,7 +285,7 @@ private fun PostCaption(caption: String, description: String) {
 
 
 @Composable
- fun PostLikes(likes: Int, comments: Int, shares: Int) {
+ fun PostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit) {
     var isLiked by remember { mutableStateOf(false) }
     var isBookmarked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
@@ -300,7 +340,7 @@ private fun PostCaption(caption: String, description: String) {
                 painter = painterResource(id = R.drawable.ic_share_icons),
                 contentDescription = "Shares",
                 modifier = Modifier.size(25.dp).clickable {
-                    shareApp(context)
+                   onShareClick()
                 }
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -310,18 +350,27 @@ private fun PostCaption(caption: String, description: String) {
             )
         }
 
-        // Bookmark icon aligned to end
-        IconButton(
-            onClick = { /* Handle bookmark */ },
-            modifier = Modifier.size(32.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = if (isBookmarked) R.drawable.filled_bm else R.drawable.ic_bookmark_icon),
-                contentDescription = "Bookmark",
-                tint = Color.Unspecified,
-                modifier = Modifier.size(24.dp).clickable { isBookmarked = !isBookmarked }
+        Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {  isBookmarked = !isBookmarked  }){
+            Text(text = stringResource(R.string.save),
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                color = if (isBookmarked) PrimaryColor else Color.Black
             )
+            // Bookmark icon aligned to end
+            IconButton(
+                onClick = { isBookmarked = !isBookmarked },
+                modifier = Modifier.size(25.dp)
+            ) {
+                Icon(
+                    painter = if (isBookmarked) painterResource(id = R.drawable.ic_bookmark_selected ) else painterResource(id = R.drawable.ic_bookmark_icon),
+                    contentDescription = "Bookmark",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
+
     }
     if (showCommentsDialog) {
 
@@ -336,6 +385,7 @@ private fun PostCaption(caption: String, description: String) {
                 timeAgo = "24 min",
                 likeCount = 2,
                 isLiked = true,
+                user = true,
                 replies = listOf(
                     Comment(
                         id = "1-1",
@@ -368,7 +418,7 @@ private fun PostCaption(caption: String, description: String) {
 }
 
 @Composable
-private fun PostImage(
+fun PostImage(
     mediaList: List<MediaItem> = listOf(
         MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
         MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),

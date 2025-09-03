@@ -59,7 +59,7 @@ fun PasswordInput(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(52.dp)
                 .background(color = Color.White, shape = RoundedCornerShape(12.dp))
                 .border(
                     width = 1.dp,
@@ -105,7 +105,7 @@ fun PasswordInput(
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         painter = painterResource(
-                            id = if (passwordVisible) R.drawable.open_eye else R.drawable.open_eye
+                            id = if (passwordVisible) R.drawable.open_eye else R.drawable.close_eye
                         ),
                         contentDescription = if (passwordVisible) "Hide password" else "Show password",
                         tint = Color.Black

@@ -12,21 +12,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -41,23 +38,21 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.UserType
-import com.bussiness.slodoggiesapp.model.main.VerificationType
-import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OtpInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
+import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
+import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
-import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.VerifyOTPViewModel
 
 @Composable
-fun VerifyOTPScreen(navController: NavHostController,type: VerificationType,viewModel: VerifyOTPViewModel = hiltViewModel()) {
+fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: VerifyOTPViewModel = hiltViewModel()) {
 
     val otp by viewModel.otp.collectAsState()
+    val successDialog by viewModel.successDialog.collectAsState()
     val context = LocalContext.current
-    val sessionManager = remember { SessionManager(context) }
 
     Box(
         modifier = Modifier
@@ -65,6 +60,8 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType,view
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
+        AuthBackButton(navController, modifier = Modifier.align(Alignment.TopStart))
+
         // Main content centered
         Column(
             modifier = Modifier
@@ -123,14 +120,14 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType,view
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Didn’t receive the code? ",
+                    text = stringResource(R.string.didnt_receive_code),
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     color = TextGrey
                 )
 
                 Text(
-                    text = "Resend",
+                    text = stringResource(R.string.resend),
                     modifier = Modifier
                         .clickable {  },
                     fontSize = 14.sp,
@@ -141,9 +138,15 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType,view
 
             Spacer(Modifier.height(22.dp))
 
-            ContinueButton ( onClick = { if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) navController.navigate(Routes.BUSINESS_REGISTRATION)
-            else navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) }, text = "Verify",backgroundColor = if (otp.length == 4) PrimaryColor else Color(0xFFD9D9D9),
-                textColor = if (otp.length == 4) Color.White else Color(0xFF686868), iconColor = if (otp.length == 4) Color.White else Color(0xFF686868) )
+            ContinueButton(
+                onClick = {
+                    viewModel.onVerifyClick(type, navController, context)
+                },
+                text = stringResource(R.string.verify),
+                backgroundColor = if (viewModel.isOtpValid()) PrimaryColor else Color(0xFFD9D9D9),
+                textColor = if (viewModel.isOtpValid()) Color.White else Color(0xFF686868),
+                iconColor = if (viewModel.isOtpValid()) Color.White else Color(0xFF686868)
+            )
 
         }
 
@@ -158,6 +161,15 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType,view
                 .wrapContentWidth()
         )
     }
+
+    if (successDialog){
+        UpdatedDialogWithExternalClose(
+            onDismiss = { viewModel.dismissSuccessDialog(navController) },
+            iconResId = R.drawable.ic_party_popper_icon,
+            text = stringResource(R.string.account_created_sucessfully),
+            description = ""
+        )
+    }
 }
 
 
@@ -165,5 +177,5 @@ fun VerifyOTPScreen(navController: NavHostController,type: VerificationType,view
 @Composable
 fun VerifyOTPScreenPreview() {
     val dummyNavController = rememberNavController()
-    VerifyOTPScreen(navController = dummyNavController, VerificationType.PHONE)
+    VerifyOTPScreen(navController = dummyNavController, "")
 }

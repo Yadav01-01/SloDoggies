@@ -1,5 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.main
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,6 +18,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,12 +60,28 @@ fun JoinThePackScreen(
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
 
+    BackHandler {
+        (context as? Activity)?.finishAffinity() // closes all activities and exits app
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
+
+        IconButton(
+            onClick = { (context as? Activity)?.finishAffinity() },
+            modifier = Modifier.padding( top = 20.dp)
+        ) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = PrimaryColor
+            )
+        }
+
         Column(
             modifier = Modifier
                 .align(Alignment.Center)

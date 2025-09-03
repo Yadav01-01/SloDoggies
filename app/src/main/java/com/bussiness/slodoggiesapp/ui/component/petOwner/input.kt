@@ -1,10 +1,13 @@
 package com.bussiness.slodoggiesapp.ui.component.petOwner
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,11 +29,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -91,8 +92,8 @@ fun CommonWhiteButton(
         Text(
             text = text,
             style = MaterialTheme.typography.bodyMedium.copy(
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                fontWeight = FontWeight.Medium,
+                fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
                 color = Color.Black
             )
@@ -100,16 +101,68 @@ fun CommonWhiteButton(
     }
 }
 
+//@Composable
+//fun CustomOutlinedTextField(
+//    value: String,
+//    onValueChange: (String) -> Unit,
+//    placeholder: String,
+//    modifier: Modifier = Modifier,
+//    fontSize: Int = 15,
+//    label: String? = null
+//) {
+//    Column(modifier = modifier.fillMaxWidth()) {
+//        label?.let {
+//            Text(
+//                text = it,
+//                fontSize = 15.sp,
+//                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+//                color = Color.Black,
+//                modifier = Modifier.padding(bottom = 8.dp)
+//            )
+//        }
+//
+//        OutlinedTextField(
+//            value = value,
+//            onValueChange = onValueChange,
+//            placeholder = {
+//                Text(
+//                    text = placeholder,
+//                    fontSize = fontSize.sp,
+//                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                    color = Color(0xFF949494)
+//                )
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth().height(50.dp),
+//            shape = RoundedCornerShape(8.dp),
+//            textStyle = LocalTextStyle.current.copy(
+//                fontSize = fontSize.sp,
+//                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                lineHeight = (fontSize + 6).sp // adds some extra space so text doesn't cut
+//            ),
+//            colors = OutlinedTextFieldDefaults.colors(
+//                focusedBorderColor = TextGrey,
+//                unfocusedBorderColor = TextGrey
+//            ),
+//            singleLine = true, // ensures text stays in one line
+//
+//        )
+//    }
+//}
+
+
 @Composable
 fun CustomOutlinedTextField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
     modifier: Modifier = Modifier,
-    fontSize: Int = 14,
+    fontSize: Int = 15,
     label: String? = null
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
+
+        // Optional label
         label?.let {
             Text(
                 text = it,
@@ -120,198 +173,42 @@ fun CustomOutlinedTextField(
             )
         }
 
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            placeholder = {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .border(
+                    width = 1.dp,
+                    color = TextGrey,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            if (value.isEmpty()) {
                 Text(
                     text = placeholder,
                     fontSize = fontSize.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     color = Color(0xFF949494)
                 )
-            },
-            modifier = Modifier.fillMaxWidth().height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = TextGrey,
-                unfocusedBorderColor = TextGrey
-            )
-        )
-    }
-}
-// Input.kt
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CustomDropdownMenu(
-    value: String,
-    onValueChange: (String) -> Unit,
-    options: List<String>,
-    label: String,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    isExpanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            color = Color.Black,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        ExposedDropdownMenuBox(
-            expanded = isExpanded,
-            onExpandedChange = onExpandedChange
-        ) {
-            OutlinedTextField(
-                value = value,
-                onValueChange = {},
-                readOnly = true,
-                placeholder = {
-                    Text(
-                        placeholder,
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        color = Color(0xFF949494)
-                    )
-                },
-                trailingIcon = {
-                    Icon(
-                        Icons.Default.ArrowDropDown,
-                        contentDescription = "Dropdown",
-                        tint = Color(0xFF949494)
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xFF00ACC1),
-                    unfocusedBorderColor = Color(0xFF949494)
-                ),
-                shape = RoundedCornerShape(12.dp)
-            )
-
-            ExposedDropdownMenu(
-                expanded = isExpanded,
-                onDismissRequest = { onExpandedChange(false) }
-            ) {
-                options.forEach { option ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                option,
-                                fontFamily = FontFamily(Font(R.font.outfit_regular))
-                            )
-                        },
-                        onClick = {
-                            onValueChange(option)
-                            onExpandedChange(false)
-                        }
-                    )
-                }
             }
+
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                textStyle = LocalTextStyle.current.copy(
+                    fontSize = fontSize.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    color = Color.Black,
+                    lineHeight = (fontSize + 6).sp
+                ),
+                singleLine = true,
+                cursorBrush = SolidColor(Color.Black),
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CommonTopAppBar(
-    title: String,
-    onBackClick: () -> Unit,
-    titleColor: Color = Color(0xFF3F393F),
-    backIconTint: Color = Color(0xFF258694),
-    dividerColor: Color = Color(0xFF656565),
-    containerColor: Color = Color.White,
-    titleFontFamily: FontFamily = FontFamily(Font(R.font.outfit_medium)),
-    titleFontSize: TextUnit = 18.sp
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                fontSize = titleFontSize,
-                fontFamily = titleFontFamily,
-                color = titleColor
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = backIconTint
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
-        )
-    )
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(4.dp)
-            .background(dividerColor)
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CommonTopAppBarProfile(
-    title: String,
-    onBackClick: () -> Unit,
-    onSettingsClick: () -> Unit = {},
-    titleColor: Color = Color(0xFF3F393F),
-    backIconTint: Color = Color(0xFF258694),
-    settingsIconTint: Color = Color(0xFF3F393F),
-    dividerColor: Color = Color(0xFF656565),
-    containerColor: Color = Color.White,
-    titleFontFamily: FontFamily = FontFamily(Font(R.font.outfit_medium)),
-    titleFontSize: TextUnit = 18.sp
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = title,
-                fontSize = titleFontSize,
-                fontFamily = titleFontFamily,
-                color = titleColor
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = backIconTint
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onSettingsClick) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_setting_icons),
-                    contentDescription = "Settings",
-                    tint = settingsIconTint
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
-        )
-    )
-    Spacer(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(4.dp)
-            .background(dividerColor)
-    )
 }
 
 

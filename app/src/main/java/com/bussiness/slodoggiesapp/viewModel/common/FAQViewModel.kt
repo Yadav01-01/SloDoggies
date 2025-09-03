@@ -29,16 +29,7 @@ class FAQViewModel @Inject constructor() : ViewModel() {
     }
 
     fun toggleExpanded(index: Int) {
-        _faqItems.replaceAllIndexed { i, pair ->
-            pair.copy(second = if (i == index) !pair.second else false)
-        }
-    }
-
-    // Extension for indexed replacement
-    private inline fun <T> MutableList<T>.replaceAllIndexed(transform: (index: Int, T) -> T) {
-        for (i in indices) {
-            this[i] = transform(i, this[i])
-        }
+        _faqItems[index] = _faqItems[index].copy(second = !_faqItems[index].second)
     }
 
 }

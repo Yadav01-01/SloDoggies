@@ -49,7 +49,7 @@ fun CustomBottomBar(
     onCenterClick: () -> Unit
 ) {
     val background = if (selectedRoute == Routes.HOME_SCREEN) Color(0xFFB9D4DB) else Color.White
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = Modifier.fillMaxWidth().background(Color.White),) {
 
         // Bottom container with top teal strip and rounded corners
         Column(modifier = Modifier

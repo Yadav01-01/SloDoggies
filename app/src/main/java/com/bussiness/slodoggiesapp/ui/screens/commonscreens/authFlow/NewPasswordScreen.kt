@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,34 +14,38 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.VerificationType
-import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
+import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
 import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.WelcomeDialog
+import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.NewPasswordViewModel
 
 @Composable
-fun NewPasswordScreen(navController: NavHostController) {
-
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+fun NewPasswordScreen(
+    navController: NavHostController,
+    viewModel: NewPasswordViewModel = hiltViewModel()
+) {
+    val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -48,6 +53,8 @@ fun NewPasswordScreen(navController: NavHostController) {
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
+        AuthBackButton(navController, modifier = Modifier.align(Alignment.TopStart))
+
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -59,7 +66,7 @@ fun NewPasswordScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "New Password",
+                text = stringResource(R.string.new_password),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
@@ -71,29 +78,38 @@ fun NewPasswordScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            FormHeadingText("New Password", modifier = Modifier.align(Alignment.Start))
-
+            FormHeadingText(stringResource(R.string.new_password), modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(10.dp))
-
-            PasswordInput(password, onPasswordChange = { password = it })
+            PasswordInput(
+                password = state.password,
+                onPasswordChange = { viewModel.onPasswordChange(it) }
+            )
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Confirm Password",modifier = Modifier.align(Alignment.Start))
-
+            FormHeadingText(stringResource(R.string.confirm_password), modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(10.dp))
-
-            PasswordInput(confirmPassword, onPasswordChange = { confirmPassword = it })
+            PasswordInput(
+                password = state.confirmPassword,
+                onPasswordChange = { viewModel.onConfirmPasswordChange(it) }
+            )
 
             Spacer(Modifier.height(20.dp))
 
             ContinueButton(
                 onClick = {
-                    navController.navigate("${Routes.VERIFY_OTP}/${VerificationType.EMAIL.name}")
+                    viewModel.updatePassword(
+                        onSuccess = {
+//                            navController.navigate("${Routes.VERIFY_OTP}/${VerificationType.EMAIL.name}")
+                        viewModel.showUpdatePasswordDialog()
+                        },
+                        onError = { message ->
+                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                        }
+                    )
                 },
-                text = "Update Password"
+                text = stringResource(R.string.update_password)
             )
-
         }
 
         Image(
@@ -104,6 +120,17 @@ fun NewPasswordScreen(navController: NavHostController) {
                 .padding(end = 16.dp, bottom = 16.dp)
                 .height(66.dp)
                 .wrapContentWidth()
+        )
+    }
+
+    if(state.showUpdatePasswordDialog){
+        WelcomeDialog(
+            onDismiss = { viewModel.dismissUpdatePasswordDialog() },
+            onSubmitClick = { viewModel.onSubmitClickDialog(navController) },
+            icon = R.drawable.ic_party_popper_icon,
+            title = stringResource(R.string.new_pass_title),
+            description = stringResource(R.string.your_password_changed),
+            button = stringResource(R.string.go_to_login)
         )
     }
 }

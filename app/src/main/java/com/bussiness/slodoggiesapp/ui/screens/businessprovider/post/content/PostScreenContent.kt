@@ -30,8 +30,7 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.VisibilityOptionsSelector
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.UploadPlaceholder
+import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
 
 @Composable
@@ -53,7 +52,7 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit,viewM
 
         Spacer(Modifier.height(10.dp))
 
-        UploadPlaceholder()
+        MediaUploadSection()
 
         Spacer(Modifier.height(15.dp))
 
@@ -73,7 +72,7 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit,viewM
 
         Spacer(Modifier.height(15.dp))
 
-        FormHeadingText("Location")
+        FormHeadingText("Zip Code")
 
         Spacer(Modifier.height(5.dp))
 
@@ -90,18 +89,11 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit,viewM
 
         Spacer(Modifier.height(10.dp))
 
-        InputField(placeholder = "Postal Code", input = postalCode, onValueChange ={ viewModel.updatePostalCode(it)})
+        InputField(placeholder = "Enter your Zip Code", input = postalCode, onValueChange ={ viewModel.updatePostalCode(it)})
 
-        Spacer(Modifier.height(15.dp))
-
-        FormHeadingText("Privacy Settings")
-
-        Spacer(Modifier.height(10.dp))
-
-        VisibilityOptionsSelector(selected = visibility, onOptionSelected = { viewModel.updateVisibility(it) })
-
-        Spacer(Modifier.height(15.dp))
+        Spacer(Modifier.height(35.dp))
 
         SubmitButton(modifier = Modifier, buttonText = "Post", onClickButton = { onClickPost() })
+        Spacer(Modifier.height(30.dp))
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -82,12 +83,12 @@ fun ProfileScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(horizontal = 12.dp)
-                .padding(top = 10.dp, bottom = 5.dp),
+                .padding(horizontal = 12.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
             item {
+                Spacer(modifier = Modifier.height(10.dp))
                 // Profile Row
                 Row(
                     modifier = Modifier
@@ -100,7 +101,7 @@ fun ProfileScreen(navController: NavHostController) {
                 ) {
                     Image(
                         painter = painterResource(R.drawable.lady_ic),
-                        contentDescription = "dog image",
+                        contentDescription = "image",
                         modifier = Modifier
                             .size(95.dp)
                             .clip(CircleShape)
@@ -129,11 +130,13 @@ fun ProfileScreen(navController: NavHostController) {
                                 painter = painterResource(R.drawable.edit_ic_p),
                                 contentDescription = "icon",
                                 tint = Color.Unspecified,
-                                modifier = Modifier
-                                    .wrapContentSize()
-                                    .clickable { navController.navigate(Routes.EDIT_PROFILE_SCREEN) }
+                                modifier = Modifier.wrapContentSize()
+                                    .clickable { navController.navigate(Routes.EDIT_PROFILE_SCREEN)  }
                             )
+
                         }
+
+                        Spacer(Modifier.height(5.dp))
 
                         Text(
                             text = email,
@@ -163,9 +166,9 @@ fun ProfileScreen(navController: NavHostController) {
                 ) {
                     ProfileDetail(label = "120", value = "Posts", onDetailClick = { })
                     VerticalDivider(Modifier.width(2.dp).height(44.dp).background(PrimaryColor))
-                    ProfileDetail(label = "27.7M", value = "Followers", onDetailClick = { navController.navigate(Routes.FOLLOWER_SCREEN)})
+                    ProfileDetail(label = "27.7M", value = "Followers", onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
                     VerticalDivider(Modifier.width(2.dp).height(44.dp).background(PrimaryColor))
-                    ProfileDetail(label = "219", value = "Following", onDetailClick = { navController.navigate(Routes.FOLLOWER_SCREEN)})
+                    ProfileDetail(label = "219", value = "Following", onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}")})
                 }
             }
 
@@ -202,6 +205,7 @@ fun ProfileScreen(navController: NavHostController) {
                         GalleryItemCard(item = sampleImages[index])
                     }
                 }
+                Spacer(Modifier.height(10.dp))
             }
         }
     }
