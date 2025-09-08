@@ -52,7 +52,7 @@ fun PetNewPostScreen(navController: NavHostController) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 0.dp, horizontal = 16.dp),
+                .padding(vertical = 5.dp, horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             listOf("Post", "Event").forEach { label ->

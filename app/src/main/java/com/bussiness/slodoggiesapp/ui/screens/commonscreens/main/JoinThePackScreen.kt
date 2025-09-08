@@ -121,7 +121,8 @@ fun JoinThePackScreen(
             ) {
                 // Pet Professional
                 OptionCard(
-                    imageRes = R.drawable.petprofessional_ic,
+                    imageRes = R.drawable.ns_petpro,
+                    onChangeImage = R.drawable.petprofessional,
                     label = "Pet Professional",
                     isSelected = selectedOption == "Pet Professional",
                     onClick = {
@@ -133,7 +134,8 @@ fun JoinThePackScreen(
 
                 // Pet Owner
                 OptionCard(
-                    imageRes = R.drawable.petownner_ic,
+                    imageRes = R.drawable.pet_owner_black,
+                    onChangeImage = R.drawable.petowner,
                     label = "Pet Owner",
                     isSelected = selectedOption == "Pet Owner",
                     onClick = {
@@ -165,6 +167,7 @@ fun JoinThePackScreen(
 @Composable
 fun OptionCard(
     imageRes: Int,
+    onChangeImage: Int,
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -185,7 +188,7 @@ fun OptionCard(
                 .padding(15.dp) // inner padding inside the border
         ) {
             Image(
-                painter = painterResource(id = imageRes),
+                painter = painterResource(id = if (isSelected) onChangeImage else imageRes),
                 contentDescription = label,
                 modifier = Modifier
                     .fillMaxSize()

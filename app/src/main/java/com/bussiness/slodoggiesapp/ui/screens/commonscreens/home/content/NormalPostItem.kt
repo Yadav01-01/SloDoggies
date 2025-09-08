@@ -2,10 +2,12 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
 import android.widget.MediaController
 import android.widget.VideoView
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +38,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,12 +73,11 @@ import com.bussiness.slodoggiesapp.ui.component.shareApp
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
-fun NormalPostItem(postItem: PostItem.NormalPost,onReportClick: () -> Unit,onShareClick: () -> Unit) {
+fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClick: () -> Unit,onShareClick: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(12.dp),
-        shape = RoundedCornerShape(20.dp),
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -83,30 +85,31 @@ fun NormalPostItem(postItem: PostItem.NormalPost,onReportClick: () -> Unit,onSha
             PostHeader(user = postItem.user, role = postItem.role, time = postItem.time, onReportClick = { onReportClick()})
             PostCaption(caption = postItem.caption, description = postItem.description)
             PostImage(mediaList = postItem.mediaList)
-            PostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares,onShareClick)
+            PostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares, onShareClick = {onShareClick()}, onSaveClick = { })
         }
     }
 }
 
 @Composable
-private fun PostHeader(user: String, role: String, time: String,onReportClick: () -> Unit) {
+fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Unit) {
+    var isFollowed by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
+            .padding(horizontal = 12.dp).padding(top = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(Modifier.width(65.dp).height(52.dp)) {
+            Box(Modifier.width(40.dp).height(40.dp)) {
 
                 Image(
                     painter = painterResource(id = R.drawable.dummy_person_image2),
                     contentDescription = "Person",
                     modifier = Modifier
-                        .size(43.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
                         .align(Alignment.TopStart)
                 )
@@ -116,10 +119,9 @@ private fun PostHeader(user: String, role: String, time: String,onReportClick: (
                     painter = painterResource(id = R.drawable.dummy_person_image1),
                     contentDescription = "Dog",
                     modifier = Modifier
-                        .size(43.dp)
+                        .size(30.dp)
                         .clip(CircleShape)
-
-                        .border(4.dp, Color.White, CircleShape)
+                        .border(2.dp, Color.White, CircleShape)
                         .align(Alignment.BottomEnd)
                 )
             }
@@ -132,45 +134,54 @@ private fun PostHeader(user: String, role: String, time: String,onReportClick: (
                 ) {
                     Text(
                         text = user,
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         color = Color.Black,
+                        lineHeight = 16.sp,
                         modifier = Modifier.widthIn(max = 150.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    Button(
-                        onClick = { },
+                    val interactionSource = remember { MutableInteractionSource() }
+
+                    OutlinedButton(
+                        onClick = { isFollowed = !isFollowed },
                         modifier = Modifier
                             .height(24.dp)
                             .padding(horizontal = 10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF258694)
-                        ),
                         shape = RoundedCornerShape(6.dp),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp)
+                        border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isFollowed) Color.White else PrimaryColor,
+                            contentColor = if (isFollowed) PrimaryColor else Color.White
+                        ),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                        interactionSource = interactionSource
                     ) {
                         Text(
-                            text = "Follow",
-                            fontSize = 11.sp,
-                            color = Color.White,
-                            fontWeight = FontWeight.Medium
+                            text = if (isFollowed) "Following" else "Follow",
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal
                         )
                     }
+
                 }
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = role,
                         fontSize = 8.sp,
                         color = Color(0xFF258694),
+                        lineHeight = 20.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         modifier = Modifier
                             .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
-                            .padding(horizontal = 10.dp, vertical = 0.dp)
+                            .padding(horizontal = 8.dp, vertical = 0.dp)
                     )
 
+                    Spacer(Modifier.width(8.dp))
                     Text(
                         text = " $time",
                         fontSize = 12.sp,
@@ -183,17 +194,18 @@ private fun PostHeader(user: String, role: String, time: String,onReportClick: (
             }
         }
 
-        PostOptionsMenu (onReportClick = onReportClick)
+        PostOptionsMenu (modifier = Modifier, onReportClick = onReportClick)
     }
 }
 
 @Composable
 fun PostOptionsMenu(
+    modifier: Modifier,
     onReportClick: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.wrapContentSize().background(Color.White)) {
+    Box(modifier = modifier.wrapContentSize().background(Color.White)) {
         IconButton(
             onClick = { expanded = true },
             modifier = Modifier.size(24.dp)
@@ -242,27 +254,32 @@ private fun PostCaption(caption: String, description: String) {
     Column(
         modifier = Modifier.padding(horizontal = 12.dp, vertical = 0.dp)
     ) {
-        Text(
-            text = caption,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Black
-        )
 
         Text(
             text = description,
-            fontSize = 14.sp,
+            fontSize = 12.5.sp,
             color = Color.Black,
-            maxLines = if (showFullText) Int.MAX_VALUE else 1,
+            fontFamily = FontFamily(Font(R.font.inter_regular)),
+            lineHeight = 17.sp,
+            maxLines = if (showFullText) Int.MAX_VALUE else 2,
             overflow = if (showFullText) TextOverflow.Visible else TextOverflow.Ellipsis
         )
+
+//        Text(
+//            text = hashtags,
+//            fontSize = 12.5.sp,
+//            color = PrimaryColor,
+//            fontFamily = FontFamily(Font(R.font.inter_regular)),
+//            lineHeight = 17.sp,
+//            overflow = TextOverflow.Ellipsis
+//        )
 
         // Only show "Read More" if text is truncated
         if (!showFullText) {
             Text(
                 text = "Read More",
-                fontSize = 14.sp,
-                color = Color(0xFF0077B5),
+                fontSize = 12.sp,
+                color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.clickable {
                     showFullText = true
@@ -272,8 +289,8 @@ private fun PostCaption(caption: String, description: String) {
             // Optional: Add "Show Less" functionality
             Text(
                 text = "Show Less",
-                fontSize = 14.sp,
-                color = Color(0xFF0077B5),
+                fontSize = 12.sp,
+                color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.clickable {
                     showFullText = false
@@ -285,7 +302,7 @@ private fun PostCaption(caption: String, description: String) {
 
 
 @Composable
- fun PostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit) {
+ fun PostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit,onSaveClick: () -> Unit) {
     var isLiked by remember { mutableStateOf(false) }
     var isBookmarked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
@@ -304,7 +321,10 @@ private fun PostCaption(caption: String, description: String) {
             Icon(
                 painter = painterResource(  id = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon),
                 contentDescription = "Paw",
-                modifier = Modifier.size(25.dp).clickable {
+                modifier = Modifier.size(25.dp).clickable(
+                    indication = null,
+                    interactionSource =  remember { MutableInteractionSource() }
+                ) {
                     isLiked = !isLiked // Toggle the liked state
                 },
                 tint = Color.Unspecified
@@ -312,9 +332,10 @@ private fun PostCaption(caption: String, description: String) {
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = (if (isLiked) likes + 1 else likes).toString(),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = if (isLiked) Color(0xFF258694) else Color.Black
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                fontWeight = FontWeight.Normal,
+                color = if (isLiked) PrimaryColor else Color.Black
             )
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -322,7 +343,10 @@ private fun PostCaption(caption: String, description: String) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_chat_bubble_icon),
                 contentDescription = "Comments",
-                modifier = Modifier.size(25.dp).clickable {
+                modifier = Modifier.size(24.dp).clickable(
+                    indication = null,
+                    interactionSource =  remember { MutableInteractionSource() }
+                ) {
                     // isLiked = !isLiked // Toggle the liked state
                     showCommentsDialog = true
                 }
@@ -331,7 +355,9 @@ private fun PostCaption(caption: String, description: String) {
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = comments.toString(),
-                fontSize = 16.sp,
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                color = Color.Black
             )
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -339,14 +365,19 @@ private fun PostCaption(caption: String, description: String) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_share_icons),
                 contentDescription = "Shares",
-                modifier = Modifier.size(25.dp).clickable {
+                modifier = Modifier.size(25.dp).clickable (
+                    indication = null,
+                    interactionSource =  remember { MutableInteractionSource() }
+                ){
                    onShareClick()
                 }
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = shares.toString(),
-                fontSize = 16.sp
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                color = Color.Black
             )
         }
 
@@ -359,7 +390,10 @@ private fun PostCaption(caption: String, description: String) {
             )
             // Bookmark icon aligned to end
             IconButton(
-                onClick = { isBookmarked = !isBookmarked },
+                onClick = { isBookmarked = !isBookmarked
+                    if (isBookmarked){
+                        onSaveClick()
+                    } },
                 modifier = Modifier.size(25.dp)
             ) {
                 Icon(
@@ -373,8 +407,6 @@ private fun PostCaption(caption: String, description: String) {
 
     }
     if (showCommentsDialog) {
-
-
         val sampleComments = listOf(
             Comment(
                 id = "1",
@@ -532,8 +564,7 @@ fun PostImage(
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp)
                     .background(
-                        Color.Black.copy(alpha = 0.3f),
-                        RoundedCornerShape(12.dp)
+                       color = Color.Transparent
                     )
                     .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {

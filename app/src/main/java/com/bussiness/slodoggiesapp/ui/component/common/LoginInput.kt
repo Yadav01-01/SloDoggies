@@ -43,7 +43,7 @@ fun PasswordInput(
     password: String,
     onPasswordChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "Your Password"
+    placeholder: String = "Enter Password"
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -105,10 +105,10 @@ fun PasswordInput(
                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                     Icon(
                         painter = painterResource(
-                            id = if (passwordVisible) R.drawable.open_eye else R.drawable.close_eye
+                            id = if (passwordVisible) R.drawable.eye_open else R.drawable.close_eye
                         ),
                         contentDescription = if (passwordVisible) "Hide password" else "Show password",
-                        tint = Color.Black
+                        tint = Color.Unspecified
                     )
 
                 }

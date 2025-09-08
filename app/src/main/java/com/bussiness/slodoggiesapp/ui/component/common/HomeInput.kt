@@ -107,7 +107,7 @@ fun EmailField(
     email: String,
     isVerified: Boolean,
     onEmailChange: (String) -> Unit,
-    onVerify: () -> Unit,
+    onVerify: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = stringResource(R.string.email),
     fontSize: Int = 15
@@ -157,7 +157,7 @@ fun EmailField(
                     modifier = Modifier.size(24.dp)
                 )
             } else {
-                TextButton(onClick = onVerify, contentPadding = PaddingValues(0.dp)) {
+                TextButton(onClick = { onVerify("dialogEmail") }, enabled = email.isNotEmpty(), contentPadding = PaddingValues(0.dp)) {
                     Text(
                         text = stringResource(R.string.verify),
                         color = Color(0xFF258694),
@@ -176,7 +176,7 @@ fun PhoneNumber(
     phone: String,
     isVerified: Boolean,
     onPhoneChange: (String) -> Unit,
-    onVerify: () -> Unit,
+    onVerify: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = "+1 (555) 123 456",
     fontSize: Int = 15
@@ -238,14 +238,14 @@ fun PhoneNumber(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_verified_icon),
                     contentDescription = null,
-                    tint = Color(0xFF258694),
+                    tint = Color.Unspecified,
                     modifier = Modifier.size(24.dp)
                 )
             } else {
-                TextButton(onClick = onVerify, contentPadding = PaddingValues(0.dp)) {
+                TextButton(onClick = { onVerify("dialogPhone") }, enabled = phone.isNotEmpty(), contentPadding = PaddingValues(0.dp)) {
                     Text(
                         text = stringResource(R.string.verify),
-                        color = Color(0xFF258694),
+                        color = PrimaryColor,
                         fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium))
                     )
@@ -312,7 +312,7 @@ fun EmailTextField(
                     modifier = Modifier.size(24.dp)
                 )
             } else {
-                TextButton(onClick = onVerify, contentPadding = PaddingValues(0.dp)) {
+                TextButton(onClick = onVerify,enabled = email.isNotEmpty(), contentPadding = PaddingValues(0.dp)) {
                     Text(
                         text = stringResource(R.string.verify),
                         color = Color(0xFF258694),

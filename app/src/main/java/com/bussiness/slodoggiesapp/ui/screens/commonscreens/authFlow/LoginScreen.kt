@@ -94,7 +94,7 @@ fun LoginScreen(
                 onValueChange = { viewModel.onEmailChange(it) }
             )
 
-            Spacer(Modifier.height(15.dp))
+            Spacer(Modifier.height(10.dp))
 
             FormHeadingText("Password", modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(10.dp))
@@ -142,7 +142,7 @@ fun LoginScreen(
                 pushStyle(
                     SpanStyle(
                         color = TextGrey,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium))
                     )
@@ -154,7 +154,7 @@ fun LoginScreen(
                 pushStyle(
                     SpanStyle(
                         color = PrimaryColor,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         textDecoration = TextDecoration.Underline

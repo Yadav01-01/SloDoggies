@@ -27,6 +27,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -114,27 +116,34 @@ fun DateTimePickerScreen(
         OutlinedTextField(
             value = if (selectedDate.value != null) {
                 val formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy")
-                "${selectedDate.value!!.format(formatter)} ${String.format("%02d:%02d", selectedHour.value, selectedMinute.value)} ${if (isAM.value) "AM" else "PM"}"
+                "${selectedDate.value!!.format(formatter)} " +
+                        String.format("%02d:%02d", selectedHour.value, selectedMinute.value) +
+                        " ${if (isAM.value) "AM" else "PM"}"
             } else {
-                "Select Date And Time"
+                ""
             },
             onValueChange = { },
             readOnly = true,
+            textStyle = androidx.compose.ui.text.TextStyle(
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                color = Color.Black
+            ),
             placeholder = {
                 Text(
                     "Select Date And Time",
                     color = TextGrey,
-                    fontSize = 13.sp,
+                    fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular))
                 )
             },
             trailingIcon = {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_date_iconn), // Use calendar icon if available
+                    painter = painterResource(id = R.drawable.ic_date_iconn),
                     contentDescription = "Calendar",
-                    modifier = Modifier.size(24.dp).clickable(onClick = {
-                        isCalendarVisible.value = true
-                    })
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clickable { isCalendarVisible.value = true }
                 )
             },
             colors = TextFieldDefaults.colors(
@@ -146,159 +155,165 @@ fun DateTimePickerScreen(
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable{
-                    isCalendarVisible.value = true
-                }
+                .height(48.dp)
+                .clickable { isCalendarVisible.value = true }
         )
+
 
         // Calendar Section
         if (isCalendarVisible.value) {
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .border(width = 1.dp, color = TextGrey, shape = RoundedCornerShape(12.dp))
-                    .background(Color.White)
-                    .padding(13.dp)
-            ) {
-                CalendarView(
-                    currentMonth = currentMonth.value,
-                    selectedDate = selectedDate.value,
-                    onDateSelected = { date ->
-                        selectedDate.value = date
-                        isCalendarVisible.value = false // date select karte hi calendar hide ho jaye
-                        Toast.makeText(context, "Selected: $date", Toast.LENGTH_SHORT).show()
-                    },
-                    onMonthChanged = { newMonth ->
-                        currentMonth.value = newMonth
-                    }
-                )
-            }
-
-            // Time Selection Section
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp)
-                    .border(width = 1.dp, color = TextGrey, shape = RoundedCornerShape(12.dp)),
-
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Time",
-                    fontSize = 16.sp,
-                    color = Color.Black,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    modifier = Modifier.weight(1f)
-                )
-
-                Row(
-                    modifier = Modifier.wrapContentWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
+            Card(modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp), // space around card
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+//                    .border(width = 1.dp, color = TextGrey, shape = RoundedCornerShape(12.dp))
+                        .background(Color.White)
+                        .padding(13.dp)
                 ) {
-                    // Hour and Minute Display
-
-                    Box(
-
-                        modifier = Modifier.background(
-                            color = Color(0xFFEFEFF0),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                            .padding(
-                                vertical = 4.dp,
-                                horizontal = 12.dp
-                            ) // Add padding around the Box content
-                            .wrapContentSize(Alignment.Center)
-                    )
-                    {
-
-
-                        Text(
-                            text = "${
-                                String.format(
-                                    "%02d:%02d",
-                                    selectedHour.value,
-                                    selectedMinute.value
-                                )
-                            }",
-                            fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            color = TextDark,
-                            modifier = Modifier
-                                .clickable { timePickerDialog.show() } // 🟢 Attach TimePickerDialog here
-                        )
-                    }
-
-                    Spacer(Modifier.width(8.dp))
-
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(9.dp))
-                            .background(Color(0xFFEEEEEF)) // Light gray capsule background
-                            .padding(2.dp) // Padding between capsule border and buttons
-                    ) {
-                        Row {
-                            Box(
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(30.dp)
-                                    .clip(RoundedCornerShape(7.dp))
-                                    .background(if (isAM.value) SelectedBlue else Color.Transparent)
-                                    .clickable {
-                                      //  isAM.value = true
-                                        if (!isAM.value) {
-                                            isAM.value = true
-                                            // 🔁 Convert to AM
-                                            if (selectedHour.value == 12) {
-                                                selectedHour.value = 12 // noon -> 12 AM
-                                            } else if (selectedHour.value > 12) {
-                                                selectedHour.value -= 12
-                                            }
-                                        }  },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "AM",
-                                    color = if (isAM.value) Color.White else Color.Black,
-                                    fontSize = 11.sp,
-                                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                )
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(30.dp)
-                                    .clip(RoundedCornerShape(7.dp))
-                                    .background(if (!isAM.value) SelectedBlue else Color.Transparent)
-                                    .clickable {
-                                    //    isAM.value = false
-                                        if (isAM.value) {
-                                            isAM.value = false
-                                            // 🔁 Convert to PM
-                                            if (selectedHour.value < 12) {
-                                                selectedHour.value = (selectedHour.value % 12) + 12
-                                            }
-                                        }
-                                               },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "PM",
-                                    color = if (!isAM.value) Color.White else Color.Black,
-                                    fontSize = 11.sp,
-                                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                )
-                            }
+                    CalendarView(
+                        currentMonth = currentMonth.value,
+                        selectedDate = selectedDate.value,
+                        onDateSelected = { date ->
+                            selectedDate.value = date
+                            isCalendarVisible.value = false // date select karte hi calendar hide ho jaye
+                            Toast.makeText(context, "Selected: $date", Toast.LENGTH_SHORT).show()
+                        },
+                        onMonthChanged = { newMonth ->
+                            currentMonth.value = newMonth
                         }
-                    }
-
+                    )
                 }
 
+                // Time Selection Section
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding( 13.dp),
+//                    .border(width = 1.dp, color = TextGrey, shape = RoundedCornerShape(12.dp)),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Time",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        modifier = Modifier.weight(1f).padding(start = 8.dp)
+                    )
 
+                    Row(
+                        modifier = Modifier.wrapContentWidth(),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Hour and Minute Display
+
+                        Box(
+
+                            modifier = Modifier.background(
+                                color = Color(0xFFEFEFF0),
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                                .padding(
+                                    vertical = 4.dp,
+                                    horizontal = 12.dp
+                                ) // Add padding around the Box content
+                                .wrapContentSize(Alignment.Center)
+                        )
+                        {
+
+
+                            Text(
+                                text = "${
+                                    String.format(
+                                        "%02d:%02d",
+                                        selectedHour.value,
+                                        selectedMinute.value
+                                    )
+                                }",
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                color = TextDark,
+                                modifier = Modifier
+                                    .clickable { timePickerDialog.show() } // 🟢 Attach TimePickerDialog here
+                            )
+                        }
+
+                        Spacer(Modifier.width(8.dp))
+
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(9.dp))
+                                .background(Color(0xFFEEEEEF)) // Light gray capsule background
+                                .padding(2.dp) // Padding between capsule border and buttons
+                        ) {
+                            Row {
+                                Box(
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(30.dp)
+                                        .clip(RoundedCornerShape(7.dp))
+                                        .background(if (isAM.value) SelectedBlue else Color.Transparent)
+                                        .clickable {
+                                            //  isAM.value = true
+                                            if (!isAM.value) {
+                                                isAM.value = true
+                                                // 🔁 Convert to AM
+                                                if (selectedHour.value == 12) {
+                                                    selectedHour.value = 12 // noon -> 12 AM
+                                                } else if (selectedHour.value > 12) {
+                                                    selectedHour.value -= 12
+                                                }
+                                            }  },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "AM",
+                                        color = if (isAM.value) Color.White else Color.Black,
+                                        fontSize = 11.sp,
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                    )
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(30.dp)
+                                        .clip(RoundedCornerShape(7.dp))
+                                        .background(if (!isAM.value) SelectedBlue else Color.Transparent)
+                                        .clickable {
+                                            //    isAM.value = false
+                                            if (isAM.value) {
+                                                isAM.value = false
+                                                // 🔁 Convert to PM
+                                                if (selectedHour.value < 12) {
+                                                    selectedHour.value = (selectedHour.value % 12) + 12
+                                                }
+                                            }
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "PM",
+                                        color = if (!isAM.value) Color.White else Color.Black,
+                                        fontSize = 11.sp,
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                    )
+                                }
+                            }
+                        }
+
+                    }
+
+
+                }
             }
         }
     }
@@ -339,7 +354,7 @@ private fun MonthHeader(
         Text(
             text = "${month.month.getDisplayName(TextStyle.FULL, Locale.getDefault())} ${month.year}",
             color = Color.Black,
-            fontSize = 15.sp,
+            fontSize = 17.sp,
             fontFamily = FontFamily(Font(R.font.outfit_regular))
         )
 
@@ -356,7 +371,7 @@ private fun MonthHeader(
                         onMonthChanged(month.minusMonths(1))
                     }
             )
-Spacer(Modifier.width(28.dp))
+                Spacer(Modifier.width(28.dp))
 
             Image(
                 painter = painterResource(id = R.drawable.ic_previous_icon_arrow),
@@ -386,8 +401,9 @@ private fun DayNamesRow() {
         listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT").forEach { day ->
             Text(
                 text = day,
-                color = Color(0x4D3C3C43),
-                fontSize = 12.sp,
+                color = Color(0xFFC5C5C7),
+                fontSize = 13.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)

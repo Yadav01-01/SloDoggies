@@ -68,7 +68,7 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
             .fillMaxSize()
             .background(Color.White)
             .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 5.dp)
     ) {
 
         // Add the WhosThisPostAbout section at the top

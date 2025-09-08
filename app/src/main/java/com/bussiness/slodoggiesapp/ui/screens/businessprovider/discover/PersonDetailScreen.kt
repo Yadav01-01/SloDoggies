@@ -29,6 +29,9 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +66,7 @@ fun PersonDetailScreen(
     viewModel: PersonDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var isFollowed by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -192,14 +196,14 @@ fun PersonDetailScreen(
             ) {
                 FilledCustomButton(
                     modifier = Modifier.weight(1f).height(35.dp),
-                    buttonText = "Follow",
+                    buttonText = if (uiState.isFollowed) "Following" else "Follow",
                     onClickFilled = { viewModel.follow() },
                     buttonTextSize = 14
                 )
                 OutlineCustomButton(
                     modifier = Modifier.weight(1f).height(35.dp),
                     text = "Message",
-                    onClick = { viewModel.message() }
+                    onClick = { viewModel.message(navController) }
                 )
             }
 

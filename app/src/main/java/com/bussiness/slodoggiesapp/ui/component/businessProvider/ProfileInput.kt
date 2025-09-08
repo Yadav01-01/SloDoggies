@@ -229,7 +229,7 @@ fun ProfileImageWithUpload(
     }
 
     Box(
-        modifier = Modifier.size(120.dp),
+        modifier = Modifier.size(140.dp), // outer size = image size
         contentAlignment = Alignment.BottomEnd
     ) {
         // Circular image with border
@@ -237,7 +237,7 @@ fun ProfileImageWithUpload(
             modifier = Modifier
                 .size(140.dp)
                 .clip(CircleShape)
-                .border(4.dp, Color(0xFFE5EFF2), CircleShape)
+                .border(5.dp, Color(0xFFCEE1E6), CircleShape)
                 .background(Color.LightGray),
             contentAlignment = Alignment.Center
         ) {
@@ -247,28 +247,30 @@ fun ProfileImageWithUpload(
                 placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
                 error = painterResource(id = R.drawable.ic_black_profile_icon),
                 modifier = Modifier
-                    .size(64.dp)
-                    .background(TextGrey)
+                    .size(132.dp) // image थोड़ा border से छोटा रखा
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
         }
 
-            Icon(
-                painter = painterResource(id = R.drawable.upload_i),
-                contentDescription = "Upload",
-                tint = Color.Unspecified,
-                modifier = Modifier.wrapContentSize().clickable {
+        // Upload icon bottom-end पर
+        Icon(
+            painter = painterResource(id = R.drawable.upload_i),
+            contentDescription = "Upload",
+            tint = Color.Unspecified,
+            modifier = Modifier
+                .size(32.dp)
+                .background(Color.Transparent)
+                .clickable {
                     showPhotoPickerDialog(
                         context,
                         onCameraClick = { cameraLauncher.launch(null) },
                         onGalleryClick = { galleryLauncher.launch("image/*") }
                     )
                 }
-
-            )
-
+        )
     }
+
 }
 
 fun saveBitmapToCache(context: Context, bitmap: Bitmap): Uri {

@@ -54,4 +54,5 @@ object Routes {
     const val EDIT_PROFILE_SCREEN_PET = "editProfileScreenPet"
     const val PET_NOTIFICATION_SCREEN = "PetNotificationScreen"
     const val PET_EVENT_SCREEN = "PetEventScreen"
+    const val VERIFY_ACCOUNT_SCREEN = "VerifyAccountScreen"
 }

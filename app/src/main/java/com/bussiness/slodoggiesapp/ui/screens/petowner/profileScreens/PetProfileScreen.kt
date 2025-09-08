@@ -109,7 +109,7 @@ fun PetProfileScreen(navController: NavHostController) {
         PetInfoDialog(
             "Add Your Pet",
             onDismiss = { showPetInfoDialog = false },
-            addPet = { petInfo ->
+            addPet = {
                 // Handle pet info saving
                 showPetInfoDialog = false
                 petAddedSuccessDialog = true

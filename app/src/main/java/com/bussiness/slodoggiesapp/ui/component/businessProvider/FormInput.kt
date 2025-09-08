@@ -50,12 +50,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,49 +87,101 @@ fun FormHeadingText(
 }
 
 
+//@Composable
+//fun InputField(
+//    input: String,
+//    onValueChange: (String) -> Unit,
+//    placeholder: String,
+//    height: Dp = 54.dp,
+//    fontSize: Int = 15,
+//    modifier: Modifier = Modifier,
+//) {
+//    androidx.compose.material.OutlinedTextField(
+//        value = input,
+//        onValueChange = onValueChange,
+//        placeholder = {
+//            Text(
+//                text = placeholder,
+//                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                fontSize = fontSize.sp,
+//                color = Color(0xFFAEAEAE),
+//                maxLines = 1
+//            )
+//        },
+//        textStyle = TextStyle(
+//            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//            fontSize = fontSize.sp,
+//            color = Color.Black
+//        ),
+//        maxLines = 1,
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .height(height),
+//        shape = RoundedCornerShape(8.dp),
+//        colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+//            backgroundColor = Color.White,
+//            focusedBorderColor = Color(0xFFAEAEAE),
+//            unfocusedBorderColor = Color(0xFFAEAEAE),
+//            cursorColor = Color.Black,
+//            focusedLabelColor = Color.Transparent,
+//            unfocusedLabelColor = Color.Transparent,
+//            placeholderColor = Color(0xFFAEAEAE),
+//            textColor = Color.Black
+//        ),
+//        singleLine = false
+//    )
+//}
+
+
 @Composable
 fun InputField(
     input: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    height: Dp = 54.dp,
+    height: Dp = 48.dp,
     fontSize: Int = 15,
     modifier: Modifier = Modifier,
 ) {
-    androidx.compose.material.OutlinedTextField(
-        value = input,
-        onValueChange = onValueChange,
-        placeholder = {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color.White)
+            .border(
+                width = 1.dp,
+                color = Color(0xFFAEAEAE),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .padding(horizontal = 12.dp, vertical = 8.dp), // inner padding
+        contentAlignment = Alignment.CenterStart
+    ) {
+        // Placeholder
+        if (input.isEmpty()) {
             Text(
                 text = placeholder,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = fontSize.sp,
                 color = Color(0xFFAEAEAE),
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-        },
-        textStyle = TextStyle(
-            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-            fontSize = fontSize.sp,
-            color = Color.Black
-        ),
-        maxLines = 1,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(height),
-        shape = RoundedCornerShape(8.dp),
-        colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
-            backgroundColor = Color.White,
-            focusedBorderColor = Color(0xFFAEAEAE),
-            unfocusedBorderColor = Color(0xFFAEAEAE),
-            cursorColor = Color.Black,
-            focusedLabelColor = Color.Transparent,
-            unfocusedLabelColor = Color.Transparent,
-            placeholderColor = Color(0xFFAEAEAE),
-            textColor = Color.Black
-        ),
-        singleLine = false
-    )
+        }
+
+        // Text Input
+        BasicTextField(
+            value = input,
+            onValueChange = onValueChange,
+            singleLine = true,
+            textStyle = TextStyle(
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                fontSize = fontSize.sp,
+                color = Color.Black
+            ),
+            cursorBrush = SolidColor(Color.Black),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }
 
 
@@ -175,13 +229,13 @@ fun TopStepProgressBar(
     val progress = currentStep / totalSteps.toFloat()
 
     LinearProgressIndicator(
-        progress = progress,
-        color = PrimaryColor,
-        trackColor = Color(0xFFE5E5E5),
+        progress = { progress },
         modifier = modifier
             .fillMaxWidth()
-            .height(2.dp)
-            .clip(RoundedCornerShape(50))
+            .height(3.dp)
+            .clip(RoundedCornerShape(50)),
+        color = PrimaryColor,
+        trackColor = Color(0xFFE5E5E5),
     )
 }
 

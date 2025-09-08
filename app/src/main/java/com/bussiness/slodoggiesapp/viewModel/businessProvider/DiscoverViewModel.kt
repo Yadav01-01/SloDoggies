@@ -14,7 +14,7 @@ class DiscoverViewModel @Inject constructor() : ViewModel() {
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query
 
-    private val _category = MutableStateFlow("")
+    private val _category = MutableStateFlow("Pets Near You")
     val category: StateFlow<String> = _category
 
     private val _petPlaceDialog = MutableStateFlow(false)
@@ -22,6 +22,15 @@ class DiscoverViewModel @Inject constructor() : ViewModel() {
 
     private val _showShareContent = MutableStateFlow(false)
     val showShareContent: StateFlow<Boolean> = _showShareContent
+
+    private val _showReportDialog = MutableStateFlow(false)
+    val showReportDialog: StateFlow<Boolean> = _showReportDialog
+
+    private val _showSavedDialog = MutableStateFlow(false)
+    val showSavedDialog: StateFlow<Boolean> = _showSavedDialog
+
+    private val _showReportToast = MutableStateFlow(false)
+    val showReportToast: StateFlow<Boolean> = _showReportToast
 
     // In real project -> Replace with Repository call (Flow from API)
     private val _searchResults = MutableStateFlow(
@@ -56,6 +65,31 @@ class DiscoverViewModel @Inject constructor() : ViewModel() {
 
     fun dismissShareContent() {
         _showShareContent.value = false
+    }
+
+    fun showSavedDialog() {
+        _showSavedDialog.value = true
+    }
+
+    fun dismissSavedDialog() {
+        _showSavedDialog.value = false
+    }
+
+    fun showReportDialog() {
+        _showReportDialog.value = true
+    }
+
+    fun dismissReportDialog() {
+        _showReportDialog.value = false
+    }
+
+    fun showReportToast() {
+        _showReportDialog.value = false
+        _showReportToast.value = true
+    }
+
+    fun dismissReportToast() {
+        _showReportToast.value = false
     }
 }
 

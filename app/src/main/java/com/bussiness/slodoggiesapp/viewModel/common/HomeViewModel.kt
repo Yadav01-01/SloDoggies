@@ -1,9 +1,11 @@
 package com.bussiness.slodoggiesapp.viewModel.common
 
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.model.common.PostItem
 import com.bussiness.slodoggiesapp.model.common.WelcomeUiState
 import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -143,6 +145,10 @@ class HomeViewModel @Inject constructor(
 
     fun dismissReportToast() {
         _showReportToast.value = false
+    }
+
+    fun onVerify(navController: NavHostController, type: String, data: String) {
+        navController.navigate("${Routes.VERIFY_ACCOUNT_SCREEN}?type=$type&data=${data}")
     }
 
     private val _petInfoDialogCount = MutableStateFlow(0)

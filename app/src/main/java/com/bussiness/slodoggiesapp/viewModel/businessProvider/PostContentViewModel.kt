@@ -27,7 +27,7 @@ class PostContentViewModel @Inject constructor() : ViewModel() {
     val visibility: StateFlow<String> = _visibility
 
     fun updateWritePost(newWritePost: String) {
-        _writePost.value = newWritePost
+        _writePost.value = newWritePost.take(500)
     }
 
     fun updateHashtags(newHashtags: String) {
@@ -53,18 +53,12 @@ class PostContentViewModel @Inject constructor() : ViewModel() {
     private val _eventPostalCode = MutableStateFlow("")
     val eventPostalCode: StateFlow<String> = _eventPostalCode
 
-    private val _rsvpRequired = MutableStateFlow(false)
-    val rsvpRequired: StateFlow<Boolean> = _rsvpRequired
-
-    private val _enableComments = MutableStateFlow(false)
-    val enableComments: StateFlow<Boolean> = _enableComments
-
     fun updateEventTitle(newEventTitle: String) {
         _eventTitle.value = newEventTitle
     }
 
     fun updateEventDescription(newEventDescription: String) {
-        _eventDescription.value = newEventDescription
+        _eventDescription.value = newEventDescription.take(500)
     }
 
     fun updateEventPostalCode(newEventPostalCode: String) {

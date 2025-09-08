@@ -5,9 +5,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -46,6 +45,7 @@ import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 @Composable
 fun HomeScreen(
     navController: NavHostController,
+    authNavController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val posts = getSamplePosts()
@@ -84,9 +84,9 @@ fun HomeScreen(
         ) {
             items(posts) { post ->
                 when (post) {
-                    is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()})
+                    is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) })
                     is PostItem.SponsoredPost -> SponsoredPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()})
-                    is PostItem.NormalPost -> NormalPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() })
+                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() })
                 }
             }
         }
@@ -106,9 +106,13 @@ fun HomeScreen(
 
     if (showUserDetailsDialog) {
         UserDetailsDialog(
+            navController = navController,
             onDismiss = { viewModel.dismissUserDetailsDialog() },
             onSubmit = {
                 viewModel.onUserDetailsSubmit()
+            },
+            onVerify = { data,type ->
+                viewModel.onVerify(navController,data,type)
             }
         )
     }
@@ -200,9 +204,9 @@ fun getSamplePosts(): List<PostItem> {
             comments = 20,
             shares = 10,
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_social_media_post, MediaType.IMAGE),
                 MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
+                MediaItem(R.drawable.dummy_social_media_post, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
             )
         ),
         PostItem.CommunityPost(
@@ -245,7 +249,7 @@ fun getSamplePosts(): List<PostItem> {
             comments = 12,
             shares = 5,
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
+                MediaItem(R.drawable.dummy_social_media_post, MediaType.IMAGE),
                 MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE)
             )
         )

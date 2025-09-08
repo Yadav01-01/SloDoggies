@@ -58,7 +58,7 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 5.dp),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         item {

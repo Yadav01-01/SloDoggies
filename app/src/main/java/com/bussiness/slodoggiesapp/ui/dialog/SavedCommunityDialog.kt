@@ -1,26 +1,18 @@
-package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.dialog
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,25 +23,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-
 
 @Composable
-fun WelcomeDialog(
+fun SavedDialog(
     onDismiss: () -> Unit = {},
-    onSubmitClick: () -> Unit = {},
     @DrawableRes icon: Int,
     title: String,
     description: String,
-    button: String
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -118,43 +104,8 @@ fun WelcomeDialog(
                         lineHeight = 20.sp
                     )
 
-                    Spacer(Modifier.height(16.dp))
-
-                    Button(
-                        onClick = onSubmitClick,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(42.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryColor
-                        )
-                    ) {
-                        Text(
-                            text = button,
-                            fontSize = 14.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            fontWeight = FontWeight.Medium,
-                            color = Color.White
-                        )
-                    }
                 }
             }
         }
-    }
-}
-
-
-
-@Preview
-@Composable
-fun WelcomeDialogPreview() {
-    MaterialTheme {
-        WelcomeDialog(
-            title = "Welcome to SloDoggies!",
-            description = "We're excited you're here!  Rather than excited to have you. Thanks",
-            button = "Get Started",
-            icon = R.drawable.ic_party_popper_icon
-        )
     }
 }

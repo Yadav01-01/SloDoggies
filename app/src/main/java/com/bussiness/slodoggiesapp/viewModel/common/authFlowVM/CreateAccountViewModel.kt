@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.util.ErrorMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor( ) : ViewModel() {
+class SignUpViewModel @Inject constructor() : ViewModel() {
 
     private val _uiState = MutableStateFlow(SignUpUiState())
     val uiState: StateFlow<SignUpUiState> = _uiState
@@ -20,8 +21,38 @@ class SignUpViewModel @Inject constructor( ) : ViewModel() {
         _uiState.value = _uiState.value.copy(userName = newUserName)
     }
 
-    fun onEmailChange(newEmail: String) {
-        _uiState.value = _uiState.value.copy(email = newEmail)
+    fun onContactChange(newInput: String) {
+        val trimmedInput = newInput.trim()
+
+        val isEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedInput).matches()
+        val isPhone = trimmedInput.matches(Regex("^[6-9][0-9]{9}$")) // 10-digit
+
+        when {
+            isEmail -> {
+                _uiState.value = _uiState.value.copy(
+                    contactInput = trimmedInput,
+                    isValid = true,
+                    contactType = "email",
+                    errorMessage = null
+                )
+            }
+            isPhone -> {
+                _uiState.value = _uiState.value.copy(
+                    contactInput = trimmedInput,
+                    isValid = true,
+                    contactType = "phone",
+                    errorMessage = null
+                )
+            }
+            else -> {
+                _uiState.value = _uiState.value.copy(
+                    contactInput = trimmedInput,
+                    isValid = false,
+                    contactType = null,
+                    errorMessage = "Enter valid email or phone number"
+                )
+            }
+        }
     }
 
     fun onPasswordChange(newPassword: String) {
@@ -38,7 +69,7 @@ class SignUpViewModel @Inject constructor( ) : ViewModel() {
 
     fun dismissUpdateAccountDialog(navController: NavController) {
         _uiState.value = _uiState.value.copy(updateAccountDialog = false)
-        navController.navigate(Routes.MAIN_SCREEN){
+        navController.navigate(Routes.MAIN_SCREEN) {
             popUpTo(Routes.SIGNUP_SCREEN) { inclusive = true }
         }
     }
@@ -48,30 +79,30 @@ class SignUpViewModel @Inject constructor( ) : ViewModel() {
 
         when {
             state.userName.isBlank() -> {
-                onError("Username cannot be empty")
+                onError(ErrorMessage.USER_NAME_NOT_EMPTY)
                 return
             }
-            state.email.isBlank() -> {
-                onError("Email cannot be empty")
+            state.contactInput.isBlank() -> {
+                onError(ErrorMessage.EMAIL_PHONE_NOT_EMPTY)
                 return
             }
-            !android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches() -> {
-                onError("Invalid email address")
+            !state.isValid -> {
+                onError(state.errorMessage ?: ErrorMessage.INVALID_CONTACT)
                 return
             }
             state.password.length < 6 -> {
-                onError("Password must be at least 6 characters")
+                onError(ErrorMessage.PASSWORD_LIMIT)
                 return
             }
             state.password != state.confirmPassword -> {
-                onError("Passwords do not match")
+                onError(ErrorMessage.PASSWORD_NOT_MATCH)
                 return
             }
         }
 
         viewModelScope.launch {
             try {
-                // TODO: repository.createAccount(state.userName, state.email, state.password)
+                // TODO: repository.createAccount(state.userName, state.contactInput, state.password)
                 onSuccess()
             } catch (e: Exception) {
                 onError(e.message ?: "Failed to create account")
@@ -80,11 +111,13 @@ class SignUpViewModel @Inject constructor( ) : ViewModel() {
     }
 }
 
-
 data class SignUpUiState(
     val userName: String = "",
-    val email: String = "",
+    val contactInput: String = "",
+    val contactType: String? = null, // "email" or "phone"
+    val isValid: Boolean = false,
     val password: String = "",
     val confirmPassword: String = "",
-    var updateAccountDialog: Boolean = false
+    val updateAccountDialog: Boolean = false,
+    val errorMessage: String? = null
 )

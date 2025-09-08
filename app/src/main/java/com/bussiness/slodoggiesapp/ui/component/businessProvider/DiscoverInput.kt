@@ -1,9 +1,11 @@
 package com.bussiness.slodoggiesapp.ui.component.businessProvider
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,14 +28,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,8 +57,6 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.EventPost
 import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.model.petOwner.PetPlaceItem
-import com.bussiness.slodoggiesapp.model.businessProvider.SocialPost
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostImage
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostLikes
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostOptionsMenu
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -323,6 +325,7 @@ fun PetOwnerDetail(
                 fontSize = 10.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                 color = PrimaryColor,
+                lineHeight = 20.sp,
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .background(
@@ -440,77 +443,8 @@ fun PetPlaceCard(placeItem: PetPlaceItem,onItemClick: () -> Unit) {
 }
 
 @Composable
-fun ActivityPostCard(post: SocialPost,onShareClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(1.dp, Color(0xFFE5EFF2), RoundedCornerShape(10.dp))
-            .padding(vertical = 10.dp)
-            .background(Color.White)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp)
-        ) {
-            Image(
-                painter = painterResource(id = post.userImageRes),
-                contentDescription = "User Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-            )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = post.userName,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                    color = Color.Black
-                )
-                Text(
-                    text = post.daysAgo,
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
-
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = "Options",
-                tint = Color.Black
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = post.title,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(horizontal = 15.dp)
-        )
-
-        Text(
-            text = post.subtitle,
-            fontSize = 14.sp,
-            color = Color.DarkGray,
-            modifier = Modifier.padding(top = 2.dp).padding(horizontal = 15.dp),
-            lineHeight = 18.sp,
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        PostImage(mediaList = post.mediaList)
-        PostLikes(likes = post.likes, comments = post.comments, shares = post.shares, onShareClick = { onShareClick() })
-    }
-}
-
-@Composable
-fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: () -> Unit) {
+fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: () -> Unit,onSaveClick : () -> Unit) {
+    var isFollowed by remember { mutableStateOf(false) }
     Column(modifier = Modifier
         .background(Color.White)
         .border(1.dp, Color(0xFFE5EFF2), RoundedCornerShape(10.dp))
@@ -536,19 +470,48 @@ fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: ()
             Spacer(modifier = Modifier.width(8.dp))
 
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = event.userName,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    color = Color.Black
-                )
+                Row(verticalAlignment = Alignment.CenterVertically){
+                    Text(
+                        text = event.userName,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        color = Color.Black
+                    )
+
+                    Spacer(Modifier.width(8.dp))
+
+                    val interactionSource = remember { MutableInteractionSource() }
+
+                    OutlinedButton(
+                        onClick = { isFollowed = !isFollowed },
+                        modifier = Modifier
+                            .height(24.dp)
+                            .padding(horizontal = 10.dp),
+                        shape = RoundedCornerShape(6.dp),
+                        border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isFollowed) Color.White else PrimaryColor,
+                            contentColor = if (isFollowed) PrimaryColor else Color.White
+                        ),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                        interactionSource = interactionSource
+                    ) {
+                        Text(
+                            text = if (isFollowed) "Following" else "Follow",
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    }
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = event.label,
-                        fontSize = 9.sp,
+                        fontSize = 8.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         color = PrimaryColor,
+                        lineHeight = 20.sp,
                         modifier = Modifier
                             .padding(top = 4.dp)
                             .background(
@@ -569,18 +532,9 @@ fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: ()
                 }
             }
 
-            Button(
-                onClick = { event.onClickFollow() },
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                shape = RoundedCornerShape(6.dp),
-                contentPadding = PaddingValues(horizontal = 14.dp),
-                elevation = ButtonDefaults.buttonElevation(4.dp),
-                modifier = Modifier.height(30.dp)
-            ) {
-                Text("Follow", color = Color.White, fontSize = 12.sp, fontFamily = FontFamily(Font(R.font.outfit_regular)))
-            }
 
-            PostOptionsMenu (onReportClick = onReportClick)
+
+            PostOptionsMenu (modifier = Modifier, onReportClick = onReportClick)
         }
 
         // Title & Details
@@ -706,7 +660,7 @@ fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: ()
         }
 
         // Bottom Row: Likes, Comments, Shares, Bookmark
-        PostLikes(likes = event.likes, comments = event.comments, shares = event.shares, onShareClick = { onShareClick() })
+        PostLikes(likes = event.likes, comments = event.comments, shares = event.shares, onShareClick = { onShareClick() }, onSaveClick = { onSaveClick() })
     }
 }
 

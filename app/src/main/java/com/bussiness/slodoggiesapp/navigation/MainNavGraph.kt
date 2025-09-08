@@ -21,10 +21,12 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileSc
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.SponsoredAdsScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit.EditAddServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.VerifyOTPScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.HomeScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.VerifyAccount
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AboutUsScreen
@@ -56,7 +58,7 @@ fun MainNavGraph(
         startDestination = Routes.HOME_SCREEN,
         modifier = modifier
     ) {
-        composable(Routes.HOME_SCREEN) { HomeScreen(navController) }
+        composable(Routes.HOME_SCREEN) { HomeScreen(navController,authNavController) }
         composable(Routes.DISCOVER_SCREEN) { DiscoverScreen(navController) }
         composable(Routes.SERVICES_SCREEN) { ServiceScreen(navController) }
         composable(Routes.PROFILE_SCREEN) { ProfileScreen(navController) }
@@ -93,6 +95,18 @@ fun MainNavGraph(
         composable(Routes.EDIT_PROFILE_SCREEN_PET) { EditProfileScreenPet(navController) }
         composable(Routes.PET_NOTIFICATION_SCREEN) { PetNotificationsScreen(navController) }
         composable(Routes.PET_EVENT_SCREEN) { EventScreen(navController) }
+//        composable(Routes.VERIFY_ACCOUNT_SCREEN) { VerifyAccount(navController) }
+        composable(
+            route = "${Routes.VERIFY_ACCOUNT_SCREEN}?type={type}&data={data}",
+            arguments = listOf(
+                navArgument("type") { type = NavType.StringType },
+                navArgument("data") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val type = backStackEntry.arguments?.getString("type") ?: "default"
+            val data = backStackEntry.arguments?.getString("data") ?: ""
+            VerifyAccount(navController, type = type,data = data)
+        }
 
         composable(
             route = "${Routes.EDIT_ADD_SERVICE_SCREEN}/{type}",

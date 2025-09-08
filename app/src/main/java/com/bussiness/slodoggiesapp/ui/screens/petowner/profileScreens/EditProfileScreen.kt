@@ -33,6 +33,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
@@ -73,6 +75,20 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
 
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(navController.currentBackStackEntry) {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<String>("verification_result")
+            ?.observe(lifecycleOwner) { result ->
+                when (result) {
+                    "dialogPhone" -> viewModel.setPhoneVerified(true)
+                    "dialogEmail" -> viewModel.setEmailVerified(true)
+                }
+            }
+    }
 
     val launcherGallery = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -142,7 +158,7 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
                         modifier = Modifier
                             .size(130.dp)
                             .clip(CircleShape)
-                            .border(width = 3.dp, color = Color(0xFF949494), shape = CircleShape)
+
                     ) {
                         AsyncImage(
                             model = uiState.profileImageUri,
@@ -191,7 +207,7 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
             PhoneNumber(
                 phone = uiState.mobileNumber,
                 onPhoneChange = { viewModel.updateMobileNumber(it) },
-                onVerify = viewModel::verifyMobile,
+                onVerify = { viewModel.onVerify(navController,"dialogPhone",uiState.mobileNumber) },
                 isVerified = uiState.isMobileVerified
             )
 
@@ -204,7 +220,7 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
             EmailTextField(
                 email = uiState.email,
                 onEmailChange = { viewModel.updateEmail(it) },
-                onVerify = viewModel::verifyEmail,
+                onVerify = { viewModel.onVerify(navController,"dialogEmail",uiState.email) },
                 isVerified = uiState.isEmailVerified,
                 placeholder = "merry@Slodoggies.com"
             )

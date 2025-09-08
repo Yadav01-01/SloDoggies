@@ -42,7 +42,7 @@ fun AddServiceScreen(
 
         TopHeadingText(textHeading = "Add Services", onBackClick = { navController.popBackStack() })
 
-        TopStepProgressBar(currentStep = 2, totalSteps = 3, modifier = Modifier.fillMaxWidth().height(6.dp))
+        TopStepProgressBar(currentStep = 2, totalSteps = 3, modifier = Modifier.fillMaxWidth())
 
         Column(
             modifier = Modifier

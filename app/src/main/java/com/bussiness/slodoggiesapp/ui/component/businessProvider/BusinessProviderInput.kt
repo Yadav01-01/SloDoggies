@@ -11,26 +11,26 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -40,12 +40,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -53,7 +54,7 @@ import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
-import java.time.format.TextStyle
+import kotlinx.coroutines.delay
 
 @Composable
 fun TopIndicatorBar(){
@@ -116,7 +117,7 @@ fun EmailInputField(
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = "Enter Email",
+                text = "Enter Email/ Phone ",
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = 14.sp,
                 color = TextGrey
@@ -207,10 +208,10 @@ fun ContinueButton(
 @Composable
 fun OtpInputField(
     otpText: String,
-    onOtpTextChange: (String) -> Unit
+    onOtpTextChange: (String) -> Unit,
+    keyboardController: SoftwareKeyboardController?,
+    focusRequester: FocusRequester,
 ) {
-    val focusRequester = remember { FocusRequester() }
-
     // Clickable Column without ripple effect
     Column(
         modifier = Modifier
@@ -268,11 +269,50 @@ fun OtpInputField(
                 .height(1.dp)
                 .focusable(),
             keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.NumberPassword
-            )
+                keyboardType = KeyboardType.NumberPassword,
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    keyboardController?.hide()
+                }
+            ),
         )
     }
 }
+
+@Composable
+fun OtpTimer(
+    totalTime: Int = 24, // total time in seconds
+    onTimerEnd: () -> Unit = {} // callback when timer finishes
+) {
+    var timeLeft by remember { mutableStateOf(totalTime) }
+
+    // Countdown effect
+    LaunchedEffect(key1 = timeLeft) {
+        if (timeLeft > 0) {
+            delay(1000L) // wait 1 second
+            timeLeft--
+        } else {
+            onTimerEnd()
+        }
+    }
+
+    // Format as mm:ss
+    val minutes = timeLeft / 60
+    val seconds = timeLeft % 60
+    val formattedTime = String.format("%02d:%02d", minutes, seconds)
+
+    Text(
+        text = formattedTime,
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.Center,
+        fontSize = 14.sp,
+        fontFamily = FontFamily(Font(R.font.outfit_bold)),
+        color = Color.Black
+    )
+}
+
 
 
 @Composable

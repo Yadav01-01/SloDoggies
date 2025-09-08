@@ -126,7 +126,6 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
                         modifier = Modifier
                             .size(130.dp)
                             .clip(CircleShape)
-                            .border(3.dp, Color(0xFF949494), CircleShape)
                     ) {
                         AsyncImage(
                             model = uiState.profileImageUri,

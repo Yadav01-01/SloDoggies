@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,7 +61,7 @@ fun SponsoredPostItem(post: PostItem.SponsoredPost,onReportClick: () -> Unit,onS
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -114,7 +115,7 @@ private fun PostHeader(user: String, time: String, onReportClick: () -> Unit) {
             }
         }
 
-        PostOptionsMenu(onReportClick = onReportClick)
+        PostOptionsMenu(modifier = Modifier.padding(end = 15.dp), onReportClick = onReportClick)
     }
 }
 
@@ -267,12 +268,19 @@ private fun IconTextButton(
     text: String,
     tint: Color = Color.Black,
     onClick: (() -> Unit)? = null,
-
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .then(if (onClick != null) Modifier else Modifier)
+        modifier = modifier.then(
+            if (onClick != null) {
+                Modifier.clickable (
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ){ onClick() }
+            } else {
+                Modifier
+            }
+        )
     ) {
         Icon(
             painter = painterResource(id = iconRes),
@@ -289,6 +297,7 @@ private fun IconTextButton(
         )
     }
 }
+
 
 @Preview(showBackground = true, backgroundColor = 0xFFF5F5F5)
 @Composable

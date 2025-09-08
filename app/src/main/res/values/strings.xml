@@ -22,6 +22,7 @@
     <string name="phone_number">Phone Number</string>
     <string name="email">Email</string>
     <string name="verify">Verify</string>
+    <string name="verify_otp">Verify OTP</string>
     <string name="bio">Bio</string>
     <string name="enter_bio">Enter Bio...</string>
     <string name="submit">Submit</string>
@@ -132,6 +133,8 @@
     <string name="Zip_Code">Zip Code</string>
     <string name="post">Post</string>
     <string name="whos_this_post_about">Who\'s This Post About?</string>
+    <string name="Event_Saved">Event Saved!</string>
+    <string name="saved_description">Your event has been successfully added — we can’t wait for you and your furry friends to join the fun!</string>
 
 
 </resources>

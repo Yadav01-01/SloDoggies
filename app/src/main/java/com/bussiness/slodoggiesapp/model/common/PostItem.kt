@@ -5,6 +5,7 @@ sealed class PostItem {
                              val role: String,
                              val time: String,
                              val caption: String,
+//                             val hashtag: String,
                              val description: String,
                              val mediaList: List<MediaItem>,
                              val likes: Int,
@@ -37,13 +38,6 @@ sealed class PostItem {
                              val comments: Int,
                              val shares: Int) : PostItem()
 }
-
-
-
-//enum class MediaType {
-//    IMAGE,
-//    VIDEO
-//}
 
 data class Comment(
     val id: String,

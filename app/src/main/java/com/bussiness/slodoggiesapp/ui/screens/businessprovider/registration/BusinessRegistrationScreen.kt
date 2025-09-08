@@ -123,7 +123,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             MediaUploadSection()
 
-            Spacer(Modifier.height(15.dp))
+            Spacer(Modifier.height(8.dp))
 
             FormHeadingText(stringResource(R.string.Category))
 

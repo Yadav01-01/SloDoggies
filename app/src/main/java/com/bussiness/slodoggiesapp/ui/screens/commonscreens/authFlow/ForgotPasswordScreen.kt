@@ -123,8 +123,8 @@ fun ForgotPasswordScreen(
             val annotatedText = buildAnnotatedString {
                 pushStyle(
                     SpanStyle(
-                        color = TextGrey,
-                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF9C9C9C),
+                        fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium))
                     )
@@ -136,7 +136,7 @@ fun ForgotPasswordScreen(
                 pushStyle(
                     SpanStyle(
                         color = PrimaryColor,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                         textDecoration = TextDecoration.Underline,
                         fontFamily = FontFamily(Font(R.font.outfit_medium))

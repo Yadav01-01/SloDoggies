@@ -88,12 +88,10 @@ fun CommunityChatScreen(
                     .padding(bottom = 75.dp)
             )
 
+
             BottomMessageBar(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                message = currentMessage,
-                onMessageChange = viewModel::onMessageChange,
-                onAttachmentClick = { /* handle attachment */ },
-                onSendClick = viewModel::sendMessage
+                viewModel = viewModel
             )
         }
     }

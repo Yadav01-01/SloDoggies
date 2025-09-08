@@ -1,8 +1,10 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,14 +19,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -49,18 +49,19 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
-import com.bussiness.slodoggiesapp.ui.component.shareApp
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
 @Composable
-fun CommunityPostItem(postItem: PostItem.CommunityPost,onReportClick: () -> Unit,onShareClick: () -> Unit){
+fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> Unit,onReportClick: () -> Unit,onShareClick: () -> Unit){
+    var isFollowed by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(12.dp),
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(10.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -83,17 +84,47 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onReportClick: () -> Unit
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = postItem.userName,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 13.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        color = Color.Black
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically){
+                        Text(
+                            text = postItem.userName,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            color = Color.Black
+                        )
+
+                        Spacer(Modifier.width(8.dp))
+
+                        val interactionSource = remember { MutableInteractionSource() }
+
+                        OutlinedButton(
+                            onClick = { isFollowed = !isFollowed },
+                            modifier = Modifier
+                                .height(24.dp)
+                                .padding(horizontal = 10.dp),
+                            shape = RoundedCornerShape(6.dp),
+                            border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isFollowed) Color.White else PrimaryColor,
+                                contentColor = if (isFollowed) PrimaryColor else Color.White
+                            ),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                            interactionSource = interactionSource
+                        ) {
+                            Text(
+                                text = if (isFollowed) "Following" else "Follow",
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        }
+                    }
+
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = postItem.label,
                             fontSize = 8.sp,
+                            lineHeight = 20.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             color = PrimaryColor,
                             modifier = Modifier
@@ -116,25 +147,10 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onReportClick: () -> Unit
                     }
                 }
 
-                Button(
-                    onClick = { postItem.onClickFollow() },
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                    shape = RoundedCornerShape(6.dp),
-                    contentPadding = PaddingValues(horizontal = 14.dp),
-                    modifier = Modifier.height(25.dp)
-                ) {
-                    Text(
-                        "Follow",
-                        color = Color.White,
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular))
-                    )
-                }
-
-                PostOptionsMenu(onReportClick = onReportClick )
+                PostOptionsMenu(modifier = Modifier, onReportClick = onReportClick )
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(2.dp))
 
             // Event Title and Date
             Row(
@@ -240,7 +256,8 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onReportClick: () -> Unit
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Black)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .clickable { onJoinedCommunity() },
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text("Join Community", modifier = Modifier.padding(end = 35.dp),
@@ -264,6 +281,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onReportClick: () -> Unit
     }
 
 }@Composable
+
 fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit) {
     var isLiked by remember { mutableStateOf(false) }
     var isBookmarked by remember { mutableStateOf(false) }
@@ -271,7 +289,7 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
     val context = LocalContext.current
     Row(
         modifier = Modifier
-            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .padding(horizontal = 12.dp, vertical = 2.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -283,7 +301,10 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
             Icon(
                 painter = painterResource(  id = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon),
                 contentDescription = "Paw",
-                modifier = Modifier.size(25.dp).clickable {
+                modifier = Modifier.size(25.dp).clickable(
+                    indication = null,
+                    interactionSource =  remember { MutableInteractionSource() }
+                ) {
                     isLiked = !isLiked // Toggle the liked state
                 },
                 tint = Color.Unspecified
@@ -295,30 +316,17 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
                 fontWeight = FontWeight.Medium,
                 color = if (isLiked) Color(0xFF258694) else Color.Black
             )
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Comments section
-            Icon(
-                painter = painterResource(id = R.drawable.ic_chat_bubble_icon),
-                contentDescription = "Comments",
-                modifier = Modifier.size(25.dp).clickable {
-                    // isLiked = !isLiked // Toggle the liked state
-                    showCommentsDialog = true
-                }
-            )
-
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = comments.toString(),
-                fontSize = 16.sp,
-            )
+//
             Spacer(modifier = Modifier.width(16.dp))
 
             // Shares section
             Icon(
                 painter = painterResource(id = R.drawable.ic_share_icons),
                 contentDescription = "Shares",
-                modifier = Modifier.size(25.dp).clickable { onShareClick() }
+                modifier = Modifier.size(25.dp).clickable(
+                    indication = null,
+                    interactionSource =  remember { MutableInteractionSource() }
+                ) { onShareClick() }
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
@@ -350,8 +358,6 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
 
     }
     if (showCommentsDialog) {
-
-
         val sampleComments = listOf(
             Comment(
                 id = "1",

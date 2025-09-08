@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,6 +69,8 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetInfoViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.UiEvent
+import kotlinx.coroutines.flow.collectLatest
 import java.io.File
 
 
@@ -76,12 +79,27 @@ fun PetInfoDialog(
     title: String,
     onDismiss: () -> Unit = {},
     addPet: (PetInfo) -> Unit = {},
-    onContinueClick : () -> Unit ,
+    onContinueClick : (PetInfo) -> Unit ,
     onProfile : Boolean = false
 ) {
     val viewModel: PetInfoViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    var selectedAge by remember { mutableStateOf("") }
+    val context =  LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is UiEvent.ShowToast -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+                is UiEvent.ContinueSuccess -> {
+                    onContinueClick(event.petInfo)
+                }
+                is UiEvent.AddPetSuccess -> {
+                    addPet(event.petInfo)
+                }
+            }
+        }
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -195,10 +213,10 @@ fun PetInfoDialog(
                     Spacer(Modifier.height(8.dp))
 
                     CustomDropdownBox(
-                        label = selectedAge.ifEmpty { "Enter pet age" },
-                        items = listOf("0-5 Years", "5-10 Years", "10-20 Years"),
-                        selectedItem = selectedAge,
-                        onItemSelected = { selectedAge = it }
+                        label = uiState.petAge.ifEmpty { "Enter pet age" },
+                        items = viewModel.ageOptions,
+                        selectedItem = uiState.petAge,
+                        onItemSelected = { viewModel.updatePetAge(it) }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -218,13 +236,13 @@ fun PetInfoDialog(
                     ) {
                         CommonWhiteButton(
                             text = if (onProfile) stringResource(R.string.cancel)  else stringResource(R.string.continue_btn),
-                            onClick = { onContinueClick() },
+                            onClick = { viewModel.onContinue() },
                             modifier = Modifier.weight(1f)
                         )
                         CommonBlueButton(
                             text = stringResource(R.string.add_pet),
                             fontSize = 16.sp,
-                            onClick = { addPet(uiState.toPetInfo()) },
+                            onClick = { viewModel.onAddPet() },
                             modifier = Modifier.weight(1f)
                         )
                     }

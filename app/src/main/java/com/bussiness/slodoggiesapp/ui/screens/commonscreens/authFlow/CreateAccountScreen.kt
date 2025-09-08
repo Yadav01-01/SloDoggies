@@ -74,7 +74,7 @@ fun SignUpScreen(
         ) {
             TopIndicatorBar()
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             Text(
                 text = stringResource(R.string.Create_your_account),
@@ -95,16 +95,16 @@ fun SignUpScreen(
                 onValueChange = { viewModel.onUserNameChange(it) }
             )
 
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             FormHeadingText(stringResource(R.string.email_and_phone), modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(5.dp))
             EmailInputField(
-                email = state.email,
-                onValueChange = { viewModel.onEmailChange(it) }
+                email = state.contactInput,
+                onValueChange = { viewModel.onContactChange(it) }
             )
 
-            Spacer(Modifier.height(15.dp))
+            Spacer(Modifier.height(10.dp))
 
             FormHeadingText(stringResource(R.string.password), modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(5.dp))
@@ -113,16 +113,17 @@ fun SignUpScreen(
                 onPasswordChange = { viewModel.onPasswordChange(it) }
             )
 
-            Spacer(Modifier.height(15.dp))
+            Spacer(Modifier.height(10.dp))
 
             FormHeadingText(stringResource(R.string.confirm_password), modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(5.dp))
             PasswordInput(
                 password = state.confirmPassword,
-                onPasswordChange = { viewModel.onConfirmPasswordChange(it) }
+                onPasswordChange = { viewModel.onConfirmPasswordChange(it) },
+                placeholder = "Re-enter Password"
             )
 
-            Spacer(Modifier.height(35.dp))
+            Spacer(Modifier.height(20.dp))
 
             ContinueButton(
                 onClick = {
@@ -144,7 +145,7 @@ fun SignUpScreen(
                 pushStyle(
                     SpanStyle(
                         color = TextGrey,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium))
                     )
@@ -156,7 +157,7 @@ fun SignUpScreen(
                 pushStyle(
                     SpanStyle(
                         color = PrimaryColor,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         textDecoration = TextDecoration.Underline

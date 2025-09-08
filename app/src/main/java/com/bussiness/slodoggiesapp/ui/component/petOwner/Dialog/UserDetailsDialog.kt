@@ -16,6 +16,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,6 +33,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.common.BioField
@@ -44,12 +48,28 @@ import com.bussiness.slodoggiesapp.viewModel.petOwner.UserDetailsViewModel
 
 @Composable
 fun UserDetailsDialog(
+    navController: NavHostController,
     viewModel: UserDetailsViewModel = hiltViewModel(),
     onDismiss: () -> Unit,
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit,
+    onVerify: (String, String) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(navController.currentBackStackEntry) {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.getLiveData<String>("verification_result")
+            ?.observe(lifecycleOwner) { result ->
+                when (result) {
+                    "dialogPhone" -> viewModel.setPhoneVerified(true)
+                    "dialogEmail" -> viewModel.setEmailVerified(true)
+                }
+            }
+    }
+
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -128,9 +148,10 @@ fun UserDetailsDialog(
                     PhoneNumber(
                         phone = state.phoneNumber,
                         onPhoneChange = viewModel::onPhoneChanged,
-                        onVerify = viewModel::verifyEmail,
-                        isVerified = state.isEmailVerified
+                        onVerify = { onVerify( "dialogPhone",state.phoneNumber) },
+                        isVerified = state.isPhoneVerified
                     )
+
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -143,7 +164,7 @@ fun UserDetailsDialog(
                         email = state.email,
                         isVerified = state.isEmailVerified,
                         onEmailChange = viewModel::onEmailChanged,
-                        onVerify = { viewModel.verifyEmail() }
+                        onVerify = { onVerify("dialogEmail",state.email) }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))

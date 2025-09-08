@@ -52,12 +52,15 @@ fun NavGraph(navController: NavHostController) {
             composable(Routes.NEW_PASSWORD_SCREEN) { NewPasswordScreen(navController) }
 
             composable(
-                route = "${Routes.VERIFY_OTP}?type={type}",
-                arguments = listOf(navArgument("type") { type = NavType.StringType })
+                route = "${Routes.VERIFY_OTP}?type={type}&data={data}",
+                arguments = listOf(
+                    navArgument("type") { type = NavType.StringType },
+                )
             ) { backStackEntry ->
                 val type = backStackEntry.arguments?.getString("type") ?: "default"
                 VerifyOTPScreen(navController, type = type)
             }
+
 
             // --- Business Provider Screens ---
             composable(Routes.BUSINESS_REGISTRATION) { BusinessRegistrationScreen(navController) }

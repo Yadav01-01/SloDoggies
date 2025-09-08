@@ -1,8 +1,10 @@
 package com.bussiness.slodoggiesapp.viewModel.common
 
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
+import com.bussiness.slodoggiesapp.navigation.Routes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -33,7 +35,8 @@ data class PersonDetailUiState(
         GalleryItem(R.drawable.dog2),
         GalleryItem(R.drawable.dog1),
         GalleryItem(R.drawable.dog2)
-    )
+    ),
+    var isFollowed: Boolean = false
 )
 
 data class PetOwnerDetailUi(
@@ -53,12 +56,16 @@ class PersonDetailViewModel @Inject constructor(): ViewModel() {
     }
 
     fun follow() {
-        // TODO: integrate API for follow/unfollow
-        println("Follow clicked for ${_uiState.value.name}")
+        _uiState.update { it.copy(isFollowed = !it.isFollowed) }
+        if (_uiState.value.isFollowed) {
+            println("Unfollowed ${_uiState.value.name}")
+        } else {
+            println("Followed ${_uiState.value.name}")
+        }
     }
 
-    fun message() {
+    fun message(navController: NavHostController) {
         // TODO: integrate chat API
-        println("Message clicked for ${_uiState.value.name}")
+        navController.navigate(Routes.CHAT_SCREEN)
     }
 }

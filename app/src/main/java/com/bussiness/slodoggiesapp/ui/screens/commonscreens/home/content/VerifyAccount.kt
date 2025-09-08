@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
+package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -36,29 +36,25 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OtpInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OtpTimer
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
 import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
-import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
-import com.bussiness.slodoggiesapp.viewModel.common.VerifyOTPViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.VerifyAccountViewModel
 import kotlinx.coroutines.android.awaitFrame
 
 @Composable
-fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: VerifyOTPViewModel = hiltViewModel()) {
+fun VerifyAccount(navController: NavHostController,data:String,type:String,viewModel: VerifyAccountViewModel = hiltViewModel()) {
 
     val otp by viewModel.otp.collectAsState()
-    val successDialog by viewModel.successDialog.collectAsState()
     val context = LocalContext.current
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -111,7 +107,7 @@ fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: Veri
                             color = PrimaryColor
                         )
                     ) {
-                        append("example@gmail.com")
+                        append(data)
                     }
                 },
                 style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
@@ -123,12 +119,7 @@ fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: Veri
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            OtpInputField(
-                otp,
-                onOtpTextChange = { viewModel.updateOtp(it) },
-                keyboardController,
-                focusRequester
-            )
+            OtpInputField(otp, onOtpTextChange = { viewModel.updateOtp(it) },keyboardController,focusRequester)
 
             Spacer(Modifier.height(10.dp))
 
@@ -136,7 +127,6 @@ fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: Veri
                 // Timer finished → show resend button or auto-request new OTP
                 Log.d("OtpScreen", "Timer ended")
             }
-
 
             Spacer(Modifier.height(10.dp))
 
@@ -158,8 +148,8 @@ fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: Veri
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     color = PrimaryColor
-    )
-}
+                )
+            }
 
             Spacer(Modifier.height(22.dp))
 
@@ -186,21 +176,4 @@ fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: Veri
                 .wrapContentWidth()
         )
     }
-
-    if (successDialog){
-        UpdatedDialogWithExternalClose(
-            onDismiss = { viewModel.dismissSuccessDialog(navController) },
-            iconResId = R.drawable.ic_party_popper_icon,
-            text = stringResource(R.string.account_created_sucessfully),
-            description = ""
-        )
-    }
-}
-
-
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun VerifyOTPScreenPreview() {
-    val dummyNavController = rememberNavController()
-    VerifyOTPScreen(navController = dummyNavController, "")
 }

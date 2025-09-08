@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -88,12 +89,16 @@ class EditProfileViewModel @Inject constructor() : ViewModel() {
     }
 
     // --- Verification Flags ---
-    fun verifyMobile() {
-        _uiState.value = _uiState.value.copy(isMobileVerified = true)
+    fun setPhoneVerified(verified: Boolean) {
+        _uiState.value = _uiState.value.copy(isMobileVerified = verified)
     }
 
-    fun verifyEmail() {
-        _uiState.value = _uiState.value.copy(isEmailVerified = true)
+    fun setEmailVerified(verified: Boolean) {
+        _uiState.value = _uiState.value.copy(isEmailVerified = verified)
+    }
+
+    fun onVerify(navController: NavHostController, type: String, data: String) {
+        navController.navigate("${Routes.VERIFY_ACCOUNT_SCREEN}?type=$type&data=${data}")
     }
 
     companion object {

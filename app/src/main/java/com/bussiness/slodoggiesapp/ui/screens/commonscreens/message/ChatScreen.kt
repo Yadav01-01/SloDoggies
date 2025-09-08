@@ -92,11 +92,9 @@ fun ChatScreen(
 
             BottomMessageBar(
                 modifier = Modifier.align(Alignment.BottomCenter),
-                message = currentMessage,
-                onMessageChange = viewModel::onMessageChange,
-                onAttachmentClick = { /* handle attachment */ },
-                onSendClick = viewModel::sendMessage
+                viewModel = viewModel
             )
+
         }
 
         // Dialogs remain outside main chat area

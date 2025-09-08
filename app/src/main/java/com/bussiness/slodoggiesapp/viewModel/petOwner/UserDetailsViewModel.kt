@@ -44,12 +44,22 @@ class UserDetailsViewModel @Inject constructor() : ViewModel() {
         _uiState.update { it.copy(email = email) }
     }
 
+    fun setPhoneVerified(verified: Boolean) {
+        _uiState.value = _uiState.value.copy(isPhoneVerified = verified)
+    }
+
+    fun setEmailVerified(verified: Boolean) {
+        _uiState.value = _uiState.value.copy(isEmailVerified = verified)
+    }
+
+
     fun verifyEmail() {
         viewModelScope.launch {
             // fake verify for now
             _uiState.update { it.copy(isEmailVerified = true) }
         }
     }
+
 
     // Validate name and profile image
     fun submitDetails(context: Context, onSuccess: () -> Unit) {

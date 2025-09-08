@@ -140,7 +140,7 @@ fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
     }
@@ -172,7 +172,7 @@ fun OnboardingPageContent(
                 .align(Alignment.BottomCenter)
                 .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                 .background(Color.White)
-                .padding(horizontal = 24.dp, vertical = 16.dp)
+                .padding(horizontal = 20.dp, vertical = 16.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
@@ -204,6 +204,7 @@ fun OnboardingPageContent(
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     lineHeight = 24.sp,
+                    fontSize = 17.sp,
                     textAlign = TextAlign.Center,
                     color = Color.Black
                 )
