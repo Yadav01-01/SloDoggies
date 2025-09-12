@@ -42,6 +42,7 @@
     <string name="upload_media">Upload Media</string>
     <string name="event_title">Event Title</string>
     <string name="event_des">Event Description</string>
+    <string name="enter_des">Enter Description</string>
     <string name="event_sdate">Event Start Date And Time</string>
     <string name="event_edate">Event End Date And Time</string>
     <string name="event_duration">Event Duration</string>
@@ -118,6 +119,7 @@
     <string name="enter_mobile_no">Enter Mobile Number</string>
     <string name="reply">Reply</string>
     <string name="edit_profile">Edit Profile</string>
+    <string name="posts">Posts</string>
     <string name="provide_name">Provider Name</string>
     <string name="Enter_Bio">Enter Bio</string>
     <string name="Save_Changes">Save Changes</string>
@@ -129,12 +131,16 @@
     <string name="Write_Post">Write Post</string>
     <string name="Enter_Description">Enter Description</string>
     <string name="Hashtags">Hashtags</string>
-    <string name="Enter_Hashtags">Enter Hashtags</string>
+    <string name="Enter_Hashtags">Enter #tags</string>
     <string name="Zip_Code">Zip Code</string>
     <string name="post">Post</string>
     <string name="whos_this_post_about">Who\'s This Post About?</string>
     <string name="Event_Saved">Event Saved!</string>
     <string name="saved_description">Your event has been successfully added — we can’t wait for you and your furry friends to join the fun!</string>
+    <string name="Delete_Post">Delete Post</string>
+    <string name="Delete_desc">Are you sure you want to delete this post?\nThis action cannot be undone.</string>
+    <string name="Duration">Duration</string>
+    <string name="send">Send</string>
 
 
 </resources>

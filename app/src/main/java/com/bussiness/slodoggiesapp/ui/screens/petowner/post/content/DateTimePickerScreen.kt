@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,7 +25,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -56,14 +54,11 @@ import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.util.Calendar
 import java.util.Locale
 
-private val LightBackground = Color(0xFFF5F5F5)
 private val TextDark = Color(0xFF333333)
 private val TextGray = Color(0xFF999999)
 private val SelectedBlue = Color(0xFF258694)
-private val BorderGray = Color(0xFF949494)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -113,51 +108,46 @@ fun DateTimePickerScreen(
         )
 
         // Selected Date and Time Display
-        OutlinedTextField(
-            value = if (selectedDate.value != null) {
-                val formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy")
-                "${selectedDate.value!!.format(formatter)} " +
-                        String.format("%02d:%02d", selectedHour.value, selectedMinute.value) +
-                        " ${if (isAM.value) "AM" else "PM"}"
-            } else {
-                ""
-            },
-            onValueChange = { },
-            readOnly = true,
-            textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = 14.sp,
-                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                color = Color.Black
-            ),
-            placeholder = {
-                Text(
-                    "Select Date And Time",
-                    color = TextGrey,
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular))
-                )
-            },
-            trailingIcon = {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_date_iconn),
-                    contentDescription = "Calendar",
-                    modifier = Modifier
-                        .size(22.dp)
-                        .clickable { isCalendarVisible.value = true }
-                )
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color(0xFFAEAEAE),
-                unfocusedIndicatorColor = Color(0xFFAEAEAE)
-            ),
-            shape = RoundedCornerShape(8.dp),
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
+                .border(1.dp, Color(0xFFAEAEAE), RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp))
                 .clickable { isCalendarVisible.value = true }
-        )
+                .padding(horizontal = 12.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            if (selectedDate.value != null) {
+                val formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy")
+                Text(
+                    text = "${selectedDate.value!!.format(formatter)} " +
+                            String.format("%02d:%02d", selectedHour.value, selectedMinute.value) +
+                            " ${if (isAM.value) "AM" else "PM"}",
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    color = Color.Black
+                )
+            } else {
+                Text(
+                    text = "Select Date And Time",
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    color = TextGrey
+                )
+            }
+
+            // Calendar icon on right side
+            Image(
+                painter = painterResource(id = R.drawable.ic_date_iconn),
+                contentDescription = "Calendar",
+                modifier = Modifier
+                    .size(22.dp)
+                    .align(Alignment.CenterEnd)
+            )
+        }
+
+
 
 
         // Calendar Section
@@ -265,7 +255,7 @@ fun DateTimePickerScreen(
                                             //  isAM.value = true
                                             if (!isAM.value) {
                                                 isAM.value = true
-                                                // 🔁 Convert to AM
+
                                                 if (selectedHour.value == 12) {
                                                     selectedHour.value = 12 // noon -> 12 AM
                                                 } else if (selectedHour.value > 12) {
@@ -452,12 +442,14 @@ private fun DayCell(
     isToday: Boolean,
     onClick: () -> Unit
 ) {
+    val today = LocalDate.now()
+    val isPast = date != null && date.isBefore(today) // ✅ check past date
     Box(
         modifier = Modifier
             .size(40.dp)
             .padding(2.dp)
             .clip(CircleShape)
-            .clickable(enabled = date != null, onClick = onClick)
+            .clickable(enabled = date != null && !isPast, onClick = onClick)
             .then(
                 when {
                     isSelected -> Modifier.background(Color(0xFFE5EFF2))
@@ -471,6 +463,7 @@ private fun DayCell(
             Text(
                 text = date.dayOfMonth.toString(),
                 color = when {
+                    isPast -> TextGray.copy(alpha = 0.5f)
                     isSelected -> Color(0xFF258694)
                     isToday && isCurrentMonth -> SelectedBlue
                     isCurrentMonth -> TextDark

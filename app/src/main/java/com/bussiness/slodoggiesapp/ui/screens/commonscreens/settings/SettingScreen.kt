@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -42,7 +43,37 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
-        HeadingTextWithIcon(textHeading = "Settings", onBackClick = { navController.popBackStack() })
+
+        BackHandler {
+            if (sessionManager.getUserType() == UserType.PET_OWNER){
+                navController.navigate(Routes.PET_PROFILE_SCREEN){
+                    popUpTo(Routes.PET_PROFILE_SCREEN) { inclusive = false }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }else{
+                navController.navigate(Routes.PROFILE_SCREEN){
+                    popUpTo(Routes.PROFILE_SCREEN) { inclusive = false } // clear stack above home
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+
+        }
+        HeadingTextWithIcon(textHeading = "Settings",
+            onBackClick = {  if (sessionManager.getUserType() == UserType.PET_OWNER){
+                navController.navigate(Routes.PET_PROFILE_SCREEN){
+                    popUpTo(Routes.PET_PROFILE_SCREEN) { inclusive = false } // clear stack above home
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }else{
+                navController.navigate(Routes.PROFILE_SCREEN){
+                    popUpTo(Routes.PROFILE_SCREEN) { inclusive = false } // clear stack above home
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            } })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 
@@ -66,7 +97,7 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
 
             item { ToggleItem(icon = R.drawable.ic_notification_icons, text = "Notification", isEnabled = isNotificationEnabled, onToggle = { isNotificationEnabled = it }) }
 
-            item { SettingsItem(icon = R.drawable.ic_delete_icon, title = "Delete Account", onClick = { showDeleteDialog = true }) }
+            item { SettingsItem(icon = R.drawable.account_privacy_ic, title = "Account Privacy", onClick = { navController.navigate(Routes.ACCOUNT_PRIVACY_SCREEN) }) }
 
             item { SettingsItem(icon = R.drawable.ic_about_circle_icon, title = "About Us", onClick = { navController.navigate(Routes.ABOUT_US_SCREEN) }) }
 
@@ -81,17 +112,6 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
             item { SettingsItem(icon = R.drawable.ic_logout_icon, title = "Logout", onClick = { showLogoutDialog = true }) }
         }
 
-        // Show Delete Dialog
-        if (showDeleteDialog) {
-            DeleteDialog(
-                onDismiss = { showDeleteDialog = false },
-                iconResId = R.drawable.delete_ic,
-                onClickDelete = {
-                    showDeleteDialog = false
-                },
-                context
-            )
-        }
         if (showLogoutDialog){
             LogoutDialog(
                 onDismiss = { showLogoutDialog = false },

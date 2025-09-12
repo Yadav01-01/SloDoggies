@@ -24,11 +24,23 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
 fun NotificationScreen(navController: NavHostController) {
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
-        HeadingTextWithIcon(textHeading = "Notifications", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(
+            textHeading = "Notifications",
+            onBackClick = { navController.popBackStack() }
+        )
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(2.dp)
+                .background(PrimaryColor)
+        )
 
         LazyColumn(
             modifier = Modifier
@@ -37,53 +49,67 @@ fun NotificationScreen(navController: NavHostController) {
                 .padding(horizontal = 5.dp),
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
+            // Today Section
             item {
                 Text(
                     "Today",
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.titleMedium
                 )
-                HorizontalDivider(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color.Black))
 
+                HorizontalDivider(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color.Black))
             }
 
+            // Notifications
             items(dummyNotifications) { notification ->
                 NotificationItem(
-                    profileImageUrl = notification.profileImageUrl,
+                    profileImageUrl = notification.profileImageUrl ?: "",
                     username = notification.username,
                     message = notification.message,
                     time = notification.time,
-                    previewImageUrl = notification.previewImageUrl
+                    previewImageUrl = notification.previewImageUrl,
+                    type = notification.type,
+                    onJoinChatClick = {
+                        // Handle join chat button click
+                    }
                 )
             }
         }
-
     }
-
 }
 
-
-
+// Dummy data
 val dummyNotifications = listOf(
+    NotificationData(
+        username = "Event Saved",
+        message = "You’ve marked this event as Interested — we’ll keep you updated! \uD83D\uDC3E",
+        time = "Just Now",
+        previewImageUrl = null,
+        type = "event"
+    ),
     NotificationData(
         profileImageUrl = "https://example.com/user1.jpg",
         username = "_username",
         message = "⭐️⭐️⭐️⭐️⭐️ \"Great service!\"",
         time = "17 Min.",
-        previewImageUrl = null
+        previewImageUrl = null,
+        type = "post"
     ),
     NotificationData(
         profileImageUrl = "https://example.com/user2.jpg",
         username = "_username",
         message = "liked your post.",
         time = "17 Min.",
-        previewImageUrl = "https://example.com/post1.jpg"
+        previewImageUrl = "https://example.com/post1.jpg",
+        type = "post"
     ),
     NotificationData(
         profileImageUrl = "https://example.com/user3.jpg",
         username = "_username",
         message = "started following you.",
-        time = "17 Min."
-    ),
-
+        time = "17 Min.",
+        previewImageUrl = null,
+        type = "post"
+    )
 )
+

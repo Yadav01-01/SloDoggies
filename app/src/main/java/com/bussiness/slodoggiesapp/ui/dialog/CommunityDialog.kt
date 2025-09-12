@@ -129,7 +129,7 @@ fun EditCommunityName(
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.padding(10.dp)) {
                             Button(
-                                onClick = { /* TODO: Edit */ },
+                                onClick = { onDismiss() },
                                 modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                                 shape = RoundedCornerShape(10.dp),
@@ -151,6 +151,7 @@ fun EditCommunityName(
     }
 }
 
+
 @Composable
 fun RemoveParticipantDialog(
     onDismiss: () -> Unit,
@@ -159,27 +160,45 @@ fun RemoveParticipantDialog(
     text: String,
     description: String
 ) {
-    Dialog(onDismissRequest = onDismiss) {
-        BoxWithConstraints(
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = 10.dp)
+
         ) {
-            val maxWidthPx = maxWidth
+            Spacer(Modifier.height(45.dp))
 
-            Box(
+            // Close button
+            Box(Modifier.fillMaxWidth()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_cross_iconx),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape)
+                        .clickable { onDismiss() }
+                )
+            }
+
+            androidx.compose.material3.Surface(
                 modifier = Modifier
-                    .widthIn(max = maxWidthPx * 0.9f) // 90% of screen width
-                    .wrapContentHeight(),
-
+                    .fillMaxWidth()
+                    .padding(top = 5.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = Color.White
             ) {
-                // Main Dialog Card
                 Column(
                     modifier = Modifier
                         .background(Color.White, shape = RoundedCornerShape(12.dp))
-                        .padding(horizontal = 10.dp, vertical = 10.dp)
-                        .align(Alignment.Center)
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
                         painter = painterResource(id = iconResId),
@@ -243,19 +262,6 @@ fun RemoveParticipantDialog(
                         )
                     }
                 }
-
-                // External Cross (X) Button
-                Icon(
-                    painter = painterResource(R.drawable.ic_cross_iconx),
-                    contentDescription = "Close",
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 0.dp, y = (-50).dp)
-                        .wrapContentSize()
-                        .background(Color(0xFFF0F0F0), CircleShape)
-                        .clickable { onDismiss() }
-                )
             }
         }
     }
@@ -270,27 +276,45 @@ fun DeleteChatDialog(
     text: String,
     description: String
 ) {
-    Dialog(onDismissRequest = onDismiss) {
-        BoxWithConstraints(
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
-            contentAlignment = Alignment.Center
+                .padding(horizontal = 10.dp)
+
         ) {
-            val maxWidthPx = maxWidth
+            Spacer(Modifier.height(45.dp))
 
-            Box(
+            // Close button
+            Box(Modifier.fillMaxWidth()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_cross_iconx),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape)
+                        .clickable { onDismiss() }
+                )
+            }
+
+            androidx.compose.material3.Surface(
                 modifier = Modifier
-                    .widthIn(max = maxWidthPx * 0.9f) // 90% of screen width
-                    .wrapContentHeight(),
-
-                ) {
-                // Main Dialog Card
+                    .fillMaxWidth()
+                    .padding(top = 5.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = Color.White
+            ) {
                 Column(
                     modifier = Modifier
                         .background(Color.White, shape = RoundedCornerShape(12.dp))
-                        .padding(horizontal = 10.dp, vertical = 10.dp)
-                        .align(Alignment.Center)
+                        .padding(horizontal = 10.dp, vertical = 10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
                         painter = painterResource(id = iconResId),
@@ -356,23 +380,11 @@ fun DeleteChatDialog(
                         )
                     }
                 }
-
-                // External Cross (X) Button
-                Icon(
-                    painter = painterResource(R.drawable.ic_cross_iconx),
-                    contentDescription = "Close",
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 0.dp, y = (-50).dp)
-                        .wrapContentSize()
-                        .background(Color(0xFFF0F0F0), CircleShape)
-                        .clickable { onDismiss() }
-                )
             }
         }
     }
 }
+
 
 @Composable
 fun BottomToast(

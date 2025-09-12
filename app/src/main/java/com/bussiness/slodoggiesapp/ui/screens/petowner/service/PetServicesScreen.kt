@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.service
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,17 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = { navController.popBackStack() })
+        BackHandler {
+            navController.navigate(Routes.HOME_SCREEN) {
+                popUpTo(Routes.HOME_SCREEN) { inclusive = true } // clear stack above home
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+
+        HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = { navController.navigate(Routes.HOME_SCREEN){
+            popUpTo(Routes.HOME_SCREEN) { inclusive = true }
+        } })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 

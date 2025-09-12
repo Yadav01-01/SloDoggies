@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.notification
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -50,6 +52,7 @@ data class NotificationItem(
     val timeAgo: String,
     val profileImageRes: Int,
     val postImageRes: Int? = null,
+    val type: String,
     val isFollowAction: Boolean = false
 )
 
@@ -58,12 +61,22 @@ fun PetNotificationsScreen(navController: NavHostController) {
     val notifications = remember {
         listOf(
             NotificationItem(
+                id = 11,
+                username = "Event Saved",
+                action = "You’ve marked this event as Interested — we’ll keep you updated! \uD83D\uDC3E",
+                timeAgo = "1h ago",
+                profileImageRes = R.drawable.dummy_person_image1,
+                isFollowAction = true,
+                type = "event"
+            ),
+            NotificationItem(
                 id = 1,
                 username = "username",
                 action = "started following you.",
                 timeAgo = "1h ago",
                 profileImageRes = R.drawable.dummy_person_image1,
-                isFollowAction = true
+                isFollowAction = true,
+                type = "post"
             ),
             NotificationItem(
                 id = 2,
@@ -71,7 +84,8 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 action = "liked your post.",
                 timeAgo = "2h ago",
                 profileImageRes = R.drawable.dummy_person_image1,
-                postImageRes = R.drawable.dummy_person_image3
+                postImageRes = R.drawable.dummy_person_image3,
+                type = "post"
             ),
             NotificationItem(
                 id = 3,
@@ -79,7 +93,8 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 action = "liked your post.",
                 timeAgo = "3h ago",
                 profileImageRes = R.drawable.dummy_person_image1,
-                postImageRes = android.R.drawable.ic_menu_gallery
+                postImageRes = android.R.drawable.ic_menu_gallery,
+                type = "post"
             ),
             NotificationItem(
                 id = 4,
@@ -87,7 +102,8 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 action = "started following you.",
                 timeAgo = "5h ago",
                 profileImageRes = android.R.drawable.ic_menu_camera,
-                isFollowAction = true
+                isFollowAction = true,
+                type = "post"
             ),
             NotificationItem(
                 id = 5,
@@ -95,7 +111,8 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 action = "started following you.",
                 timeAgo = "8h ago",
                 profileImageRes = R.drawable.dummy_person_image2,
-                isFollowAction = true
+                isFollowAction = true,
+                type = "post"
             ),
             NotificationItem(
                 id = 6,
@@ -103,7 +120,8 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 action = "started following you.",
                 timeAgo = "12h ago",
                 profileImageRes = R.drawable.dummy_person_image2,
-                isFollowAction = true
+                isFollowAction = true,
+                type = "post"
             ),
             NotificationItem(
                 id = 7,
@@ -111,7 +129,8 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 action = "liked your post.",
                 timeAgo = "1d ago",
                 profileImageRes = android.R.drawable.ic_menu_camera,
-                postImageRes = android.R.drawable.ic_menu_gallery
+                postImageRes = android.R.drawable.ic_menu_gallery,
+                type = "post"
             ),
             NotificationItem(
                 id = 8,
@@ -119,7 +138,8 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 action = "liked your post.",
                 timeAgo = "2d ago",
                 profileImageRes = android.R.drawable.ic_menu_camera,
-                postImageRes = R.drawable.dummy_person_image3
+                postImageRes = R.drawable.dummy_person_image3,
+                type = "post"
             )
         )
     }
@@ -170,18 +190,27 @@ fun NotificationItemRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Profile Image
-        AsyncImage(
-            model = notification.profileImageRes,
-            contentDescription = "Profile picture",
-            placeholder = painterResource(id = R.drawable.ic_person_icon1),
-            error = painterResource(id = R.drawable.ic_person_icon1),
-            modifier = Modifier
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(Color.Gray.copy(alpha = 0.2f)),
-            contentScale = ContentScale.Crop
-        )
-
+        if (notification.type == "post"){
+            AsyncImage(
+                model = notification.profileImageRes,
+                contentDescription = "Profile picture",
+                placeholder = painterResource(id = R.drawable.ic_person_icon1),
+                error = painterResource(id = R.drawable.ic_person_icon1),
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(Color.Gray.copy(alpha = 0.2f)),
+                contentScale = ContentScale.Crop
+            )
+        }else{
+            Image(
+                painter = painterResource(id = R.drawable.msg_event),
+                contentDescription = "event Image",
+                modifier = Modifier
+                    .wrapContentSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
 
         Spacer(modifier = Modifier.width(12.dp))
 
@@ -190,9 +219,29 @@ fun NotificationItemRow(
             modifier = Modifier.weight(1f)
         ) {
             // Username and action
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            if (notification.type == "post"){
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = notification.username,
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = notification.action,
+                        fontSize = 14.sp,
+                        color = TextGrey,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontWeight = FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }else{
                 Text(
                     text = notification.username,
                     fontSize = 14.sp,
@@ -200,14 +249,15 @@ fun NotificationItemRow(
                     fontWeight = FontWeight.Medium,
                     color = Color.Black
                 )
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = notification.action,
                     fontSize = 14.sp,
                     color = TextGrey,
+                    lineHeight = 18.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     fontWeight = FontWeight.Normal,
-                    maxLines = 1,
+                    maxLines = 4,
                     overflow = TextOverflow.Ellipsis
                 )
             }
@@ -224,12 +274,49 @@ fun NotificationItemRow(
         }
 
         // Action button or post image
-        if (notification.isFollowAction) {
+        if (notification.type == "post"){
+            if (notification.isFollowAction) {
+                Button(
+                    onClick = onFollowClick,
+                    modifier = Modifier
+                        .height(28.dp)
+                        .padding(horizontal = 4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF258694)
+                    ),
+                    shape = RoundedCornerShape(6.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+                ) {
+                    Text(
+                        text = "Follow back",
+                        fontSize = 12.sp,
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontWeight = FontWeight.Normal
+                    )
+                }
+            } else {
+                notification.postImageRes?.let { imageRes ->
+                    AsyncImage(
+                        model = imageRes, // Can be String (URL) or Int (resId)
+                        contentDescription = "Post image",
+                        placeholder = painterResource(id = android.R.drawable.ic_menu_gallery),
+                        error = painterResource(id = android.R.drawable.ic_menu_gallery),
+                        modifier = Modifier
+                            .size(37.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(Color.Gray.copy(alpha = 0.2f)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+
+            }
+        }else{
             Button(
                 onClick = onFollowClick,
                 modifier = Modifier
                     .height(28.dp)
-                    .padding(horizontal = 4.dp),
+                    .padding(horizontal = 4.dp).align(Alignment.Top),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF258694)
                 ),
@@ -237,28 +324,13 @@ fun NotificationItemRow(
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
             ) {
                 Text(
-                    text = "Follow back",
+                    text = "Join Chat",
                     fontSize = 12.sp,
                     color = Color.White,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     fontWeight = FontWeight.Normal
                 )
             }
-        } else {
-            notification.postImageRes?.let { imageRes ->
-                AsyncImage(
-                    model = imageRes, // Can be String (URL) or Int (resId)
-                    contentDescription = "Post image",
-                    placeholder = painterResource(id = android.R.drawable.ic_menu_gallery),
-                    error = painterResource(id = android.R.drawable.ic_menu_gallery),
-                    modifier = Modifier
-                        .size(37.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Gray.copy(alpha = 0.2f)),
-                    contentScale = ContentScale.Crop
-                )
-            }
-
         }
     }
 }

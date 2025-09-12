@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -76,7 +77,22 @@ fun ServiceProviderDetailsScreen(navController: NavHostController,viewModel: Ser
     val serviceDetail by viewModel.serviceDetail.collectAsState()
     Column(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
 
-        HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = { navController.popBackStack() })
+        BackHandler {
+            navController.navigate(Routes.PET_SERVICES_SCREEN) {
+                popUpTo(Routes.PET_SERVICES_SCREEN) { inclusive = false }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+
+
+        HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = {
+            navController.navigate(Routes.PET_SERVICES_SCREEN) {
+                popUpTo(Routes.PET_SERVICES_SCREEN) { inclusive = false }
+                launchSingleTop = true       // Avoid duplicates
+                restoreState = true          // Restore scroll/input state
+            }
+        })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 

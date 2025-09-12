@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -65,6 +66,7 @@ import com.bussiness.slodoggiesapp.model.petOwner.ProfileItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.FillPetInfoDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.PetInfoDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.SettingIconHeader
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
@@ -100,32 +102,28 @@ fun PetProfileScreen(navController: NavHostController) {
     var showPetInfoDialog by remember { mutableStateOf(false) }
     var petAddedSuccessDialog by remember { mutableStateOf(false) }
     var showAddButton by remember { mutableStateOf(true) }
+
     LaunchedEffect(Unit) {
-
         showAddButton = false
-    }
-
-    if (showPetInfoDialog) {
-        PetInfoDialog(
-            "Add Your Pet",
-            onDismiss = { showPetInfoDialog = false },
-            addPet = {
-                // Handle pet info saving
-                showPetInfoDialog = false
-                petAddedSuccessDialog = true
-            },
-            onContinueClick = { showPetInfoDialog = false },
-            onProfile = true
-        )
-    }
-    if (petAddedSuccessDialog){
-        UpdatedDialogWithExternalClose(onDismiss = { petAddedSuccessDialog = false }, iconResId = R.drawable.ic_sucess_p, text = "Pet Added Successfully!",
-            description = "Thanks for keeping things up to date!")
     }
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        ScreenHeadingText(textHeading = "My Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
+        BackHandler {
+            navController.navigate(Routes.PET_SERVICES_SCREEN) {
+                popUpTo(Routes.HOME_SCREEN) { inclusive = false } // keep home
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+
+        ScreenHeadingText(textHeading = "My Profile",
+            onBackClick = {  navController.navigate(Routes.HOME_SCREEN) {
+                popUpTo(Routes.HOME_SCREEN) { inclusive = false } // clear stack above home
+                launchSingleTop = true
+                restoreState = true
+            } },
+            onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 
@@ -182,11 +180,9 @@ fun PetProfileScreen(navController: NavHostController) {
                 }
             } else {
                 val sampleProfiles = listOf(
-                    ProfileItem(1, R.drawable.dummy_person_image1),
-                    ProfileItem(2, R.drawable.dummy_person_image2),
-                    ProfileItem(3, R.drawable.dummy_person_image3),
-                    ProfileItem(4, android.R.drawable.ic_menu_manage),
-                    ProfileItem(5, android.R.drawable.ic_menu_search),
+                    ProfileItem(1, R.drawable.dog_ic),
+                    ProfileItem(2, R.drawable.dog1),
+                    ProfileItem(3, R.drawable.dog3),
                     ProfileItem(6, isAddButton = true)
                 )
 
@@ -466,6 +462,23 @@ fun PetProfileScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
+    }
+    if (showPetInfoDialog) {
+        FillPetInfoDialog(
+            "Add Your Pet",
+            onDismiss = { showPetInfoDialog = false },
+            onAddPet = {
+                // Handle pet info saving
+                showPetInfoDialog = false
+                petAddedSuccessDialog = true
+            },
+            onCancel = { showPetInfoDialog = false },
+            onProfile = true
+        )
+    }
+    if (petAddedSuccessDialog){
+        UpdatedDialogWithExternalClose(onDismiss = { petAddedSuccessDialog = false }, iconResId = R.drawable.ic_sucess_p, text = "Pet Added Successfully!",
+            description = "Thanks for keeping things up to date!")
     }
 
 }

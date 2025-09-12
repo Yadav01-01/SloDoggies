@@ -87,52 +87,6 @@ fun FormHeadingText(
 }
 
 
-//@Composable
-//fun InputField(
-//    input: String,
-//    onValueChange: (String) -> Unit,
-//    placeholder: String,
-//    height: Dp = 54.dp,
-//    fontSize: Int = 15,
-//    modifier: Modifier = Modifier,
-//) {
-//    androidx.compose.material.OutlinedTextField(
-//        value = input,
-//        onValueChange = onValueChange,
-//        placeholder = {
-//            Text(
-//                text = placeholder,
-//                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-//                fontSize = fontSize.sp,
-//                color = Color(0xFFAEAEAE),
-//                maxLines = 1
-//            )
-//        },
-//        textStyle = TextStyle(
-//            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-//            fontSize = fontSize.sp,
-//            color = Color.Black
-//        ),
-//        maxLines = 1,
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .height(height),
-//        shape = RoundedCornerShape(8.dp),
-//        colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
-//            backgroundColor = Color.White,
-//            focusedBorderColor = Color(0xFFAEAEAE),
-//            unfocusedBorderColor = Color(0xFFAEAEAE),
-//            cursorColor = Color.Black,
-//            focusedLabelColor = Color.Transparent,
-//            unfocusedLabelColor = Color.Transparent,
-//            placeholderColor = Color(0xFFAEAEAE),
-//            textColor = Color.Black
-//        ),
-//        singleLine = false
-//    )
-//}
-
-
 @Composable
 fun InputField(
     input: String,
@@ -180,6 +134,46 @@ fun InputField(
             ),
             cursorBrush = SolidColor(Color.Black),
             modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+
+@Composable
+fun DescriptionBox(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(106.dp)
+            .background(Color.White, shape = RoundedCornerShape(8.dp))
+            .border(1.dp, Color.LightGray, RoundedCornerShape(8.dp))
+            .padding(8.dp) // inner padding
+    ) {
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            textStyle = TextStyle(
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                color = Color.Black,
+                fontSize = 15.sp
+            ),
+            modifier = Modifier.fillMaxSize(),
+            singleLine = false,
+            decorationBox = { innerTextField ->
+                if (value.isEmpty()) {
+                    Text(
+                        text = placeholder,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        color = TextGrey,
+                        fontSize = 15.sp
+                    )
+                }
+                innerTextField()
+            }
         )
     }
 }

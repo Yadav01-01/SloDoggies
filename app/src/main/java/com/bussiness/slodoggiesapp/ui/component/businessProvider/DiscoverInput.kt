@@ -353,13 +353,14 @@ fun PetOwnerDetail(
 
 
 @Composable
-fun GalleryItemCard(item: GalleryItem, height: Int = 150) {
+fun GalleryItemCard(item: GalleryItem, height: Int = 150,onClickItem: () -> Unit) {
     Box(
         modifier = Modifier
             .height(height.dp) // You can adjust height here
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
             .background(Color.LightGray)
+            .clickable { onClickItem() }
     ) {
         Image(
             painter = painterResource(id = item.imageResId),

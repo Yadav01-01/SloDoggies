@@ -259,8 +259,8 @@ fun OnMenuClick(
         )
 
         MenuItem(
-            iconRes = R.drawable.ic_report_icon,
-            label = "Give Feedback",
+            iconRes = R.drawable.req_fb,
+            label = "Req. Feedback",
             onClick = {
                 onDismiss()
                 onFeedbackClick()

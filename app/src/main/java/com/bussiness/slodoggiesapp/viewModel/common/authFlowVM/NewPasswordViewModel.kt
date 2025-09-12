@@ -28,7 +28,13 @@ class NewPasswordViewModel @Inject constructor() : ViewModel() {
 
     fun onSubmitClickDialog(navController: NavController) {
         _uiState.value = _uiState.value.copy(showUpdatePasswordDialog = false)
-        navController.navigate(Routes.LOGIN_SCREEN)
+        navController.navigate(Routes.LOGIN_SCREEN) {
+            popUpTo(navController.graph.startDestinationId) {
+                inclusive = true
+            }
+            launchSingleTop = true // prevent multiple copies of login screen
+        }
+
     }
 
     fun onPasswordChange(newPassword: String) {

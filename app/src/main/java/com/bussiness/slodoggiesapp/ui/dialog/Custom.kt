@@ -3,6 +3,7 @@ package com.bussiness.slodoggiesapp.ui.dialog
 import android.content.Context
 import android.widget.Toast
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -24,10 +25,13 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,26 +57,6 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.DialogButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
-@Composable
-fun CustomToast(message: String) {
-    Box(
-        modifier = Modifier
-            .wrapContentSize()
-            .padding(15.dp)
-            .background(PrimaryColor, shape = RoundedCornerShape(8.dp))
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-    ) {
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                fontWeight = FontWeight.Medium,
-                fontSize = 15.sp,
-                color = Color.White
-            )
-        )
-    }
-}
 
 @Composable
 fun UpdatedDialogWithExternalClose(
@@ -80,26 +65,45 @@ fun UpdatedDialogWithExternalClose(
     text: String,
     description: String
 ) {
-    Dialog(onDismissRequest = onDismiss) {
-        BoxWithConstraints(
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            val maxWidthPx = maxWidth
+                .padding(horizontal = 10.dp)
 
-            Box(
+        ) {
+            Spacer(Modifier.height(45.dp))
+
+            // Close button
+            Box(Modifier.fillMaxWidth()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_cross_iconx),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape)
+                        .clickable { onDismiss() }
+                )
+            }
+
+            Surface(
                 modifier = Modifier
-                    .widthIn(max = maxWidthPx * 0.9f) // 90% of screen width
-                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .padding(top = 5.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = Color.White
             ) {
-                // Main Dialog Card
                 Column(
                     modifier = Modifier
                         .background(Color.White, shape = RoundedCornerShape(12.dp))
-                        .padding(horizontal = 10.dp, vertical = 32.dp)
-                        .align(Alignment.Center)
+                        .padding(horizontal = 10.dp, vertical = 32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Icon(
                         painter = painterResource(id = iconResId),
@@ -138,23 +142,11 @@ fun UpdatedDialogWithExternalClose(
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
-
-                // External Cross (X) Button
-                Icon(
-                    painter = painterResource(R.drawable.ic_cross_iconx),
-                    contentDescription = "Close",
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 0.dp, y = (-50).dp)
-                        .wrapContentSize()
-                        .background(Color(0xFFF0F0F0), CircleShape)
-                        .clickable { onDismiss() }
-                )
             }
         }
     }
 }
+
 
 @Composable
 fun DeleteDialog(

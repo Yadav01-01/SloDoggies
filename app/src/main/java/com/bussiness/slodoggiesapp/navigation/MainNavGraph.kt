@@ -21,7 +21,6 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileSc
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.SponsoredAdsScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit.EditAddServiceScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.VerifyOTPScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen
@@ -29,7 +28,10 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.HomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.VerifyAccount
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost.EditPostScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost.UserPost
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AboutUsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AccountPrivacy
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.FAQScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.HelpAndSupportScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.MyEventScreen
@@ -58,18 +60,16 @@ fun MainNavGraph(
         startDestination = Routes.HOME_SCREEN,
         modifier = modifier
     ) {
-        composable(Routes.HOME_SCREEN) { HomeScreen(navController,authNavController) }
+        composable(Routes.HOME_SCREEN) { HomeScreen(navController) }
         composable(Routes.DISCOVER_SCREEN) { DiscoverScreen(navController) }
         composable(Routes.SERVICES_SCREEN) { ServiceScreen(navController) }
         composable(Routes.PROFILE_SCREEN) { ProfileScreen(navController) }
         composable(Routes.PERSON_DETAIL_SCREEN) { PersonDetailScreen(navController) }
-//        composable(Routes.FOLLOWER_SCREEN) { FollowerScreen(navController, type) }
         composable(Routes.SPONSORED_ADS_SCREEN) { SponsoredAdsScreen(navController) }
         composable(Routes.EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
         composable(Routes.POST_SCREEN) { PostScreen(navController) }
         composable(Routes.EDIT_BUSINESS_SCREEN) { EditBusinessScreen(navController) }
         composable(Routes.SETTINGS_SCREEN) { SettingsScreen(navController,authNavController) }
-        composable(Routes.SAVED_ITEM_SCREEN) { SavedItemScreen(navController) }
         composable(Routes.SAVED_ITEM_SCREEN) { SavedItemScreen(navController) }
         composable(Routes.ABOUT_US_SCREEN) { AboutUsScreen(navController) }
         composable(Routes.TERMS_AND_CONDITION_SCREEN) { TermsAndConditionsScreen(navController) }
@@ -92,10 +92,12 @@ fun MainNavGraph(
         composable(Routes.PET_EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
         composable(Routes.PET_ADD_PARTICIPANTS_SCREEN) { AddParticipantsScreen(navController) }
         composable(Routes.EDIT_PROFILE_SCREEN_PET) { EditProfileScreenPet(navController) }
-        composable(Routes.EDIT_PROFILE_SCREEN_PET) { EditProfileScreenPet(navController) }
         composable(Routes.PET_NOTIFICATION_SCREEN) { PetNotificationsScreen(navController) }
         composable(Routes.PET_EVENT_SCREEN) { EventScreen(navController) }
-//        composable(Routes.VERIFY_ACCOUNT_SCREEN) { VerifyAccount(navController) }
+        composable(Routes.ACCOUNT_PRIVACY_SCREEN) { AccountPrivacy(navController,authNavController) }
+        composable(Routes.USER_POST_SCREEN) { UserPost(navController) }
+        composable(Routes.EDIT_POST_SCREEN) { EditPostScreen(navController) }
+
         composable(
             route = "${Routes.VERIFY_ACCOUNT_SCREEN}?type={type}&data={data}",
             arguments = listOf(

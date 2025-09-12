@@ -1,28 +1,21 @@
 package com.bussiness.slodoggiesapp.ui.component.common
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -31,17 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,17 +43,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
-fun AuthBackButton(navController : NavHostController, modifier: Modifier){
+fun AuthBackButton(navController: NavHostController, modifier: Modifier = Modifier) {
     IconButton(
         onClick = { navController.popBackStack() },
-        modifier = Modifier
-            .padding( top = 20.dp)
+        modifier = modifier.padding(top = 20.dp)
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -79,70 +67,100 @@ fun AuthBackButton(navController : NavHostController, modifier: Modifier){
     }
 }
 
-
 @Composable
-fun MediaUploadSection() {
+fun MediaUploadSection(
+    maxImages: Int = 10,
+    onMediaSelected: (Uri) -> Unit // Callback for API
+) {
     val context = LocalContext.current
     val imageUris = remember { mutableStateListOf<Uri>() }
-    val maxImages = 10
     var showDialog by remember { mutableStateOf(false) }
-
-    // Gallery Picker
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(maxImages)
-    ) { uris ->
-        if (uris.isNotEmpty()) {
-            val newUris = uris.filter { it !in imageUris } // Filter duplicates
-            if (imageUris.size + newUris.size <= maxImages) {
-                imageUris.addAll(newUris)
-            } else {
-                Toast.makeText(context, "You can only upload up to $maxImages images", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    // Camera Capture
     val cameraImageUri = remember { mutableStateOf<Uri?>(null) }
+
+    // Camera launcher
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
             cameraImageUri.value?.let { uri ->
-                if (uri !in imageUris) { // Prevent duplicate
-                    if (imageUris.size < maxImages) {
-                        imageUris.add(uri)
-                    } else {
-                        Toast.makeText(context, "You can only upload up to $maxImages images", Toast.LENGTH_SHORT).show()
-                    }
+                if (uri !in imageUris && imageUris.size < maxImages) {
+                    imageUris.add(uri)          // Update grid
+                    onMediaSelected(uri)        // Callback for API
                 }
             }
         }
     }
 
+    // Permission launcher
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val uri = createImageUri(context)
+            cameraImageUri.value = uri
+            if (uri != null) {
+                cameraLauncher.launch(uri)
+            }
+        } else {
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // Gallery launcher
+    val galleryLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickMultipleVisualMedia(maxImages)
+    ) { uris ->
+        val newUris = uris.filter { it !in imageUris }
+        if (imageUris.size + newUris.size <= maxImages) {
+            imageUris.addAll(newUris)
+            newUris.forEach { onMediaSelected(it) }
+        } else {
+            Toast.makeText(
+                context,
+                "You can only upload up to $maxImages images",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    // Camera permission check
+    fun launchCameraWithPermissionCheck() {
+        val permission = Manifest.permission.CAMERA
+        when (PackageManager.PERMISSION_GRANTED) {
+            ContextCompat.checkSelfPermission(context, permission) -> {
+                val uri = createImageUri(context) //  always MediaStore
+                if (uri != null) {
+                    cameraImageUri.value = uri
+                    cameraLauncher.launch(uri)
+                } else {
+                    Toast.makeText(context, "Failed to create image file", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else -> permissionLauncher.launch(permission)
+        }
+    }
+
+
     Column(modifier = Modifier.fillMaxWidth()) {
-        // Upload Box
+        // Upload placeholder
         UploadPlaceholder {
             if (imageUris.size >= maxImages) {
-                Toast.makeText(
-                    context,
-                    "Maximum $maxImages images allowed",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Maximum $maxImages images allowed", Toast.LENGTH_SHORT).show()
             } else {
                 showDialog = true
             }
         }
 
-        // Compose Dialog
+        // Media selection dialog
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
+                title = { Text("Select Media") },
                 confirmButton = {
                     TextButton(onClick = { showDialog = false }) {
                         Text("Cancel")
                     }
                 },
-                title = { Text("Select Media") },
                 text = {
                     Column(Modifier.verticalScroll(rememberScrollState())) {
                         Text(
@@ -162,9 +180,7 @@ fun MediaUploadSection() {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    val uri = createImageUri(context)
-                                    cameraImageUri.value = uri
-                                    cameraLauncher.launch(uri)
+                                    launchCameraWithPermissionCheck()
                                     showDialog = false
                                 }
                                 .padding(16.dp)
@@ -174,49 +190,63 @@ fun MediaUploadSection() {
             )
         }
 
-
         Spacer(Modifier.height(12.dp))
 
-        // Selected Images Grid
+        // Selected images grid
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 450.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+                .heightIn(max = 450.dp),
         ) {
-            items(
-                items = imageUris,
-                key = { it.hashCode() } // Stable key
-            ) { uri ->
-                Box(modifier = Modifier.fillMaxWidth()) {
+            items(imageUris, key = { it.hashCode() }) { uri ->
+                Box(
+                    modifier = Modifier.size(105.dp).padding(5.dp)
+                ) {
                     Image(
                         painter = rememberAsyncImagePainter(uri),
                         contentDescription = null,
                         modifier = Modifier
-                            .size(100.dp)
+                            .fillMaxSize()
                             .clip(RoundedCornerShape(8.dp))
                             .background(Color.LightGray),
                         contentScale = ContentScale.Crop
                     )
+
                     Icon(
                         painter = painterResource(R.drawable.ic_cross_icon),
                         contentDescription = "Remove",
                         tint = Color.Unspecified,
                         modifier = Modifier
                             .align(Alignment.TopEnd)
-                            .padding(4.dp)
-                            .size(18.dp)
-                            .offset(y= ((-6).dp))
+                            .offset(x = (6).dp, y = (-6).dp) //overlap outside image
+                            .size(20.dp)
                             .clickable { imageUris.remove(uri) }
                     )
                 }
+
             }
         }
     }
 }
 
+
+/**
+ * Create a new image URI in MediaStore
+ */
+fun createImageUri(context: Context): Uri? {
+    val contentValues = ContentValues().apply {
+        put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_${System.currentTimeMillis()}.jpg")
+        put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+        put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/YourAppName")
+    }
+
+    return context.contentResolver.insert(
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        contentValues
+    )
+}
 
 
 
@@ -226,8 +256,8 @@ fun UploadPlaceholder(onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .height(85.dp)
-            .clip(RoundedCornerShape(10.dp)) // Clip first
-            .background(color = Color(0xFFE5EFF2)) // Then apply background
+            .clip(RoundedCornerShape(10.dp))
+            .background(color = Color(0xFFE5EFF2))
             .dashedBorder(
                 strokeWidth = 2.dp,
                 color = PrimaryColor,
@@ -259,7 +289,6 @@ fun UploadPlaceholder(onClick: () -> Unit) {
 }
 
 
-
 @SuppressLint("SuspiciousModifierThen")
 fun Modifier.dashedBorder(
     strokeWidth: Dp,
@@ -286,12 +315,3 @@ fun Modifier.dashedBorder(
     }
 )
 
-
-
-fun createImageUri(context: Context): Uri {
-    val contentValues = ContentValues().apply {
-        put(MediaStore.MediaColumns.DISPLAY_NAME, "IMG_${System.currentTimeMillis()}.jpg")
-        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-    }
-    return context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)!!
-}

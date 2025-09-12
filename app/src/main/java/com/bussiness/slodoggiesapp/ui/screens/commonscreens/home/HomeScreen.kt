@@ -45,7 +45,6 @@ import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    authNavController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val posts = getSamplePosts()
@@ -62,17 +61,19 @@ fun HomeScreen(
     var message by remember { mutableStateOf("") }
     var selectedReason by remember { mutableStateOf("") }
     val context =  LocalContext.current
+    val activity = context as? Activity
     val sessionManager = SessionManager.getInstance(context)
-
-    BackHandler {
-        (context as? Activity)?.finishAffinity() // closes all activities and exits app
-    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0XFFB9D4DB))
     ) {
+
+        BackHandler {
+            activity?.finish()  // closes the app
+        }
+
         HomeTopBar(
             onNotificationClick = { if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER)navController.navigate(Routes.NOTIFICATION_SCREEN) else navController.navigate(Routes.PET_NOTIFICATION_SCREEN) },
             onMessageClick = { navController.navigate(Routes.MESSAGE_SCREEN) }
@@ -86,7 +87,7 @@ fun HomeScreen(
                 when (post) {
                     is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) })
                     is PostItem.SponsoredPost -> SponsoredPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()})
-                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() })
+                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() },normalPost = true, onEditClick = {}, onDeleteClick = {})
                 }
             }
         }
@@ -183,9 +184,7 @@ fun HomeScreen(
     }
 
     if (shareContentDialog) {
-        ShareContentDialog {
-            viewModel.dismissShareContent()
-        }
+        ShareContentDialog(onDismiss = { viewModel.dismissShareContent() }, onSendClick = { viewModel.dismissShareContent() })
     }
 
 }

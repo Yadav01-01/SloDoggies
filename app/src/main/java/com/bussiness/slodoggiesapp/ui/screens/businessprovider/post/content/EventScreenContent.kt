@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
@@ -65,7 +66,9 @@ fun EventScreenContent(
         item {
             FormHeadingText(stringResource(R.string.upload_media))
             Spacer(Modifier.height(10.dp))
-            MediaUploadSection()
+            MediaUploadSection(maxImages = 10) { uri ->
+//                viewModel.addPetImage(uri)
+            }
         }
 
         item {
@@ -77,7 +80,7 @@ fun EventScreenContent(
         item {
             FormHeadingText(stringResource(R.string.event_des))
             Spacer(Modifier.height(10.dp))
-            InputField(modifier = Modifier.height(110.dp), placeholder = stringResource(R.string.event_des), input = eventDescription, onValueChange = { viewModel.updateEventDescription(it) })
+            DescriptionBox( placeholder = stringResource(R.string.enter_des), value = eventDescription, onValueChange = { viewModel.updateEventDescription(it) })
         }
 
         item {

@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.community
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -59,11 +60,32 @@ fun AddParticipantsScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
+
+        BackHandler {
+            navController.navigate(Routes.COMMUNITY_PROFILE_SCREEN) {
+                popUpTo(Routes.ADD_PARTICIPANTS_SCREEN) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+        }
         // Top Heading
         ParticipantTextWithIcon(
             textHeading = "Add Participants",
-            onBackClick = { navController.popBackStack() },
-            onClick = { navController.navigate(Routes.COMMUNITY_PROFILE_SCREEN) },
+            onBackClick = {
+                navController.navigate(Routes.COMMUNITY_PROFILE_SCREEN) {
+                    popUpTo(Routes.ADD_PARTICIPANTS_SCREEN) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            },
+            onClick = { navController.navigate(Routes.COMMUNITY_PROFILE_SCREEN){
+                popUpTo(Routes.ADD_PARTICIPANTS_SCREEN) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            } },
             selected = selected.isNotEmpty()
         )
 

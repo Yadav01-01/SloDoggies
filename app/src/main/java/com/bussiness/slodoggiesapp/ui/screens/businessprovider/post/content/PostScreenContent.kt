@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
@@ -52,7 +53,9 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit,viewM
 
         Spacer(Modifier.height(10.dp))
 
-        MediaUploadSection()
+        MediaUploadSection(maxImages = 10) { uri ->
+//            viewModel.addPetImage(uri)
+        }
 
         Spacer(Modifier.height(15.dp))
 
@@ -60,7 +63,7 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit,viewM
 
         Spacer(Modifier.height(10.dp))
 
-        InputField(modifier = Modifier.height(106.dp), placeholder = "Enter Description", input = writePost, onValueChange ={ viewModel.updateWritePost(it)})
+        DescriptionBox(placeholder = "Enter Description", value = writePost, onValueChange ={ viewModel.updateWritePost(it)})
 
         Spacer(Modifier.height(15.dp))
 
@@ -68,7 +71,7 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit,viewM
 
         Spacer(Modifier.height(10.dp))
 
-        InputField(placeholder = "Enter Hashtags", input = hashtags, onValueChange ={viewModel.updateHashtags(it)})
+        InputField(placeholder = "Enter #tags", input = hashtags, onValueChange ={viewModel.updateHashtags(it)})
 
         Spacer(Modifier.height(15.dp))
 

@@ -107,7 +107,7 @@ fun CommunityChatSection(
     LazyColumn(
         state = listState,
         modifier = modifier,
-        verticalArrangement = Arrangement.Bottom
+        verticalArrangement = Arrangement.Top
     ) {
         items(messages) { message ->
             ChatBubble(message)

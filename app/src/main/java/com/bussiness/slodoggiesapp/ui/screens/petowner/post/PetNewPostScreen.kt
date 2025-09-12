@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.post
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ChoosePostTypeButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.dialog.PostSuccessDialog
@@ -43,7 +45,18 @@ fun PetNewPostScreen(navController: NavHostController) {
 
     Column ( modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        HeadingTextWithIcon(textHeading = "New post", onBackClick = { navController.popBackStack() })
+        BackHandler {
+            navController.navigate(Routes.HOME_SCREEN) {
+                popUpTo(Routes.HOME_SCREEN) { inclusive = false } // clear stack above home
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+
+        HeadingTextWithIcon(textHeading = "New post",
+            onBackClick = { navController.navigate(Routes.HOME_SCREEN){
+            popUpTo(Routes.HOME_SCREEN){ inclusive = true }
+        } })
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 

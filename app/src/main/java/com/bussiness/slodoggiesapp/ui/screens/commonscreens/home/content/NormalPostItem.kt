@@ -73,7 +73,7 @@ import com.bussiness.slodoggiesapp.ui.component.shareApp
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
-fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClick: () -> Unit,onShareClick: () -> Unit) {
+fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClick: () -> Unit,onShareClick: () -> Unit,normalPost : Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit) {
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -82,7 +82,7 @@ fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClic
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            PostHeader(user = postItem.user, role = postItem.role, time = postItem.time, onReportClick = { onReportClick()})
+            PostHeader(user = postItem.user, role = postItem.role, time = postItem.time, onReportClick = { onReportClick()},normalPost,onEditClick = { onEditClick() },onDeleteClick = { onDeleteClick() } )
             PostCaption(caption = postItem.caption, description = postItem.description)
             PostImage(mediaList = postItem.mediaList)
             PostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares, onShareClick = {onShareClick()}, onSaveClick = { })
@@ -91,7 +91,7 @@ fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClic
 }
 
 @Composable
-fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Unit) {
+fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Unit,normalPost: Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit) {
     var isFollowed by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
@@ -146,26 +146,28 @@ fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Un
 
                     val interactionSource = remember { MutableInteractionSource() }
 
-                    OutlinedButton(
-                        onClick = { isFollowed = !isFollowed },
-                        modifier = Modifier
-                            .height(24.dp)
-                            .padding(horizontal = 10.dp),
-                        shape = RoundedCornerShape(6.dp),
-                        border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isFollowed) Color.White else PrimaryColor,
-                            contentColor = if (isFollowed) PrimaryColor else Color.White
-                        ),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
-                        interactionSource = interactionSource
-                    ) {
-                        Text(
-                            text = if (isFollowed) "Following" else "Follow",
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal
-                        )
+                    if (normalPost){
+                        OutlinedButton(
+                            onClick = { isFollowed = !isFollowed },
+                            modifier = Modifier
+                                .height(24.dp)
+                                .padding(horizontal = 10.dp),
+                            shape = RoundedCornerShape(6.dp),
+                            border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isFollowed) Color.White else PrimaryColor,
+                                contentColor = if (isFollowed) PrimaryColor else Color.White
+                            ),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                            interactionSource = interactionSource
+                        ) {
+                            Text(
+                                text = if (isFollowed) "Following" else "Follow",
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        }
                     }
 
                 }
@@ -194,7 +196,12 @@ fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Un
             }
         }
 
-        PostOptionsMenu (modifier = Modifier, onReportClick = onReportClick)
+        if (normalPost){
+            PostOptionsMenu (modifier = Modifier, onReportClick = onReportClick)
+        }else{
+            PostContentMenu(modifier = Modifier, onEditClick = { onEditClick() }, onDeleteClick = { onDeleteClick() })
+        }
+
     }
 }
 
@@ -243,6 +250,84 @@ fun PostOptionsMenu(
         }
     }
 }
+
+@Composable
+fun PostContentMenu(
+    modifier: Modifier = Modifier,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier.wrapContentSize(Alignment.TopEnd)
+    ) {
+        IconButton(
+            onClick = { expanded = true },
+            modifier = Modifier.size(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = "More options",
+                tint = Color.Black
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(15.dp) // ✅ outer curve applied
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = "Edit",
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        color = Color.Black,
+                        fontSize = 16.sp
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.edit_ic_p),
+                        contentDescription = "Edit",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(20.dp)
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onEditClick()
+                }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = "Delete",
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        color = Color.Black,
+                        fontSize = 16.sp
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.delete_mi),
+                        contentDescription = "Delete",
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(20.dp)
+                    )
+                },
+                onClick = {
+                    expanded = false
+                    onDeleteClick()
+                }
+            )
+        }
+    }
+}
+
+
 
 
 

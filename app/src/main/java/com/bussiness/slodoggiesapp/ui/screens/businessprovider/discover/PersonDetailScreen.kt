@@ -49,6 +49,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DetailText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FilledCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
@@ -256,7 +257,7 @@ fun PersonDetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(uiState.gallery.size) { index ->
-                    GalleryItemCard(item = uiState.gallery[index])
+                    GalleryItemCard(item = uiState.gallery[index], onClickItem = { navController.navigate(Routes.USER_POST_SCREEN)})
                 }
             }
         }

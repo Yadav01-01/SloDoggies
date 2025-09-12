@@ -121,7 +121,9 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             Spacer(Modifier.height(10.dp))
 
-            MediaUploadSection()
+            MediaUploadSection(maxImages = 10) { uri ->
+//                viewModel.addPetImage(uri)
+            }
 
             Spacer(Modifier.height(8.dp))
 
@@ -169,7 +171,9 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             Spacer(Modifier.height(10.dp))
 
-            MediaUploadSection()
+            MediaUploadSection(maxImages = 10) { uri ->
+//                viewModel.addPetImage(uri)
+            }
 
             Spacer(Modifier.height(20.dp))
 

@@ -1,7 +1,9 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.content
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
@@ -26,7 +28,7 @@ fun PetPlacesResults(onItemClick: () -> Unit) {
             PetPlaceItem(R.drawable.place_ic, "Springdale Pet Ranch", "San Luis Obispo", "40 km"),
         )
     }
-
+    Spacer(Modifier.height(4.dp))
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier

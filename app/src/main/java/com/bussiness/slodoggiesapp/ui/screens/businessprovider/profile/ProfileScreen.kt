@@ -202,7 +202,7 @@ fun ProfileScreen(navController: NavHostController) {
                     userScrollEnabled = false // Important to avoid nested scroll issues
                 ) {
                     items(sampleImages.size) { index ->
-                        GalleryItemCard(item = sampleImages[index])
+                        GalleryItemCard(item = sampleImages[index], onClickItem = {navController.navigate(Routes.USER_POST_SCREEN)})
                     }
                 }
                 Spacer(Modifier.height(10.dp))

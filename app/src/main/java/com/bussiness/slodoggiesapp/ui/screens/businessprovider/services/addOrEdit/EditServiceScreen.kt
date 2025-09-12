@@ -91,7 +91,9 @@ fun EditAddServiceScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            MediaUploadSection()
+            MediaUploadSection(maxImages = 10) { uri ->
+//                viewModel.addPetImage(uri)
+            }
 
             Spacer(Modifier.height(25.dp))
 

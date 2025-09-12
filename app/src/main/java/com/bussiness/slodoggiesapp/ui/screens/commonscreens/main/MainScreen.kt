@@ -1,6 +1,5 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.main
 
-import android.app.LocaleManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
@@ -14,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -100,3 +100,8 @@ fun getCurrentRoute(navController: NavController): String {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     return navBackStackEntry.value?.destination?.route ?: ""
 }
+fun String.toBaseRoute(): String {
+    return this.substringBefore("/") // remove params after first /
+}
+
+

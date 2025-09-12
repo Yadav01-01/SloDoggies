@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
@@ -64,7 +65,11 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
         item {
             FormHeadingText(stringResource(R.string.upload_media))
             Spacer(Modifier.height(10.dp))
-            MediaUploadSection()
+            MediaUploadSection(maxImages = 10) { uri ->
+                // This lambda is called whenever a new image is selected
+                // You can now send this URI to your API or store in ViewModel
+//                viewModel.addPetImage(uri)
+            }
         }
 
         item {
@@ -80,10 +85,9 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
         item {
             FormHeadingText(stringResource(R.string.event_des))
             Spacer(Modifier.height(10.dp))
-            InputField(
-                modifier = Modifier.height(110.dp),
-                placeholder = stringResource(R.string.event_des),
-                input = eventDescription,
+            DescriptionBox(
+                placeholder = stringResource(R.string.enter_des),
+                value = eventDescription,
                 onValueChange = { viewModel.updateEventDescription(it) }
             )
         }
@@ -95,11 +99,10 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
 
         item {
             FormHeadingText(stringResource(R.string.event_duration))
-            CustomDropdownBox(
-                label = selectedDuration.ifEmpty { "Select Option" },
-                items = durations,
-                selectedItem = selectedDuration,
-                onItemSelected = { selectedDuration = it }
+            InputField(
+                placeholder = stringResource(R.string.Duration),
+                input = "Duration",
+                onValueChange = {  }
             )
         }
 

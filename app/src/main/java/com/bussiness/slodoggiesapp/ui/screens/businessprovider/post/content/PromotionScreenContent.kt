@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategoryInputField
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.LabeledCheckbox
@@ -76,7 +77,9 @@ fun PromotionScreenContent(
         item {
             FormHeadingText(stringResource(R.string.upload_media))
             Spacer(Modifier.height(10.dp))
-            MediaUploadSection()
+            MediaUploadSection(maxImages = 10) { uri ->
+//                viewModel.addPetImage(uri)
+            }
         }
 
         item {
@@ -92,10 +95,9 @@ fun PromotionScreenContent(
         item {
             FormHeadingText(stringResource(R.string.ad_desc))
             Spacer(Modifier.height(10.dp))
-            InputField(
-                modifier = Modifier.height(110.dp),
-                placeholder = stringResource(R.string.enter_description),
-                input = adDescription,
+            DescriptionBox(
+                placeholder = stringResource(R.string.enter_des),
+                value = adDescription,
                 onValueChange = { viewModel.updateAdDescription(it) }
             )
         }
@@ -113,9 +115,8 @@ fun PromotionScreenContent(
         item {
             FormHeadingText(stringResource(R.string.enter_terms_condition))
             Spacer(Modifier.height(10.dp))
-            InputField(
-                modifier = Modifier.height(110.dp),
-                input = termsAndConditions,
+            DescriptionBox(
+                value = termsAndConditions,
                 onValueChange = { viewModel.updateTermsAndConditions(it) },
                 placeholder = "Enter here"
             )

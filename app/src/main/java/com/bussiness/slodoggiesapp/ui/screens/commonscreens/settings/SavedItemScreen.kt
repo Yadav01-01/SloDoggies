@@ -20,6 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -50,7 +51,7 @@ fun SavedItemScreen(navController: NavHostController) {
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(dataList.size) { index ->
-                GalleryItemCard(item = dataList[index], height =125 )
+                GalleryItemCard(item = dataList[index], height =125 , onClickItem = { navController.navigate(Routes.USER_POST_SCREEN)})
             }
         }
 

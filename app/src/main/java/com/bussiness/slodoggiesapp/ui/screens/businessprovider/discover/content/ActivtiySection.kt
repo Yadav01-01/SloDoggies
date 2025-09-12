@@ -31,7 +31,10 @@ fun ActivitiesPostsList(
                     postItem = post,
                     modifier = Modifier.padding(0.dp),
                     onReportClick = onReportClick,
-                    onShareClick = onShareClick
+                    onShareClick = onShareClick,
+                    normalPost = true,
+                    onEditClick = { /* Handle edit click */ },
+                    onDeleteClick = { /* Handle delete click */ }
                 )
             }
         }

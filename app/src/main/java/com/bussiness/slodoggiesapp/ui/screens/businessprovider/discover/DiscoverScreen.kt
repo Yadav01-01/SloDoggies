@@ -95,9 +95,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
         )
     }
     if (shareContentDialog) {
-        ShareContentDialog {
-            viewModel.dismissShareContent()
-        }
+        ShareContentDialog( onDismiss = { viewModel.dismissShareContent() }, onSendClick = { viewModel.dismissShareContent() })
     }
     if (showSavedDialog){
         SavedDialog(

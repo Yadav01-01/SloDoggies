@@ -35,7 +35,7 @@ class PetInfoViewModel @Inject constructor() : ViewModel() {
     fun updatePetAge(age: String) = update { it.copy(petAge = age) }
     fun updatePetBio(bio: String) = update { it.copy(petBio = bio.take(150)) }
 
-    /** ✅ Validation function with error message */
+    /**  Validation function with error message */
     fun validate(): String? {
         val state = _uiState.value
         return when {
@@ -48,14 +48,20 @@ class PetInfoViewModel @Inject constructor() : ViewModel() {
     }
 
     /** Continue button */
-    fun onContinue() {
-        val error = validate()
-        if (error == null) {
-            sendEvent(UiEvent.ContinueSuccess(_uiState.value.toPetInfo()))
-        } else {
-            sendEvent(UiEvent.ShowToast(error))
+    fun onContinue(onProfile: Boolean) {
+        if (onProfile){
+            val error = validate()
+            if (error == null) {
+                sendEvent(UiEvent.ContinueSuccess(_uiState.value.toPetInfo()))
+            } else {
+                sendEvent(UiEvent.ShowToast(error))
+            }
+        }else{
+            UiEvent.CloseDialog
         }
+
     }
+
 
     /** Add Pet button */
     fun onAddPet() {
@@ -106,4 +112,5 @@ sealed class UiEvent {
     data class ShowToast(val message: String) : UiEvent()
     data class ContinueSuccess(val petInfo: PetInfo) : UiEvent()
     data class AddPetSuccess(val petInfo: PetInfo) : UiEvent()
+    data object CloseDialog : UiEvent()
 }

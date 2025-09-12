@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
@@ -84,7 +85,11 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
 
         Spacer(Modifier.height(10.dp))
 
-        MediaUploadSection()
+        MediaUploadSection(maxImages = 10) { uri ->
+            // This lambda is called whenever a new image is selected
+            // You can now send this URI to your API or store in ViewModel
+//            viewModel.addPetImage(uri)
+        }
 
         Spacer(Modifier.height(15.dp))
 
@@ -92,7 +97,7 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
 
         Spacer(Modifier.height(10.dp))
 
-        InputField(modifier = Modifier.height(106.dp), placeholder = stringResource(R.string.Enter_Description), input = writePost, onValueChange ={ viewModel.updateWritePost(it)})
+        DescriptionBox(placeholder = stringResource(R.string.Enter_Description), value = writePost, onValueChange ={ viewModel.updateWritePost(it)})
 
         Spacer(Modifier.height(15.dp))
 

@@ -49,6 +49,7 @@ import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.ForgotPasswordVie
 @Composable
 fun ForgotPasswordScreen(
     navController: NavHostController,
+    type : String,
     viewModel: ForgotPasswordViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -74,7 +75,7 @@ fun ForgotPasswordScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Forgot Password?",
+                text = if (type == "changePass") "Change Password" else "Forgot Password?",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
@@ -83,6 +84,7 @@ fun ForgotPasswordScreen(
                 textAlign = TextAlign.Center,
                 color = Color.Black
             )
+
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -120,44 +122,47 @@ fun ForgotPasswordScreen(
             Spacer(Modifier.height(25.dp))
 
 
-            val annotatedText = buildAnnotatedString {
-                pushStyle(
-                    SpanStyle(
-                        color = Color(0xFF9C9C9C),
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium))
+            if (type != "changePass"){
+                val annotatedText = buildAnnotatedString {
+                    pushStyle(
+                        SpanStyle(
+                            color = Color(0xFF9C9C9C),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium))
+                        )
                     )
-                )
-                append("Remembered your password? ")
-                pop()
+                    append("Remembered your password? ")
+                    pop()
 
-                pushStringAnnotation(tag = "LOG_IN", annotation = "log_in")
-                pushStyle(
-                    SpanStyle(
-                        color = PrimaryColor,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp,
-                        textDecoration = TextDecoration.Underline,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium))
+                    pushStringAnnotation(tag = "LOG_IN", annotation = "log_in")
+                    pushStyle(
+                        SpanStyle(
+                            color = PrimaryColor,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                            textDecoration = TextDecoration.Underline,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium))
+                        )
                     )
+                    append("LogIn")
+                    pop()
+                }
+
+                ClickableText(
+                    text = annotatedText,
+                    onClick = { offset ->
+                        annotatedText.getStringAnnotations(
+                            tag = "LOG_IN",
+                            start = offset,
+                            end = offset
+                        ).firstOrNull()?.let {
+                            navController.navigate(Routes.LOGIN_SCREEN)
+                        }
+                    }
                 )
-                append("LogIn")
-                pop()
             }
 
-            ClickableText(
-                text = annotatedText,
-                onClick = { offset ->
-                    annotatedText.getStringAnnotations(
-                        tag = "LOG_IN",
-                        start = offset,
-                        end = offset
-                    ).firstOrNull()?.let {
-                        navController.navigate(Routes.LOGIN_SCREEN)
-                    }
-                }
-            )
         }
 
         Image(
@@ -178,5 +183,5 @@ fun ForgotPasswordScreen(
 @Composable
 fun EmailAuthScreenPreview() {
     val dummyNavController = rememberNavController()
-    ForgotPasswordScreen(navController = dummyNavController)
+    ForgotPasswordScreen(navController = dummyNavController, type = " ")
 }
