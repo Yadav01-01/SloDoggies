@@ -54,10 +54,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun AuthBackButton(navController: NavHostController, modifier: Modifier = Modifier) {
+fun AuthBackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(
-        onClick = { navController.popBackStack() },
-        modifier = modifier.padding(top = 20.dp)
+        onClick = { onClick() },
+        modifier = modifier
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -153,38 +153,26 @@ fun MediaUploadSection(
 
         // Media selection dialog
         if (showDialog) {
-            AlertDialog(
+            androidx.compose.material.AlertDialog(
                 onDismissRequest = { showDialog = false },
-                title = { Text("Select Media") },
-                confirmButton = {
-                    TextButton(onClick = { showDialog = false }) {
-                        Text("Cancel")
-                    }
-                },
-                text = {
-                    Column(Modifier.verticalScroll(rememberScrollState())) {
-                        Text(
-                            text = "Gallery",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    galleryLauncher.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-                                    showDialog = false
-                                }
-                                .padding(16.dp)
-                        )
-                        Text(
-                            text = "Camera",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    launchCameraWithPermissionCheck()
-                                    showDialog = false
-                                }
-                                .padding(16.dp)
-                        )
+                title = { Text("Select Option") },
+                buttons = {
+                    Column(Modifier.fillMaxWidth().wrapContentHeight().padding(16.dp)) {
+                        Text("Camera", Modifier
+                            .clickable {
+                                launchCameraWithPermissionCheck()
+                                showDialog = false
+                            }.fillMaxWidth()
+                            .padding(8.dp))
+
+                        Text("Gallery", Modifier
+                            .clickable {
+                                galleryLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                                showDialog = false
+                            }.fillMaxWidth()
+                            .padding(8.dp))
                     }
                 }
             )

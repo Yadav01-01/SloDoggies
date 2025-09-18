@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.post
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ChoosePostTypeButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.dialog.PostSuccessDialog
@@ -39,11 +41,26 @@ fun PostScreen(navController: NavHostController) {
     var successDialog by remember { mutableStateOf(false) }
     var eventSuccess by remember { mutableStateOf(false) }
 
+    BackHandler {
+        navController.navigate(Routes.HOME_SCREEN) {
+            launchSingleTop = true
+            popUpTo(Routes.HOME_SCREEN) {
+                inclusive = false
+            }
+        }
+    }
+
     Column ( modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        HeadingTextWithIcon(textHeading = if (selected == "Post") "New post" else if (selected == "Event") "New Event" else "New Promotion ", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = if (selected == "Post") "New post" else if (selected == "Event") "New Event" else "New Promotion ",
+            onBackClick = { navController.navigate(Routes.HOME_SCREEN) {
+                launchSingleTop = true
+                popUpTo(Routes.HOME_SCREEN) {
+                    inclusive = false
+                }
+            } })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(Modifier.height(15.dp))
 
@@ -66,7 +83,7 @@ fun PostScreen(navController: NavHostController) {
         when (selected) {
             "Post" -> PostScreenContent(onClickLocation = { }, onClickPost = { successDialog = true })
             "Event" -> EventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
-            "Ads." -> PromotionScreenContent(onClickLocation = { },onClickSave = { })
+            "Ads." -> PromotionScreenContent(onClickLocation = { },onClickSave = { navController.navigate(Routes.BUDGET_SCREEN)})
         }
         if (successDialog){
             PostSuccessDialog(

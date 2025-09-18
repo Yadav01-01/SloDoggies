@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,6 +31,7 @@ fun FollowerScreen(navController: NavHostController, type: String) {
     var selectedOption by remember { mutableStateOf(type) }
     var query by remember { mutableStateOf("") }
     var removeDialog by remember { mutableStateOf(false) }
+    var isNavigating by remember { mutableStateOf(false) }
     val context =  LocalContext.current
 
     val followersList = listOf(
@@ -47,22 +49,27 @@ fun FollowerScreen(navController: NavHostController, type: String) {
 
     val listToShow = if (selectedOption == "Follower") followersList else followingList
 
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
+    }
+
     Column(modifier = Modifier
         .fillMaxSize()
         .background(Color.White)) {
 
         ScreenHeadingText(
             textHeading = "My Profile",
-            onBackClick = { navController.popBackStack() },
+            onBackClick = {  if (!isNavigating) {
+                isNavigating = true
+                navController.popBackStack()
+            } },
             onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN) }
         )
 
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(PrimaryColor)
-        )
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         LazyColumn(
             modifier = Modifier

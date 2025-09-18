@@ -51,6 +51,9 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
     val eventTitle by viewModel.eventTitle.collectAsState()
     val eventDescription by viewModel.eventDescription.collectAsState()
     val postalCode by viewModel.postalCode.collectAsState()
+    val streetAddress by viewModel.streetAddress.collectAsState()
+    val areaSector by viewModel.areaSector.collectAsState()
+    val landmark by viewModel.landmark.collectAsState()
     var selectedDuration by remember { mutableStateOf("") }
     val durations = listOf("30 min", "1 hour", "2 hours") // Example list
     var showDialog by remember { mutableStateOf(false) }
@@ -94,6 +97,7 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
 
         item {
             DateTimePickerScreen(textHeading = stringResource(R.string.event_sdate))
+            Spacer(Modifier.height(15.dp))
             DateTimePickerScreen(textHeading = stringResource(R.string.event_edate))
         }
 
@@ -107,27 +111,54 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
         }
 
         item {
+            FormHeadingText(stringResource(R.string.flat_address))
+            InputField(
+                placeholder = stringResource(R.string.enter_flat_address),
+                input = streetAddress ,
+                onValueChange = { viewModel.updateStreetAddress(it) }
+            )
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.area_sector))
+            InputField(
+                placeholder = stringResource(R.string.enter_area_sector),
+                input = areaSector,
+                onValueChange = { viewModel.updateAreaSector(it) }
+            )
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.landmark))
+            InputField(
+                placeholder = stringResource(R.string.enter_landmark),
+                input = landmark,
+                onValueChange = { viewModel.updateLandmark(it) }
+            )
+        }
+
+        item {
             FormHeadingText("Zip Code")
-            Spacer(Modifier.height(5.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable { onClickLocation() }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.precise_loc),
-                    contentDescription = null,
-                    tint = Color.Gray,
-                    modifier = Modifier.wrapContentSize()
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "use my current location",
-                    fontFamily = FontFamily(Font(R.font.poppins)),
-                    fontSize = 12.sp,
-                    color = Color.Black
-                )
-            }
-            Spacer(Modifier.height(10.dp))
+//            Spacer(Modifier.height(5.dp))
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.clickable { onClickLocation() }
+//            ) {
+//                Icon(
+//                    painter = painterResource(id = R.drawable.precise_loc),
+//                    contentDescription = null,
+//                    tint = Color.Gray,
+//                    modifier = Modifier.wrapContentSize()
+//                )
+//                Spacer(modifier = Modifier.width(4.dp))
+//                Text(
+//                    text = "use my current location",
+//                    fontFamily = FontFamily(Font(R.font.poppins)),
+//                    fontSize = 12.sp,
+//                    color = Color.Black
+//                )
+//            }
+//            Spacer(Modifier.height(10.dp))
             InputField(
                 placeholder = "Enter your Zip Code",
                 input = postalCode,

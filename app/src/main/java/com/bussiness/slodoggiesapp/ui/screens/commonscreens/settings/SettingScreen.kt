@@ -75,7 +75,7 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
                 }
             } })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         LazyColumn(
             modifier = Modifier
@@ -95,6 +95,12 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
                 }
             }
 
+            if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
+                item {
+                    SettingsItem(icon = R.drawable.transaction_ic, title = "Transaction", onClick = { navController.navigate(Routes.TRANSACTION_SCREEN) })
+                }
+            }
+
             item { ToggleItem(icon = R.drawable.ic_notification_icons, text = "Notification", isEnabled = isNotificationEnabled, onToggle = { isNotificationEnabled = it }) }
 
             item { SettingsItem(icon = R.drawable.account_privacy_ic, title = "Account Privacy", onClick = { navController.navigate(Routes.ACCOUNT_PRIVACY_SCREEN) }) }
@@ -109,7 +115,7 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
 
             item { SettingsItem(icon = R.drawable.ic_customer_support_icon, title = "Help & Support", onClick = { navController.navigate(Routes.HELP_AND_SUPPORT_SCREEN) }) }
 
-            item { SettingsItem(icon = R.drawable.ic_logout_icon, title = "Logout", onClick = { showLogoutDialog = true }) }
+            item { SettingsItem(icon = R.drawable.ic_logout_icon, title = "Logout", textColor = Color(0xFFDD0B00), onClick = { showLogoutDialog = true }) }
         }
 
         if (showLogoutDialog){

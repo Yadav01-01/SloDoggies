@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -79,12 +80,26 @@ fun ServiceScreen(navController: NavHostController) {
             avatar = R.drawable.dummy_baby_pic)
     )
 
+    BackHandler {
+        navController.navigate(Routes.HOME_SCREEN) {
+            launchSingleTop = true
+            popUpTo(Routes.HOME_SCREEN) {
+                inclusive = false
+            }
+        }
+    }
 
     Column ( modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = stringResource(R.string.services),
+            onBackClick = { navController.navigate(Routes.HOME_SCREEN){
+                launchSingleTop = true
+                popUpTo(Routes.HOME_SCREEN) {
+                    inclusive = false
+                }
+            } },)
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Column(
             modifier = Modifier

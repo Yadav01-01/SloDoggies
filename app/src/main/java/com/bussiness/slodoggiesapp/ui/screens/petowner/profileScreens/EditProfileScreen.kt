@@ -59,6 +59,7 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.common.EmailTextField
 import com.bussiness.slodoggiesapp.ui.component.common.PhoneNumber
@@ -132,12 +133,9 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
             .background(Color.White)
     ) {
 
-        ScreenHeadingText(textHeading = "My Profile", onBackClick = { navController.popBackStack() }, onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
+        HeadingTextWithIcon(textHeading = stringResource(R.string.my_profile), onBackClick = {navController.popBackStack()})
 
-        HorizontalDivider(modifier = Modifier
-            .fillMaxWidth()
-            .height(2.dp)
-            .background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Column(
             modifier = Modifier

@@ -15,21 +15,23 @@ class ForgotPasswordViewModel @Inject constructor() : ViewModel() {
     val uiState: StateFlow<ForgotPasswordUiState> = _uiState
 
     fun onEmailChange(newEmail: String) {
-        _uiState.value = _uiState.value.copy(email = newEmail)
+        _uiState.value = _uiState.value.copy(email = newEmail.take(10))
     }
 
     fun sendCode(onSuccess: () -> Unit, onError: (String) -> Unit) {
         val state = _uiState.value
 
         if (state.email.isBlank()) {
-            onError("Email cannot be empty")
+            onError("Email/Phone cannot be empty")
             return
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches()) {
-            onError("Invalid email address")
+        if (!(android.util.Patterns.EMAIL_ADDRESS.matcher(state.email).matches() ||
+                    android.util.Patterns.PHONE.matcher(state.email).matches())) {
+            onError("Enter valid email or mobile number")
             return
         }
+
 
         viewModelScope.launch {
             try {

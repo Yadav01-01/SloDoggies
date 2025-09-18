@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

@@ -53,6 +53,27 @@ class PostContentViewModel @Inject constructor() : ViewModel() {
     private val _eventPostalCode = MutableStateFlow("")
     val eventPostalCode: StateFlow<String> = _eventPostalCode
 
+    private val _streetAddress = MutableStateFlow("")
+    val streetAddress: StateFlow<String> = _streetAddress
+
+    private val _areaSector = MutableStateFlow("")
+    val areaSector: StateFlow<String> = _areaSector
+
+    private val _landmark = MutableStateFlow("")
+    val landmark: StateFlow<String> = _landmark
+
+    fun updateLandmark(newLandmark: String) {
+        _landmark.value = newLandmark
+    }
+
+    fun updateAreaSector(newAreaSector: String) {
+        _areaSector.value = newAreaSector
+    }
+
+    fun updateStreetAddress(newStreetAddress: String) {
+        _streetAddress.value = newStreetAddress
+    }
+
     fun updateEventTitle(newEventTitle: String) {
         _eventTitle.value = newEventTitle
     }
@@ -78,6 +99,13 @@ class PostContentViewModel @Inject constructor() : ViewModel() {
 
     private val _termsAndConditions = MutableStateFlow("")
     val termsAndConditions: StateFlow<String> = _termsAndConditions
+
+    private val _serviceLocation = MutableStateFlow("")
+    val serviceLocation: StateFlow<String> = _serviceLocation
+
+    fun updateServiceLocation(newServiceLocation: String) {
+        _serviceLocation.value = newServiceLocation
+    }
 
     fun updateTitle(newTitle: String) {
         _title.value = newTitle

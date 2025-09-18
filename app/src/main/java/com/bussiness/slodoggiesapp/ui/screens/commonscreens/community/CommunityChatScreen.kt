@@ -73,7 +73,7 @@ fun CommunityChatScreen(
             onViewProfileClick = { navController.navigate(Routes.COMMUNITY_PROFILE_SCREEN) }
         )
 
-        HorizontalDivider(thickness = 1.5.dp, color = PrimaryColor)
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Box(
             modifier = Modifier

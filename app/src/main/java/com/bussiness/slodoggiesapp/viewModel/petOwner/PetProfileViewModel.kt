@@ -25,7 +25,8 @@ data class PetProfileUiState(
     val showManagedByDropdown: Boolean = false,
     val showImagePickerDialog: Boolean = false,
     val showConfirmationDialog: Boolean = false,
-    val navigateToProfile: Boolean = false
+    val navigateToProfile: Boolean = false,
+    val deleteDialog: Boolean = false
 )
 
 @HiltViewModel
@@ -61,6 +62,14 @@ class PetProfileViewModel @Inject constructor(
 
     fun showConfirmationDialog(show: Boolean) = updateState {
         copy(showConfirmationDialog = show)
+    }
+
+    fun showDeleteDialog(show: Boolean) = updateState {
+        copy(deleteDialog = show)
+    }
+
+    fun dismissDeleteDialog() {
+        showDeleteDialog(false)
     }
 
 

@@ -54,6 +54,9 @@ fun EventScreenContent(
     val eventTitle by viewModel.eventTitle.collectAsState()
     val eventDescription by viewModel.eventDescription.collectAsState()
     val postalCode by viewModel.eventPostalCode.collectAsState()
+    val streetAddress by viewModel.streetAddress.collectAsState()
+    val areaSector by viewModel.areaSector.collectAsState()
+    val landmark by viewModel.landmark.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
     LazyColumn(
@@ -96,29 +99,57 @@ fun EventScreenContent(
         }
 
         item {
+            FormHeadingText(stringResource(R.string.flat_address))
+            InputField(
+                placeholder = stringResource(R.string.enter_flat_address),
+                input = streetAddress ,
+                onValueChange = { viewModel.updateStreetAddress(it) }
+            )
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.area_sector))
+            InputField(
+                placeholder = stringResource(R.string.enter_area_sector),
+                input = areaSector,
+                onValueChange = { viewModel.updateAreaSector(it) }
+            )
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.landmark))
+            InputField(
+                placeholder = stringResource(R.string.enter_landmark),
+                input = landmark,
+                onValueChange = { viewModel.updateLandmark(it) }
+            )
+        }
+
+
+        item {
             FormHeadingText(stringResource(R.string.zip_code))
-            Spacer(Modifier.height(5.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable { onClickLocation() }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.precise_loc),
-                    contentDescription = null,
-                    tint = Color.Gray,
-                    modifier = Modifier.wrapContentSize()
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = stringResource(R.string.use_my_current_location),
-                    fontFamily = FontFamily(Font(R.font.poppins)),
-                    fontSize = 12.sp,
-                    color = Color.Black
-                )
-            }
-
-            Spacer(Modifier.height(10.dp))
+//            Spacer(Modifier.height(5.dp))
+//
+//            Row(
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.clickable { onClickLocation() }
+//            ) {
+//                Icon(
+//                    painter = painterResource(id = R.drawable.precise_loc),
+//                    contentDescription = null,
+//                    tint = Color.Gray,
+//                    modifier = Modifier.wrapContentSize()
+//                )
+//                Spacer(modifier = Modifier.width(4.dp))
+//                Text(
+//                    text = stringResource(R.string.use_my_current_location),
+//                    fontFamily = FontFamily(Font(R.font.poppins)),
+//                    fontSize = 12.sp,
+//                    color = Color.Black
+//                )
+//            }
+//
+//            Spacer(Modifier.height(10.dp))
 
             InputField(placeholder = stringResource(R.string.enter_zip_code), input = postalCode, onValueChange = { viewModel.updateEventPostalCode(it) })
         }

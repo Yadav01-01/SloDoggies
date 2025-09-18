@@ -24,12 +24,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,7 +66,7 @@ fun SignUpScreen(
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
-        AuthBackButton(navController, modifier = Modifier.align(Alignment.TopStart))
+        AuthBackButton(onClick = { navController.popBackStack() }, modifier = Modifier.align(Alignment.TopStart))
 
         Column(
             modifier = Modifier
@@ -87,11 +89,11 @@ fun SignUpScreen(
                 color = Color.Black
             )
 
-            FormHeadingText(stringResource(R.string.username), modifier = Modifier.align(Alignment.Start))
+            FormHeadingText(stringResource(R.string.FullName), modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(5.dp))
             UserNameInputField(
                 input = state.userName,
-                placeholder = stringResource(R.string.enter_username),
+                placeholder = stringResource(R.string.enter_fullname),
                 onValueChange = { viewModel.onUserNameChange(it) }
             )
 
@@ -179,6 +181,84 @@ fun SignUpScreen(
                     }
                 }
             )
+
+            val termsText = buildAnnotatedString {
+                // Normal intro text
+                withStyle(
+                    style = SpanStyle(
+                        color = Color.Black,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular))
+                    )
+                ) {
+                    append(stringResource(R.string.create_account_policy) + " ")
+                }
+
+                // Terms & Conditions link
+                pushStringAnnotation(tag = "TERMS", annotation = "TERMS")
+                withStyle(
+                    style = SpanStyle(
+                        color = PrimaryColor,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    )
+                ) {
+                    append("Terms & Conditions")
+                }
+                pop()
+
+                // " and "
+                withStyle(
+                    style = SpanStyle(
+                        color = Color.Black,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular))
+                    )
+                ) {
+                    append(" ${stringResource(R.string.and_)} ")
+                }
+
+                // Privacy Policy link
+                pushStringAnnotation(tag = "PRIVACY", annotation = "PRIVACY")
+                withStyle(
+                    style = SpanStyle(
+                        color = PrimaryColor,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    )
+                ) {
+                    append("Privacy Policy")
+                }
+                pop()
+            }
+
+            Box(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                ClickableText(
+                    text = termsText,
+                    modifier = Modifier.fillMaxWidth(),
+                    style = TextStyle(
+                        textAlign = TextAlign.Center
+                    ),
+                    onClick = { offset ->
+                        termsText.getStringAnnotations(start = offset, end = offset)
+                            .firstOrNull()?.let { annotation ->
+                                when (annotation.tag) {
+                                    "TERMS" -> navController.navigate(Routes.TERMS_AND_CONDITION_SCREEN)
+                                    "PRIVACY" -> navController.navigate(Routes.PRIVACY_POLICY_SCREEN)
+                                }
+                            }
+                    }
+                )
+            }
+
+
         }
 
         Image(

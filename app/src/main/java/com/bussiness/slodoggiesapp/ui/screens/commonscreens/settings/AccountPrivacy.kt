@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,13 +38,23 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 fun AccountPrivacy(navController: NavHostController, authNavController: NavHostController) {
 
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var isNavigating by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
+    }
     Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
 
-        HeadingTextWithIcon(textHeading = "Account Privacy", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = "Account Privacy", onBackClick = {  if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        } })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(Modifier.height(10.dp))
 

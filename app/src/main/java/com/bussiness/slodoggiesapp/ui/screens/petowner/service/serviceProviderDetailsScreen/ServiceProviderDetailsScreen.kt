@@ -94,7 +94,7 @@ fun ServiceProviderDetailsScreen(navController: NavHostController,viewModel: Ser
             }
         })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Column(modifier = Modifier.weight(1f).background(Color.White).padding(horizontal = 15.dp)) {
 
@@ -198,16 +198,21 @@ fun ProviderDetails(
             ) {
                 Column(modifier = Modifier.align(Alignment.TopStart)) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "Pawfect Pet Care",
-                        fontSize = 14.sp,
-                        color = Color.Black,
-                        maxLines = 1,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "Pawfect Pet Care",
+                            fontSize = 14.sp,
+                            color = Color.Black,
+                            maxLines = 1,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_check_mark),
+                            contentDescription = "Verified",
+                            modifier = Modifier.size(14.dp)
+                        )
+                    }
 
                     // Rating
                     Row(
@@ -216,7 +221,7 @@ fun ProviderDetails(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_round_star),
                             contentDescription = "Rating",
-                            tint = Color(0xFFFFD700),
+                            tint = Color.Unspecified,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
@@ -264,61 +269,39 @@ fun ProviderDetails(
             // Service Name
 
 
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(vertical = 10.dp), // same vertical spacing for both
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Text(
+                    text = providerName,
+                    fontSize = 14.sp,
+                    color = Color.Black,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    modifier = Modifier.weight(1f) // push Surface to the end
+                )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .align(Alignment.CenterStart),
-
-                    ) {
-                    AsyncImage(
-                        model = personImage,
-                        contentDescription = "Person",
-                        placeholder = painterResource(R.drawable.ic_person_icon),
-                        error = painterResource(R.drawable.ic_person_icon),
-                        modifier = Modifier.size(30.dp).clip(CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = providerName,
-                        fontSize = 14.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    if (userVerified){
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_check_mark),
-                            contentDescription = stringResource(R.string.verify),
-                            modifier = Modifier.size(14.dp)
-                        )
-                    }
-                    
-                }
                 Surface(
-                    color = PrimaryColor, // White background
+                    color = PrimaryColor,
                     shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, Color(0xFFCDCDCD)), // Light gray border
-                    modifier = Modifier
-                        .width(121.dp)
-                        .padding(vertical = 10.dp)
-                        .align(Alignment.CenterEnd) // Outer spacing
+                    border = BorderStroke(1.dp, Color(0xFFCDCDCD)),
+                    modifier = Modifier.width(121.dp)
                 ) {
-
                     Text(
                         text = stringResource(R.string.follow),
                         fontSize = 12.sp,
-                        color = Color(0xFFFFFFFF),
+                        color = Color.White,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        textAlign = TextAlign.Center, 
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
             }
+
 
             EnhancedExpandableInfoSpinner(phoneNumber = phoneNumber, website = website, address = address, businessDescription = businessDescription)
         }
@@ -372,7 +355,7 @@ fun EnhancedExpandableInfoSpinner(
                 Image(
                     painter = painterResource(id = if (expanded) R.drawable.ic_dropdown_open_icon else R.drawable.ic_dropdown_close_icon),
                     contentDescription = null,
-                    modifier = Modifier.wrapContentSize(),
+                    modifier = Modifier.size(16.dp),
                 )
             }
 

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
@@ -66,6 +67,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategoryInputField
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.DayTimeSelector
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
@@ -84,6 +86,9 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
     val location by viewModel.location.collectAsState()
     val url by viewModel.url.collectAsState()
     val contact by viewModel.contact.collectAsState()
+    val streetAddress by viewModel.streetAddress.collectAsState()
+    val areaSector by viewModel.areaSector.collectAsState()
+    val landmark by viewModel.landmark.collectAsState()
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -92,94 +97,125 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
         TopStepProgressBar(currentStep = 1, totalSteps = 3, modifier = Modifier)
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp) // Handles spacing between items
         ) {
-
-            Spacer(Modifier.height(5.dp))
-
-            FormHeadingText(stringResource(R.string.business_name))
-
-            Spacer(Modifier.height(10.dp))
-
-            InputField(input = name, onValueChange = { viewModel.updateName(it)}, placeholder = stringResource(R.string.enter_name))
-
-            Spacer(Modifier.height(15.dp))
-
-            FormHeadingText(stringResource(R.string.email))
-
-            Spacer(Modifier.height(10.dp))
-
-            InputField(input = email, onValueChange = { viewModel.updateEmail(it)}, placeholder = stringResource(R.string.enter_email))
-
-            Spacer(Modifier.height(15.dp))
-
-            FormHeadingText(stringResource(R.string.Upload_business_logo))
-
-            Spacer(Modifier.height(10.dp))
-
-            MediaUploadSection(maxImages = 10) { uri ->
-//                viewModel.addPetImage(uri)
+            item {
+                FormHeadingText(stringResource(R.string.business_name))
+                InputField(
+                    input = name,
+                    onValueChange = { viewModel.updateName(it) },
+                    placeholder = stringResource(R.string.enter_name)
+                )
             }
 
-            Spacer(Modifier.height(8.dp))
-
-            FormHeadingText(stringResource(R.string.Category))
-
-            Spacer(Modifier.height(10.dp))
-
-            CategoryInputField()
-
-            Spacer(Modifier.height(15.dp))
-
-            FormHeadingText(stringResource(R.string.location))
-
-            Spacer(Modifier.height(10.dp))
-
-            InputField(input = location, onValueChange = { viewModel.updateLocation(it)}, placeholder = stringResource(R.string.Enter_Location))
-
-            Spacer(Modifier.height(15.dp))
-
-            FormHeadingText(stringResource(R.string.website_))
-
-            Spacer(Modifier.height(10.dp))
-
-            InputField(input =url, onValueChange = { viewModel.updateUrl(it)}, placeholder = "URL")
-
-            Spacer(Modifier.height(15.dp))
-
-            FormHeadingText(stringResource(R.string.contact_number))
-
-            Spacer(Modifier.height(10.dp))
-
-            InputField(input = contact, onValueChange = { viewModel.updateContact(it)}, placeholder = "Enter Contact")
-
-            Spacer(Modifier.height(15.dp))
-
-            FormHeadingText(stringResource(R.string.available_days))
-
-            Spacer(Modifier.height(10.dp))
-
-//        InputField()
-
-            Spacer(Modifier.height(15.dp))
-
-            FormHeadingText(stringResource(R.string.Upload_verification_docs))
-
-            Spacer(Modifier.height(10.dp))
-
-            MediaUploadSection(maxImages = 10) { uri ->
-//                viewModel.addPetImage(uri)
+            item {
+                FormHeadingText(stringResource(R.string.email))
+                InputField(
+                    input = email,
+                    onValueChange = { viewModel.updateEmail(it) },
+                    placeholder = stringResource(R.string.enter_email)
+                )
             }
 
-            Spacer(Modifier.height(20.dp))
+            item {
+                FormHeadingText(stringResource(R.string.Upload_business_logo))
+                MediaUploadSection(maxImages = 10) { uri ->
+                    // viewModel.addPetImage(uri)
+                }
+            }
 
-            SubmitButton(modifier = Modifier,buttonText = stringResource(R.string.submit), onClickButton = { navController.navigate(Routes.ADD_SERVICE) }, buttonTextSize = 15)
+            item {
+                FormHeadingText(stringResource(R.string.Category))
+                CategoryInputField()
+            }
 
+            item {
+                FormHeadingText(stringResource(R.string.location))
+                InputField(
+                    input = location,
+                    onValueChange = { viewModel.updateLocation(it) },
+                    placeholder = stringResource(R.string.Enter_Location)
+                )
+            }
+
+            item {
+                FormHeadingText(stringResource(R.string.flat_address))
+                InputField(
+                    placeholder = stringResource(R.string.enter_flat_address),
+                    input = streetAddress ,
+                    onValueChange = { viewModel.updateStreetAddress(it) }
+                )
+            }
+
+            item {
+                FormHeadingText(stringResource(R.string.area_sector))
+                InputField(
+                    placeholder = stringResource(R.string.enter_area_sector),
+                    input = areaSector,
+                    onValueChange = { viewModel.updateAreaSector(it) }
+                )
+            }
+
+            item {
+                FormHeadingText(stringResource(R.string.landmark))
+                InputField(
+                    placeholder = stringResource(R.string.enter_landmark),
+                    input = landmark,
+                    onValueChange = { viewModel.updateLandmark(it) }
+                )
+            }
+
+            item {
+                FormHeadingText(stringResource(R.string.website_))
+                InputField(
+                    input = url,
+                    onValueChange = { viewModel.updateUrl(it) },
+                    placeholder = "URL"
+                )
+            }
+
+            item {
+                FormHeadingText(stringResource(R.string.contact_number))
+                InputField(
+                    input = contact,
+                    onValueChange = { viewModel.updateContact(it) },
+                    placeholder = "Enter Contact"
+                )
+            }
+
+            item {
+                FormHeadingText(stringResource(R.string.available_days))
+                // Add your custom available days UI here
+                DayTimeSelector(
+                    onDone = { selectedDays, from, to ->
+                        println("Selected Days: $selectedDays")
+                        println("From: $from")
+                        println("To: $to")
+                    }
+                )
+            }
+
+            item {
+                FormHeadingText(stringResource(R.string.Upload_verification_docs))
+                MediaUploadSection(maxImages = 10) { uri ->
+                    // viewModel.addPetImage(uri)
+                }
+            }
+
+            item {
+                SubmitButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    buttonText = stringResource(R.string.submit),
+                    onClickButton = { navController.navigate(Routes.ADD_SERVICE) },
+                    buttonTextSize = 15
+                )
+            }
         }
+
     }
 }
 

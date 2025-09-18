@@ -24,7 +24,7 @@ class PetInfoViewModel @Inject constructor() : ViewModel() {
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    val ageOptions = listOf("0-5 Years", "5-10 Years", "10-20 Years")
+    val ageOptions = listOf("1 Year", "2 Year", "3 Year", "4 Year", "5 Year", )
 
     fun setSelectedPhoto(uri: Uri?) {
         _selectedPhoto.value = uri
@@ -36,7 +36,7 @@ class PetInfoViewModel @Inject constructor() : ViewModel() {
     fun updatePetBio(bio: String) = update { it.copy(petBio = bio.take(150)) }
 
     /**  Validation function with error message */
-    fun validate(): String? {
+    private fun validate(): String? {
         val state = _uiState.value
         return when {
             state.petName.isBlank() -> "Please enter pet name"
@@ -47,20 +47,21 @@ class PetInfoViewModel @Inject constructor() : ViewModel() {
         }
     }
 
+
     /** Continue button */
     fun onContinue(onProfile: Boolean) {
-        if (onProfile){
+        if (onProfile) {
             val error = validate()
             if (error == null) {
-                sendEvent(UiEvent.ContinueSuccess(_uiState.value.toPetInfo()))
+                sendEvent(UiEvent.ContinueSuccess(_uiState.value.toPetInfo())) //  pass PetInfo
             } else {
                 sendEvent(UiEvent.ShowToast(error))
             }
-        }else{
-            UiEvent.CloseDialog
+        } else {
+            sendEvent(UiEvent.CloseDialog) //  actually send the event
         }
-
     }
+
 
 
     /** Add Pet button */

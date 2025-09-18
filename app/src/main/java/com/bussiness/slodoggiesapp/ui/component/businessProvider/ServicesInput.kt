@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.ServicePackage
@@ -92,8 +93,22 @@ fun PetSitterCard(
                     modifier = Modifier
                         .width(100.dp)
                         .height(86.dp)
-                        .background(Color.LightGray, RoundedCornerShape(10.dp))
-                )
+                        .background(Color.White, RoundedCornerShape(10.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = "imageUrl", // replace with your Uri/String
+                        contentDescription = "Preview",
+                        placeholder = painterResource(R.drawable.fluent_color_paw),
+                        error = painterResource(R.drawable.fluent_color_paw),
+                        fallback = painterResource(R.drawable.fluent_color_paw),
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(10.dp))
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.width(12.dp))
 
@@ -146,23 +161,15 @@ fun PetSitterCard(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(R.drawable.lady_ic),
-                            contentDescription = null,
-                            modifier = Modifier.size(30.dp)
+                    Text(
+                        text = providerName,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            fontSize = 14.sp,
+                            color = Color(0xFF9A9A9A)
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = providerName,
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                fontSize = 14.sp,
-                                color = Color(0xFF9A9A9A)
-                            )
-                        )
-                    }
+                    )
                 }
             }
 
@@ -248,6 +255,7 @@ fun ServicePackageCard(
                 Icon(
                     painter = painterResource(R.drawable.edit_ic_p),
                     contentDescription = "Edit",
+                    tint = Color.Unspecified,
                     modifier = Modifier
                         .clickable { onEdit() }
                         .padding(4.dp)

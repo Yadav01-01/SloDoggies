@@ -3,6 +3,8 @@ package com.bussiness.slodoggiesapp.ui.component.businessProvider
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.content.Context
+import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -28,7 +30,10 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -72,7 +77,8 @@ import java.util.Calendar
 @Composable
 fun FormHeadingText(
     text: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    color: Color = Color.Black
 ) {
     Text(
         text = text,
@@ -81,7 +87,7 @@ fun FormHeadingText(
             fontSize = 14.sp,
             fontFamily = FontFamily(Font(R.font.outfit_medium))
         ),
-        color = Color.Black,
+        color = color,
         modifier = modifier
     )
 }
@@ -299,7 +305,7 @@ fun CategoryInputField() {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp)
+                .height(48.dp)
                 .background(Color.White, shape = RoundedCornerShape(8.dp))
                 .border(1.dp, Color(0xFFAEAEAE), shape = RoundedCornerShape(8.dp)),
             contentAlignment = Alignment.CenterStart
@@ -390,49 +396,306 @@ fun CategoryInputField() {
 }
 
 @Composable
-fun ScreenHeadingText(textHeading: String, onBackClick: () -> Unit,onSettingClick: () -> Unit) {
-
+fun ScreenHeadingText(
+    textHeading: String,
+    onBackClick: () -> Unit,
+    @DrawableRes endIcon: Int = R.drawable.setting_ic,
+    onSettingClick: () -> Unit
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(
-            start = 5.dp,
-            end = 5.dp,
-            top = 7.dp,
-            bottom = 7.dp
-        )
-
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 7.dp)
     ) {
-        Row(modifier = Modifier.weight(1f).fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    painter = painterResource(R.drawable.back_ic),
-                    contentDescription = "back",
-                    tint = PrimaryColor,
-                    modifier = Modifier
-                        .wrapContentSize()
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = textHeading,
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 20.sp
-                ),
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                color = Color(0xFF221B22)
+        // Left Section (Back + Title)
+        IconButton(onClick = onBackClick) {
+            Icon(
+                painter = painterResource(R.drawable.back_ic),
+                contentDescription = "back",
+                tint = PrimaryColor
             )
         }
 
+        Text(
+            text = textHeading,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp
+            ),
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            color = Color(0xFF221B22),
+            modifier = Modifier.weight(1f) // pushes end icon to the right
+        )
+
+        // Right Section (Optional End Icon)
         IconButton(onClick = onSettingClick) {
             Icon(
-                painter = painterResource(R.drawable.setting_ic),
-                contentDescription = "settings",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .wrapContentSize()
+                painter = painterResource(endIcon),
+                contentDescription = "end icon",
+                tint = Color.Unspecified
             )
+        }
+    }
+}
+
+
+@Composable
+fun DayTimeSelector(
+    onDone: (selectedDays: List<String>, from: String, to: String) -> Unit
+) {
+    val context = LocalContext.current
+
+    val days = listOf(
+        "All", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday", "Sunday"
+    )
+    val selectedDays = remember { mutableStateListOf<String>() }
+
+    var fromTime by remember { mutableStateOf("--:--") }
+    var toTime by remember { mutableStateOf("--:--") }
+    var expanded by remember { mutableStateOf(false) } // dropdown toggle
+
+    fun showTimePicker(onTimeSelected: (String) -> Unit) {
+        val cal = Calendar.getInstance()
+        TimePickerDialog(
+            context,
+            { _, hour: Int, minute: Int ->
+                onTimeSelected(String.format("%02d:%02d", hour, minute))
+            },
+            cal.get(Calendar.HOUR_OF_DAY),
+            cal.get(Calendar.MINUTE),
+            true
+        ).show()
+    }
+
+    Column(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+
+        // ---- Clickable Box (summary + expand) ----
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .border(1.dp, Color(0xFF9C9C9C), RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { expanded = !expanded }
+                .padding(horizontal = 12.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            if (selectedDays.isNotEmpty() && fromTime != "--:--" && toTime != "--:--") {
+                Text(
+                    text = "${selectedDays.joinToString(", ")} | $fromTime - $toTime",
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            } else {
+                Text(
+                    text = "Select Days and Time",
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    color = Color.Gray
+                )
+            }
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_date_iconn),
+                contentDescription = "Calendar",
+                modifier = Modifier
+                    .size(22.dp)
+                    .align(Alignment.CenterEnd)
+            )
+        }
+
+        // ---- Expandable Section ----
+        AnimatedVisibility(visible = expanded) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp)
+                    .background(Color(0xFFF9F9F9), RoundedCornerShape(8.dp))
+                    .padding(12.dp)
+            ) {
+
+                // Day checkboxes
+                for (i in days.indices step 2) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        for (j in 0..1) {
+                            if (i + j < days.size) {
+                                val day = days[i + j]
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(vertical = 4.dp)
+                                ) {
+                                    CustomCheckBox(
+                                        checked = selectedDays.contains(day) ||
+                                                (day == "All" && selectedDays.size == days.size - 1),
+                                        onCheckedChange = { checked ->
+                                            if (day == "All") {
+                                                if (checked) {
+                                                    selectedDays.clear()
+                                                    selectedDays.addAll(days.drop(1))
+                                                } else {
+                                                    selectedDays.clear()
+                                                }
+                                            } else {
+                                                if (checked) selectedDays.add(day) else selectedDays.remove(day)
+                                            }
+                                        }
+                                    )
+
+                                    Spacer(Modifier.width(10.dp))
+
+                                    Text(text = day,
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 14.sp,
+                                        color = Color.Black
+                                    )
+                                }
+                            } else {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Time Pickers
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TimePickerField(
+                        label = "From",
+                        time = fromTime,
+                        onClick = { showTimePicker { fromTime = it } },
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    TimePickerField(
+                        label = "To",
+                        time = toTime,
+                        onClick = { showTimePicker { toTime = it } },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Done Button
+                Button(
+                    onClick = {
+                        if (selectedDays.isEmpty() || fromTime == "--:--" || toTime == "--:--") {
+                            Toast.makeText(context, "Please select days & time", Toast.LENGTH_SHORT).show()
+                        } else {
+                            expanded = false // collapse back
+                            onDone(selectedDays.toList(), fromTime, toTime)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor)
+                ) {
+                    Text(
+                        text = "Done",
+                        fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                        fontSize = 15.sp,
+                        color = Color.White
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomCheckBox(
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    size: Dp = 18.dp,
+    checkedColor: Color = PrimaryColor, // teal
+    uncheckedColor: Color = Color.Transparent,
+    borderColor: Color = PrimaryColor
+) {
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(RoundedCornerShape(3.dp))
+            .background(if (checked) checkedColor else uncheckedColor)
+            .border(
+                width = 1.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(3.dp)
+            )
+            .clickable { onCheckedChange(!checked) },
+        contentAlignment = Alignment.Center
+    ) {
+        if (checked) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Checked",
+                tint = Color.White,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun TimePickerField(
+    label: String,
+    time: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            fontWeight = FontWeight.Medium,
+            color = Color.Black
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .border(1.dp, Color(0xFFAEAEAE), RoundedCornerShape(8.dp))
+                .clickable { onClick() }
+                .padding(horizontal = 12.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = time,
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontWeight = FontWeight.Normal,
+                    color = if (time == "--:--") Color.Gray else Color.Black
+                )
+                Icon(
+                    painter = painterResource(R.drawable.time_ic),
+                    contentDescription = "Pick Time",
+                    tint = Color.Unspecified
+                )
+            }
         }
     }
 }
@@ -622,37 +885,3 @@ fun showTimePicker(context: Context, onTimeSelected: (String) -> Unit) {
     }, hour, minute, true).show()
 }
 
-@Composable
-fun LabeledCheckbox(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable { onCheckedChange(!checked) }
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Checkbox(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = CheckboxDefaults.colors(
-                checkedColor = Color.Black,
-                uncheckedColor = Color.Gray,
-                checkmarkColor = Color.White
-            )
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = label,
-            style = TextStyle(
-                fontSize = 14.sp,
-                fontFamily = FontFamily(Font(R.font.poppins)),
-                color = Color.Black
-            )
-        )
-    }
-}

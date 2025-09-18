@@ -164,7 +164,7 @@ fun CustomDropdownBox(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                .border(1.dp, Color(0xFFAEAEAE), RoundedCornerShape(8.dp))
                 .background(Color.White, RoundedCornerShape(8.dp))
                 .clickable { expanded = !expanded }
                 .padding(12.dp),

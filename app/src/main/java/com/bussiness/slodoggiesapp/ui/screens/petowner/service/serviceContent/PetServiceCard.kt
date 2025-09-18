@@ -63,28 +63,17 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
             Spacer(modifier = Modifier.height(6.dp))
 
             // Service Name
-            Text(
-                text = service.name,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                maxLines = 1,
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(3.dp))
-
-            // Provider Name with verified icon
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = service.providerName,
-                    fontSize = 10.sp,
+                    text = service.name,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
                     color = Color.Black,
+                    maxLines = 1,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    //modifier = Modifier.weight(1f)
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Image(
@@ -93,6 +82,16 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
                     modifier = Modifier.size(14.dp)
                 )
             }
+
+            Spacer(modifier = Modifier.height(3.dp))
+
+            // Provider Name with verified icon
+            Text(
+                text = service.providerName,
+                fontSize = 10.sp,
+                color = Color.Black,
+                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -103,13 +102,13 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
                 Icon(
                     painter = painterResource(id = R.drawable.ic_round_star),
                     contentDescription = "Rating",
-                    tint = Color(0xFFFFD700),
+                    tint = Color.Unspecified,
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = service.rating.toString(),
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     fontWeight = FontWeight.Medium,
                     color = Color.Black
@@ -176,7 +175,7 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
 data class PetService(
     val name: String,
     val providerName: String,
-    val rating: Float,
+    val rating: String,
     val serviceType: String,
     val iconRes: Int
 )

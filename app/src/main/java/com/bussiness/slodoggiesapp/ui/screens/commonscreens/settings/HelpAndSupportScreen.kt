@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -50,12 +53,23 @@ fun HelpAndSupportScreen(navController: NavHostController,viewModel: HelpAndSupp
     val email by viewModel.email.collectAsState()
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
+    var isNavigating by remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
+    }
 
     Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
 
-        HeadingTextWithIcon(textHeading = "Help & Support", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = "Help & Support", onBackClick = { if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }})
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(Modifier.height(10.dp))
 

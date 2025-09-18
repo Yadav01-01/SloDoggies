@@ -58,7 +58,7 @@ fun PetNewPostScreen(navController: NavHostController) {
             popUpTo(Routes.HOME_SCREEN){ inclusive = true }
         } })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(Modifier.height(15.dp))
 

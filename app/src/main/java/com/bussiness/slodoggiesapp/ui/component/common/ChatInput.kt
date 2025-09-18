@@ -272,7 +272,8 @@ fun BottomMessageBar(
 
                     DropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.background(Color.White)
                     ) {
                         DropdownMenuItem(
                             text = { Text("Image") },

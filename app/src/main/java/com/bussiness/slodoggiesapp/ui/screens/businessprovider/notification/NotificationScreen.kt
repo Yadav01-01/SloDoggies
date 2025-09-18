@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.notification
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,12 +19,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.model.businessProvider.NotificationData
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.NotificationItem
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
 fun NotificationScreen(navController: NavHostController) {
+
+    BackHandler {
+        navController.navigate(Routes.HOME_SCREEN) {
+            launchSingleTop = true
+            popUpTo(Routes.HOME_SCREEN) {
+                inclusive = false
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -32,15 +44,15 @@ fun NotificationScreen(navController: NavHostController) {
 
         HeadingTextWithIcon(
             textHeading = "Notifications",
-            onBackClick = { navController.popBackStack() }
+            onBackClick = { navController.navigate(Routes.HOME_SCREEN){
+                launchSingleTop = true
+                popUpTo(Routes.HOME_SCREEN) {
+                    inclusive = false
+                }
+            } }
         )
 
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(PrimaryColor)
-        )
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         LazyColumn(
             modifier = Modifier

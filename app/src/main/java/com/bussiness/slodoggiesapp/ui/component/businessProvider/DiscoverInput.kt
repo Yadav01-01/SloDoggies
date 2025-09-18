@@ -256,11 +256,16 @@ fun DetailText(label: String,backgroundColor: Color,textColor: Color){
 }
 
 @Composable
-fun ProfileDetail(label: String, value: String,onDetailClick: () -> Unit) {
+fun ProfileDetail(
+    label: String,
+    value: String,
+    onDetailClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
+        modifier = modifier.clickable { onDetailClick() },
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable { onDetailClick()  }
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = label,

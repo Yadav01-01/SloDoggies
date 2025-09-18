@@ -9,18 +9,20 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.EditBusinessScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.SubscriptionScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.PersonDetailScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.notification.NotificationScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.PostScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.promotion.BudgetScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.promotion.PreviewAdsScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.EditProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.FollowerScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.SponsoredAdsScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.EditBusinessScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit.EditAddServiceScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.sponsoredAds.SponsoredAdsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen
@@ -28,6 +30,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.HomeScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.VerifyAccount
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.NewMessageScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost.EditPostScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost.UserPost
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AboutUsScreen
@@ -39,6 +42,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.PrivacyPoli
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SavedItemScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.SettingsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.TermsAndConditionsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.TransactionScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.event.EventScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.notification.PetNotificationsScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.PetNewPostScreen
@@ -97,6 +101,10 @@ fun MainNavGraph(
         composable(Routes.ACCOUNT_PRIVACY_SCREEN) { AccountPrivacy(navController,authNavController) }
         composable(Routes.USER_POST_SCREEN) { UserPost(navController) }
         composable(Routes.EDIT_POST_SCREEN) { EditPostScreen(navController) }
+        composable(Routes.BUDGET_SCREEN) { BudgetScreen(navController) }
+        composable(Routes.PREVIEW_ADS_SCREEN) { PreviewAdsScreen(navController) }
+        composable(Routes.NEW_MESSAGE_SCREEN) { NewMessageScreen(navController) }
+        composable(Routes.TRANSACTION_SCREEN) { TransactionScreen(navController) }
 
         composable(
             route = "${Routes.VERIFY_ACCOUNT_SCREEN}?type={type}&data={data}",

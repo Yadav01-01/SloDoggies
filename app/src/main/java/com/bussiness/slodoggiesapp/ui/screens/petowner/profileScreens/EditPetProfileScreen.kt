@@ -55,6 +55,7 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CustomDropdownMenuUpdated
 import com.bussiness.slodoggiesapp.ui.component.petOwner.SettingIconHeader
+import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetProfileViewModel
@@ -106,9 +107,10 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
             .fillMaxSize()
             .background(Color.White)
     ) {
-        ScreenHeadingText(stringResource(R.string.edit_pet_profile), onBackClick = { navController.popBackStack() }, onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN) })
+        ScreenHeadingText(stringResource(R.string.edit_pet_profile), onBackClick = { navController.popBackStack() }, endIcon = R.drawable.bin_ic,
+            onSettingClick = { viewModel.showDeleteDialog(true) })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Column(
             modifier = Modifier
@@ -217,6 +219,16 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
 
             Spacer(modifier = Modifier.height(16.dp))
         }
+    }
+
+    if (uiState.deleteDialog){
+        DeleteChatDialog(
+            onDismiss = { viewModel.dismissDeleteDialog() },
+            onClickRemove = { viewModel.dismissDeleteDialog()  },
+            iconResId = R.drawable.delete_mi,
+            text = stringResource(R.string.main_text),
+            description = stringResource(R.string.delete_pet_profile)
+        )
     }
 
     if(uiState.showConfirmationDialog){

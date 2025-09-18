@@ -151,7 +151,7 @@ fun PetNotificationsScreen(navController: NavHostController) {
     ) {
         HeadingTextWithIcon(textHeading = "Notifications", onBackClick = { navController.popBackStack() })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         // Notifications List
         LazyColumn(

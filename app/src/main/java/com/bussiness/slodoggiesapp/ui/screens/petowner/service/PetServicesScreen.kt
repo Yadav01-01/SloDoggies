@@ -57,7 +57,7 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
             popUpTo(Routes.HOME_SCREEN) { inclusive = true }
         } })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(modifier = Modifier.height(20.dp))
 

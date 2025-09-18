@@ -76,7 +76,7 @@ fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: Veri
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
-        AuthBackButton(navController, modifier = Modifier.align(Alignment.TopStart))
+        AuthBackButton(onClick = {navController.popBackStack()}, modifier = Modifier.align(Alignment.TopStart))
 
         // Main content centered
         Column(

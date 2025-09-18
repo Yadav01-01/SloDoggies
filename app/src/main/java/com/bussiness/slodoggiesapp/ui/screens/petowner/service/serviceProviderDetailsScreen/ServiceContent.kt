@@ -153,8 +153,8 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
                     painter = painterResource(id = if (expanded) R.drawable.ic_dropdown_open_icon else R.drawable.ic_dropdown_close_icon),
                     contentDescription = null,
                     modifier = Modifier
-                        .height(25.dp)
-                        .width(25.dp)
+                        .height(16.dp)
+                        .width(16.dp)
                 )
             }
             if (expanded) {

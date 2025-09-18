@@ -39,12 +39,7 @@ fun SubscriptionScreen(navController: NavHostController) {
             onBackClick = { navController.popBackStack() }
         )
 
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(PrimaryColor)
-        )
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(modifier = Modifier.height(10.dp))
 

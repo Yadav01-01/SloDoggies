@@ -58,4 +58,8 @@ object Routes {
     const val ACCOUNT_PRIVACY_SCREEN = "AccountPrivacyScreen"
     const val USER_POST_SCREEN = "UserPostScreen"
     const val EDIT_POST_SCREEN = "EditPostScreen"
+    const val BUDGET_SCREEN = "BudgetScreen"
+    const val PREVIEW_ADS_SCREEN = "PreviewAdsScreen"
+    const val NEW_MESSAGE_SCREEN = "NewMessageScreen"
+    const val TRANSACTION_SCREEN = "TransactionScreen"
 }

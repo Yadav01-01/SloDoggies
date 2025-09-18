@@ -59,7 +59,7 @@ fun EditProfileScreen(navController: NavHostController) {
 
         ScreenHeadingText(stringResource(R.string.edit_profile), onBackClick = { navController.popBackStack() }, onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN) })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(Modifier.height(20.dp))
 

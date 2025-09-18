@@ -76,7 +76,7 @@ fun PetInfoDialog(
     title: String,
     onDismiss: () -> Unit = {},
     addPet: (PetInfo) -> Unit = {},
-    onContinueClick : (PetInfo) -> Unit ,
+    onContinueClick: (PetInfo) -> Unit,
     onProfile : Boolean = false
 ) {
     val viewModel: PetInfoViewModel = hiltViewModel()
@@ -89,7 +89,7 @@ fun PetInfoDialog(
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
                 is UiEvent.ContinueSuccess -> {
-                    onContinueClick(event.petInfo)
+                    onContinueClick(event.petInfo) // ✅ now you get the petInfo
                 }
                 is UiEvent.AddPetSuccess -> {
                     addPet(event.petInfo)
@@ -100,6 +100,7 @@ fun PetInfoDialog(
             }
         }
     }
+
 
     Dialog(
         onDismissRequest = onDismiss,

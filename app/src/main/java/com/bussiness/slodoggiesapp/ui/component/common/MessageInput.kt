@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -43,8 +44,10 @@ import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.ChatHeaderData
 import com.bussiness.slodoggiesapp.model.common.Message
+import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
 fun MessageItem(message: Message, onItemClick: () -> Unit) {
@@ -223,6 +226,9 @@ fun OnMenuClick(
     onBlockClick: () -> Unit,
     onFeedbackClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val sessionManager = SessionManager.getInstance(context)
+
     DropdownMenu(
         expanded = menuExpanded,
         onDismissRequest = onDismiss,
@@ -260,12 +266,14 @@ fun OnMenuClick(
 
         MenuItem(
             iconRes = R.drawable.req_fb,
-            label = "Req. Feedback",
+            label = if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER)"Req. Feedback"
+            else "Give Feedback",
             onClick = {
                 onDismiss()
                 onFeedbackClick()
             }
         )
+
     }
 }
 

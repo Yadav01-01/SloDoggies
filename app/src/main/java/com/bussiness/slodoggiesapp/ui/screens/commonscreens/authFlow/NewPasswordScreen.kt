@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
@@ -47,13 +49,27 @@ fun NewPasswordScreen(
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
+    BackHandler {
+        navController.navigate(Routes.LOGIN_SCREEN) {
+            launchSingleTop = true
+            popUpTo(Routes.LOGIN_SCREEN) {
+                inclusive = true
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
-        AuthBackButton(navController, modifier = Modifier.align(Alignment.TopStart))
+        AuthBackButton(onClick = {navController.navigate(Routes.LOGIN_SCREEN){
+            launchSingleTop = true
+            popUpTo(Routes.LOGIN_SCREEN) {
+                inclusive = true
+            }
+        } }, modifier = Modifier.align(Alignment.TopStart))
 
         Column(
             modifier = Modifier

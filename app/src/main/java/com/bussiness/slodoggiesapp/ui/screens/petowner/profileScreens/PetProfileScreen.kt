@@ -8,9 +8,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -125,7 +127,7 @@ fun PetProfileScreen(navController: NavHostController) {
             } },
             onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Column(
             modifier = Modifier
@@ -311,20 +313,50 @@ fun PetProfileScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            Row (modifier = Modifier.fillMaxWidth(),
-                Arrangement.SpaceEvenly) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ProfileDetail(
+                    label = "20",
+                    value = "Posts",
+                    modifier = Modifier.weight(1f),
+                    onDetailClick = {}
+                )
 
-                ProfileDetail(label = "20", value = "Posts", onDetailClick = {})
+                VerticalDivider(
+                    modifier = Modifier.fillMaxHeight(),
+                    thickness = 1.dp,
+                    color = PrimaryColor
+                )
 
-                VerticalDivider(Modifier.width(2.dp).height(44.dp).background(PrimaryColor))
+                ProfileDetail(
+                    label = "27k",
+                    value = "Followers",
+                    modifier = Modifier.weight(1f),
+                    onDetailClick = {
+                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Follower")
+                    }
+                )
 
-                ProfileDetail(label = "27k", value = "Followers", onDetailClick = {navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
+                VerticalDivider(
+                    modifier = Modifier.fillMaxHeight(),
+                    thickness = 1.dp,
+                    color = PrimaryColor
+                )
 
-                VerticalDivider(Modifier.width(2.dp).height(44.dp).background(PrimaryColor))
-
-                ProfileDetail(label = "219", value = "Following" , onDetailClick =  {navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}") })
-
+                ProfileDetail(
+                    label = "219",
+                    value = "Following",
+                    modifier = Modifier.weight(1f),
+                    onDetailClick = {
+                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Following")
+                    }
+                )
             }
+
 
             Spacer(modifier = Modifier.height(24.dp))
             Card(

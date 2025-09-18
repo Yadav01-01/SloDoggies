@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,12 +45,22 @@ import com.bussiness.slodoggiesapp.viewModel.common.FAQViewModel
 @Composable
 fun FAQScreen(navController: NavHostController,viewModel: FAQViewModel = hiltViewModel()) {
     val faqList = viewModel.faqItems
+    var isNavigating by remember { mutableStateOf(false) }
 
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
+    }
     Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
 
-        HeadingTextWithIcon(textHeading = "FAQs", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = "FAQs", onBackClick = {  if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        } })
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(Modifier.height(10.dp))
 

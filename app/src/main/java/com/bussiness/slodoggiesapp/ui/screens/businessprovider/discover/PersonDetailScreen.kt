@@ -1,13 +1,16 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,6 +71,14 @@ fun PersonDetailScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var isFollowed by remember { mutableStateOf(false) }
+    var isNavigating by remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -75,14 +86,12 @@ fun PersonDetailScreen(
             .background(Color.White)
     ) {
 
-        HeadingTextWithIcon(textHeading = uiState.name, onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = uiState.name, onBackClick = {  if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        } })
 
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(PrimaryColor)
-        )
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Column(
             modifier = Modifier
@@ -176,15 +185,18 @@ fun PersonDetailScreen(
 
             // Stats
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min), // Row की height child के हिसाब से set होगी
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileDetail(label = uiState.posts, value = "Posts", onDetailClick = {})
-                VerticalDivider(Modifier.width(2.dp).height(44.dp).background(PrimaryColor))
-                ProfileDetail(label = uiState.followers, value = "Followers", onDetailClick = {})
-                VerticalDivider(Modifier.width(2.dp).height(44.dp).background(PrimaryColor))
-                ProfileDetail(label = uiState.following, value = "Following", onDetailClick = {})
+                ProfileDetail(label = "120", value = "Posts", modifier = Modifier.weight(1f), onDetailClick = { })
+                VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
+                ProfileDetail(label = "27.7M", value = "Followers", modifier = Modifier.weight(1f), onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
+                VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
+                ProfileDetail(label = "219", value = "Following",  modifier = Modifier.weight(1f),onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}")})
             }
+
 
             Spacer(modifier = Modifier.height(20.dp))
 

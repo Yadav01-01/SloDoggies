@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,9 +15,12 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
@@ -26,13 +30,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -49,6 +61,7 @@ import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ParticipantTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.common.EditPostViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun EditPostScreen(
@@ -63,7 +76,7 @@ fun EditPostScreen(
             .background(Color.White)
     ) {
         ParticipantTextWithIcon(
-            textHeading = stringResource(R.string.posts),
+            textHeading = stringResource(R.string.edit_info),
             onBackClick = {
                 navController.navigate(Routes.USER_POST_SCREEN) {
                     popUpTo(Routes.USER_POST_SCREEN) { inclusive = true }
@@ -79,17 +92,12 @@ fun EditPostScreen(
             selected = uiState.description.isNotEmpty()
         )
 
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(PrimaryColor)
-        )
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFCEE1E6))
+                .background(Color(0xFFCEE1E6)).verticalScroll(rememberScrollState())
         ) {
             PostCard(
                 profileImageUrl = uiState.profileImageUrl,
@@ -184,12 +192,6 @@ fun PostCard(
                         )
                     }
                 }
-
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More options",
-                    modifier = Modifier.clickable { onMenuClick() }
-                )
             }
 
             // Post Image
@@ -205,11 +207,15 @@ fun PostCard(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditDescription(
     description: String,
     onDescriptionChange: (String) -> Unit
 ) {
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val focusRequester = remember { FocusRequester() }
+    var isFocused by remember { mutableStateOf(false) }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -219,6 +225,12 @@ fun EditDescription(
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
+        LaunchedEffect(isFocused) {
+            if (isFocused) {
+                delay(100)
+                bringIntoViewRequester.bringIntoView()
+            }
+        }
         BasicTextField(
             value = description,
             onValueChange = onDescriptionChange,
@@ -231,7 +243,12 @@ fun EditDescription(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(12.dp)
+                .focusRequester(focusRequester)
+                .onFocusChanged { state ->
+                    isFocused = state.isFocused
+                },
+
             decorationBox = { innerTextField ->
                 Box(
                     modifier = Modifier.fillMaxWidth()

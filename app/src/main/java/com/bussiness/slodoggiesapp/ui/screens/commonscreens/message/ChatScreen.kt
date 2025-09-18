@@ -18,19 +18,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.ChatHeaderData
+import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.ui.component.common.BottomMessageBar
 import com.bussiness.slodoggiesapp.ui.component.common.ChatHeaderItem
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.ReportBusinessChat
 import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.ReportDialog
 import com.bussiness.slodoggiesapp.ui.dialog.BottomToast
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatSection
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
 import kotlinx.coroutines.delay
 
@@ -45,10 +49,12 @@ fun ChatScreen(
     var selectedReason by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var showReportDialog by remember { mutableStateOf(false) }
+    var sessionManager = SessionManager.getInstance(LocalContext.current)
 
     val messages by viewModel.messages.collectAsState()
     val currentMessage by viewModel.currentMessage.collectAsState()
     val listState = rememberLazyListState()
+    var isNavigating by remember { mutableStateOf(false) }
 
     // Scroll to latest message when list changes
     LaunchedEffect(messages.size) {
@@ -66,7 +72,11 @@ fun ChatScreen(
         // Header stays
         ChatHeaderItem(
             chatData = chatHeader,
-            onBackClick = { navController.popBackStack() },
+            onBackClick = {
+                if (!isNavigating) {
+                    isNavigating = true
+                    navController.popBackStack()
+                } },
             onDeleteClick = { deleteDialog = true },
             onReportClick = { showReportDialog = true },
             onBlockClick = {
@@ -76,7 +86,7 @@ fun ChatScreen(
             onFeedbackClick = { /* handle feedback */ }
         )
 
-        HorizontalDivider(thickness = 1.5.dp, color = PrimaryColor)
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         // Chat list & input area
         Box(
@@ -99,22 +109,41 @@ fun ChatScreen(
 
         // Dialogs remain outside main chat area
         if (showReportDialog) {
-            ReportDialog(
-                onDismiss = { showReportDialog = false },
-                title = stringResource(R.string.report),
-                reasons = listOf(
-                    "Bullying or unwanted contact",
-                    "Violence, hate or exploitation",
-                    "False Information",
-                    "Scam, fraud or spam"
-                ),
-                selectedReason = selectedReason,
-                message = message,
-                onReasonSelected = { reason -> selectedReason = reason },
-                onMessageChange = { message = it },
-                onCancel = { showReportDialog = false },
-                onSendReport = { showReportDialog = false }
-            )
+            if (sessionManager.getUserType() == UserType.PET_OWNER){
+                ReportDialog(
+                    onDismiss = { showReportDialog = false },
+                    title = stringResource(R.string.report),
+                    reasons = listOf(
+                        "Bullying or unwanted contact",
+                        "Violence, hate or exploitation",
+                        "False Information",
+                        "Scam, fraud or spam"
+                    ),
+                    selectedReason = selectedReason,
+                    message = message,
+                    onReasonSelected = { reason -> selectedReason = reason },
+                    onMessageChange = { message = it },
+                    onCancel = { showReportDialog = false },
+                    onSendReport = { showReportDialog = false }
+                )
+            }else{
+                ReportBusinessChat(
+                    onDismiss = { showReportDialog = false },
+                    title = stringResource(R.string.report),
+                    reasons = listOf(
+                        "Bullying or unwanted contact",
+                        "Violence, hate or exploitation",
+                        "False Information",
+                        "Scam, fraud or spam"),
+                    selectedReason = selectedReason,
+                    message = message,
+                    onReasonSelected = { reason -> selectedReason = reason },
+                    onMessageChange = { message = it },
+                    onCancel = { showReportDialog = false },
+                    onSendReport = { showReportDialog = false }
+                )
+            }
+
         }
 
         if (showToast) {

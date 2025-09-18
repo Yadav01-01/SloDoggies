@@ -47,9 +47,9 @@ import kotlinx.coroutines.launch
 
 val onboardingPages = listOf(
     OnboardingPage(
-        imageRes = R.drawable.onboard1, // Replace with actual drawables
+        imageRes = R.drawable.onboard1,
         title = "Welcome to SloDoggies",
-        description = "Discover a tail-wagging world where dog lovers and trusted local services connect. SLO county's pet scene just got its own home."
+        description = "Discover a tail-wagging world where dog lovers and local services connect. SLO county's dog community just got its own home!"
     ),
     OnboardingPage(
         imageRes = R.drawable.onboard1,
@@ -59,7 +59,7 @@ val onboardingPages = listOf(
     OnboardingPage(
         imageRes = R.drawable.onboard3,
         title = "Paws, Play & Participate",
-        description = "Join dog friendly events, follow favorite providers, explore pet places and make lifelong friends - bothtwo-and four-legged. "
+        description = "Join dog friendly events, follow favorite providers, explore pet places and make lifelong friends - both two-and four-legged. "
     )
 )
 
@@ -203,7 +203,7 @@ fun OnboardingPageContent(
                     text = page.description,
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 18.sp),
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    lineHeight = 24.sp,
+                    lineHeight = 20.sp,
                     fontSize = 17.sp,
                     textAlign = TextAlign.Center,
                     color = Color.Black

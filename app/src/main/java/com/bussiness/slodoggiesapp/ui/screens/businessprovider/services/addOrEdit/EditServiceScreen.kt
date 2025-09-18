@@ -49,7 +49,13 @@ fun EditAddServiceScreen(
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
-        HeadingTextWithIcon(textHeading = if (type == "add") "Add Services" else " Edit Service", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = if (type == "add") "Add Services" else " Edit Service",
+            onBackClick = {navController.navigate(Routes.SERVICES_SCREEN) {
+                launchSingleTop = true
+                popUpTo(Routes.SERVICES_SCREEN) {
+                    inclusive = false
+                }
+            }})
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
 
@@ -87,7 +93,7 @@ fun EditAddServiceScreen(
 
             Spacer(Modifier.height(15.dp))
 
-            FormHeadingText("Additional Media")
+            FormHeadingText("Upload Media")
 
             Spacer(Modifier.height(10.dp))
 

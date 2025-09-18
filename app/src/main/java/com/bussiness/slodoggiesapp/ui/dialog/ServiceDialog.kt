@@ -106,7 +106,7 @@ fun ServiceAdEditDialog(
                     }
 
                     Icon(
-                        painter = painterResource(R.drawable.ic_cross_icon),
+                        painter = painterResource(R.drawable.ic_cross_iconx),
                         contentDescription = "Close",
                         tint = Color.Unspecified,
                         modifier = Modifier

@@ -26,6 +26,27 @@ class BusinessRegistrationViewModel @Inject constructor() : ViewModel() {
     private val _contact = MutableStateFlow("")
     val contact: StateFlow<String> = _contact
 
+    private val _streetAddress = MutableStateFlow("")
+    val streetAddress: StateFlow<String> = _streetAddress
+
+    private val _areaSector = MutableStateFlow("")
+    val areaSector: StateFlow<String> = _areaSector
+
+    private val _landmark = MutableStateFlow("")
+    val landmark: StateFlow<String> = _landmark
+
+    fun updateLandmark(newLandmark: String) {
+        _landmark.value = newLandmark
+    }
+
+    fun updateAreaSector(newAreaSector: String) {
+        _areaSector.value = newAreaSector
+    }
+
+    fun updateStreetAddress(newStreetAddress: String) {
+        _streetAddress.value = newStreetAddress
+    }
+
 
 
     private val _category = MutableStateFlow<String?>(null)

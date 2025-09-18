@@ -77,12 +77,7 @@ fun EventScreen(navController: NavHostController) {
             onBackClick = { navController.popBackStack() }
         )
 
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(2.dp)
-                .background(PrimaryColor)
-        )
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         LazyColumn(
             modifier = Modifier

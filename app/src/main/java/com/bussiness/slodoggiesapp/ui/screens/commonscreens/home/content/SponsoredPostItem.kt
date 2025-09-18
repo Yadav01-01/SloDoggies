@@ -153,7 +153,7 @@ private fun PostMedia(mediaList: List<MediaItem>) {
     ) {
 
         AsyncImage(
-            model = R.drawable.dummy_baby_pic,
+            model = R.drawable.dog1,
             contentDescription = "Post image",
             contentScale = ContentScale.Crop,
             modifier =  Modifier.fillMaxWidth().height(350.dp)

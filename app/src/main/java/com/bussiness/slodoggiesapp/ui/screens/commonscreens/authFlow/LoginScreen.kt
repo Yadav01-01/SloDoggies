@@ -62,7 +62,7 @@ fun LoginScreen(
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
         // Back button at top-left
-        AuthBackButton(navController, modifier = Modifier.align(Alignment.TopStart))
+        AuthBackButton(onClick = {navController.popBackStack()}, modifier = Modifier.align(Alignment.TopStart))
 
         Column(
             modifier = Modifier

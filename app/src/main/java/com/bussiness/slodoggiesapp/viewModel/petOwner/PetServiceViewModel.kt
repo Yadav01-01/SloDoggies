@@ -15,12 +15,12 @@ class PetServicesViewModel : ViewModel() {
     val uiState: StateFlow<PetServiceUiState> = _uiState
 
     private val allServices = listOf(
-        PetService("Pawfect Pet Care", "Provider Name", 4.8f, "Grooming", R.drawable.paw_icon),
-        PetService("SLO Pet Centre", "Provider Name", 4.8f, "Walking", R.drawable.paw_icon),
-        PetService("Pawfect Pet Sitters", "Provider Name", 4.8f, "Boarding", R.drawable.paw_icon),
-        PetService("Dozy Pet Sitters", "Provider Name", 4.8f, "Boarding", R.drawable.paw_icon),
-        PetService("Grooming Pet Sitters", "Provider Name", 4.8f, "Grooming", R.drawable.paw_icon),
-        PetService("SLODOG Centre", "Provider Name", 4.8f, "Veterinary", R.drawable.paw_icon)
+        PetService("Pawfect Pet Care", "Provider Name", "4.8/5", "Grooming", R.drawable.paw_icon),
+        PetService("SLO Pet Centre", "Provider Name", "4.8/5", "Walking", R.drawable.paw_icon),
+        PetService("Pawfect Pet Sitters", "Provider Name", "4.8/5", "Boarding", R.drawable.paw_icon),
+        PetService("Dozy Pet Sitters", "Provider Name", "4.8/5", "Boarding", R.drawable.paw_icon),
+        PetService("Grooming Pet Sitters", "Provider Name", "4.8/5", "Grooming", R.drawable.paw_icon),
+        PetService("SLODOG Centre", "Provider Name", "4.8/5", "Veterinary", R.drawable.paw_icon)
     )
 
     init {
