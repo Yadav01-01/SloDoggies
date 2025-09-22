@@ -12,16 +12,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
@@ -53,7 +53,7 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.FillPetInfoDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialog
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
@@ -70,74 +70,102 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
     val successDialog by remember { mutableStateOf(false) }
 
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp, vertical = 5.dp)
+            .imePadding(),
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-
-        // Add the WhosThisPostAbout section at the top
-        WhosThisPostAbout(
-            selectedPet = viewModel.selectedPet,
-            allPets = samplePeople,
-            onAddPersonClick = { showPetInfoDialog = true },
-            onPersonClick = { pet -> viewModel.selectPerson(pet) }
-        )
-
-        FormHeadingText(stringResource(R.string.Upload_Media))
-
-        Spacer(Modifier.height(10.dp))
-
-        MediaUploadSection(maxImages = 10) { uri ->
-            // This lambda is called whenever a new image is selected
-            // You can now send this URI to your API or store in ViewModel
-//            viewModel.addPetImage(uri)
-        }
-
-        Spacer(Modifier.height(15.dp))
-
-        FormHeadingText(stringResource(R.string.Write_Post))
-
-        Spacer(Modifier.height(10.dp))
-
-        DescriptionBox(placeholder = stringResource(R.string.Enter_Description), value = writePost, onValueChange ={ viewModel.updateWritePost(it)})
-
-        Spacer(Modifier.height(15.dp))
-
-        FormHeadingText(stringResource(R.string.Hashtags))
-
-        Spacer(Modifier.height(10.dp))
-
-        InputField(placeholder = stringResource(R.string.Enter_Hashtags), input = hashtags, onValueChange ={viewModel.updateHashtags(it)})
-
-        Spacer(Modifier.height(15.dp))
-
-        FormHeadingText(stringResource(R.string.Zip_Code))
-
-        Spacer(Modifier.height(5.dp))
-
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { onClickLocation() }) {
-            Icon(
-                painter = painterResource(id = R.drawable.precise_loc),
-                contentDescription = null,
-                tint = Color.Gray,
-                modifier = Modifier.wrapContentSize()
+        item {
+            // Add the WhosThisPostAbout section at the top
+            WhosThisPostAbout(
+                selectedPet = viewModel.selectedPet,
+                allPets = samplePeople,
+                onAddPersonClick = { showPetInfoDialog = true },
+                onPersonClick = { pet -> viewModel.selectPerson(pet) }
             )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(text = stringResource(R.string.use_my_current_location), fontFamily = FontFamily(Font(R.font.poppins)), fontSize = 12.sp, color = Color.Black)
         }
 
-        Spacer(Modifier.height(10.dp))
+        item {
+            FormHeadingText(stringResource(R.string.Upload_Media))
+        }
 
-        InputField(placeholder = stringResource(R.string.enter_your_zip_code), input = postalCode, onValueChange ={ viewModel.updatePostalCode(it)})
+        item {
+            MediaUploadSection(maxImages = 10) { uri ->
+                // Example: viewModel.addPetImage(uri)
+            }
+        }
 
-        Spacer(Modifier.height(35.dp))
+        item {
+            FormHeadingText(stringResource(R.string.Write_Post))
+        }
 
-        SubmitButton(modifier = Modifier, buttonText = stringResource(R.string.post), onClickButton = { onClickPost() })
-        Spacer(Modifier.height(30.dp))
+        item {
+            DescriptionBox(
+                placeholder = stringResource(R.string.Enter_Description),
+                value = writePost,
+                onValueChange = { viewModel.updateWritePost(it) }
+            )
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.Hashtags))
+        }
+
+        item {
+            InputField(
+                placeholder = stringResource(R.string.Enter_Hashtags),
+                input = hashtags,
+                onValueChange = { viewModel.updateHashtags(it) }
+            )
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.Zip_Code))
+        }
+
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { onClickLocation() }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.precise_loc),
+                    contentDescription = null,
+                    tint = Color.Gray,
+                    modifier = Modifier.wrapContentSize()
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = stringResource(R.string.use_my_current_location),
+                    fontFamily = FontFamily(Font(R.font.poppins)),
+                    fontSize = 12.sp,
+                    color = Color.Black
+                )
+            }
+        }
+
+        item {
+            InputField(
+                placeholder = stringResource(R.string.enter_your_zip_code),
+                input = postalCode,
+                onValueChange = { viewModel.updatePostalCode(it) }
+            )
+        }
+
+        item {
+            Spacer(Modifier.height(20.dp))
+            SubmitButton(
+                modifier = Modifier,
+                buttonText = stringResource(R.string.post),
+                onClickButton = { onClickPost() }
+            )
+            Spacer(Modifier.height(30.dp))
+        }
     }
+
     if (showPetInfoDialog) {
         FillPetInfoDialog(
             "Add Your Pet",

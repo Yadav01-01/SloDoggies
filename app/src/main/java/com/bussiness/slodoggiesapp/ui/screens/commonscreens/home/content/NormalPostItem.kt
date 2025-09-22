@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -30,7 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -67,9 +65,8 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.MediaItem
 import com.bussiness.slodoggiesapp.model.common.MediaType
 import com.bussiness.slodoggiesapp.model.common.PostItem
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
-import com.bussiness.slodoggiesapp.ui.component.shareApp
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable

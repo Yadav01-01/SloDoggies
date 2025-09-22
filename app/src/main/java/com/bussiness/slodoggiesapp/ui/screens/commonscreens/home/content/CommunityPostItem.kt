@@ -47,8 +47,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.PostItem
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 

@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.component.petOwner.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -35,7 +35,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.common.BioField

@@ -1,12 +1,12 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.event
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -67,6 +67,15 @@ fun EventScreen(navController: NavHostController) {
 
     val eventsToDisplay = if (selectedOption == "My Events") sampleEvents else sampleEvents2
 
+    BackHandler {
+        navController.navigate(Routes.HOME_SCREEN){
+            launchSingleTop = true
+            popUpTo(Routes.HOME_SCREEN){
+                inclusive = true
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,7 +83,12 @@ fun EventScreen(navController: NavHostController) {
     ) {
         HeadingTextWithIcon(
             textHeading = "My Events",
-            onBackClick = { navController.popBackStack() }
+            onBackClick = { navController.navigate(Routes.HOME_SCREEN){
+                launchSingleTop = true
+                popUpTo(Routes.HOME_SCREEN){
+                    inclusive = true
+                }
+            }}
         )
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)

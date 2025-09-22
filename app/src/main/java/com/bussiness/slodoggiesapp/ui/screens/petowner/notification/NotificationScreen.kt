@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.notification
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -41,20 +42,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
-
-data class NotificationItem(
-    val id: Int,
-    val username: String,
-    val action: String,
-    val timeAgo: String,
-    val profileImageRes: Int,
-    val postImageRes: Int? = null,
-    val type: String,
-    val isFollowAction: Boolean = false
-)
 
 @Composable
 fun PetNotificationsScreen(navController: NavHostController) {
@@ -144,12 +135,25 @@ fun PetNotificationsScreen(navController: NavHostController) {
         )
     }
 
+    BackHandler {
+        navController.navigate(Routes.HOME_SCREEN){
+            popUpTo(Routes.HOME_SCREEN){
+                inclusive = true
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        HeadingTextWithIcon(textHeading = "Notifications", onBackClick = { navController.popBackStack() })
+        HeadingTextWithIcon(textHeading = "Notifications",
+            onBackClick = { navController.navigate(Routes.HOME_SCREEN){
+                popUpTo(Routes.HOME_SCREEN){
+                    inclusive = true
+                }
+            } })
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
@@ -334,6 +338,17 @@ fun NotificationItemRow(
         }
     }
 }
+
+data class NotificationItem(
+    val id: Int,
+    val username: String,
+    val action: String,
+    val timeAgo: String,
+    val profileImageRes: Int,
+    val postImageRes: Int? = null,
+    val type: String,
+    val isFollowAction: Boolean = false
+)
 
 @Preview(showBackground = true)
 @Composable

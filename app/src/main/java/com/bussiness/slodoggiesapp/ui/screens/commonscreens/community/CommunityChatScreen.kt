@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,6 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +55,7 @@ fun CommunityChatScreen(
 ) {
     val messages by viewModel.messages.collectAsState()
     val currentMessage by viewModel.currentMessage.collectAsState()
+    var isNavigating by remember { mutableStateOf(false) }
 
     val listState = rememberLazyListState() // LazyColumn scroll state
 
@@ -69,7 +74,12 @@ fun CommunityChatScreen(
     ) {
         CommunityHeader(
             community = Community(id = "1", name = "Event Community 1", membersCount = 22, imageUrl = ""),
-            onBackClick = { navController.popBackStack() },
+            onBackClick = {
+                if (!isNavigating) {
+                    isNavigating = true
+                    navController.popBackStack()
+                }
+            },
             onViewProfileClick = { navController.navigate(Routes.COMMUNITY_PROFILE_SCREEN) }
         )
 
@@ -79,6 +89,7 @@ fun CommunityChatScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
+                .imePadding()
         ) {
             CommunityChatSection(
                 messages = messages,

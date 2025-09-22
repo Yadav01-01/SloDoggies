@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -49,89 +51,98 @@ fun ReviewInterface() {
     var reviewText by remember { mutableStateOf("") }
     var selectedRating by remember { mutableStateOf(0) }
 
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .verticalScroll(rememberScrollState())
             .padding(vertical = 10.dp)
+            .imePadding(),
+        verticalArrangement = Arrangement.spacedBy(16.dp) // consistent spacing
     ) {
         // Rating Summary Section
-        RatingSummary()
+        item {
+            RatingSummary()
+        }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        item {
+            Spacer(modifier = Modifier.height(8.dp))
+            ReviewsList()
+        }
 
-        // Reviews List
-        ReviewsList()
-
-        Spacer(modifier = Modifier.height(10.dp))
         // Rate & Review Section
-        Text(
-            text = "Rate & Review",
-            fontSize = 14.sp,
-            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            color = Color.Black,
-        )
-        Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            color = Color(0xFFE9EAEB),
-            thickness = 1.dp
-        )
-
-
-        // Star Rating
-        StarRating(
-            rating = selectedRating,
-            onRatingChanged = { selectedRating = it }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Review Text Field
-        OutlinedTextField(
-            value = reviewText,
-            onValueChange = { reviewText = it },
-            placeholder = {
-                Text(
-                    text = "Type Here.....",
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-
-                    color = Color(0xFF949494)
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(90.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Color(0xFF949494),
-                unfocusedBorderColor = Color(0xFF949494)
-            ),
-            shape = RoundedCornerShape(8.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Submit Button
-        Button(
-            onClick = { /* Handle submit */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF258694)
-            ),
-            shape = RoundedCornerShape(8.dp)
-        ) {
+        item {
             Text(
-                text = "Submit",
-                fontSize = 15.sp,
-                fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                color = Color.White
+                text = "Rate & Review",
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                color = Color.Black,
+            )
+            Divider(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                color = Color(0xFFE9EAEB),
+                thickness = 1.dp
             )
         }
+
+        // Star Rating
+        item {
+            StarRating(
+                rating = selectedRating,
+                onRatingChanged = { selectedRating = it }
+            )
+        }
+
+        // Review Text Field
+        item {
+            OutlinedTextField(
+                value = reviewText,
+                onValueChange = { reviewText = it },
+                placeholder = {
+                    Text(
+                        text = "Type Here.....",
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        color = Color(0xFF949494)
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(90.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFF949494),
+                    unfocusedBorderColor = Color(0xFF949494)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            )
+        }
+
+        // Submit Button
+        item {
+            Button(
+                onClick = { /* Handle submit */ },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF258694)
+                ),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "Submit",
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_bold)),
+                    color = Color.White
+                )
+            }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(30.dp))
+        }
     }
+
 }
 
 @Composable
@@ -384,10 +395,11 @@ fun StarRating(
 ) {
     Row {
         for (i in 1..5) {
-            Image(painter = painterResource(id = if (i <= rating)  R.drawable.ic_round_star else R.drawable.ic_black_outlined_star ),
+            Image(painter = painterResource(id = if (i <= rating)  R.drawable.filled_new_ic else R.drawable.ic_black_outlined_star ),
                 contentDescription = "Rate $i stars",
                 modifier = Modifier
-                    .size(if (i <= rating) 32.dp else 25.dp)
+//                    .size(if (i <= rating) 32.dp else 25.dp)
+                    .size(25.dp)
                     .clickable { onRatingChanged(i) }
                     .padding(2.dp))
         }

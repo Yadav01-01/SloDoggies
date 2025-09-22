@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover
+package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image

@@ -12,6 +12,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,10 +40,15 @@ fun AddServiceScreen(
     val title by viewModel.title.collectAsState()
     val description by viewModel.description.collectAsState()
     val amount by viewModel.amount.collectAsState()
+    var isNavigating by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
 
-        TopHeadingText(textHeading = "Add Services", onBackClick = { navController.popBackStack() })
+        TopHeadingText(textHeading = "Add Services", onBackClick = {
+            if (!isNavigating) {
+                isNavigating = true
+                navController.popBackStack() }
+        })
 
         TopStepProgressBar(currentStep = 2, totalSteps = 3, modifier = Modifier.fillMaxWidth())
 

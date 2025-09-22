@@ -1,7 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -31,10 +30,10 @@ import com.bussiness.slodoggiesapp.model.common.PostItem
 import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.common.HomeTopBar
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.PetInfoDialog
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.ReportDialog
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.UserDetailsDialog
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.WelcomeDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.PetInfoDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.UserDetailsDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.WelcomeDialog
 import com.bussiness.slodoggiesapp.ui.dialog.ReportBottomToast
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.CommunityPostItem
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.NormalPostItem
@@ -167,9 +166,9 @@ fun HomeScreen(
             onCancel = { viewModel.dismissReportDialog() },
             onSendReport = { viewModel.showReportToast() },
             reasons = listOf("Bullying or unwanted contact",
-                "Violence, hate or exploitation",
-                "False Information",
-                "Scam, fraud or spam"),
+                             "Violence, hate or exploitation",
+                             "False Information",
+                             "Scam, fraud or spam"),
             selectedReason = selectedReason,
             message = message,
             onReasonSelected = {  reason -> selectedReason = reason },

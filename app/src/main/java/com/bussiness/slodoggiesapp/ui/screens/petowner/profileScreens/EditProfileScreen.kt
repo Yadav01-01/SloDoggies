@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -13,14 +14,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -69,6 +73,7 @@ import com.bussiness.slodoggiesapp.ui.component.saveBitmapToCache
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.EditProfileViewModel
+import okhttp3.Route
 
 
 @Composable
@@ -127,137 +132,158 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
         }
     }
 
+    BackHandler {
+        navController.navigate(Routes.PET_PROFILE_SCREEN){
+            popUpTo(Routes.PET_PROFILE_SCREEN){inclusive = true}
+            launchSingleTop = true
+        }
+    }
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
 
-        HeadingTextWithIcon(textHeading = stringResource(R.string.my_profile), onBackClick = {navController.popBackStack()})
+        HeadingTextWithIcon(textHeading = stringResource(R.string.my_profile),
+            onBackClick = {navController.navigate(Routes.PET_PROFILE_SCREEN){
+                popUpTo(Routes.PET_PROFILE_SCREEN){inclusive = true}
+                launchSingleTop = true
+            } })
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .imePadding(),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
+
             // Add Photo Section
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                    modifier = Modifier.size(110.dp),
-                    contentAlignment = Alignment.Center
+            item {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     Box(
-                        modifier = Modifier
-                            .size(130.dp)
-                            .clip(CircleShape)
-
+                        modifier = Modifier.size(110.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        AsyncImage(
-                            model = uiState.profileImageUri,
-                            contentDescription = "Parent Photo",
-                            contentScale = ContentScale.Crop,
-                            placeholder =  painterResource(id = R.drawable.ic_black_profile_icon),
-                            error =  painterResource(id = R.drawable.ic_black_profile_icon),
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize()
+                                .size(130.dp)
                                 .clip(CircleShape)
+                        ) {
+                            AsyncImage(
+                                model = uiState.profileImageUri,
+                                contentDescription = "Parent Photo",
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
+                                error = painterResource(id = R.drawable.ic_black_profile_icon),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        }
 
+                        // Camera icon to trigger image selection
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_post_icon),
+                            contentDescription = "Add Photo",
+                            modifier = Modifier
+                                .size(35.dp)
+                                .align(Alignment.BottomEnd)
+                                .clickable { viewModel.toggleImagePickerDialog() }
                         )
                     }
-
-                    // Camera icon to trigger image selection
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_post_icon),
-                        contentDescription = "Add Photo",
-                        modifier = Modifier
-                            .size(35.dp)
-                            .align(Alignment.BottomEnd)
-                            .clickable {
-                                viewModel.toggleImagePickerDialog()
-                            }
-                    )
                 }
-
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            item { Spacer(modifier = Modifier.height(32.dp)) }
 
             // Name Field
-            CustomOutlinedTextField(
-                value = uiState.name,
-                onValueChange = { viewModel.updateName(it) },
-                placeholder = stringResource(R.string.enter_name),
-                label = stringResource(R.string.pet_parent_name)
-            )
+            item {
+                CustomOutlinedTextField(
+                    value = uiState.name,
+                    onValueChange = { viewModel.updateName(it) },
+                    placeholder = stringResource(R.string.enter_name),
+                    label = stringResource(R.string.pet_parent_name)
+                )
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-            FormHeadingText(stringResource(R.string.mobile_number))
+            item { FormHeadingText(stringResource(R.string.mobile_number)) }
 
-            Spacer(Modifier.height(8.dp))
+            item { Spacer(Modifier.height(8.dp)) }
 
-            PhoneNumber(
-                phone = uiState.mobileNumber,
-                onPhoneChange = { viewModel.updateMobileNumber(it) },
-                onVerify = { viewModel.onVerify(navController,"dialogPhone",uiState.mobileNumber) },
-                isVerified = uiState.isMobileVerified
-            )
+            item {
+                PhoneNumber(
+                    phone = uiState.mobileNumber,
+                    onPhoneChange = { viewModel.updateMobileNumber(it) },
+                    onVerify = { viewModel.onVerify(navController, "dialogPhone", uiState.mobileNumber) },
+                    isVerified = uiState.isMobileVerified
+                )
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-            FormHeadingText(stringResource(R.string.email))
+            item { FormHeadingText(stringResource(R.string.email)) }
 
-            Spacer(Modifier.height(8.dp))
+            item { Spacer(Modifier.height(8.dp)) }
 
-            EmailTextField(
-                email = uiState.email,
-                onEmailChange = { viewModel.updateEmail(it) },
-                onVerify = { viewModel.onVerify(navController,"dialogEmail",uiState.email) },
-                isVerified = uiState.isEmailVerified,
-                placeholder = "merry@Slodoggies.com"
-            )
+            item {
+                EmailTextField(
+                    email = uiState.email,
+                    onEmailChange = { viewModel.updateEmail(it) },
+                    onVerify = { viewModel.onVerify(navController, "dialogEmail", uiState.email) },
+                    isVerified = uiState.isEmailVerified,
+                    placeholder = "merry@Slodoggies.com"
+                )
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-            FormHeadingText(stringResource(R.string.relation_to_pet))
+            item { FormHeadingText(stringResource(R.string.relation_to_pet)) }
 
-            Spacer(Modifier.height(8.dp))
+            item { Spacer(Modifier.height(8.dp)) }
 
-            CustomDropdownBox(
-                label = uiState.relation.ifEmpty { "Select" },
-                items = uiState.relationOptions,
-                selectedItem = uiState.relation, // Current selected value
-                onItemSelected = { selected ->
-                    viewModel.updateRelation(selected)
-                }
-            )
+            item {
+                CustomDropdownBox(
+                    label = uiState.relation.ifEmpty { "Select" },
+                    items = uiState.relationOptions,
+                    selectedItem = uiState.relation,
+                    onItemSelected = { selected -> viewModel.updateRelation(selected) }
+                )
+            }
 
-            Spacer(Modifier.height(16.dp))
+            item { Spacer(Modifier.height(16.dp)) }
 
             // Bio Field
-            CustomOutlinedTextField(
-                value = uiState.bio,
-                onValueChange = { viewModel.updateBio(it) },
-                placeholder = stringResource(R.string.enter_bio),
-                label =stringResource(R.string.bio),
-            )
+            item {
+                CustomOutlinedTextField(
+                    value = uiState.bio,
+                    onValueChange = { viewModel.updateBio(it) },
+                    placeholder = stringResource(R.string.enter_bio),
+                    label = stringResource(R.string.bio)
+                )
+            }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            item { Spacer(modifier = Modifier.height(32.dp)) }
 
             // Bottom Buttons
-            CommonBlueButton(
-                text = stringResource(R.string.save_changes),
-                fontSize = 15.sp,
-                onClick = { viewModel.toggleUpdateProfileDialog() },
-                modifier = Modifier.padding(horizontal = 45.dp),
-            )
+            item {
+                CommonBlueButton(
+                    text = stringResource(R.string.save_changes),
+                    fontSize = 15.sp,
+                    onClick = { viewModel.toggleUpdateProfileDialog() },
+                    modifier = Modifier.padding(horizontal = 45.dp)
+                )
+            }
         }
+
 
     }
     if (uiState.updateProfileDialog){

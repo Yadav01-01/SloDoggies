@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,7 +60,7 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(horizontal = 24.dp, vertical = 32.dp)
+            .padding(horizontal = 20.dp, vertical = 32.dp)
     ) {
         // Back button at top-left
         AuthBackButton(onClick = {navController.popBackStack()}, modifier = Modifier.align(Alignment.TopStart))
@@ -190,3 +191,8 @@ fun LoginScreen(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun LoginPreview(){
+    LoginScreen(navController = NavHostController(LocalContext.current))
+}

@@ -17,6 +17,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -46,6 +49,7 @@ fun CommunityProfileScreen(
     val menuDialog by viewModel.menuDialog.collectAsState()
     val showEditNameDialog by viewModel.showEditNameDialog.collectAsState()
     val removeDialog by viewModel.removeDialog.collectAsState()
+    var isNavigating by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -54,7 +58,11 @@ fun CommunityProfileScreen(
             .padding(15.dp)
     ) {
         // Back Button
-        IconButton(onClick = { navController.popBackStack() }) {
+        IconButton(onClick = {
+            if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack() }
+        }) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = null,

@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit
 
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -46,6 +47,15 @@ fun EditAddServiceScreen(
     val description by viewModel.description.collectAsState()
     val amount by viewModel.amount.collectAsState()
     var updateDialog by remember { mutableStateOf(false) }
+
+    BackHandler {
+        navController.navigate(Routes.SERVICES_SCREEN) {
+            launchSingleTop = true
+            popUpTo(Routes.SERVICES_SCREEN) {
+                inclusive = false
+            }
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 

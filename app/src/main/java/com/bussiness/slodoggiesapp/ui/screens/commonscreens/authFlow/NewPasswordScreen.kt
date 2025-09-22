@@ -38,7 +38,7 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
 import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
 import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.WelcomeDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.WelcomeDialog
 import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.NewPasswordViewModel
 
 @Composable

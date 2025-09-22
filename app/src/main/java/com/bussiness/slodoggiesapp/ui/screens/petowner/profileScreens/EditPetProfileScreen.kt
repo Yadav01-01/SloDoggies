@@ -4,23 +4,27 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,10 +34,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -51,15 +57,16 @@ import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScrollableDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CustomDropdownMenuUpdated
-import com.bussiness.slodoggiesapp.ui.component.petOwner.SettingIconHeader
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetProfileViewModel
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfileViewModel = hiltViewModel()) {
 
@@ -101,124 +108,170 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
             else -> permissionLauncher.launch(android.Manifest.permission.CAMERA)
         }
     }
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutineScope = rememberCoroutineScope()
+
+    BackHandler {
+        navController.navigate(Routes.PET_PROFILE_SCREEN){
+            popUpTo(Routes.PET_PROFILE_SCREEN){inclusive = true}
+            launchSingleTop = true
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        ScreenHeadingText(stringResource(R.string.edit_pet_profile), onBackClick = { navController.popBackStack() }, endIcon = R.drawable.bin_ic,
+        ScreenHeadingText(stringResource(R.string.edit_pet_profile),
+            onBackClick = { navController.navigate(Routes.PET_PROFILE_SCREEN){
+                popUpTo(Routes.PET_PROFILE_SCREEN){inclusive = true}
+                launchSingleTop = true
+            } },
+            endIcon = R.drawable.bin_ic,
             onSettingClick = { viewModel.showDeleteDialog(true) })
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 14.dp)
-                .verticalScroll(rememberScrollState())
+                .imePadding(),
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
 
-            Spacer(modifier = Modifier.height(24.dp))
+            item { Spacer(modifier = Modifier.height(24.dp)) }
 
             // Profile Image
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
-                Box(modifier = Modifier.size(110.dp), contentAlignment = Alignment.Center) {
-                    Box(
-                        modifier = Modifier
-                            .size(130.dp)
-                            .clip(CircleShape)
-                    ) {
-                        AsyncImage(
-                            model = uiState.profileImageUri,
-                            contentDescription = "Pet Photo",
-                            contentScale = ContentScale.Crop,
-                            placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
-                            error = painterResource(id = R.drawable.ic_black_profile_icon),
+            item {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(modifier = Modifier.size(110.dp), contentAlignment = Alignment.Center) {
+                        Box(
                             modifier = Modifier
-                                .fillMaxSize()
+                                .size(130.dp)
                                 .clip(CircleShape)
+                        ) {
+                            AsyncImage(
+                                model = uiState.profileImageUri,
+                                contentDescription = "Pet Photo",
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
+                                error = painterResource(id = R.drawable.ic_black_profile_icon),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape)
+                            )
+                        }
+
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_post_icon),
+                            contentDescription = "Add Photo",
+                            modifier = Modifier
+                                .size(35.dp)
+                                .align(Alignment.BottomEnd)
+                                .clickable { viewModel.toggleImagePicker(true) }
                         )
                     }
-
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_post_icon),
-                        contentDescription = "Add Photo",
-                        modifier = Modifier
-                            .size(35.dp)
-                            .align(Alignment.BottomEnd)
-                            .clickable { viewModel.toggleImagePicker(true) }
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            item { Spacer(modifier = Modifier.height(32.dp)) }
 
             // Fields
-            CustomOutlinedTextField(
-                value = uiState.petName,
-                onValueChange = viewModel::onPetNameChange,
-                placeholder = "Enter pet name",
-                label = "Pet Name"
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            CustomOutlinedTextField(
-                value = uiState.petBreed,
-                onValueChange = viewModel::onPetBreedChange,
-                placeholder = "Enter Breed",
-                label = "Pet Breed"
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            FormHeadingText("Pet Age")
-
-            Spacer(Modifier.height(5.dp))
-
-            CustomDropdownBox(
-                label = selectedAge.ifEmpty { "Enter pet age" },
-                items = listOf("0-5 Years", "5-10 Years", "10-20 Years"),
-                selectedItem = selectedAge,
-                onItemSelected = { selectedAge = it }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            CustomOutlinedTextField(
-                value = uiState.petBio,
-                onValueChange = viewModel::onPetBioChange,
-                placeholder = "Enter Bio",
-                label = "Pet Bio"
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            FormHeadingText("Managed by")
-
-            Spacer(Modifier.height(5.dp))
-
-            CustomDropdownBox(
-                label = managedBy.ifEmpty { "Pet Mom" },
-                items = listOf("Pet Mom", "Pet Dad"),
-                selectedItem = managedBy,
-                onItemSelected = { managedBy = it }
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Save Button
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                CommonBlueButton(
-                    text = "Save Changes",
-                    fontSize = 15.sp,
-                    onClick = { viewModel.showConfirmationDialog(true) },
-                    modifier = Modifier.padding(horizontal = 45.dp)
+            item {
+                CustomOutlinedTextField(
+                    value = uiState.petName,
+                    onValueChange = viewModel::onPetNameChange,
+                    placeholder = "Enter pet name",
+                    label = "Pet Name"
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+
+            item {
+                CustomOutlinedTextField(
+                    value = uiState.petBreed,
+                    onValueChange = viewModel::onPetBreedChange,
+                    placeholder = "Enter Breed",
+                    label = "Pet Breed"
+                )
+            }
+
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+
+            item {
+                FormHeadingText("Pet Age")
+            }
+
+            item { Spacer(Modifier.height(5.dp)) }
+
+            item {
+                ScrollableDropdownBox(
+                    label = selectedAge.ifEmpty { "Enter pet age" },
+                    items = viewModel.ageOptions,
+                    selectedItem = selectedAge,
+                    onItemSelected = { selectedAge = it }
+                )
+            }
+
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+
+
+            item {
+                CustomOutlinedTextField(
+                    value = uiState.petBio,
+                    onValueChange = viewModel::onPetBioChange,
+                    placeholder = "Enter Bio",
+                    label = "Pet Bio",
+                    modifier = Modifier
+                        .bringIntoViewRequester(bringIntoViewRequester)
+                        .onFocusEvent { focusState ->
+                            if (focusState.isFocused) {
+                                coroutineScope.launch {
+                                    bringIntoViewRequester.bringIntoView()
+                                }
+                            }
+                        }
+                )
+
+            }
+
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+
+            item { FormHeadingText("Managed by") }
+
+            item { Spacer(Modifier.height(5.dp)) }
+
+            item {
+                CustomDropdownBox(
+                    label = managedBy.ifEmpty { "Pet Mom" },
+                    items = listOf("Pet Mom", "Pet Dad"),
+                    selectedItem = managedBy,
+                    onItemSelected = { managedBy = it }
+                )
+            }
+
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+
+            // Save Button
+            item {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CommonBlueButton(
+                        text = "Save Changes",
+                        fontSize = 15.sp,
+                        onClick = { viewModel.showConfirmationDialog(true) },
+                        modifier = Modifier.padding(horizontal = 45.dp)
+                    )
+                }
+            }
         }
+
     }
 
     if (uiState.deleteDialog){

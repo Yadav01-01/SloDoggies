@@ -4,17 +4,21 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +32,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,50 +75,58 @@ fun EditPostScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-    ) {
-        ParticipantTextWithIcon(
-            textHeading = stringResource(R.string.edit_info),
-            onBackClick = {
-                navController.navigate(Routes.USER_POST_SCREEN) {
-                    popUpTo(Routes.USER_POST_SCREEN) { inclusive = true }
-                    launchSingleTop = true
+    Scaffold(
+        topBar = {
+            Column(Modifier.background(Color.White)) {
+                ParticipantTextWithIcon(
+                    textHeading = stringResource(R.string.edit_info),
+                    onBackClick = {
+                        navController.navigate(Routes.USER_POST_SCREEN) {
+                            popUpTo(Routes.USER_POST_SCREEN) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    onClick = {
+                        navController.navigate(Routes.USER_POST_SCREEN) {
+                            popUpTo(Routes.USER_POST_SCREEN) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    },
+                    selected = uiState.description.isNotEmpty()
+                )
+                HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
+            }
+        },
+        content = { paddingValues ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFCEE1E6))
+                    .padding(paddingValues)
+                    .imePadding(),
+                contentPadding = PaddingValues(bottom = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    PostCard(
+                        profileImageUrl = uiState.profileImageUrl,
+                        userName = uiState.userName,
+                        timeAgo = uiState.timeAgo,
+                        role = uiState.role,
+                        postImageUrl = uiState.postImageUrl,
+                        onMenuClick = { /* Dropdown menu if needed */ }
+                    )
                 }
-            },
-            onClick = {
-                navController.navigate(Routes.USER_POST_SCREEN) {
-                    popUpTo(Routes.USER_POST_SCREEN) { inclusive = true }
-                    launchSingleTop = true
+
+                item {
+                    EditDescription(
+                        description = uiState.description,
+                        onDescriptionChange = { viewModel.updateDescription(it) }
+                    )
                 }
-            },
-            selected = uiState.description.isNotEmpty()
-        )
-
-        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color(0xFFCEE1E6)).verticalScroll(rememberScrollState())
-        ) {
-            PostCard(
-                profileImageUrl = uiState.profileImageUrl,
-                userName = uiState.userName,
-                timeAgo = uiState.timeAgo,
-                role = uiState.role,
-                postImageUrl = uiState.postImageUrl,
-                onMenuClick = { /* Hook with dropdown menu if needed */ }
-            )
-
-            EditDescription(
-                description = uiState.description,
-                onDescriptionChange = { viewModel.updateDescription(it) }
-            )
+            }
         }
-    }
+    )
 }
 
 

@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -41,7 +40,7 @@ fun MainScreen(authNavController: NavHostController) {
     )
 
     val bottomNavRoutes = bottomNavItems.map { it.route }
-//        .plus(Routes.POST_SCREEN)
+
 
     Scaffold(
         modifier = Modifier
@@ -99,9 +98,6 @@ fun MainScreen(authNavController: NavHostController) {
 fun getCurrentRoute(navController: NavController): String {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     return navBackStackEntry.value?.destination?.route ?: ""
-}
-fun String.toBaseRoute(): String {
-    return this.substringBefore("/") // remove params after first /
 }
 
 

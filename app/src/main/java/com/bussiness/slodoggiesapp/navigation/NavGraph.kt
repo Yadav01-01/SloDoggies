@@ -31,41 +31,27 @@ import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDe
 @Composable
 fun NavGraph(navController: NavHostController) {
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding()
+        modifier = Modifier.fillMaxSize().navigationBarsPadding()
     ) {
-        NavHost(
-            navController = navController,
-            startDestination = Routes.SPLASH
-        ) {
+        NavHost(navController = navController, startDestination = Routes.SPLASH) {
 
             // --- Intro / Auth Screens ---
-            composable(Routes.SPLASH) {
-                SplashScreen(navController)
-            }
+            composable(Routes.SPLASH) { SplashScreen(navController) }
+            composable(Routes.ONBOARDING) { OnboardingScreen(navController) }
+            composable(Routes.JOIN_THE_PACK) { JoinThePackScreen(navController) }
+            composable(Routes.LOGIN_SCREEN) { LoginScreen(navController) }
+            composable(Routes.SIGNUP_SCREEN) { SignUpScreen(navController) }
+            composable(Routes.NEW_PASSWORD_SCREEN) { NewPasswordScreen(navController) }
 
-            composable(Routes.ONBOARDING) {
-                OnboardingScreen(navController, onFinish = {
-                    //Onboarding complete -> move to login without stacking onboarding again
-                    navController.navigate(Routes.LOGIN_SCREEN) {
-                        popUpTo(Routes.ONBOARDING) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                })
-            }
+            // --- Business Provider Screens ---
+            composable(Routes.BUSINESS_REGISTRATION) { BusinessRegistrationScreen(navController) }
+            composable(Routes.ADD_SERVICE) { AddServiceScreen(navController) }
+            composable(Routes.MAIN_SCREEN) { MainScreen(navController) }
 
-            composable(Routes.JOIN_THE_PACK) {
-                JoinThePackScreen(navController)
-            }
-
-            composable(Routes.LOGIN_SCREEN) {
-                LoginScreen(navController)
-            }
-
-            composable(Routes.SIGNUP_SCREEN) {
-                SignUpScreen(navController)
-            }
+            // --- Pet Owner Screens ---
+            composable(Routes.NOTIFICATION_PERMISSION_SCREEN) { NotificationPermissionScreen(navController) }
+            composable(Routes.LOCATION_PERMISSION_SCREEN) { LocationPermissionScreen(navController) }
+            composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
 
             composable(
                 route = "${Routes.FORGOT_PASSWORD_SCREEN}/{type}",
@@ -77,11 +63,6 @@ fun NavGraph(navController: NavHostController) {
                 ForgotPasswordScreen(navController, type)
             }
 
-
-            composable(Routes.NEW_PASSWORD_SCREEN) {
-                NewPasswordScreen(navController)
-            }
-
             composable(
                 route = "${Routes.VERIFY_OTP}?type={type}&data={data}",
                 arguments = listOf(
@@ -91,33 +72,6 @@ fun NavGraph(navController: NavHostController) {
             ) { backStackEntry ->
                 val type = backStackEntry.arguments?.getString("type") ?: "default"
                 VerifyOTPScreen(navController, type = type)
-            }
-
-            // --- Business Provider Screens ---
-            composable(Routes.BUSINESS_REGISTRATION) {
-                BusinessRegistrationScreen(navController)
-            }
-
-            composable(Routes.ADD_SERVICE) {
-                AddServiceScreen(navController)
-            }
-
-            composable(Routes.MAIN_SCREEN) {
-                //  Always use a separate NavController for MainScreen (BottomNav) to avoid blank screen
-                MainScreen(navController)
-            }
-
-            // --- Pet Owner Screens ---
-            composable(Routes.NOTIFICATION_PERMISSION_SCREEN) {
-                NotificationPermissionScreen(navController)
-            }
-
-            composable(Routes.LOCATION_PERMISSION_SCREEN) {
-                LocationPermissionScreen(navController)
-            }
-
-            composable(Routes.SERVICE_PROVIDER_DETAILS) {
-                ServiceProviderDetailsScreen(navController)
             }
         }
     }

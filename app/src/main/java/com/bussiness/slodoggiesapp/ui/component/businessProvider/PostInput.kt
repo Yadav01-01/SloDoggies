@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -45,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
@@ -232,3 +236,88 @@ fun CustomDropdownBox(
     }
 }
 
+@Composable
+fun ScrollableDropdownBox(
+    label: String,
+    items: List<String>,
+    selectedItem: String,
+    onItemSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val itemHeight = 48.dp // Height of one dropdown item
+    val maxVisibleItems = 5
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, Color(0xFFAEAEAE), RoundedCornerShape(8.dp))
+                .background(Color.White, RoundedCornerShape(8.dp))
+                .clickable { expanded = !expanded }
+                .padding(12.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = label,
+                    color = TextGrey,
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular))
+                )
+                Icon(
+                    painter = painterResource(id = if (expanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down),
+                    contentDescription = null,
+                    tint = Color.Gray
+                )
+            }
+        }
+
+        // Dropdown list
+        AnimatedVisibility(visible = expanded) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                val dropdownHeight = if (items.size > maxVisibleItems) itemHeight * maxVisibleItems else Dp.Unspecified
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(max = dropdownHeight)
+                        .background(Color.White)
+                ) {
+                    items(items) { item ->
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    if (item == selectedItem) PrimaryColor else Color.White,
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .clickable {
+                                    onItemSelected(item)
+                                    expanded = false
+                                }
+                                .padding(horizontal = 12.dp, vertical = 12.dp)
+                        ) {
+                            Text(
+                                text = item,
+                                color = if (item == selectedItem) Color.White else Color.Black,
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 14.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

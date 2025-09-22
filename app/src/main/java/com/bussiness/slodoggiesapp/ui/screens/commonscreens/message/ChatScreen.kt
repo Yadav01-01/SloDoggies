@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
@@ -28,8 +29,8 @@ import com.bussiness.slodoggiesapp.model.businessProvider.ChatHeaderData
 import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.ui.component.common.BottomMessageBar
 import com.bussiness.slodoggiesapp.ui.component.common.ChatHeaderItem
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.ReportBusinessChat
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.ReportDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportBusinessChat
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
 import com.bussiness.slodoggiesapp.ui.dialog.BottomToast
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatSection
@@ -49,7 +50,7 @@ fun ChatScreen(
     var selectedReason by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
     var showReportDialog by remember { mutableStateOf(false) }
-    var sessionManager = SessionManager.getInstance(LocalContext.current)
+    val sessionManager = SessionManager.getInstance(LocalContext.current)
 
     val messages by viewModel.messages.collectAsState()
     val currentMessage by viewModel.currentMessage.collectAsState()
@@ -93,6 +94,7 @@ fun ChatScreen(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
+                .imePadding()
         ) {
             CommunityChatSection(
                 messages = messages,

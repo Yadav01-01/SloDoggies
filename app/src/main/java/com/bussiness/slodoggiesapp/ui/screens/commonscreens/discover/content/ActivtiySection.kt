@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.content
+package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer

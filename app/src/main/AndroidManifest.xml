@@ -33,7 +33,7 @@
             android:name=".activity.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.SlodoggiesApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

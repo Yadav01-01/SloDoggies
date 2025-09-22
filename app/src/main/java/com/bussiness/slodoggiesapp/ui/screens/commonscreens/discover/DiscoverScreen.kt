@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover
+package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,13 +36,13 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.HashtagSection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchBar
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchResultItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SocialEventCard
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.ReportDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
 import com.bussiness.slodoggiesapp.ui.dialog.PetPlaceDialog
 import com.bussiness.slodoggiesapp.ui.dialog.ReportBottomToast
 import com.bussiness.slodoggiesapp.ui.dialog.SavedDialog
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.content.ActivitiesPostsList
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.content.PetPlacesResults
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.content.ShowPetsNearYou
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content.ActivitiesPostsList
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content.PetPlacesResults
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content.ShowPetsNearYou
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.ShareContentDialog
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.DiscoverViewModel
 
@@ -66,6 +66,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
             .background(Color.White)
             .padding(horizontal = 12.dp)
     ) {
+        Spacer(Modifier.height(8.dp))
         //  Search Bar
         SearchBar(query = query, onQueryChange = { viewModel.updateQuery(it) },placeholder = "Search")
 

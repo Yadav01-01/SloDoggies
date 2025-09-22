@@ -68,12 +68,9 @@ import com.bussiness.slodoggiesapp.model.petOwner.ProfileItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.FillPetInfoDialog
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.PetInfoDialog
-import com.bussiness.slodoggiesapp.ui.component.petOwner.SettingIconHeader
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialog
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-import kotlinx.coroutines.delay
 
 // Sample photo URLs - replace with your actual image URLs
 private val photos = listOf(

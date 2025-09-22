@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.component.petOwner.dialog
 
 import android.Manifest
 import android.app.AlertDialog
@@ -59,8 +59,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.petOwner.PetInfo
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScrollableDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
@@ -89,7 +89,7 @@ fun PetInfoDialog(
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
                 is UiEvent.ContinueSuccess -> {
-                    onContinueClick(event.petInfo) // ✅ now you get the petInfo
+                    onContinueClick(event.petInfo)
                 }
                 is UiEvent.AddPetSuccess -> {
                     addPet(event.petInfo)
@@ -213,7 +213,7 @@ fun PetInfoDialog(
 
                     Spacer(Modifier.height(8.dp))
 
-                    CustomDropdownBox(
+                    ScrollableDropdownBox(
                         label = uiState.petAge.ifEmpty { "Enter pet age" },
                         items = viewModel.ageOptions,
                         selectedItem = uiState.petAge,
@@ -381,12 +381,12 @@ fun showPhotoPickerDialog(
 @Preview(showBackground = true)
 @Composable
 fun PetInfoDialogPreview() {
-    MaterialTheme {
-        PetInfoDialog(
-            "Tell us about your pet!",
-            onDismiss = TODO(),
-            addPet = TODO(),
-            onContinueClick = TODO()
-        )
-    }
+    PetInfoDialog(
+        title = "Tell us about your pet!",
+        onDismiss = {},
+        addPet = {},
+        onContinueClick = {},
+        onProfile = false
+    )
 }
+

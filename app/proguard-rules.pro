@@ -1,22 +1,121 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+####################################
+## General Android & Kotlin rules ##
+####################################
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Keep your app classes
+-keep class com.bussiness.slodoggiesapp.** { *; }
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep Activities, Fragments, ViewModels
+-keep class * extends android.app.Activity
+-keep class * extends androidx.fragment.app.Fragment
+-keep class * extends androidx.lifecycle.ViewModel
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Keep Parcelable & Serializable
+-keepclassmembers class * implements android.os.Parcelable {
+    public static final android.os.Parcelable$Creator CREATOR;
+}
+-keepclassmembers class * implements java.io.Serializable { *; }
+
+# Keep annotations (needed for Hilt, Retrofit, Gson)
+-keepattributes *Annotation*
+-keepattributes Signature
+
+# Keep Kotlin metadata
+-keep class kotlin.Metadata { *; }
+
+
+##########################
+## Hilt / Dagger rules ##
+##########################
+
+-keep class dagger.hilt.** { *; }
+-keep class androidx.hilt.** { *; }
+-dontwarn dagger.hilt.**
+-dontwarn javax.annotation.**
+
+# Hilt generated classes
+-keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
+
+
+##############################
+## Retrofit / Gson / OkHttp ##
+##############################
+
+# Retrofit interfaces
+-keep interface com.bussiness.slodoggiesapp.data.api.** { *; }
+
+# Retrofit models (needed for Gson reflection)
+-keep class com.bussiness.slodoggiesapp.data.model.** { *; }
+
+# Retrofit & OkHttp warnings
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn retrofit2.**
+
+# Gson
+-keep class com.google.gson.** { *; }
+
+
+#####################
+## Jetpack Compose ##
+#####################
+
+-keep class androidx.compose.** { *; }
+
+# Keep Composable methods
+-keepclassmembers class * {
+    @androidx.compose.runtime.Composable <methods>;
+}
+
+# Avoid Compose reflection stripping
+-keepclassmembers class * {
+    @androidx.compose.runtime.Composable *;
+}
+
+# Already present
 -dontwarn androidx.compose.ui.text.font.**
+
+
+###################
+## Media3 Player ##
+###################
+
+-dontwarn com.google.android.exoplayer2.**
+-keep class com.google.android.exoplayer2.** { *; }
+
+
+###############
+## Coil (v2) ##
+###############
+
+-dontwarn coil.**
+-keep class coil.** { *; }
+
+
+#######################
+## Accompanist libs  ##
+#######################
+
+-dontwarn com.google.accompanist.**
+
+
+#####################
+## Material Design ##
+#####################
+
+-dontwarn com.google.android.material.**
+-keep class com.google.android.material.** { *; }
+
+
+######################
+## Logging Cleanup  ##
+######################
+
+# Remove Log calls in release for smaller size
+-assumenosideeffects class android.util.Log {
+    public static *** v(...);
+    public static *** d(...);
+    public static *** i(...);
+    public static *** w(...);
+    public static *** e(...);
+}

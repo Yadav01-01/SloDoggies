@@ -64,7 +64,7 @@ val onboardingPages = listOf(
 )
 
 @Composable
-fun OnboardingScreen(navController: NavHostController, onFinish: () -> Unit) {
+fun OnboardingScreen(navController: NavHostController) {
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { onboardingPages.size })
     val scope = rememberCoroutineScope()
 
@@ -248,7 +248,6 @@ fun PageIndicator(currentPage: Int, totalPages: Int) {
 fun OnboardingScreenPreview() {
     val navController = rememberNavController()
     OnboardingScreen(
-        navController = navController,
-        onFinish = { /* No-op for preview */ }
+        navController = navController
     )
 }

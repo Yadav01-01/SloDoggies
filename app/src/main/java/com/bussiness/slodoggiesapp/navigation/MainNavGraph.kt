@@ -10,8 +10,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.settings.SubscriptionScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.PersonDetailScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.DiscoverScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.PersonDetailScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.notification.NotificationScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.PostScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.promotion.BudgetScreen

@@ -2,7 +2,6 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,12 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,10 +34,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,8 +44,8 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.MediaItem
 import com.bussiness.slodoggiesapp.model.common.MediaType
 import com.bussiness.slodoggiesapp.model.common.PostItem
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.Comment
-import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.CommentsDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable

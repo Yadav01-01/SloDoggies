@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog
+package com.bussiness.slodoggiesapp.ui.component.petOwner.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -38,7 +38,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.petOwner.PetInfo
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
