@@ -101,14 +101,14 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
             DateTimePickerScreen(textHeading = stringResource(R.string.event_edate))
         }
 
-        item {
-            FormHeadingText(stringResource(R.string.event_duration))
-            InputField(
-                placeholder = stringResource(R.string.Duration),
-                input = "Duration",
-                onValueChange = {  }
-            )
-        }
+//        item {
+//            FormHeadingText(stringResource(R.string.event_duration))
+//            InputField(
+//                placeholder = stringResource(R.string.Duration),
+//                input = "Duration",
+//                onValueChange = {  }
+//            )
+//        }
 
         item {
             FormHeadingText(stringResource(R.string.flat_address))

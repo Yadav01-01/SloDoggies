@@ -177,7 +177,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> 
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = postItem.eventDate,
+                        text = postItem.eventStartDate,
                         fontSize = 14.sp,
                         color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.outfit_regular))
@@ -196,7 +196,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> 
                     text = postItem.eventDescription,
                     fontSize = 14.sp,
                     color = TextGrey,
-                    maxLines = 8,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     lineHeight = 18.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -205,17 +205,31 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> 
 
                 Spacer(modifier = Modifier.width(8.dp))
 
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.time_ic),
+//                        contentDescription = "Duration",
+//                        tint = Color.Unspecified
+//                    )
+//                    Spacer(modifier = Modifier.width(4.dp))
+//                    Text(
+//                        text = postItem.eventDuration,
+//                        fontSize = 12.sp,
+//                        color = Color.Gray,
+//                        fontFamily = FontFamily(Font(R.font.outfit_regular))
+//                    )
+//                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        painter = painterResource(id = R.drawable.time_ic),
-                        contentDescription = "Duration",
+                        painter = painterResource(id = R.drawable.cal_ic),
+                        contentDescription = "Calendar",
                         tint = Color.Unspecified
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = postItem.eventDuration,
-                        fontSize = 12.sp,
-                        color = Color.Gray,
+                        text = postItem.eventEndDate,
+                        fontSize = 14.sp,
+                        color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.outfit_regular))
                     )
                 }

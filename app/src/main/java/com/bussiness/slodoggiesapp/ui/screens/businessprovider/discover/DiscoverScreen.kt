@@ -145,7 +145,8 @@ fun EventsResult(onClickMore: () -> Unit,onShareClick: () -> Unit,onSavedClick: 
             location = "San Luis Obispo County",
             onClickFollow = {},
             onClickMore = {},
-            eventDate = "May 25, 4:00 PM",
+            eventStartDate = "May 25, 4:00 PM",
+            eventEndDate = "June 15, 5:00 PM",
             onClickLike = {},
             onClickComment = {},
             onClickShare = {},
@@ -165,7 +166,8 @@ fun EventsResult(onClickMore: () -> Unit,onShareClick: () -> Unit,onSavedClick: 
             location = "San Luis Obispo County",
             onClickFollow = {},
             onClickMore = {},
-            eventDate = "May 25, 4:00 PM",
+            eventStartDate = "May 25, 4:00 PM",
+            eventEndDate = "June 15, 5:00 PM",
             onClickLike = {},
             onClickComment = {},
             onClickShare = {},
@@ -185,7 +187,8 @@ fun EventsResult(onClickMore: () -> Unit,onShareClick: () -> Unit,onSavedClick: 
             location = "San Luis Obispo County",
             onClickFollow = {},
             onClickMore = {},
-            eventDate = "May 25, 4:00 PM",
+            eventStartDate = "May 25, 4:00 PM",
+            eventEndDate = "June 15, 5:00 PM",
             onClickLike = {},
             onClickComment = {},
             onClickShare = {},
@@ -205,7 +208,8 @@ fun EventsResult(onClickMore: () -> Unit,onShareClick: () -> Unit,onSavedClick: 
             location = "San Luis Obispo County",
             onClickFollow = {},
             onClickMore = {},
-            eventDate = "May 25, 4:00 PM",
+            eventStartDate = "May 25, 4:00 PM",
+            eventEndDate = "June 15, 5:00 PM",
             onClickLike = {},
             onClickComment = {},
             onClickShare = {},
@@ -260,7 +264,7 @@ fun getSamplePosts(): List<PostItem> {
             mediaList = listOf(
                 MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
                 MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
+                MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, )
             )
         ),
         PostItem.NormalPost(

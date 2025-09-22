@@ -206,7 +206,7 @@ fun getSamplePosts(): List<PostItem> {
             mediaList = listOf(
                 MediaItem(R.drawable.dummy_social_media_post, MediaType.IMAGE),
                 MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_social_media_post, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
+                MediaItem(R.drawable.dummy_social_media_post, MediaType.VIDEO,)
             )
         ),
         PostItem.CommunityPost(
@@ -221,7 +221,8 @@ fun getSamplePosts(): List<PostItem> {
             location = "San Luis Obispo County",
             onClickFollow = {},
             onClickMore = {},
-            eventDate = "May 25, 4:00 PM",
+            eventStartDate = "May 25, 4:00 PM",
+            eventEndDate = "June 16, 7:00 PM",
             likes = 200,
             comments = 100,
             shares = 10
@@ -244,7 +245,9 @@ fun getSamplePosts(): List<PostItem> {
             role = "Pet Dad",
             time = "15 Min.",
             caption = "Enjoying the sunny day!",
-            description = "Max loves playing in the park with his friends",
+            description = "Max loves playing in the park with his friends Lorem ipsum dolor sit amet," +
+                    " consectetur adipiscing Lorem ipsum dolor sit amet, " +
+                    " consectetur adipiscing Lorem ipsum dolor sit amet, consectetur adipiscing",
             likes = 85,
             comments = 12,
             shares = 5,

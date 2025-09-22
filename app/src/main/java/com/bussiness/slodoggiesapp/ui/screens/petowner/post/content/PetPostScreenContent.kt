@@ -3,6 +3,7 @@ package com.bussiness.slodoggiesapp.ui.screens.petowner.post.content
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +53,8 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
+import com.bussiness.slodoggiesapp.ui.component.petOwner.Dialog.FillPetInfoDialog
+import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
 
@@ -60,6 +64,8 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
     val writePost by viewModel.writePost.collectAsState()
     val hashtags by viewModel.hashtags.collectAsState()
     val postalCode by viewModel.postalCode.collectAsState()
+    var showPetInfoDialog by remember { mutableStateOf(false) }
+    var petAddedSuccessDialog by remember { mutableStateOf(false) }
     // Add state for selected people
     val successDialog by remember { mutableStateOf(false) }
 
@@ -76,8 +82,7 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
         WhosThisPostAbout(
             selectedPet = viewModel.selectedPet,
             allPets = samplePeople,
-            isSelecting = viewModel.isSelecting,
-            onAddPersonClick = { viewModel.startSelecting() },
+            onAddPersonClick = { showPetInfoDialog = true },
             onPersonClick = { pet -> viewModel.selectPerson(pet) }
         )
 
@@ -133,13 +138,29 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
         SubmitButton(modifier = Modifier, buttonText = stringResource(R.string.post), onClickButton = { onClickPost() })
         Spacer(Modifier.height(30.dp))
     }
+    if (showPetInfoDialog) {
+        FillPetInfoDialog(
+            "Add Your Pet",
+            onDismiss = { showPetInfoDialog = false },
+            onAddPet = {
+                // Handle pet info saving
+                showPetInfoDialog = false
+                petAddedSuccessDialog = true
+            },
+            onCancel = { showPetInfoDialog = false },
+            onProfile = true
+        )
+    }
+    if (petAddedSuccessDialog){
+        UpdatedDialogWithExternalClose(onDismiss = { petAddedSuccessDialog = false }, iconResId = R.drawable.ic_sucess_p, text = "Pet Added Successfully!",
+            description = "Thanks for keeping things up to date!")
+    }
 }
 
 @Composable
 fun WhosThisPostAbout(
     selectedPet: Person? = null,
     allPets: List<Person> = emptyList(),
-    isSelecting: Boolean = false,
     onAddPersonClick: () -> Unit = {},
     onPersonClick: (Person) -> Unit = {}
 ) {
@@ -153,6 +174,13 @@ fun WhosThisPostAbout(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        // Reorder pets: selected first, others after
+        val reorderedPets = if (selectedPet != null) {
+            listOf(selectedPet) + allPets.filter { it.id != selectedPet.id }
+        } else {
+            allPets
+        }
+
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -161,27 +189,17 @@ fun WhosThisPostAbout(
                 AddPersonButton(onClick = onAddPersonClick)
             }
 
-            if (isSelecting) {
-                items(allPets) { pet ->
-                    PersonItem(
-                        person = pet,
-                        onClick = { onPersonClick(pet) }
-                    )
-                }
-            } else {
-                selectedPet?.let { person ->
-                    item {
-                        PersonItem(
-                            person = person,
-                            onClick = { onPersonClick(person) },
-                            selected = true
-                        )
-                    }
-                }
+            items(reorderedPets) { pet ->
+                PersonItem(
+                    person = pet,
+                    selected = pet.id == selectedPet?.id,
+                    onClick = { onPersonClick(pet) }
+                )
             }
         }
     }
 }
+
 
 
 
@@ -199,13 +217,18 @@ fun AddPersonButton(
                 color = Color(0xFFE5EFF2),
                 shape = RoundedCornerShape(12.dp)
             )
-            .clickable { onClick() }
-            .padding(8.dp), // Equal spacing inside outer box
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                onClick()
+            }
+            .padding(8.dp),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
-                .size(50.dp) // Circle size
+                .size(50.dp)
                 .clip(CircleShape)
                 .background(Color.White)
                 .border(
@@ -224,6 +247,7 @@ fun AddPersonButton(
         }
     }
 }
+
 
 
 @Composable
@@ -276,7 +300,12 @@ val samplePeople = listOf(
     Person("1", "Jimmy", "https://example.com/jimmy.jpg"),
     Person("2", "Barry", "https://example.com/barry.jpg"),
     Person("3", "Bill", "https://example.com/bill.jpg"),
-    Person("4", "Julia", "https://example.com/julia.jpg")
+    Person("4", "Julia", "https://example.com/julia.jpg"),
+    Person("5", "velit", "https://example.com/julia.jpg"),
+    Person("6", "Julia", "https://example.com/julia.jpg"),
+    Person("7", "velit", "https://example.com/julia.jpg"),
+    Person("8", "Bill", "https://example.com/julia.jpg"),
+    Person("9", "Julia", "https://example.com/julia.jpg"),
 )
 
 // Data class for Person

@@ -7,13 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,16 +28,15 @@ import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.Review
 import com.bussiness.slodoggiesapp.model.businessProvider.ReviewReply
-import com.bussiness.slodoggiesapp.model.businessProvider.ServicePackage
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AddServiceButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetSitterCard
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TypeButton
 import com.bussiness.slodoggiesapp.ui.dialog.CommentReplyDialog
+import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ReviewContent
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ServicePackageSection
-import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.ReviewInterface
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
@@ -50,12 +45,7 @@ fun ServiceScreen(navController: NavHostController) {
     var selected by remember { mutableStateOf("Services") }
     var commentReply by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
-    val apiData = ServicePackage(
-        title = "Full Grooming Package",
-        description = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et.",
-        amount = "$100",
-        photos = listOf(R.drawable.dog1, R.drawable.dog2, R.drawable.dog3,R.drawable.dog1, R.drawable.dog2, R.drawable.dog3,R.drawable.dog1, R.drawable.dog2, R.drawable.dog3  )
-    )
+    var deleteDialog by remember { mutableStateOf(false) }
 
     val reviewListData = listOf(
         Review(
@@ -140,7 +130,7 @@ fun ServiceScreen(navController: NavHostController) {
             }
 
             when (selected) {
-                "Services" -> ServicePackageSection(navController, servicePackage = apiData)
+                "Services" -> ServicePackageSection(navController, onClickDelete = { deleteDialog = true })
                 "Rating & Reviews" -> ReviewContent(reviewListData, onClickReply = { commentReply = true })
             }
 
@@ -158,6 +148,15 @@ fun ServiceScreen(navController: NavHostController) {
             onClickSubmit = { /* Handle submit */ },
             message = message,
             onMessageChange = { message = it }
+        )
+    }
+    if (deleteDialog){
+        DeleteChatDialog(
+            onDismiss = { deleteDialog = false },
+            onClickRemove = { deleteDialog = false  },
+            iconResId = R.drawable.delete_mi,
+            text = stringResource(R.string.delete_service),
+            description = stringResource(R.string.service_desc)
         )
     }
 

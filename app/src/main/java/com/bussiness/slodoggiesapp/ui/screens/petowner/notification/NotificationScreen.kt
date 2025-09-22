@@ -296,7 +296,7 @@ fun NotificationItemRow(
                     )
                 }
             } else {
-                notification.postImageRes?.let { imageRes ->
+                notification.postImageRes?.let { imageRes ->    //event
                     AsyncImage(
                         model = imageRes, // Can be String (URL) or Int (resId)
                         contentDescription = "Post image",

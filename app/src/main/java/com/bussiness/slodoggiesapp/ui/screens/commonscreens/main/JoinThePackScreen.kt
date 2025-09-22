@@ -2,6 +2,7 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.main
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,6 +21,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -181,21 +184,31 @@ fun OptionCard(
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .border(1.dp, borderColor, RoundedCornerShape(14.dp))
-                .padding(15.dp) // inner padding inside the border
+        Card(
+            shape = RoundedCornerShape(14.dp),
+            border = BorderStroke(1.dp, borderColor),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            modifier = Modifier.size(80.dp)
         ) {
-            Image(
-                painter = painterResource(id = if (isSelected) onChangeImage else imageRes),
-                contentDescription = label,
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(RoundedCornerShape(12.dp)), // Optional: to match rounded shape inside
-                contentScale = ContentScale.Fit
-            )
+                    .padding(15.dp) // inner padding inside the card
+            ) {
+                Image(
+                    painter = painterResource(id = if (isSelected) onChangeImage else imageRes),
+                    contentDescription = label,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(12.dp)),
+                    contentScale = ContentScale.Fit
+                )
+            }
         }
+
 
         Spacer(modifier = Modifier.height(25.dp))
 

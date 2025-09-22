@@ -21,7 +21,7 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ServicePackageCard
 
 @Composable
-fun ServicePackageSection(navController: NavHostController, servicePackage: ServicePackage) {
+fun ServicePackageSection(navController: NavHostController, onClickDelete: () -> Unit) {
 
     FormHeadingText("Available Services-")
 
@@ -54,9 +54,7 @@ fun ServicePackageSection(navController: NavHostController, servicePackage: Serv
             ServicePackageCard(
                 data = servicePackage,
                 onEdit = { navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/${"edit"}") },
-                onDelete = {
-                    // TODO: Implement Delete Logic
-                }
+                onDelete = { onClickDelete() }
             )
         }
         item {

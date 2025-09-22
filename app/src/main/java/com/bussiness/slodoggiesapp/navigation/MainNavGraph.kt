@@ -9,14 +9,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.SubscriptionScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.settings.SubscriptionScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.discover.PersonDetailScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.notification.NotificationScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.PostScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.promotion.BudgetScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.promotion.PreviewAdsScreen
-import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.EditProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.FollowerScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile.ProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.EditBusinessScreen
@@ -70,7 +69,6 @@ fun MainNavGraph(
         composable(Routes.PROFILE_SCREEN) { ProfileScreen(navController) }
         composable(Routes.PERSON_DETAIL_SCREEN) { PersonDetailScreen(navController) }
         composable(Routes.SPONSORED_ADS_SCREEN) { SponsoredAdsScreen(navController) }
-        composable(Routes.EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
         composable(Routes.POST_SCREEN) { PostScreen(navController) }
         composable(Routes.EDIT_BUSINESS_SCREEN) { EditBusinessScreen(navController) }
         composable(Routes.SETTINGS_SCREEN) { SettingsScreen(navController,authNavController) }
@@ -93,7 +91,6 @@ fun MainNavGraph(
         composable(Routes.PET_PROFILE_SCREEN) { PetProfileScreen(navController) }
         composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
         composable(Routes.EDIT_PET_PROFILE_SCREEN) { EditPetProfileScreen(navController) }
-        composable(Routes.PET_EDIT_PROFILE_SCREEN) { EditProfileScreen(navController) }
         composable(Routes.PET_ADD_PARTICIPANTS_SCREEN) { AddParticipantsScreen(navController) }
         composable(Routes.EDIT_PROFILE_SCREEN_PET) { EditProfileScreenPet(navController) }
         composable(Routes.PET_NOTIFICATION_SCREEN) { PetNotificationsScreen(navController) }

@@ -15,7 +15,7 @@ class ForgotPasswordViewModel @Inject constructor() : ViewModel() {
     val uiState: StateFlow<ForgotPasswordUiState> = _uiState
 
     fun onEmailChange(newEmail: String) {
-        _uiState.value = _uiState.value.copy(email = newEmail.take(10))
+        _uiState.value = _uiState.value.copy(email = newEmail)
     }
 
     fun sendCode(onSuccess: () -> Unit, onError: (String) -> Unit) {

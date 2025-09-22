@@ -29,7 +29,7 @@ class CommunityChatViewModel @Inject constructor() : ViewModel() {
     val pendingAttachments: StateFlow<List<Pair<Uri, String>>> = _pendingAttachments
 
     fun onMessageChange(newMessage: String) {
-        _currentMessage.value = newMessage
+        _currentMessage.value = newMessage.take(250)
     }
 
     fun sendMessage() {

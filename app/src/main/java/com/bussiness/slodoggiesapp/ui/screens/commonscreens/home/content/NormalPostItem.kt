@@ -103,28 +103,39 @@ fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Un
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(Modifier.width(40.dp).height(40.dp)) {
+            if (normalPost){
+                Box(Modifier.width(40.dp).height(40.dp)) {
 
+                    Image(
+                        painter = painterResource(id = R.drawable.dummy_person_image2),
+                        contentDescription = "Person",
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .align(Alignment.TopStart)
+                    )
+
+                    // Front image (dog in FULL COLOR with white border)
+                    Image(
+                        painter = painterResource(id = R.drawable.dummy_person_image1),
+                        contentDescription = "Dog",
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(CircleShape)
+                            .border(2.dp, Color.White, CircleShape)
+                            .align(Alignment.BottomEnd)
+                    )
+                }
+            }else{
                 Image(
                     painter = painterResource(id = R.drawable.dummy_person_image2),
                     contentDescription = "Person",
                     modifier = Modifier
-                        .size(30.dp)
+                        .size(35.dp)
                         .clip(CircleShape)
-                        .align(Alignment.TopStart)
-                )
-
-                // Front image (dog in FULL COLOR with white border)
-                Image(
-                    painter = painterResource(id = R.drawable.dummy_person_image1),
-                    contentDescription = "Dog",
-                    modifier = Modifier
-                        .size(30.dp)
-                        .clip(CircleShape)
-                        .border(2.dp, Color.White, CircleShape)
-                        .align(Alignment.BottomEnd)
                 )
             }
+
 
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -539,7 +550,7 @@ fun PostImage(
     mediaList: List<MediaItem> = listOf(
         MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
         MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-        MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
+        MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, )
     )
 ) {
     val pagerState = rememberPagerState(pageCount = { mediaList.size })

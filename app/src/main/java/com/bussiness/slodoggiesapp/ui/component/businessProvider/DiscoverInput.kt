@@ -571,7 +571,7 @@ fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: ()
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        text = event.eventDate,
+                        text = event.eventStartDate,
                         fontSize = 14.sp,
                         color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -600,13 +600,31 @@ fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: ()
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End
-                ) {
+//                Row(
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.End
+//                ) {
+//                    Icon(
+//                        painter = painterResource(id = R.drawable.time_ic), // your duration icon
+//                        contentDescription = "Duration",
+//                        tint = Color.Unspecified,
+//                        modifier = Modifier.wrapContentSize()
+//                    )
+//
+//                    Spacer(modifier = Modifier.width(4.dp))
+//
+//                    Text(
+//                        text = event.eventDuration,
+//                        fontSize = 12.sp,
+//                        color = Color.Gray,
+//                        fontFamily = FontFamily(Font(R.font.outfit_regular))
+//                    )
+//                }
+                Row(verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End) {
                     Icon(
-                        painter = painterResource(id = R.drawable.time_ic), // your duration icon
-                        contentDescription = "Duration",
+                        painter = painterResource(id = R.drawable.cal_ic), // your calendar icon
+                        contentDescription = "Calendar",
                         tint = Color.Unspecified,
                         modifier = Modifier.wrapContentSize()
                     )
@@ -614,10 +632,11 @@ fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: ()
                     Spacer(modifier = Modifier.width(4.dp))
 
                     Text(
-                        text = event.eventDuration,
-                        fontSize = 12.sp,
-                        color = Color.Gray,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular))
+                        text = event.eventEndDate,
+                        fontSize = 14.sp,
+                        color = Color.Black,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontWeight = FontWeight.Normal
                     )
                 }
             }

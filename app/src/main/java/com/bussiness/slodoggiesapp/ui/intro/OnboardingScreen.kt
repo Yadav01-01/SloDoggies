@@ -172,7 +172,7 @@ fun OnboardingPageContent(
                 .align(Alignment.BottomCenter)
                 .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
                 .background(Color.White)
-                .padding(horizontal = 20.dp, vertical = 16.dp)
+                .padding(horizontal = 15.dp, vertical = 16.dp)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize(),

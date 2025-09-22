@@ -53,7 +53,7 @@ fun PetNewPostScreen(navController: NavHostController) {
             }
         }
 
-        HeadingTextWithIcon(textHeading = "New post",
+        HeadingTextWithIcon(textHeading = if (selected == "Post" )"New post" else "New Event",
             onBackClick = { navController.navigate(Routes.HOME_SCREEN){
             popUpTo(Routes.HOME_SCREEN){ inclusive = true }
         } })

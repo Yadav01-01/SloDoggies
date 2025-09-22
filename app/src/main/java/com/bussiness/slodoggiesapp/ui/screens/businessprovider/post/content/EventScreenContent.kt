@@ -92,11 +92,11 @@ fun EventScreenContent(
             DateTimePickerScreen(textHeading = stringResource(R.string.event_edate))
         }
 
-        item {
-            FormHeadingText(stringResource(R.string.event_duration))
-            Spacer(Modifier.height(10.dp))
-            InputField(input = eventTitle, onValueChange = { }, placeholder = stringResource(R.string.select_duration))
-        }
+//        item {
+//            FormHeadingText(stringResource(R.string.event_duration))
+//            Spacer(Modifier.height(10.dp))
+//            InputField(input = eventTitle, onValueChange = { }, placeholder = stringResource(R.string.select_duration))
+//        }
 
         item {
             FormHeadingText(stringResource(R.string.flat_address))

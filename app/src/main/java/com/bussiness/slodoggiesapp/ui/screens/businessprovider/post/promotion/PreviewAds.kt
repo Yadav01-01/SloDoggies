@@ -107,7 +107,7 @@ fun PreviewAdsScreen(navController: NavHostController) {
             // --- Submit Button ---
             item {
                 Spacer(Modifier.height(15.dp))
-                SubmitButton(buttonText = "Submit", onClickButton = { })
+                SubmitButton(buttonText = "Submit", onClickButton = { navController.navigate(Routes.SPONSORED_ADS_SCREEN) })
                 Spacer(Modifier.height(10.dp))
             }
         }

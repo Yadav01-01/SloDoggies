@@ -87,7 +87,7 @@ fun getSamplePosts(): List<PostItem> = listOf(
         mediaList = listOf(
             MediaItem(R.drawable.new_dog_ic, MediaType.IMAGE),
             MediaItem(R.drawable.dog3, MediaType.IMAGE),
-            MediaItem(R.drawable.new_dog_ic, MediaType.VIDEO, R.raw.dummy_video_thumbnail)
+            MediaItem(R.drawable.new_dog_ic, MediaType.VIDEO,)
         )
     ),
     PostItem.NormalPost(
