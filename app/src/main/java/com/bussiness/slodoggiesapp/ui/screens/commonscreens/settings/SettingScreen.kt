@@ -2,11 +2,8 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
@@ -28,7 +25,6 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWith
 import com.bussiness.slodoggiesapp.ui.component.common.SettingsItem
 import com.bussiness.slodoggiesapp.ui.component.common.SettingsItemArrow
 import com.bussiness.slodoggiesapp.ui.component.common.ToggleItem
-import com.bussiness.slodoggiesapp.ui.dialog.DeleteDialog
 import com.bussiness.slodoggiesapp.ui.dialog.LogoutDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -82,7 +78,7 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
                 .fillMaxSize()
                 .background(Color.White)
                 .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+//            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item { SettingsItem(icon = R.drawable.ic_bookmark_icon, title = "Saved", onClick = { navController.navigate(Routes.SAVED_ITEM_SCREEN) }) }
 
@@ -103,7 +99,7 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
 
             item { ToggleItem(icon = R.drawable.ic_notification_icons, text = "Notification", isEnabled = isNotificationEnabled, onToggle = { isNotificationEnabled = it }) }
 
-            item { SettingsItem(icon = R.drawable.account_privacy_ic, title = "Account Privacy", onClick = { navController.navigate(Routes.ACCOUNT_PRIVACY_SCREEN) }) }
+            item { SettingsItem(icon = R.drawable.privac_y, title = "Account Privacy", onClick = { navController.navigate(Routes.ACCOUNT_PRIVACY_SCREEN) }) }
 
             item { SettingsItem(icon = R.drawable.ic_about_circle_icon, title = "About Us", onClick = { navController.navigate(Routes.ABOUT_US_SCREEN) }) }
 

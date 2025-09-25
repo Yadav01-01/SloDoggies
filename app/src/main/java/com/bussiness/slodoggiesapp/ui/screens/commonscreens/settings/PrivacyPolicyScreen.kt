@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
@@ -44,6 +45,48 @@ fun PrivacyPolicyScreen(navController: NavHostController) {
         }
     }
     Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
+
+        HeadingTextWithIcon(textHeading = "Privacy Policy", onBackClick = {  if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        } })
+
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
+
+        Spacer(Modifier.height(10.dp))
+
+        Column  (
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp, vertical = 10.dp)
+        ){
+            Text(
+                text = " We value your privacy and are committed to protecting your personal information. When you use our app, we may collect basic details such as your name, location, email, pet information, and activity within the app to provide a personalized experience and improve our services. Your information is never sold or shared with third parties without your consent, except as required by law or to ensure the safety and integrity of our platform. We use secure methods to store and manage your data and take reasonable steps to prevent unauthorized access. By using the app, you consent to the collection and use of your information as outlined in this policy. If you have any questions or concerns, please contact us at support@petsloapp.com.",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    color = Color(0xFF252E32)
+                )
+            )
+        }
+    }
+
+}
+
+@Composable
+fun AuthPrivacyPolicyScreen(navController: NavHostController) {
+
+    var isNavigating by remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
+    }
+    Column (modifier = Modifier.fillMaxSize().background(Color.White).statusBarsPadding() ){
 
         HeadingTextWithIcon(textHeading = "Privacy Policy", onBackClick = {  if (!isNavigating) {
             isNavigating = true

@@ -56,7 +56,6 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
             Image(
                 painter = painterResource(id = service.iconRes),
                 contentDescription = null,
-                //  tint = Color(0xFFFF8C00),
                 modifier = Modifier.height(45.dp).width(50.dp)
             )
 
@@ -128,9 +127,10 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
             ) {
                 Text(
                     text = service.serviceType,
-                    fontSize = 11.sp, // Slightly larger font size to match appearance
+                    fontSize = 10.sp, // Slightly larger font size to match appearance
                     color = Color(0xFF8A8894), // Soft gray text color
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp) // Inner padding
                 )
             }

@@ -57,7 +57,7 @@ fun AboutUsScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp)
+                .padding(horizontal = 20.dp, vertical = 10.dp)
         ){
             Text(
                 text = " Our app is designed to bring together pet lovers and pet service providers across San Luis Obispo County, California. Whether you're a devoted pet parent looking to connect with others, discover local events, or find trusted services like grooming, walking, or boarding — or a business looking to reach engaged pet owners — our platform is here to help. We believe in building a supportive, friendly, and informed pet community where users can share experiences, promote well-being, and celebrate the joy that pets bring into our lives.",

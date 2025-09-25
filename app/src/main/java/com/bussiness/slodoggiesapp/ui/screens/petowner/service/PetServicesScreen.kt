@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,8 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -46,16 +51,23 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
         BackHandler {
-            navController.navigate(Routes.HOME_SCREEN) {
-                popUpTo(Routes.HOME_SCREEN) { inclusive = true } // clear stack above home
-                launchSingleTop = true
-                restoreState = true
+            if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
+                navController.navigate(Routes.HOME_SCREEN) {
+                    launchSingleTop = true
+                }
             }
         }
 
-        HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = { navController.navigate(Routes.HOME_SCREEN){
-            popUpTo(Routes.HOME_SCREEN) { inclusive = true }
-        } })
+
+        HeadingTextWithIcon(
+            textHeading = stringResource(R.string.services),
+            onBackClick = {
+                if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
+                    navController.navigate(Routes.HOME_SCREEN) { launchSingleTop = true }
+                }
+            }
+        )
+
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
@@ -77,7 +89,7 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
             modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val serviceTypes = listOf("Search", "Walking", "Grooming", "Sitting / Boarding", "Veterinary")
+            val serviceTypes = listOf("Walking", "Grooming", "Sitting / Boarding", "Veterinary")
             items(serviceTypes) { serviceType ->
                 ServiceTypeChip(
                     serviceType = serviceType,
@@ -92,6 +104,15 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
         }
 
         Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = "Top Providers",
+            color = Color.Black,
+            fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
 
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),

@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -52,6 +53,7 @@ import com.bussiness.slodoggiesapp.model.businessProvider.Community
 import com.bussiness.slodoggiesapp.model.common.AddParticipant
 import com.bussiness.slodoggiesapp.model.common.Participants
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import okhttp3.internal.wait
 
 @Composable
 fun CommunityHeader(
@@ -132,9 +134,16 @@ fun CommunityHeader(
                 expanded = menuExpanded,
                 onDismissRequest = { menuExpanded = false },
                 offset = DpOffset(x = (-70).dp, y = 0.dp),
+                shape = RoundedCornerShape(15.dp),
+                containerColor = Color.White,
                 modifier = Modifier
                     .background(Color.White)
-                    .clip(RoundedCornerShape(5.dp))
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(15.dp),
+                        ambientColor = Color.White.copy(alpha = 0.12f),
+                        spotColor = Color.White.copy(alpha = 0.12f)
+                    )
             ) {
                 DropdownMenuItem(
                     text = {
@@ -142,7 +151,8 @@ fun CommunityHeader(
                             text = "View Profile",
                             color = Color.Black,
                             fontSize = 16.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_regular))
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontWeight = FontWeight.Normal
                         )
                     },
                     onClick = {
@@ -151,6 +161,7 @@ fun CommunityHeader(
                     }
                 )
             }
+
         }
 
     }

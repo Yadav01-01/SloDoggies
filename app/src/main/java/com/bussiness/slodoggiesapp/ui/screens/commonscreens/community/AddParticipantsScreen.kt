@@ -158,20 +158,15 @@ fun AddParticipantsScreen(
                 fontFamily = FontFamily(Font(R.font.outfit_medium))
             )
 
-            HorizontalDivider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(PrimaryColor)
-            )
+            HorizontalDivider(thickness = 1.dp, color = PrimaryColor)
 
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(0.dp)) {
                 items(suggestions) { participant ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { viewModel.selectParticipant(participant) }
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         AsyncImage(
@@ -190,6 +185,7 @@ fun AddParticipantsScreen(
                             color = Color.Black
                         )
                     }
+                    HorizontalDivider(thickness = 1.dp, color = Color(0xFFE1EDEF))
                 }
             }
         }

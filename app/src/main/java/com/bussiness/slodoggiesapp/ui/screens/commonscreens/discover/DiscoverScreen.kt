@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -60,6 +61,14 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
     var selectedReason by remember { mutableStateOf("") }
     val categories = listOf("Pets Near You", "Events", "Pet Places", "Activities")
 
+    BackHandler {
+        if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
+            navController.navigate(Routes.HOME_SCREEN) {
+                launchSingleTop = true
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,15 +94,13 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
             "Pets Near You" -> ShowPetsNearYou(searchResults, navController)
             "Pet Places"    -> PetPlacesResults( onItemClick = { viewModel.showPetPlaceDialog()})
             "Activities"    -> { ActivitiesPostsList(posts = getSamplePosts(), onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }) }
-            "Events"        -> EventsResult(onClickMore = { }, onShareClick = { viewModel.showShareContent() }, onSavedClick = { viewModel.showSavedDialog() })
+            "Events"        -> EventsResult(onClickMore = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onSavedClick = { viewModel.showSavedDialog() }, onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) })
             else            -> ShowGeneralResults(searchResults, navController)
         }
     }
 
     if (petPlaceDialog) {
-        PetPlaceDialog(
-            onDismiss = { viewModel.dismissPetPlaceDialog() }
-        )
+        PetPlaceDialog(onDismiss = { viewModel.dismissPetPlaceDialog() })
     }
     if (shareContentDialog) {
         ShareContentDialog( onDismiss = { viewModel.dismissShareContent() }, onSendClick = { viewModel.dismissShareContent() })
@@ -131,7 +138,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
 
 
 @Composable
-fun EventsResult(onClickMore: () -> Unit,onShareClick: () -> Unit,onSavedClick: () -> Unit) {
+fun EventsResult(onClickMore: () -> Unit,onJoinClick : () -> Unit,onShareClick: () -> Unit,onSavedClick: () -> Unit) {
 
     val sampleEvents = listOf(
         EventPost(
@@ -225,11 +232,12 @@ fun EventsResult(onClickMore: () -> Unit,onShareClick: () -> Unit,onSavedClick: 
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(sampleEvents) { event ->
-            SocialEventCard( event = event , onReportClick = { onClickMore() }, onShareClick = { onShareClick() }, onSaveClick = { onSavedClick() })
+            SocialEventCard( event = event , onReportClick = { onClickMore() },
+                onShareClick = { onShareClick() }, onSaveClick = { onSavedClick() },
+                onJoinCommunity = { onJoinClick()})
         }
     }
 }
-
 
 @Composable
 fun ShowGeneralResults(results: List<SearchResult>, controller: NavHostController) {
@@ -290,6 +298,5 @@ fun getSamplePosts(): List<PostItem> {
 @Composable
 fun DiscoverScreenPreview() {
     val navController = rememberNavController()
-
     DiscoverScreen(navController = navController)
 }

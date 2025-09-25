@@ -51,6 +51,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DialogButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.RemoveButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
@@ -245,13 +246,13 @@ fun RemoveParticipantDialog(
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        DialogButton(
+                        RemoveButton(
                             text = "Cancel",
                             selected = false,
                             onClick = onDismiss,
                             modifier = Modifier.weight(1f)
                         )
-                        DialogButton(
+                        RemoveButton(
                             text = "Remove",
                             selected = true,
                             onClick = {
@@ -361,7 +362,7 @@ fun DeleteChatDialog(
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        DialogButton(
+                        RemoveButton(
                             text = "Delete",
                             selected = true,
                             onClick = {
@@ -370,7 +371,7 @@ fun DeleteChatDialog(
                             },
                             modifier = Modifier.weight(1f)
                         )
-                        DialogButton(
+                        RemoveButton(
                             text = "Cancel",
                             selected = false,
                             onClick = {

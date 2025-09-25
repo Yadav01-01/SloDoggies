@@ -109,18 +109,19 @@ fun PetProfileScreen(navController: NavHostController) {
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
         BackHandler {
-            navController.navigate(Routes.PET_SERVICES_SCREEN) {
-                popUpTo(Routes.HOME_SCREEN) { inclusive = false } // keep home
-                launchSingleTop = true
-                restoreState = true
+            if (!navController.popBackStack(Routes.HOME_SCREEN,
+                    false)) {
+                navController.navigate(Routes.HOME_SCREEN) {
+                    launchSingleTop = true
+                }
             }
         }
 
         ScreenHeadingText(textHeading = "My Profile",
-            onBackClick = {  navController.navigate(Routes.HOME_SCREEN) {
-                popUpTo(Routes.HOME_SCREEN) { inclusive = false } // clear stack above home
-                launchSingleTop = true
-                restoreState = true
+            onBackClick = {    if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
+                navController.navigate(Routes.HOME_SCREEN) {
+                    launchSingleTop = true
+                }
             } },
             onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
 

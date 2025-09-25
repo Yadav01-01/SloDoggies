@@ -1,5 +1,12 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen
 
+import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,9 +17,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,12 +54,7 @@ fun LocationPermissionScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Bell Icon
-            Image(
-                painter = painterResource(id = R.drawable.location_icon),
-                contentDescription = "Location Icon",
-                modifier = Modifier.size(120.dp)
-            )
+            RippleAnimation(icon = R.drawable.location_ic)
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -104,6 +108,50 @@ fun LocationPermissionScreen(navController: NavHostController) {
         }
     }
 }
+
+@Composable
+fun RippleAnimation(@DrawableRes icon : Int) {
+    val infiniteTransition = rememberInfiniteTransition()
+
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 0.6f,
+        targetValue = 1.4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    val alpha by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        )
+    )
+
+    // Ripple + Bell Icon
+    Box(
+        modifier = Modifier.size(160.dp), // fixed container
+        contentAlignment = Alignment.Center
+    ) {
+        // Ripple expanding
+        Box(
+            modifier = Modifier
+                .size(160.dp * scale)
+                .background(Color(0xFFA8CFD4).copy(alpha = alpha), CircleShape)
+        )
+
+        // Bell Icon always in center
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = "Notification Icon",
+            modifier = Modifier.size(100.dp),
+        )
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

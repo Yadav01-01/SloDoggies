@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -199,20 +201,20 @@ private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () 
             IconTextButton(
                 iconRes = R.drawable.ic_chat_bubble_icon,
                 text = comments.toString(),
-                onClick = { showCommentsDialog = true },
-
+                onClick = { showCommentsDialog = true }
             )
 
             Spacer(modifier = Modifier.width(20.dp))
 
             // Share
             IconTextButton(
-                modifier = Modifier.clickable { onShareClick() },
                 iconRes = R.drawable.ic_share_icons,
                 text = shares.toString(),
+                onClick = { onShareClick() }
             )
         }
     }
+
     if (showCommentsDialog) {
         val sampleComments = listOf(
             Comment(
@@ -256,41 +258,38 @@ private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () 
 }
 
 @Composable
-private fun IconTextButton(
-    modifier: Modifier = Modifier,
-    @DrawableRes iconRes: Int,
+fun IconTextButton(
+    iconRes: Int,
     text: String,
     tint: Color = Color.Black,
-    onClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.then(
-            if (onClick != null) {
-                Modifier.clickable (
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ){ onClick() }
-            } else {
-                Modifier
-            }
-        )
+        modifier = modifier.clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() }
+        ) { onClick() }
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = null,
-            modifier = Modifier.size(24.dp),
-            tint = tint
+            tint = tint,
+            modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = text,
             fontSize = 14.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+            fontWeight = FontWeight.Normal,
             color = tint,
-            fontFamily = FontFamily(Font(R.font.outfit_regular))
+            modifier = Modifier.widthIn(min = 24.dp) //  reserve space
         )
     }
 }
+
 
 
 @Preview(showBackground = true, backgroundColor = 0xFFF5F5F5)

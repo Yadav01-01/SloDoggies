@@ -6,9 +6,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -66,8 +71,10 @@ fun FullScreenImageViewerScreen(
             // This Box will hold the pager and close button together
             Box(
                 modifier = Modifier
-                    .size(450.dp)
-                    .padding(horizontal = 10.dp)
+                    .height(400.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp)
+                    .clip(RoundedCornerShape(10.dp)) // clip once at container level
                     .align(Alignment.Center)
             ) {
                 // HorizontalPager
@@ -80,9 +87,10 @@ fun FullScreenImageViewerScreen(
                         model = images[page],
                         contentDescription = "Full Screen Image",
                         modifier = Modifier
-                            .fillMaxSize()
+                            .height(287.dp)
+                            .padding(horizontal = 10.dp)
                             .clip(RoundedCornerShape(10.dp)),
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Crop
                     )
                 }
 
@@ -101,20 +109,28 @@ fun FullScreenImageViewerScreen(
                 Row(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
                         .padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.Center, //  center dots horizontally
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     repeat(images.size) { index ->
                         Box(
                             modifier = Modifier
-                                .size(5.dp)
+                                .size(6.dp) // slightly bigger so it's visible
                                 .background(
                                     color = if (index == currentIndex) Color.White else Color.Gray,
                                     shape = CircleShape
                                 )
                         )
+                        if (index != images.lastIndex) {
+                            Spacer(modifier = Modifier.width(8.dp)) // consistent spacing between dots
+                        }
                     }
                 }
+
+                Spacer(Modifier.height(5.dp))
+
                 val scope = rememberCoroutineScope()
 
                 // Previous button

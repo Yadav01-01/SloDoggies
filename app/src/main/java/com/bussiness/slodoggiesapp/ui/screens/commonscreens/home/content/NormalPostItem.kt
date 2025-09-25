@@ -411,15 +411,21 @@ private fun PostCaption(caption: String, description: String) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
+            // Like section
             Icon(
-                painter = painterResource(  id = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon),
+                painter = painterResource(
+                    id = if (isLiked) R.drawable.ic_paw_like_filled_icon
+                    else R.drawable.ic_paw_like_icon
+                ),
                 contentDescription = "Paw",
-                modifier = Modifier.size(25.dp).clickable(
-                    indication = null,
-                    interactionSource =  remember { MutableInteractionSource() }
-                ) {
-                    isLiked = !isLiked // Toggle the liked state
-                },
+                modifier = Modifier
+                    .size(25.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        isLiked = !isLiked // Toggle the liked state
+                    },
                 tint = Color.Unspecified
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -428,7 +434,8 @@ private fun PostCaption(caption: String, description: String) {
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontWeight = FontWeight.Normal,
-                color = if (isLiked) PrimaryColor else Color.Black
+                color = if (isLiked) PrimaryColor else Color.Black,
+                modifier = Modifier.widthIn(min = 24.dp) //  reserve width
             )
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -436,21 +443,22 @@ private fun PostCaption(caption: String, description: String) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_chat_bubble_icon),
                 contentDescription = "Comments",
-                modifier = Modifier.size(24.dp).clickable(
-                    indication = null,
-                    interactionSource =  remember { MutableInteractionSource() }
-                ) {
-                    // isLiked = !isLiked // Toggle the liked state
-                    showCommentsDialog = true
-                }
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        showCommentsDialog = true
+                    }
             )
-
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = comments.toString(),
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier.widthIn(min = 24.dp) //  reserve width
             )
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -458,21 +466,25 @@ private fun PostCaption(caption: String, description: String) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_share_icons),
                 contentDescription = "Shares",
-                modifier = Modifier.size(25.dp).clickable (
-                    indication = null,
-                    interactionSource =  remember { MutableInteractionSource() }
-                ){
-                   onShareClick()
-                }
+                modifier = Modifier
+                    .size(25.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        onShareClick()
+                    }
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
                 text = shares.toString(),
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier.widthIn(min = 24.dp) //  reserve width
             )
         }
+
 
         Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {  isBookmarked = !isBookmarked  }){
             Text(text = stringResource(R.string.save),

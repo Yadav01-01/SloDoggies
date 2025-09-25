@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.ClickableText
@@ -68,7 +69,8 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopIndicatorBar()
@@ -88,7 +90,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            FormHeadingText("Email", modifier = Modifier.align(Alignment.Start))
+            FormHeadingText("Email/ Phone ", modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(10.dp))
             EmailInputField(
                 email = state.email,
@@ -150,6 +152,8 @@ fun LoginScreen(
                 )
                 append("New here? ")
                 pop()
+
+                append("")
 
                 pushStringAnnotation(tag = "CREATE_ACCOUNT", annotation = "create_account")
                 pushStyle(

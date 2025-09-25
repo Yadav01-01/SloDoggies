@@ -449,7 +449,7 @@ fun PetPlaceCard(placeItem: PetPlaceItem,onItemClick: () -> Unit) {
 }
 
 @Composable
-fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: () -> Unit,onSaveClick : () -> Unit) {
+fun SocialEventCard( event: EventPost,onJoinCommunity: () -> Unit,onReportClick: () -> Unit,onShareClick: () -> Unit,onSaveClick : () -> Unit) {
     var isFollowed by remember { mutableStateOf(false) }
     Column(modifier = Modifier
         .background(Color.White)
@@ -669,7 +669,8 @@ fun SocialEventCard( event: EventPost,onReportClick: () -> Unit,onShareClick: ()
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Black)
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .clickable { onJoinCommunity() },
             contentAlignment = Alignment.CenterEnd
         ) {
             Text("Join Community", modifier = Modifier.padding(end = 35.dp),

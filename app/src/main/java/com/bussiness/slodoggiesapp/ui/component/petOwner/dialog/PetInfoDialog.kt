@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -64,6 +65,8 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScrollableDropd
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.Person
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PersonItem
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetInfoViewModel
@@ -138,122 +141,127 @@ fun PetInfoDialog(
                 shape = RoundedCornerShape(12.dp),
                 color = Color.White
             ) {
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(14.dp)
-                        .verticalScroll(rememberScrollState())
+                        .padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp) // common spacing
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                        if (!onProfile){
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = stringResource(id = R.string.skip),
+                                text = title,
                                 style = MaterialTheme.typography.titleMedium,
-                                color = PrimaryColor,
+                                color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.End,
-                                modifier = Modifier.clickable { onDismiss() }
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            if (!onProfile) {
+                                Text(
+                                    text = stringResource(id = R.string.skip),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = PrimaryColor,
+                                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    textAlign = TextAlign.End,
+                                    modifier = Modifier.clickable { onDismiss() }
+                                )
+                            }
+                        }
+                    }
+
+                    item {
+                        HorizontalDivider(thickness = 1.dp, color = TextGrey)
+                    }
+
+//                    item {
+//                        PersonItem(
+//                            person = samplePeople,
+//                            selected = false,
+//                            onClick = { }
+//                        )
+//                    }
+
+                    item {
+                        AddPhotoSection(
+                            onPhotoSelected = { uri ->
+                                viewModel.setSelectedPhoto(uri)
+                            }
+                        )
+                    }
+
+                    item {
+                        CustomOutlinedTextField(
+                            value = uiState.petName,
+                            onValueChange = { viewModel.updatePetName(it) },
+                            placeholder = stringResource(R.string.placeholder_pet_name),
+                            label = stringResource(R.string.label_pet_name),
+                        )
+                    }
+
+                    item {
+                        CustomOutlinedTextField(
+                            value = uiState.petBreed,
+                            onValueChange = { viewModel.updatePetBreed(it) },
+                            placeholder = stringResource(R.string.placeholder_pet_breed),
+                            label = stringResource(R.string.label_pet_breed)
+                        )
+                    }
+
+                    item {
+                        FormHeadingText("Pet Age")
+                        Spacer(Modifier.height(8.dp))
+                        ScrollableDropdownBox(
+                            label = uiState.petAge.ifEmpty { "Enter pet age" },
+                            items = viewModel.ageOptions,
+                            selectedItem = uiState.petAge,
+                            onItemSelected = { viewModel.updatePetAge(it) }
+                        )
+                    }
+
+                    item {
+                        CustomOutlinedTextField(
+                            value = uiState.petBio,
+                            onValueChange = { viewModel.updatePetBio(it) },
+                            placeholder = stringResource(R.string.placeholder_pet_bio),
+                            label = stringResource(R.string.label_pet_bio)
+                        )
+                    }
+
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            CommonWhiteButton(
+                                text = if (onProfile) stringResource(R.string.cancel) else stringResource(R.string.continue_btn),
+                                onClick = { viewModel.onContinue(onProfile) },
+                                modifier = Modifier.weight(1f)
+                            )
+                            CommonBlueButton(
+                                text = stringResource(R.string.add_pet),
+                                fontSize = 16.sp,
+                                onClick = { viewModel.onAddPet() },
+                                modifier = Modifier.weight(1f)
                             )
                         }
-
                     }
-
-
-                    Spacer(modifier = Modifier.height(15.dp))
-
-                    HorizontalDivider(thickness = 1.dp, color = TextGrey)
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Add Photo
-                    AddPhotoSection(
-                        onPhotoSelected = { uri ->
-                            viewModel.setSelectedPhoto(uri)
-                        }
-                    )
-
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    CustomOutlinedTextField(
-                        value = uiState.petName,
-                        onValueChange = { viewModel.updatePetName(it) },
-                        placeholder = stringResource(R.string.placeholder_pet_name),
-                        label = stringResource(R.string.label_pet_name),
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    CustomOutlinedTextField(
-                        value = uiState.petBreed,
-                        onValueChange = { viewModel.updatePetBreed(it) },
-                        placeholder = stringResource(R.string.placeholder_pet_breed),
-                        label = stringResource(R.string.label_pet_breed)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    FormHeadingText("Pet Age")
-
-                    Spacer(Modifier.height(8.dp))
-
-                    ScrollableDropdownBox(
-                        label = uiState.petAge.ifEmpty { "Enter pet age" },
-                        items = viewModel.ageOptions,
-                        selectedItem = uiState.petAge,
-                        onItemSelected = { viewModel.updatePetAge(it) }
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    CustomOutlinedTextField(
-                        value = uiState.petBio,
-                        onValueChange = { viewModel.updatePetBio(it) },
-                        placeholder = stringResource(R.string.placeholder_pet_bio),
-                        label = stringResource(R.string.label_pet_bio)
-                    )
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        CommonWhiteButton(
-                            text = if (onProfile) stringResource(R.string.cancel)  else stringResource(R.string.continue_btn),
-                            onClick = { viewModel.onContinue(onProfile) },
-                            modifier = Modifier.weight(1f)
-                        )
-                        CommonBlueButton(
-                            text = stringResource(R.string.add_pet),
-                            fontSize = 16.sp,
-                            onClick = { viewModel.onAddPet() },
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
                 }
+
             }
         }
     }
 }
+
+val samplePeople = Person("1", "Jimmy", "https://example.com/jimmy.jpg")
+
 
 @Composable
 fun AddPhotoSection(

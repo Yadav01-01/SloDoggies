@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -71,7 +74,9 @@ fun SignUpScreen(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopIndicatorBar()
@@ -155,6 +160,8 @@ fun SignUpScreen(
                 append(stringResource(R.string.already_have_account))
                 pop()
 
+                append("")
+
                 pushStringAnnotation(tag = "LOGIN", annotation = "Login")
                 pushStyle(
                     SpanStyle(
@@ -183,7 +190,7 @@ fun SignUpScreen(
             )
 
             val termsText = buildAnnotatedString {
-                // Normal intro text
+                // Intro text
                 withStyle(
                     style = SpanStyle(
                         color = Color.Black,
@@ -195,7 +202,7 @@ fun SignUpScreen(
                     append(stringResource(R.string.create_account_policy) + " ")
                 }
 
-                // Terms & Conditions link
+                // Terms link
                 pushStringAnnotation(tag = "TERMS", annotation = "TERMS")
                 withStyle(
                     style = SpanStyle(
@@ -205,7 +212,7 @@ fun SignUpScreen(
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     )
                 ) {
-                    append("Terms & Conditions")
+                    append(stringResource(R.string.terms_and_conditions))
                 }
                 pop()
 
@@ -221,7 +228,7 @@ fun SignUpScreen(
                     append(" ${stringResource(R.string.and_)} ")
                 }
 
-                // Privacy Policy link
+                // Privacy link
                 pushStringAnnotation(tag = "PRIVACY", annotation = "PRIVACY")
                 withStyle(
                     style = SpanStyle(
@@ -231,7 +238,7 @@ fun SignUpScreen(
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     )
                 ) {
-                    append("Privacy Policy")
+                    append(stringResource(R.string.privacy_policy))
                 }
                 pop()
             }
@@ -243,20 +250,19 @@ fun SignUpScreen(
                 ClickableText(
                     text = termsText,
                     modifier = Modifier.fillMaxWidth(),
-                    style = TextStyle(
-                        textAlign = TextAlign.Center
-                    ),
+                    style = TextStyle(textAlign = TextAlign.Center),
                     onClick = { offset ->
-                        termsText.getStringAnnotations(start = offset, end = offset)
+                        termsText.getStringAnnotations(start = offset, end = offset + 1)
                             .firstOrNull()?.let { annotation ->
                                 when (annotation.tag) {
-                                    "TERMS" -> navController.navigate(Routes.TERMS_AND_CONDITION_SCREEN)
-                                    "PRIVACY" -> navController.navigate(Routes.PRIVACY_POLICY_SCREEN)
+                                    "TERMS" -> navController.navigate(Routes.AUTH_TERMS_AND_CONDITION_SCREEN)
+                                    "PRIVACY" -> navController.navigate(Routes.AUTH_PRIVACY_POLICY_SCREEN)
                                 }
                             }
                     }
                 )
             }
+
 
 
         }

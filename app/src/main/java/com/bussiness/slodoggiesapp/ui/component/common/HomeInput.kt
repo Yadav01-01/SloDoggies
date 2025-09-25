@@ -73,7 +73,7 @@ fun HomeTopBar(
 
         // Action Icons: Notification and Message
         Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             IconButton(onClick = onNotificationClick) {
                 Icon(

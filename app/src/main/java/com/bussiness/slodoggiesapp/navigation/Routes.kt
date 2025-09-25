@@ -60,4 +60,6 @@ object Routes {
     const val PREVIEW_ADS_SCREEN = "PreviewAdsScreen"
     const val NEW_MESSAGE_SCREEN = "NewMessageScreen"
     const val TRANSACTION_SCREEN = "TransactionScreen"
+    const val AUTH_TERMS_AND_CONDITION_SCREEN = "AuthTermsAndConditionsScreen"
+    const val AUTH_PRIVACY_POLICY_SCREEN = "AuthPrivacyPolicyScreen"
 }

@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,6 +65,9 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
     val writePost by viewModel.writePost.collectAsState()
     val hashtags by viewModel.hashtags.collectAsState()
     val postalCode by viewModel.postalCode.collectAsState()
+    val streetAddress by viewModel.streetAddress.collectAsState()
+    val areaSector by viewModel.areaSector.collectAsState()
+    val landmark by viewModel.landmark.collectAsState()
     var showPetInfoDialog by remember { mutableStateOf(false) }
     var petAddedSuccessDialog by remember { mutableStateOf(false) }
     // Add state for selected people
@@ -90,9 +94,6 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
 
         item {
             FormHeadingText(stringResource(R.string.Upload_Media))
-        }
-
-        item {
             MediaUploadSection(maxImages = 10) { uri ->
                 // Example: viewModel.addPetImage(uri)
             }
@@ -100,9 +101,6 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
 
         item {
             FormHeadingText(stringResource(R.string.Write_Post))
-        }
-
-        item {
             DescriptionBox(
                 placeholder = stringResource(R.string.Enter_Description),
                 value = writePost,
@@ -112,21 +110,16 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
 
         item {
             FormHeadingText(stringResource(R.string.Hashtags))
-        }
-
-        item {
             InputField(
-                placeholder = stringResource(R.string.Enter_Hashtags),
+                placeholder = stringResource(R.string.Add_Hashtags),
                 input = hashtags,
                 onValueChange = { viewModel.updateHashtags(it) }
             )
         }
 
-        item {
-            FormHeadingText(stringResource(R.string.Zip_Code))
-        }
 
         item {
+            FormHeadingText(stringResource(R.string.current_location))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable { onClickLocation() }
@@ -134,13 +127,14 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
                 Icon(
                     painter = painterResource(id = R.drawable.precise_loc),
                     contentDescription = null,
-                    tint = Color.Gray,
+                    tint = Color.Unspecified,
                     modifier = Modifier.wrapContentSize()
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(R.string.use_my_current_location),
                     fontFamily = FontFamily(Font(R.font.poppins)),
+                    fontWeight = FontWeight.Normal,
                     fontSize = 12.sp,
                     color = Color.Black
                 )
@@ -148,8 +142,40 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
         }
 
         item {
+            FormHeadingText(stringResource(R.string.Enter_your_Address))
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.flat_address))
             InputField(
-                placeholder = stringResource(R.string.enter_your_zip_code),
+                placeholder = stringResource(R.string.enter_flat_address),
+                input = streetAddress ,
+                onValueChange = { viewModel.updateStreetAddress(it) }
+            )
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.area_sector))
+            InputField(
+                placeholder = stringResource(R.string.enter_area_sector),
+                input = areaSector,
+                onValueChange = { viewModel.updateAreaSector(it) }
+            )
+        }
+
+        item {
+            FormHeadingText(stringResource(R.string.landmark))
+            InputField(
+                placeholder = stringResource(R.string.enter_landmark),
+                input = landmark,
+                onValueChange = { viewModel.updateLandmark(it) }
+            )
+        }
+
+        item {
+            FormHeadingText("Zip Code")
+            InputField(
+                placeholder = "Enter your Zip Code",
                 input = postalCode,
                 onValueChange = { viewModel.updatePostalCode(it) }
             )
@@ -354,7 +380,7 @@ fun WhosThisPostAboutEmptyPreview() {
 @Preview
 @Composable
 fun WhosThisPostAboutWithPeoplePreview() {
-    val samplePeople = listOf(
+    listOf(
         Person("1", "Jimmy", "https://example.com/jimmy.jpg"),
         Person("2", "Barry", "https://example.com/barry.jpg"),
         Person("3", "Bill", "https://example.com/bill.jpg"),

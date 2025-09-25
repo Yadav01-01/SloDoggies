@@ -170,17 +170,24 @@ fun ChatBubble(message: ChatMessage) {
 
         Box(
             modifier = Modifier
+                .padding(top = 4.dp, bottom = 4.dp) // vertical margin outside the Box
                 .clip(bubbleShape)
                 .background(bubbleColor)
-                .widthIn(max = if (message.isUser) LocalConfiguration.current.screenWidthDp.dp * 0.8f else LocalConfiguration.current.screenWidthDp.dp * 0.7f)
+                .widthIn(
+                    max = if (message.isUser)
+                        LocalConfiguration.current.screenWidthDp.dp * 0.8f
+                    else
+                        LocalConfiguration.current.screenWidthDp.dp * 0.7f
+                )
         ) {
             Text(
                 text = message.text,
-                modifier = Modifier.padding(12.dp),
+                modifier = Modifier.padding(12.dp), // inner padding for content
                 color = if (message.isUser) Color.White else Color.Black,
                 fontSize = 14.sp
             )
         }
+
     }
 }
 

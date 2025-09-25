@@ -25,6 +25,8 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.JoinThePackScre
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.MainScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.LocationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.NotificationPermissionScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AuthPrivacyPolicyScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AuthTermsAndConditionsScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -42,6 +44,8 @@ fun NavGraph(navController: NavHostController) {
             composable(Routes.LOGIN_SCREEN) { LoginScreen(navController) }
             composable(Routes.SIGNUP_SCREEN) { SignUpScreen(navController) }
             composable(Routes.NEW_PASSWORD_SCREEN) { NewPasswordScreen(navController) }
+            composable(Routes.AUTH_TERMS_AND_CONDITION_SCREEN) { AuthTermsAndConditionsScreen(navController) }
+            composable(Routes.AUTH_PRIVACY_POLICY_SCREEN) { AuthPrivacyPolicyScreen(navController) }
 
             // --- Business Provider Screens ---
             composable(Routes.BUSINESS_REGISTRATION) { BusinessRegistrationScreen(navController) }

@@ -106,6 +106,7 @@ fun HelpAndSupportScreen(navController: NavHostController,viewModel: HelpAndSupp
                         fontSize = 14.sp,
                         lineHeight = 18.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        fontWeight = FontWeight.Normal,
                         color = Color.Black
                     )
                     

@@ -136,9 +136,10 @@ fun PetNotificationsScreen(navController: NavHostController) {
     }
 
     BackHandler {
-        navController.navigate(Routes.HOME_SCREEN){
-            popUpTo(Routes.HOME_SCREEN){
-                inclusive = true
+        if (!navController.popBackStack(Routes.HOME_SCREEN,
+                false)) {
+            navController.navigate(Routes.HOME_SCREEN) {
+                launchSingleTop = true
             }
         }
     }
@@ -149,9 +150,9 @@ fun PetNotificationsScreen(navController: NavHostController) {
             .background(Color.White)
     ) {
         HeadingTextWithIcon(textHeading = "Notifications",
-            onBackClick = { navController.navigate(Routes.HOME_SCREEN){
-                popUpTo(Routes.HOME_SCREEN){
-                    inclusive = true
+            onBackClick = {  if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
+                navController.navigate(Routes.HOME_SCREEN) {
+                    launchSingleTop = true
                 }
             } })
 
@@ -168,7 +169,7 @@ fun PetNotificationsScreen(navController: NavHostController) {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.titleMedium
                 )
-                HorizontalDivider(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color.Black))
+                HorizontalDivider(thickness = 1.dp, color = PrimaryColor)
 
             }
 

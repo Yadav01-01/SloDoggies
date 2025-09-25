@@ -133,7 +133,7 @@ fun PersonDetailScreen(
                     .wrapContentHeight()
                     .background(Color.White, RoundedCornerShape(20.dp))
                     .border(1.dp, Color(0xFFE5EFF2), RoundedCornerShape(20.dp))
-                    .padding(16.dp),
+                    .padding(14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
 

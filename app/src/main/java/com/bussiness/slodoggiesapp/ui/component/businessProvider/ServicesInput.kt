@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -60,7 +61,9 @@ import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.ServicePackage
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FullScreenImageViewerScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.EnhancedExpandableInfoSpinner
+import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.ImageGalleryScreen
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
@@ -315,6 +318,7 @@ fun ServicePackageCard(
                 Spacer(modifier = Modifier.height(10.dp))
 
                 PhotosGrid(data.photos)
+
             }
         }
     }
@@ -351,18 +355,24 @@ private fun KeyValueRow(label: String, value: String) {
 @Composable
 private fun PhotosGrid(photos: List<Int>) {
     val maxDisplay = 5
-    val photosToShow = photos.take(maxDisplay)
     val remaining = photos.size - maxDisplay
+    var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
+
+    // If more than maxDisplay, we take (maxDisplay - 1) and reserve the last for "+N"
+    val photosToShow =
+        if (remaining > 0) photos.take(maxDisplay - 1) else photos.take(maxDisplay)
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = Modifier
-            .fillMaxWidth().heightIn(max = 220.dp),
+            .fillMaxWidth()
+            .heightIn(max = 220.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         userScrollEnabled = false
     ) {
-        items(photosToShow) { photo ->
+        // Normal images
+        itemsIndexed(photosToShow) { index, photo ->
             Image(
                 painter = rememberAsyncImagePainter(photo),
                 contentDescription = null,
@@ -371,33 +381,57 @@ private fun PhotosGrid(photos: List<Int>) {
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(10.dp))
+                    .clickable { selectedImageIndex = index }
             )
         }
 
+        // Last item -> either "+N" box or just the last photo
         if (remaining > 0) {
             item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.LightGray),
-                    contentAlignment = Alignment.Center
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable { selectedImageIndex = maxDisplay - 1 } // open at the last image
                 ) {
-                    Text(
-                        text = "+$remaining",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 20.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            color = Color.White
-                        )
+                    Image(
+                        painter = rememberAsyncImagePainter(photos[maxDisplay - 1]),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize()
                     )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .background(Color.Black.copy(alpha = 0.5f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "+$remaining",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 20.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                color = Color.White
+                            )
+                        )
+                    }
                 }
             }
         }
     }
+
+    // Full screen viewer
+    selectedImageIndex?.let { index ->
+        FullScreenImageViewerScreen(
+            images = photos,
+            initialIndex = index,
+            onDismiss = { selectedImageIndex = null }
+        )
+    }
 }
+
 
 
 

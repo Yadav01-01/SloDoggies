@@ -42,6 +42,7 @@ import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SponsorButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
+import com.bussiness.slodoggiesapp.ui.dialog.AdsStatusDialog
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.sponsoredAds.sposoredcontent.ActiveScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.sponsoredAds.sposoredcontent.ExpiredScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.sponsoredAds.sposoredcontent.PendingScreen
@@ -52,6 +53,8 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 fun SponsoredAdsScreen(navController: NavHostController) {
 
     var selected by remember { mutableStateOf("Active") }
+    var statusDialog by remember { mutableStateOf(true) }
+    var approvedDialog by remember { mutableStateOf(false) }
 
     BackHandler {
         navController.navigate(Routes.PROFILE_SCREEN) {
@@ -99,6 +102,37 @@ fun SponsoredAdsScreen(navController: NavHostController) {
             }
         }
     }
+    if (selected == "Pending"){
+        if (statusDialog){
+            AdsStatusDialog(
+                onDismiss = { statusDialog = false },
+                icon = R.drawable.time_clock,
+                heading = "Your ad is under review!",
+                desc1 = "Your ad is now under review by the admin team.",
+                desc2 = "You will receive a notification once it is approved and live.",
+                buttonText = "Go to Dashboard",
+                onClick = {
+                    statusDialog = false
+                    approvedDialog = true
+                }
+            )
+        }
+        if (approvedDialog){
+            AdsStatusDialog(
+                onDismiss = { approvedDialog = false },
+                icon = R.drawable.icon_park_outline_success,
+                heading = "Your ad has been approved!",
+                desc1 = "Congratulations! Your ad is now live and visible to users on the platform.",
+                desc2 = "You can:\n" +
+                        "- View performance in the dashboard\n" +
+                        "- Edit or stop your ad anytime",
+                buttonText = "Proceed to pay.",
+                onClick = { approvedDialog = false }
+            )
+        }
+    }
+
+
 }
 
 

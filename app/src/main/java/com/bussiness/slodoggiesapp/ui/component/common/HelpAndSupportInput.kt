@@ -120,8 +120,10 @@ fun SupportContactFAQTextCard(
         Column(modifier = Modifier) {
             Text(
                 text = heading,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+                fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -132,7 +134,9 @@ fun SupportContactFAQTextCard(
                 withStyle(
                     style = SpanStyle(
                         color = PrimaryColor,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                        fontSize = 14.sp,
                     )
                 ) {
                     append("FAQ section")

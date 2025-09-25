@@ -130,6 +130,5 @@ fun MainNavGraph(
             val type = backStackEntry.arguments?.getString("type") ?: "Follower"
             FollowerScreen(navController,type)
         }
-
     }
 }

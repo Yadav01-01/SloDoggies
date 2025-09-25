@@ -129,7 +129,7 @@ fun AudienceListItem(
 
         OutlinedButton(
             onClick = onPrimaryClick,
-            shape = RoundedCornerShape(10),
+            shape = RoundedCornerShape(5.dp),
             border = BorderStroke(1.dp, PrimaryColor),
             modifier = Modifier.wrapContentWidth().height(30.dp),
             contentPadding = PaddingValues(horizontal = 18.dp, vertical = 0.dp)
@@ -137,19 +137,21 @@ fun AudienceListItem(
             Text(
                 text = if (isFollower) "Follow Back" else "Message",
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 color = PrimaryColor
             )
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(12.dp))
 
         Icon(
             painter = painterResource(R.drawable.bold_cross_ic),
             contentDescription = "Remove",
             modifier = Modifier
                 .wrapContentSize()
-                .clickable { onRemoveClick() },
+                .clickable { onRemoveClick() }
+                .padding(end = 10.dp),
             tint = Color.Unspecified
         )
     }
@@ -405,3 +407,31 @@ fun DialogButton(
         )
     }
 }
+
+@Composable
+fun RemoveButton(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(if (selected) PrimaryColor else Color.White)
+            .clickable(
+                onClick = onClick,
+            )
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center,
+            color = if (selected) Color.White else Color.Black
+        )
+    }
+}
+

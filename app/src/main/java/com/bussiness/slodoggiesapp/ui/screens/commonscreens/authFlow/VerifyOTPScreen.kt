@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -82,7 +84,8 @@ fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: Veri
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopIndicatorBar()
@@ -150,7 +153,7 @@ fun VerifyOTPScreen(navController: NavHostController,type:String,viewModel: Veri
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     color = TextGrey
                 )
-
+                Spacer(Modifier.width(2.dp))
                 Text(
                     text = stringResource(R.string.resend),
                     modifier = Modifier

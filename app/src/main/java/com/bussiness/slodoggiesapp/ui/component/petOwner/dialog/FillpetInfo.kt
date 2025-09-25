@@ -5,12 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,6 +47,8 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.Person
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PersonItem
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetInfoViewModel
 
@@ -94,107 +100,147 @@ fun FillPetInfoDialog(
                 shape = RoundedCornerShape(12.dp),
                 color = Color.White
             ) {
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(14.dp)
-                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp) // optional: adds spacing between items
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.weight(1f)
-                        )
-
-                    }
-
-
-                    Spacer(modifier = Modifier.height(15.dp))
-
-                    HorizontalDivider(thickness = 1.dp, color = TextGrey)
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    // Add Photo
-                    AddPhotoSection(
-                        onPhotoSelected = { uri ->
-
+                    // Title Row
+                    item {
+                        Spacer(Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.weight(1f)
+                            )
                         }
-                    )
+                    }
+
+                    // Divider
+                    item {
+                        HorizontalDivider(thickness = 1.dp, color = TextGrey)
+                    }
+
+                    item {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = PaddingValues(horizontal = 0.dp)
+                        ) {
+                            items(pets) { pet ->
+                                PersonItem(
+                                    person = pet,
+                                    selected = false,
+                                    onClick = { /* handle click */ }
+                                )
+                            }
+                        }
+                    }
 
 
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    CustomOutlinedTextField(
-                        value = uiState.petName,
-                        onValueChange = { viewModel.updatePetName(it) },
-                        placeholder = stringResource(R.string.placeholder_pet_name),
-                        label = stringResource(R.string.label_pet_name),
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    CustomOutlinedTextField(
-                        value = uiState.petBreed,
-                        onValueChange = { viewModel.updatePetBreed(it) },
-                        placeholder = stringResource(R.string.placeholder_pet_breed),
-                        label = stringResource(R.string.label_pet_breed)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    FormHeadingText("Pet Age")
-
-                    Spacer(Modifier.height(8.dp))
-
-                    CustomDropdownBox(
-                        label = uiState.petAge.ifEmpty { "Enter pet age" },
-                        items = viewModel.ageOptions,
-                        selectedItem = uiState.petAge,
-                        onItemSelected = { viewModel.updatePetAge(it) }
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    CustomOutlinedTextField(
-                        value = uiState.petBio,
-                        onValueChange = { viewModel.updatePetBio(it) },
-                        placeholder = stringResource(R.string.placeholder_pet_bio),
-                        label = stringResource(R.string.label_pet_bio)
-                    )
-
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        CommonWhiteButton(
-                            text = if (onProfile) stringResource(R.string.cancel)  else stringResource(
-                                R.string.continue_btn),
-                            onClick = { onCancel() },
-                            modifier = Modifier.weight(1f)
-                        )
-                        CommonBlueButton(
-                            text = stringResource(R.string.add_pet),
-                            fontSize = 16.sp,
-                            onClick = { onAddPet() },
-                            modifier = Modifier.weight(1f)
+                    // Add Photo Section
+                    item {
+                        AddPhotoSection(
+                            onPhotoSelected = { uri ->
+                                // handle photo
+                            }
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    // Pet Name
+                    item {
+                        Spacer(modifier = Modifier.height(5.dp))
+                        CustomOutlinedTextField(
+                            value = uiState.petName,
+                            onValueChange = { viewModel.updatePetName(it) },
+                            placeholder = stringResource(R.string.placeholder_pet_name),
+                            label = stringResource(R.string.label_pet_name),
+                        )
+                    }
+
+                    // Pet Breed
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CustomOutlinedTextField(
+                            value = uiState.petBreed,
+                            onValueChange = { viewModel.updatePetBreed(it) },
+                            placeholder = stringResource(R.string.placeholder_pet_breed),
+                            label = stringResource(R.string.label_pet_breed)
+                        )
+                    }
+
+                    // Pet Age
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        FormHeadingText("Pet Age")
+                        Spacer(Modifier.height(8.dp))
+                        CustomDropdownBox(
+                            label = uiState.petAge.ifEmpty { "Enter pet age" },
+                            items = viewModel.ageOptions,
+                            selectedItem = uiState.petAge,
+                            onItemSelected = { viewModel.updatePetAge(it) }
+                        )
+                    }
+
+                    // Pet Bio
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CustomOutlinedTextField(
+                            value = uiState.petBio,
+                            onValueChange = { viewModel.updatePetBio(it) },
+                            placeholder = stringResource(R.string.placeholder_pet_bio),
+                            label = stringResource(R.string.label_pet_bio)
+                        )
+                    }
+
+                    // Buttons
+                    item {
+                        Spacer(modifier = Modifier.height(32.dp))
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            CommonWhiteButton(
+                                text = if (onProfile) stringResource(R.string.cancel) else stringResource(R.string.continue_btn),
+                                onClick = { onCancel() },
+                                modifier = Modifier.weight(1f)
+                            )
+                            CommonBlueButton(
+                                text = stringResource(R.string.add_pet),
+                                fontSize = 16.sp,
+                                onClick = { onAddPet() },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
                 }
+
             }
         }
     }
 }
+
+val pets = listOf(
+    Person("1", "Jimmy", "https://example.com/jimmy.jpg"),
+    Person("2", "Barry", "https://example.com/barry.jpg"),
+    Person("3", "Bill", "https://example.com/bill.jpg"),
+    Person("4", "Julia", "https://example.com/julia.jpg"),
+    Person("5", "velit", "https://example.com/julia.jpg"),
+    Person("6", "Julia", "https://example.com/julia.jpg"),
+    Person("7", "velit", "https://example.com/julia.jpg"),
+    Person("8", "Bill", "https://example.com/julia.jpg"),
+    Person("9", "Julia", "https://example.com/julia.jpg"),
+)

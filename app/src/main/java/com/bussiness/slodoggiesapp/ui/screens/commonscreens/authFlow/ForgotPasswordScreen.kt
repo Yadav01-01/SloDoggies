@@ -150,6 +150,8 @@ fun ForgotPasswordScreen(
                     append("Remembered your password? ")
                     pop()
 
+                    append("")
+
                     pushStringAnnotation(tag = "LOG_IN", annotation = "log_in")
                     pushStyle(
                         SpanStyle(

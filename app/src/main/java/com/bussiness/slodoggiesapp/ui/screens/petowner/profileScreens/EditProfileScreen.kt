@@ -156,7 +156,7 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
                 .imePadding(),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
@@ -167,6 +167,7 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    Spacer(Modifier.height(20.dp))
                     Box(
                         modifier = Modifier.size(110.dp),
                         contentAlignment = Alignment.Center
@@ -208,8 +209,8 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
                 CustomOutlinedTextField(
                     value = uiState.name,
                     onValueChange = { viewModel.updateName(it) },
-                    placeholder = stringResource(R.string.enter_name),
-                    label = stringResource(R.string.pet_parent_name)
+                    placeholder = stringResource(R.string.Enter_Full_Name),
+                    label = stringResource(R.string.Full_Name)
                 )
             }
 

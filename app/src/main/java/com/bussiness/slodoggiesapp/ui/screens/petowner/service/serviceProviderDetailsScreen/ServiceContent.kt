@@ -89,7 +89,7 @@ fun ServicesContent() {
                 color = Color.Black,
                 fontFamily = FontFamily(Font(R.font.outfit_semibold)),
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
             )
         }
 
@@ -120,7 +120,7 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                vertical = 10.dp,
+                vertical = 5.dp,
                 horizontal = 4.dp
             )
     ) {
@@ -130,7 +130,7 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { expanded = !expanded }
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {

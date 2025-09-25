@@ -46,17 +46,23 @@ fun PetNewPostScreen(navController: NavHostController) {
     Column ( modifier = Modifier.fillMaxSize().background(Color.White)) {
 
         BackHandler {
-            navController.navigate(Routes.HOME_SCREEN) {
-                popUpTo(Routes.HOME_SCREEN) { inclusive = false } // clear stack above home
-                launchSingleTop = true
-                restoreState = true
+            if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
+                navController.navigate(Routes.HOME_SCREEN) {
+                    launchSingleTop = true
+                }
             }
         }
 
-        HeadingTextWithIcon(textHeading = if (selected == "Post" )"New post" else "New Event",
-            onBackClick = { navController.navigate(Routes.HOME_SCREEN){
-            popUpTo(Routes.HOME_SCREEN){ inclusive = true }
-        } })
+        HeadingTextWithIcon(
+            textHeading = if (selected == "Post") "New post" else "New Event",
+            onBackClick = {
+                if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
+                    navController.navigate(Routes.HOME_SCREEN) {
+                        launchSingleTop = true
+                    }
+                }
+            }
+        )
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 

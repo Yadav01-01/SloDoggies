@@ -135,8 +135,8 @@ fun UserDetailsDialog(
                     CustomOutlinedTextField(
                         value = state.name,
                         onValueChange = viewModel::onNameChanged,
-                        placeholder = stringResource(R.string.enter_name),
-                        label = stringResource(R.string.name)
+                        placeholder = stringResource(R.string.merry),
+                        label = stringResource(R.string.pet_name)
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))

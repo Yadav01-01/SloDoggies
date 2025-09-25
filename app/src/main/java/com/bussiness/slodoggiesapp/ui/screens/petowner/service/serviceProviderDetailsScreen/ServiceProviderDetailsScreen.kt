@@ -27,17 +27,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,11 +58,9 @@ import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
-
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.servicesVM.ServiceDetailViewModel
 
@@ -285,8 +278,7 @@ fun ProviderDetails(
 
                 Surface(
                     color = PrimaryColor,
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, Color(0xFFCDCDCD)),
+                    shape = RoundedCornerShape(5.dp),
                     modifier = Modifier.width(121.dp)
                 ) {
                     Text(
@@ -340,7 +332,7 @@ fun EnhancedExpandableInfoSpinner(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { expanded = !expanded }
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -364,7 +356,7 @@ fun EnhancedExpandableInfoSpinner(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                        .padding(start = 12.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     Text(
                         text = "$ Business Description:$businessDescription",
@@ -386,7 +378,7 @@ fun EnhancedExpandableInfoSpinner(
                         Text(
                             text = stringResource(R.string.phone),
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Medium,
                             color = Color.Black,
                             maxLines = 1,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -415,7 +407,7 @@ fun EnhancedExpandableInfoSpinner(
                         Text(
                             text = stringResource(R.string.website),
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Medium,
                             color = Color.Black,
                             maxLines = 1,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -444,7 +436,7 @@ fun EnhancedExpandableInfoSpinner(
                         Text(
                             text = stringResource(R.string.address),
                             fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Medium,
                             color = Color.Black,
                             maxLines = 1,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),

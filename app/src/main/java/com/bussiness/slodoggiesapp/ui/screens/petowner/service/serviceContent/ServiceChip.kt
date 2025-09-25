@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
 fun ServiceTypeChip(
@@ -25,16 +26,16 @@ fun ServiceTypeChip(
 ) {
     Surface(
         color = if (isSelected) Color(0xFF258694) else Color.White,
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Color(0xFFCDCDCD)),
+        shape = RoundedCornerShape(10.dp),
+        border = BorderStroke(1.dp, TextGrey),
         modifier = Modifier
             .wrapContentSize()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(10.dp))
     ) {
         Text(
             text = serviceType,
-            fontSize = 12.sp,
-            color = if (isSelected) Color.White else Color(0xFF8A8894),
+            fontSize = 14.sp,
+            color = if (isSelected) Color.White else Color(0xFF9C9C9C),
             fontFamily = FontFamily(Font(R.font.outfit_medium)),
             modifier = Modifier
                 .padding(horizontal = 16.dp, vertical = 8.dp)
