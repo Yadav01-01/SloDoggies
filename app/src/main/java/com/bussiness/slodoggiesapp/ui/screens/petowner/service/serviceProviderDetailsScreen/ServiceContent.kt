@@ -225,17 +225,14 @@ fun ImageGalleryScreen() {
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
 
     val images = listOf(
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-        R.drawable.dummy_image5,
-
+        R.drawable.dog1,
+        R.drawable.dog3,
+        R.drawable.dog2,
+        R.drawable.dog1,
+        R.drawable.dog3,
+        R.drawable.dog3,
+        R.drawable.dog2,
+        R.drawable.dog3,
         )
 
     val maxVisibleImages = 6

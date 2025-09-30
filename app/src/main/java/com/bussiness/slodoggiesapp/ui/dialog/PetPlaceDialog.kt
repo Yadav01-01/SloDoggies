@@ -55,7 +55,7 @@ fun PetPlaceDialog(onDismiss: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 0.dp),
+                .padding(horizontal = 10.dp),
             contentAlignment = Alignment.BottomCenter // Aligns content at bottom
         ) {
             Column(

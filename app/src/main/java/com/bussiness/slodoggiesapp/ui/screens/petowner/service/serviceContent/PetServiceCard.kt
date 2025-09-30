@@ -106,12 +106,34 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = service.rating.toString(),
+                    text = service.rating,
                     fontSize = 12.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     fontWeight = FontWeight.Medium,
                     color = Color.Black
                 )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.location_ic_icon),
+                    contentDescription = "location",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.wrapContentSize()
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${service.miles} away",
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
+
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -177,5 +199,6 @@ data class PetService(
     val providerName: String,
     val rating: String,
     val serviceType: String,
+    val miles : String,
     val iconRes: Int
 )

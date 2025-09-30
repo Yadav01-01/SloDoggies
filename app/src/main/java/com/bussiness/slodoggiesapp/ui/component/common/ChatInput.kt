@@ -24,10 +24,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -51,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.ChatMessage
+import com.bussiness.slodoggiesapp.model.common.ChatWindow
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
 
@@ -330,6 +336,81 @@ fun BottomMessageBar(
                     modifier = Modifier.size(20.dp)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun FeedbackBubble(message: ChatWindow.Feedback) {
+    var feedbackText by remember { mutableStateOf(message.feedbackText) }
+    var ratings by remember { mutableStateOf(message.userRatings.toMutableList()) }
+
+    // Bubble background
+    val bubbleColor = PrimaryColor // or any darker color to make white text readable
+    val bubbleShape = RoundedCornerShape(16.dp)
+
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .fillMaxWidth()
+            .clip(bubbleShape)
+            .background(bubbleColor)
+            .padding(12.dp) // inner padding
+    ) {
+        Text(
+            text = "⭐ Rate Your Experience with Business Provider",
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMedium
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        message.serviceFeedback.forEachIndexed { index, service ->
+            Text(
+                text = service,
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Row {
+                for (i in 1..5) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = null,
+                        tint = if (ratings[index] >= i) Color.Yellow else Color.Gray,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { ratings[index] = i }
+                    )
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+
+        OutlinedTextField(
+            value = feedbackText,
+            onValueChange = { feedbackText = it },
+            placeholder = { Text("Write something here...", color = Color.White.copy(alpha = 0.7f)) },
+            colors = OutlinedTextFieldDefaults.colors(
+//                focusedBorderColor = Color.White,
+//                unfocusedBorderColor = Color.White,
+//                textColor = Color.White,
+//                cursorColor = Color.White,
+//                placeholderColor = Color.White.copy(alpha = 0.7f)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        Button(
+            onClick = {
+                println("Feedback submitted: $feedbackText, ratings: $ratings")
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+        ) {
+            Text("Submit Feedback", color = Color.White)
         }
     }
 }

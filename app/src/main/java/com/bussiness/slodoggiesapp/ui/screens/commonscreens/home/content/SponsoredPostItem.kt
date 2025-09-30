@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -267,10 +269,12 @@ fun IconTextButton(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.clickable(
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() }
-        ) { onClick() }
+        modifier = modifier
+            .width(IntrinsicSize.Min) // keep consistent width for the pair
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() }
     ) {
         Icon(
             painter = painterResource(id = iconRes),
@@ -285,10 +289,12 @@ fun IconTextButton(
             fontFamily = FontFamily(Font(R.font.outfit_regular)),
             fontWeight = FontWeight.Normal,
             color = tint,
-            modifier = Modifier.widthIn(min = 24.dp) //  reserve space
+            modifier = Modifier.width(36.dp), // fixed width so "9", "99", "999" don't shift
+            textAlign = TextAlign.Start
         )
     }
 }
+
 
 
 

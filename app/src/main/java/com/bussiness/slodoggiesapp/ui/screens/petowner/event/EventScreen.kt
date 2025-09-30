@@ -37,7 +37,7 @@ fun EventScreen(navController: NavHostController) {
             id = "1",
             imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+1",
             title = "Puppy Party",
-            description = "Bring your puppy to play",
+            description = "Bring your puppy in a party ",
             dateTime = "05- 25-2025 4:00 PM",
             duration = "45 Mins.",
             location = "Los Angeles County",
@@ -58,7 +58,7 @@ fun EventScreen(navController: NavHostController) {
             id = "3",
             imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+3",
             title = "Training Session",
-            description = "Learn tricks with your pup",
+            description = "Learn tricks with",
             dateTime = "05- 25-2025 4:00 PM",
             duration = "90 Mins.",
             location = "Orange County"

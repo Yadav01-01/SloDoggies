@@ -102,6 +102,7 @@ fun ServiceProviderDetailsScreen(navController: NavHostController,viewModel: Ser
                 businessDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad ",
                 phoneNumber = "(805) 123 4567",
                 website = "pawfectpets.com",
+                miles = "4",
                 address = "123 Pet Lane, San Luis Obispo, CA",
                 onClickInquire = {navController.navigate(Routes.CHAT_SCREEN)}
             )
@@ -129,6 +130,7 @@ fun ProviderDetails(
     personImage : String,
     providerName : String,
     userVerified : Boolean,
+    miles : String,
     businessDescription: String,
     phoneNumber: String,
     website: String,
@@ -226,8 +228,32 @@ fun ProviderDetails(
                             color = Color.Black
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.location_ic_icon),
+                            contentDescription = "location",
+                            tint = Color.Unspecified,
+                            modifier = Modifier.wrapContentSize()
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "$miles miles away",
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Black
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
                 }
-                Spacer(modifier = Modifier.height(4.dp))
+
 
                 Row(
                     modifier = Modifier
@@ -265,7 +291,7 @@ fun ProviderDetails(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 10.dp), // same vertical spacing for both
+                    .padding(vertical = 0.dp), // same vertical spacing for both
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(

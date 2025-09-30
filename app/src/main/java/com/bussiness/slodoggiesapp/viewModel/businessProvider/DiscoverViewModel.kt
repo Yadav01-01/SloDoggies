@@ -35,9 +35,9 @@ class DiscoverViewModel @Inject constructor() : ViewModel() {
     // In real project -> Replace with Repository call (Flow from API)
     private val _searchResults = MutableStateFlow(
         listOf(
-            SearchResult("Justin Bator", "Pet Dad", R.drawable.sample_user),
-            SearchResult("Luna Smith", "Pet Groomer", R.drawable.sample_user),
-            SearchResult("Buddy John", "Trainer", R.drawable.sample_user)
+            SearchResult("Jimmi", "Pet Dad", R.drawable.dog1),
+            SearchResult("Barry", "Pet Groomer", R.drawable.dog2),
+            SearchResult("Jully", "Trainer", R.drawable.dog_ic)
         )
     )
     val searchResults: StateFlow<List<SearchResult>> = _searchResults

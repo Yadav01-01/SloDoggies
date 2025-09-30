@@ -3,6 +3,7 @@ package com.bussiness.slodoggiesapp.ui.component.common
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,7 +56,10 @@ fun MessageItem(message: Message, onItemClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 10.dp).clickable { onItemClick() },
+            .padding(vertical = 8.dp, horizontal = 10.dp).clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onItemClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
@@ -90,7 +95,7 @@ fun MessageItem(message: Message, onItemClick: () -> Unit) {
                     style = MaterialTheme.typography.bodySmall,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     fontSize = 10.sp,
-                    color = PrimaryColor,
+                    color = TextGrey,
                     maxLines = 1
                 )
             }
@@ -105,6 +110,7 @@ fun MessageItem(message: Message, onItemClick: () -> Unit) {
             )
         }
     }
+    HorizontalDivider(thickness = 1.dp, color = Color(0xFFF4F4F4))
 }
 
 
@@ -232,10 +238,9 @@ fun OnMenuClick(
     DropdownMenu(
         expanded = menuExpanded,
         onDismissRequest = onDismiss,
-        modifier = Modifier
-            .width(180.dp)
-            .background(Color.White, RoundedCornerShape(10.dp))
-            .clip(RoundedCornerShape(10.dp))
+        modifier = Modifier.width(180.dp),
+        shape = RoundedCornerShape(10.dp), //  this controls the popup shape
+        containerColor = Color.White
     ) {
         MenuItem(
             iconRes = R.drawable.delete_mi,
@@ -266,15 +271,15 @@ fun OnMenuClick(
 
         MenuItem(
             iconRes = R.drawable.req_fb,
-            label = if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER)"Req. Feedback"
+            label = if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) "Req. Feedback"
             else "Give Feedback",
             onClick = {
                 onDismiss()
                 onFeedbackClick()
             }
         )
-
     }
+
 }
 
 @Composable

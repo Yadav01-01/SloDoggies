@@ -54,7 +54,7 @@ fun LocationPermissionScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            RippleAnimation(icon = R.drawable.location_ic)
+            RippleAnimation(icon = R.drawable.location_iccv)
 
             Spacer(modifier = Modifier.height(32.dp))
 

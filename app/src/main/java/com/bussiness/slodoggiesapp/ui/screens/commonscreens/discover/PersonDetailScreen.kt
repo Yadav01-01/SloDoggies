@@ -272,6 +272,7 @@ fun PersonDetailScreen(
                     GalleryItemCard(item = uiState.gallery[index], onClickItem = { navController.navigate(Routes.USER_POST_SCREEN)})
                 }
             }
+            Spacer(Modifier.height(10.dp))
         }
     }
 }

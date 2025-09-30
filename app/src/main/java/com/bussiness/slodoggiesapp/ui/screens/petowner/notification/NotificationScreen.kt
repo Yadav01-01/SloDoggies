@@ -84,7 +84,7 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 action = "liked your post.",
                 timeAgo = "3h ago",
                 profileImageRes = R.drawable.dummy_person_image1,
-                postImageRes = android.R.drawable.ic_menu_gallery,
+                postImageRes = R.drawable.dummy_person_image3,
                 type = "post"
             ),
             NotificationItem(
@@ -92,7 +92,7 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 username = "username",
                 action = "started following you.",
                 timeAgo = "5h ago",
-                profileImageRes = android.R.drawable.ic_menu_camera,
+                profileImageRes = R.drawable.dummy_person_image3,
                 isFollowAction = true,
                 type = "post"
             ),
@@ -119,8 +119,8 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 username = "username",
                 action = "liked your post.",
                 timeAgo = "1d ago",
-                profileImageRes = android.R.drawable.ic_menu_camera,
-                postImageRes = android.R.drawable.ic_menu_gallery,
+                profileImageRes = R.drawable.dummy_person_image3,
+                postImageRes = R.drawable.dummy_person_image3,
                 type = "post"
             ),
             NotificationItem(
@@ -128,7 +128,7 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 username = "username",
                 action = "liked your post.",
                 timeAgo = "2d ago",
-                profileImageRes = android.R.drawable.ic_menu_camera,
+                profileImageRes = R.drawable.dummy_person_image3,
                 postImageRes = R.drawable.dummy_person_image3,
                 type = "post"
             )

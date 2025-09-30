@@ -16,10 +16,10 @@ data class PersonDetailUiState(
     val age: String = "6 Years Old" ?: "Age",
     val bio: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed." ?: "Bio",
     val profileImages: List<Int> = listOf(
-        R.drawable.sample_user,
-        R.drawable.sample_user,
-        R.drawable.sample_user,
-        R.drawable.sample_user
+        R.drawable.dog_ic,
+        R.drawable.dog_ic,
+        R.drawable.dog_ic,
+        R.drawable.dog_ic
     ),
     val selectedImageIndex: Int = 0,
     val posts: String = "20",

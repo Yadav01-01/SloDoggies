@@ -8,17 +8,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -48,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.positionInWindow
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -55,6 +55,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -81,34 +82,41 @@ fun CommentsDialog(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false )
     ) {
-        Box ( modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars) // Account for system bars
-            .padding(top = 64.dp), // Optional top padding to not stick to very top
-            contentAlignment = Alignment.BottomCenter){
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding(), // pushes content above keyboard
+            contentAlignment = Alignment.BottomCenter
+        ) {
             Column(
-                modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.Bottom,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
             ) {
-                // Close button at top-right
+                // Close button above the surface
                 Box(
-                    modifier = Modifier.fillMaxWidth()
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_cross_iconx),
-                        contentDescription = "Close",
+                        contentDescription = null,
                         modifier = Modifier
-                            .clickable(onClick = onDismiss)
                             .align(Alignment.TopEnd)
-                            .size(50.dp)
                             .clip(CircleShape)
-                            .padding(8.dp)
+                            .clickable { onDismiss() }
                     )
                 }
+
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.7f),
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp),
+                        .heightIn(
+                            min = Dp.Unspecified,              // let content shrink
+                            max = LocalConfiguration.current.screenHeightDp.dp * 0.7f // cap at 70%
+                        ),
+                    shape = RoundedCornerShape(16.dp),
                     color = Color.White
                 ) {
                     Column(
@@ -148,7 +156,7 @@ fun CommentsDialog(
                                     onReply = { replyingTo = comment.userName },
                                     onEditClick = {},
                                     onDeleteClick = {},
-                                    )
+                                )
 
 
                                 // Replies
@@ -234,11 +242,12 @@ fun CommentsDialog(
 
                     }
                 }
-
             }
         }
     }
 }
+
+
 
 @Composable
 fun CommentInputBox(

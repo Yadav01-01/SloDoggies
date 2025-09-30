@@ -645,7 +645,7 @@ fun SocialEventCard( event: EventPost,onJoinCommunity: () -> Unit,onReportClick:
             Spacer(modifier = Modifier.height(4.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(painter = painterResource(R.drawable.location_ic), contentDescription = null, tint = Color.Unspecified, modifier = Modifier.wrapContentSize())
+                Icon(painter = painterResource(R.drawable.location_ic_icon), contentDescription = null, tint = Color.Unspecified, modifier = Modifier.wrapContentSize())
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(event.location, fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.outfit_medium)), color = Color.Black)
             }

@@ -2,17 +2,24 @@ package com.bussiness.slodoggiesapp.ui.component.petOwner.dialog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +35,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -37,11 +46,14 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScrollableDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.common.BioField
 import com.bussiness.slodoggiesapp.ui.component.common.EmailField
 import com.bussiness.slodoggiesapp.ui.component.common.PhoneNumber
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
+import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.viewModel.petOwner.UserDetailsViewModel
 
@@ -77,116 +89,126 @@ fun UserDetailsDialog(
             decorFitsSystemWindows = false
         )
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 10.dp)
-
+                .fillMaxSize()
+                .imePadding(), // pushes content above keyboard
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Spacer(Modifier.height(45.dp))
-
-            // Close button
-            Box(Modifier.fillMaxWidth()) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_cross_iconx),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .clip(CircleShape)
-                        .clickable { onDismiss() }
-                )
-            }
-
-            Surface(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 5.dp),
-                shape = RoundedCornerShape(12.dp),
-                color = Color.White
+                    .padding(horizontal = 10.dp)
             ) {
-                Column(
+                // Close button above the surface
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_cross_iconx),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .clip(CircleShape)
+                            .clickable { onDismiss() }
+                    )
+                }
+
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp)
-                        .verticalScroll(rememberScrollState())
+                        .padding(top = 5.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color.White
                 ) {
-                    // Header
-                    Text(
-                        text = stringResource(R.string.add_your_details),
-                        fontSize = 18.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        color = Color.Black
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                            .imePadding()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        // Header
+                        Text(
+                            text = stringResource(R.string.add_your_details),
+                            fontSize = 18.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            color = Color.Black
+                        )
 
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Divider(thickness = 1.dp, color = TextGrey)
-                    Spacer(modifier = Modifier.height(12.dp))
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Divider(thickness = 1.dp, color = TextGrey)
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                    // Add Photo Section
-                    AddPhotoSection(
-                        onPhotoSelected = { uri ->
-                            viewModel.setSelectedPhoto(uri) // send Uri to ViewModel
-                        }
-                    )
+                        // Add Photo Section
+                        AddPhotoSection(
+                            onPhotoSelected = { uri ->
+                                viewModel.setSelectedPhoto(uri) // send Uri to ViewModel
+                            }
+                        )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
 
-                    // Name Field
-                    CustomOutlinedTextField(
-                        value = state.name,
-                        onValueChange = viewModel::onNameChanged,
-                        placeholder = stringResource(R.string.merry),
-                        label = stringResource(R.string.pet_name)
-                    )
+                        // Name Field
+                        CustomOutlinedTextField(
+                            value = state.name,
+                            onValueChange = viewModel::onNameChanged,
+                            placeholder = stringResource(R.string.merry),
+                            label = stringResource(R.string.pet_name)
+                        )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    // Phone Field
-                    FormHeadingText(stringResource(R.string.mobile_number))
+                        // Phone Field
+                        FormHeadingText(stringResource(R.string.mobile_number))
 
-                    PhoneNumber(
-                        phone = state.phoneNumber,
-                        onPhoneChange = viewModel::onPhoneChanged,
-                        onVerify = { onVerify( "dialogPhone",state.phoneNumber) },
-                        isVerified = state.isPhoneVerified
-                    )
+                        PhoneNumber(
+                            phone = state.phoneNumber,
+                            onPhoneChange = viewModel::onPhoneChanged,
+                            onVerify = { onVerify( "dialogPhone",state.phoneNumber) },
+                            isVerified = state.isPhoneVerified
+                        )
 
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    FormHeadingText(stringResource(R.string.email))
+                        FormHeadingText(stringResource(R.string.email))
 
-                    Spacer(Modifier.height(5.dp))
+                        Spacer(Modifier.height(5.dp))
 
-                    // Email Field with Verify
-                    EmailField(
-                        email = state.email,
-                        isVerified = state.isEmailVerified,
-                        onEmailChange = viewModel::onEmailChanged,
-                        onVerify = { onVerify("dialogEmail",state.email) }
-                    )
+                        // Email Field with Verify
+                        EmailField(
+                            email = state.email,
+                            isVerified = state.isEmailVerified,
+                            onEmailChange = viewModel::onEmailChanged,
+                            onVerify = { onVerify("dialogEmail",state.email) }
+                        )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    FormHeadingText(stringResource(R.string.bio))
+                        FormHeadingText(stringResource(R.string.bio))
 
-                    Spacer(Modifier.height(5.dp))
-                    // Bio Field
-                    BioField(
-                        value = state.bio,
-                        onValueChange = viewModel::onBioChanged
-                    )
+                        Spacer(Modifier.height(5.dp))
+                        // Bio Field
+                        BioField(
+                            value = state.bio,
+                            onValueChange = viewModel::onBioChanged
+                        )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
 
-                    // Bottom Buttons
-                    CommonBlueButton(
-                        text = stringResource(R.string.submit),
-                        onClick = { viewModel.submitDetails(context, onSuccess = { onSubmit()}) },
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                        // Bottom Buttons
+                        CommonBlueButton(
+                            text = stringResource(R.string.submit),
+                            onClick = { viewModel.submitDetails(context, onSuccess = { onSubmit()}) },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
     }
 }
+

@@ -240,7 +240,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> 
             // Location
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp)) {
                 Icon(
-                    painter = painterResource(R.drawable.location_ic),
+                    painter = painterResource(R.drawable.location_ic_icon),
                     contentDescription = null,
                     tint = Color.Unspecified
                 )

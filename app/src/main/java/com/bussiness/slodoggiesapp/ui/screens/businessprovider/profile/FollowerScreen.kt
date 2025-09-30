@@ -107,8 +107,9 @@ fun FollowerScreen(navController: NavHostController, type: String) {
                 AudienceListItem(
                     data = data,
                     isFollower = selectedOption == "Follower",
-                    onPrimaryClick = { /* Handle follow/message click */ },
-                    onRemoveClick = { removeDialog = true }
+                    onPrimaryClick = { navController.navigate(Routes.CHAT_SCREEN) },
+                    onRemoveClick = { removeDialog = true },
+                    onFollowBackClick = { }
                 )
             }
 

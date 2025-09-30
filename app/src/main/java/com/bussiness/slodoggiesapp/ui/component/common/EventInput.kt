@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -116,20 +117,25 @@ fun EventCard(
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
                         fontSize = 14.sp,
                         color = TextGrey,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.widthIn(max = 150.dp)
                     )
 
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            painter = painterResource(id = R.drawable.time_ic),
-                            contentDescription = "Duration",
+                            painter = painterResource(id = R.drawable.cal_ic),
+                            contentDescription = "Calendar",
                             tint = Color.Unspecified,
                             modifier = Modifier.wrapContentSize()
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = event.duration, style = MaterialTheme.typography.bodySmall)
+                        Text(text = event.dateTime,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontSize = 14.sp,
+                            color = Color.Black
+                        )
                     }
                 }
 
@@ -137,7 +143,7 @@ fun EventCard(
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        painter = painterResource(R.drawable.location_ic),
+                        painter = painterResource(R.drawable.location_ic_icon),
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = Modifier.wrapContentSize()

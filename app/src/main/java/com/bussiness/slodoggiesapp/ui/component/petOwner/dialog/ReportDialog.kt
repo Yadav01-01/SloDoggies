@@ -8,23 +8,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Surface
 import androidx.compose.material3.OutlinedTextField
@@ -39,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -72,46 +65,133 @@ fun ReportDialog(
 ) {
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false
+        )
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.systemBars)
-                .padding(top = 64.dp),
+                .imePadding(), // pushes content above keyboard
             contentAlignment = Alignment.BottomCenter
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().imePadding(),
-                verticalArrangement = Arrangement.Bottom
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp)
             ) {
-                CloseButton(onDismiss)
+                // Close button above the surface
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_cross_iconx),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .clip(CircleShape)
+                            .clickable { onDismiss() }
+                    )
+                }
 
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight(0.785f),
+                        .wrapContentHeight(),
                     shape = RoundedCornerShape(16.dp),
                     color = Color.White
                 ) {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        DialogHeader(title)
-                        Divider(color = PrimaryColor, thickness = 1.dp)
-                        DialogContent(
-                            reasons = reasons,
-                            selectedReason = selectedReason,
-                            onReasonSelected = onReasonSelected,
-                            message = message,
-                            onMessageChange = onMessageChange,
-                            onCancel = onCancel,
-                            onSendReport = onSendReport
-                        )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        item { DialogHeader(title) }
+                        item { Divider(color = PrimaryColor, thickness = 1.dp) }
+
+                        item {
+                            Text(
+                                text = stringResource(R.string.Why_are_you_reporting_this_comment),
+                                fontSize = 14.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                fontWeight = FontWeight.Medium,
+                                color = Color.Black
+                            )
+                        }
+
+                        items(reasons) { reason ->
+                            ReportReasonOption(
+                                text = reason,
+                                isSelected = selectedReason == reason,
+                                onClick = { onReasonSelected(reason) }
+                            )
+                        }
+
+                        item {
+                            Text(
+                                text = stringResource(R.string.message_optional),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = Color.Black
+                            )
+                            OutlinedTextField(
+                                value = message,
+                                onValueChange = { onMessageChange(it) },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(95.dp),
+                                placeholder = {
+                                    Text(
+                                        text = stringResource(R.string.Write_something_here),
+                                        color = TextGrey,
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                        fontSize = 15.sp,
+                                        lineHeight = 15.sp
+                                    )
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = TextGrey,
+                                    unfocusedBorderColor = TextGrey
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                singleLine = false,
+                                maxLines = 4
+                            )
+                        }
+
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            ) {
+                                CommonWhiteButton(
+                                    text = stringResource(R.string.cancel),
+                                    onClick = onCancel,
+                                    modifier = Modifier.weight(1f),
+                                )
+                                CommonBlueButton(
+                                    text = stringResource(R.string.send_report),
+                                    fontSize = 16.sp,
+                                    onClick = onSendReport,
+                                    modifier = Modifier.weight(1f),
+                                )
+                            }
+                        }
                     }
                 }
             }
         }
     }
 }
+
+
+
 
 @Composable
 private fun CloseButton(onDismiss: () -> Unit) {
@@ -133,7 +213,7 @@ private fun DialogHeader(title: String = "Report Comment") {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(bottom = 5.dp)
     ) {
         Text(
             text = title,
@@ -166,14 +246,14 @@ private fun DialogContent(
             fontFamily = FontFamily(Font(R.font.outfit_medium)),
             fontWeight = FontWeight.Medium,
             color = Color.Black,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 8.dp)
         )
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f), // Makes list scrollable without pushing buttons
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             items(reasons) { reason ->
                 ReportReasonOption(
@@ -184,7 +264,7 @@ private fun DialogContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = stringResource(R.string.message_optional),
@@ -253,85 +333,87 @@ fun ReportReasonOption(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
+            .clip(RoundedCornerShape(5.dp)) // added clipping
             .background(
                 color = if (isSelected) PrimaryColor else Color.Transparent,
             )
-            .padding(horizontal = 0.dp, vertical = 5.dp)
+            .padding(horizontal = 4.dp, vertical = 0.dp)
     )
+
 }
 
-@Composable
-fun ReportBusinessChat(
-    onDismiss: () -> Unit,
-    title: String,
-    reasons: List<String>,
-    selectedReason: String,
-    message: String,
-    onReasonSelected: (String) -> Unit,
-    onMessageChange: (String) -> Unit,
-    onCancel: () -> Unit,
-    onSendReport: () -> Unit
-) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.systemBars)
-                .padding(top = 64.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                CloseButton(onDismiss)
-
-                Surface(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight() //  take only needed height
-                        .padding(bottom = 16.dp)
-                        .then(
-                            Modifier.heightIn(
-                                max = (LocalConfiguration.current.screenHeightDp.dp * 0.85f) // ✅ cap at 85% of screen height
-                            )
-                        ),
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color.White
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        DialogHeader(title)
-                        Divider(color = PrimaryColor, thickness = 1.dp)
-
-                        // If content grows too tall, make it scrollable
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .verticalScroll(rememberScrollState())
-                                .padding(bottom = 16.dp)
-                        ) {
-                            BusinessDialogContent(
-                                reasons = reasons,
-                                selectedReason = selectedReason,
-                                onReasonSelected = onReasonSelected,
-                                message = message,
-                                onMessageChange = onMessageChange,
-                                onCancel = onCancel,
-                                onSendReport = onSendReport
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
+//@Composable
+//fun ReportBusinessChat(
+//    onDismiss: () -> Unit,
+//    title: String,
+//    reasons: List<String>,
+//    selectedReason: String,
+//    message: String,
+//    onReasonSelected: (String) -> Unit,
+//    onMessageChange: (String) -> Unit,
+//    onCancel: () -> Unit,
+//    onSendReport: () -> Unit
+//) {
+//    Dialog(
+//        onDismissRequest = onDismiss,
+//        properties = DialogProperties(
+//            usePlatformDefaultWidth = false,
+//            decorFitsSystemWindows = false
+//        )
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .windowInsetsPadding(WindowInsets.systemBars)
+//                .padding(top = 64.dp),
+//            contentAlignment = Alignment.BottomCenter
+//        ) {
+//            Column(
+//                modifier = Modifier.fillMaxWidth(),
+//                verticalArrangement = Arrangement.Bottom
+//            ) {
+//                CloseButton(onDismiss)
+//
+//                Surface(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .wrapContentHeight() //  take only needed height
+//                        .padding(bottom = 16.dp)
+//                        .then(
+//                            Modifier.heightIn(
+//                                max = (LocalConfiguration.current.screenHeightDp.dp * 0.85f) // ✅ cap at 85% of screen height
+//                            )
+//                        ),
+//                    shape = RoundedCornerShape(16.dp),
+//                    color = Color.White
+//                ) {
+//                    Column(modifier = Modifier.fillMaxWidth()) {
+//                        DialogHeader(title)
+//                        Divider(color = PrimaryColor, thickness = 1.dp)
+//
+//                        // If content grows too tall, make it scrollable
+//                        Column(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .verticalScroll(rememberScrollState())
+//                                .padding(bottom = 16.dp)
+//                        ) {
+//                            BusinessDialogContent(
+//                                reasons = reasons,
+//                                selectedReason = selectedReason,
+//                                onReasonSelected = onReasonSelected,
+//                                message = message,
+//                                onMessageChange = onMessageChange,
+//                                onCancel = onCancel,
+//                                onSendReport = onSendReport
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
 
 @Composable

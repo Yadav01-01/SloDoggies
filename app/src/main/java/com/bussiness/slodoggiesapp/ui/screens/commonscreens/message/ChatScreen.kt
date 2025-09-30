@@ -29,7 +29,6 @@ import com.bussiness.slodoggiesapp.model.businessProvider.ChatHeaderData
 import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.ui.component.common.BottomMessageBar
 import com.bussiness.slodoggiesapp.ui.component.common.ChatHeaderItem
-import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportBusinessChat
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
 import com.bussiness.slodoggiesapp.ui.dialog.BottomToast
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
@@ -111,41 +110,22 @@ fun ChatScreen(
 
         // Dialogs remain outside main chat area
         if (showReportDialog) {
-            if (sessionManager.getUserType() == UserType.PET_OWNER){
-                ReportDialog(
-                    onDismiss = { showReportDialog = false },
-                    title = stringResource(R.string.report),
-                    reasons = listOf(
-                        "Bullying or unwanted contact",
-                        "Violence, hate or exploitation",
-                        "False Information",
-                        "Scam, fraud or spam"
-                    ),
-                    selectedReason = selectedReason,
-                    message = message,
-                    onReasonSelected = { reason -> selectedReason = reason },
-                    onMessageChange = { message = it },
-                    onCancel = { showReportDialog = false },
-                    onSendReport = { showReportDialog = false }
-                )
-            }else{
-                ReportBusinessChat(
-                    onDismiss = { showReportDialog = false },
-                    title = stringResource(R.string.report),
-                    reasons = listOf(
-                        "Bullying or unwanted contact",
-                        "Violence, hate or exploitation",
-                        "False Information",
-                        "Scam, fraud or spam"),
-                    selectedReason = selectedReason,
-                    message = message,
-                    onReasonSelected = { reason -> selectedReason = reason },
-                    onMessageChange = { message = it },
-                    onCancel = { showReportDialog = false },
-                    onSendReport = { showReportDialog = false }
-                )
-            }
-
+            ReportDialog(
+                onDismiss = { showReportDialog = false },
+                title = stringResource(R.string.report),
+                reasons = listOf(
+                    "Bullying or unwanted contact",
+                    "Violence, hate or exploitation",
+                    "False Information",
+                    "Scam, fraud or spam"
+                ),
+                selectedReason = selectedReason,
+                message = message,
+                onReasonSelected = { reason -> selectedReason = reason },
+                onMessageChange = { message = it },
+                onCancel = { showReportDialog = false },
+                onSendReport = { showReportDialog = false }
+            )
         }
 
         if (showToast) {
