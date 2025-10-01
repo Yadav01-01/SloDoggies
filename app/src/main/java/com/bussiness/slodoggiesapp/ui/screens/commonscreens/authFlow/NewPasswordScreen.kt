@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,13 +52,12 @@ fun NewPasswordScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    var isNavigating by remember { mutableStateOf(false) }
 
     BackHandler {
-        navController.navigate(Routes.LOGIN_SCREEN) {
-            launchSingleTop = true
-            popUpTo(Routes.LOGIN_SCREEN) {
-                inclusive = true
-            }
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
         }
     }
 
@@ -65,11 +67,9 @@ fun NewPasswordScreen(
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
-        AuthBackButton(onClick = {navController.navigate(Routes.LOGIN_SCREEN){
-            launchSingleTop = true
-            popUpTo(Routes.LOGIN_SCREEN) {
-                inclusive = true
-            }
+        AuthBackButton(onClick = { if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
         } }, modifier = Modifier.align(Alignment.TopStart))
 
         Column(

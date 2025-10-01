@@ -278,10 +278,9 @@ fun ActiveScreen(clicks: Int = 1200, impressions: Int = 1300) {
                 "Real-time Tap to Call and Message options."
             )
 
-            rules.forEach {
-                Text("• $it", fontSize = 14.sp, color = Color.Black)
-                Spacer(modifier = Modifier.height(4.dp))
-            }
+            BulletList(rules = rules)
+
         }
+
     }
 }

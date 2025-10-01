@@ -49,6 +49,7 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
+import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
@@ -300,6 +301,7 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
     var isLiked by remember { mutableStateOf(false) }
     var isBookmarked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
+    var deleteComment by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Row(
         modifier = Modifier
@@ -409,6 +411,16 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
         CommentsDialog(
             comments = sampleComments,
             onDismiss = { showCommentsDialog = false }
+            , onDeleteClick = { deleteComment = true }
+        )
+    }
+    if (deleteComment){
+        DeleteChatDialog(
+            onDismiss = { deleteComment = false },
+            onClickRemove = { deleteComment = false  },
+            iconResId = R.drawable.delete_mi,
+            text = "Delete Comment",
+            description = stringResource(R.string.delete_Comment)
         )
     }
 }

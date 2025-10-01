@@ -295,7 +295,7 @@ fun EditBusinessScreen(
             item {
                 SubmitButton(
                     modifier = Modifier.fillMaxWidth(),
-                    buttonText = stringResource(R.string.submit),
+                    buttonText = stringResource(R.string.Save_Changes),
                     onClickButton = { navController.navigate(Routes.SERVICES_SCREEN) },
                     buttonTextSize = 15
                 )

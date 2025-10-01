@@ -19,20 +19,24 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingTextWithSkip
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
 import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.ui.dialog.AddedServiceDialog
+import com.bussiness.slodoggiesapp.ui.dialog.SubscriptionWarningDialog
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.AddServiceViewModel
 
 @Composable
@@ -46,14 +50,16 @@ fun AddServiceScreen(
     val amount by viewModel.amount.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
     var addedServiceDialog by remember { mutableStateOf(false) }
+    var subscribeDisclaimer by remember { mutableStateOf(true) }
 
     Column(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
 
-        TopHeadingText(textHeading = "Add Services", onBackClick = {
+        TopHeadingTextWithSkip(textHeading = "Add Services", onBackClick = {
             if (!isNavigating) {
                 isNavigating = true
                 navController.popBackStack() }
-        })
+        },
+            onSkipClick = { navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) } )
 
         TopStepProgressBar(currentStep = 2, totalSteps = 3, modifier = Modifier.fillMaxWidth())
 
@@ -62,10 +68,8 @@ fun AddServiceScreen(
                 .fillMaxSize()
                 .padding(16.dp)
                 .background(Color.White),
-            verticalArrangement = Arrangement.spacedBy(15.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Spacer at the top
-            item { Spacer(modifier = Modifier.height(10.dp)) }
 
             // Service Title
             item { FormHeadingText("Service Title") }
@@ -125,8 +129,23 @@ fun AddServiceScreen(
     if (addedServiceDialog){
         AddedServiceDialog(
             onDismiss = { addedServiceDialog = false },
-            onAddAnotherClick = { },
+            onAddAnotherClick = {
+                viewModel.updateTitle("")
+                viewModel.updateDescription("")
+                viewModel.updateAmount("")
+                addedServiceDialog = false
+                                },
             onGoToHomeClick = {   navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) }
+        )
+    }
+    if (subscribeDisclaimer){
+        SubscriptionWarningDialog(
+            onDismiss = { subscribeDisclaimer = false },
+            icon = R.drawable.caution_ic,
+            heading = "Subscription Alert!",
+            desc1 = stringResource(R.string.subscription_desc),
+            buttonText = "Proceed",
+            onClick = { subscribeDisclaimer = false }
         )
     }
 

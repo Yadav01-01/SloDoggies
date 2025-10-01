@@ -2,8 +2,10 @@ package com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
@@ -81,6 +83,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             item {
                 FormHeadingText(stringResource(R.string.Upload_business_logo))
+                Spacer(Modifier.height(5.dp))
                 MediaUploadSection(maxImages = 10) { uri ->
                     // viewModel.addPetImage(uri)
                 }
@@ -92,20 +95,11 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
             }
 
             item {
-                FormHeadingText(stringResource(R.string.location))
+                FormHeadingText(stringResource(R.string.Business_address))
                 InputField(
                     input = location,
                     onValueChange = { viewModel.updateLocation(it) },
-                    placeholder = stringResource(R.string.Enter_Location)
-                )
-            }
-
-            item {
-                FormHeadingText(stringResource(R.string.flat_address))
-                InputField(
-                    placeholder = stringResource(R.string.enter_flat_address),
-                    input = streetAddress ,
-                    onValueChange = { viewModel.updateStreetAddress(it) }
+                    placeholder = stringResource(R.string.Enter_Business_Address)
                 )
             }
 
@@ -124,6 +118,15 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
                     placeholder = stringResource(R.string.enter_landmark),
                     input = landmark,
                     onValueChange = { viewModel.updateLandmark(it) }
+                )
+            }
+
+            item {
+                FormHeadingText(stringResource(R.string.zip_code))
+                InputField(
+                    placeholder = stringResource(R.string.enter_zip_code),
+                    input = streetAddress ,
+                    onValueChange = { viewModel.updateStreetAddress(it) }
                 )
             }
 
@@ -167,11 +170,13 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
             item {
                 SubmitButton(
                     modifier = Modifier.fillMaxWidth(),
-                    buttonText = stringResource(R.string.submit),
+                    buttonText = stringResource(R.string.submit_n_next),
                     onClickButton = { navController.navigate(Routes.ADD_SERVICE) },
                     buttonTextSize = 15
                 )
+                Spacer(modifier = Modifier.height(16.dp))
             }
+
         }
 
     }

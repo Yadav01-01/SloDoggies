@@ -128,6 +128,7 @@ fun SearchResultItem(
                     .wrapContentSize()
                     .clickable { onRemove() }
             )
+            Spacer(Modifier.width(15.dp))
         }
     }
     Divider(Modifier.height(1.dp).background(color = Color(0xFFE5EFF2)))

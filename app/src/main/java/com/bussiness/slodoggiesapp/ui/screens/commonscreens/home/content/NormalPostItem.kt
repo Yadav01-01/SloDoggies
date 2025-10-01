@@ -65,9 +65,12 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.common.MediaItem
 import com.bussiness.slodoggiesapp.model.common.MediaType
 import com.bussiness.slodoggiesapp.model.common.PostItem
+import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
+import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
 fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClick: () -> Unit,onShareClick: () -> Unit,normalPost : Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit) {
@@ -90,6 +93,7 @@ fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClic
 @Composable
 fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Unit,normalPost: Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit) {
     var isFollowed by remember { mutableStateOf(false) }
+    var sessionManager = SessionManager.getInstance(LocalContext.current)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,28 +183,68 @@ fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Un
                     }
 
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = role,
-                        fontSize = 8.sp,
-                        color = Color(0xFF258694),
-                        lineHeight = 20.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        modifier = Modifier
-                            .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
-                            .padding(horizontal = 8.dp, vertical = 0.dp)
-                    )
+                if (normalPost){
+                    Row(verticalAlignment = Alignment.CenterVertically) {
 
-                    Spacer(Modifier.width(8.dp))
-                    Text(
-                        text = " $time",
-                        fontSize = 12.sp,
-                        color = Color(0xFF949494),
-                        modifier = Modifier
-                            .padding(vertical = 2.dp),
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    )
+                        Text(
+                            text = role,
+                            fontSize = 8.sp,
+                            color = Color(0xFF258694),
+                            lineHeight = 20.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            modifier = Modifier
+                                .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
+                                .padding(horizontal = 8.dp, vertical = 0.dp)
+                        )
+
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            text = "$time",
+                            fontSize = 12.sp,
+                            color = Color(0xFF949494),
+                            modifier = Modifier
+                                .padding(vertical = 2.dp),
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        )
+                    }
+                }else{
+                    if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER){
+                        Text(
+                            text = " $time",
+                            fontSize = 12.sp,
+                            color = Color(0xFF949494),
+                            modifier = Modifier
+                                .padding(vertical = 2.dp),
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        )
+                    }else{
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+
+                            Text(
+                                text = role,
+                                fontSize = 8.sp,
+                                color = Color(0xFF258694),
+                                lineHeight = 20.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                modifier = Modifier
+                                    .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
+                                    .padding(horizontal = 8.dp, vertical = 0.dp)
+                            )
+
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = "$time",
+                                fontSize = 12.sp,
+                                color = Color(0xFF949494),
+                                modifier = Modifier
+                                    .padding(vertical = 2.dp),
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            )
+                        }
+                    }
+
                 }
+
             }
         }
 
@@ -285,7 +329,7 @@ fun PostContentMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
             containerColor = Color.White,
-            shape = RoundedCornerShape(15.dp) // ✅ outer curve applied
+            shape = RoundedCornerShape(15.dp) //  outer curve applied
         ) {
             DropdownMenuItem(
                 text = {
@@ -381,7 +425,7 @@ private fun PostCaption(caption: String, description: String) {
         } else {
             // Optional: Add "Show Less" functionality
             Text(
-                text = "Show Less",
+                text = "Read Less",
                 fontSize = 12.sp,
                 color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
@@ -399,6 +443,7 @@ private fun PostCaption(caption: String, description: String) {
     var isLiked by remember { mutableStateOf(false) }
     var isBookmarked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
+    var deleteComment by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Row(
         modifier = Modifier
@@ -549,7 +594,17 @@ private fun PostCaption(caption: String, description: String) {
         )
         CommentsDialog(
             comments = sampleComments,
-            onDismiss = { showCommentsDialog = false }
+            onDismiss = { showCommentsDialog = false },
+            onDeleteClick = { deleteComment = true }
+        )
+    }
+    if (deleteComment){
+        DeleteChatDialog(
+            onDismiss = { deleteComment = false },
+            onClickRemove = { deleteComment = false  },
+            iconResId = R.drawable.delete_mi,
+            text = "Delete Comment",
+            description = stringResource(R.string.delete_Comment)
         )
     }
 }

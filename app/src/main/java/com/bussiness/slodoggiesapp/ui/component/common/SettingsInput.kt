@@ -95,7 +95,7 @@ fun SettingsItem(
             painter = painterResource(id = icon),
             contentDescription = title,
             tint = Color.Unspecified,
-            modifier = Modifier.wrapContentSize()
+            modifier = Modifier.size(20.dp)
         )
 
         Text(

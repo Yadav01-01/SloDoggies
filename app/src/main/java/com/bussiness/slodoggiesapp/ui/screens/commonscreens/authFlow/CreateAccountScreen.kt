@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
@@ -53,6 +58,7 @@ import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.SignUpViewModel
 
 @Composable
@@ -62,6 +68,15 @@ fun SignUpScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    var isNavigating by remember { mutableStateOf(false) }
+    var sessionManager = SessionManager.getInstance(context)
+
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -69,7 +84,10 @@ fun SignUpScreen(
             .background(Color.White)
             .padding(horizontal = 24.dp, vertical = 32.dp)
     ) {
-        AuthBackButton(onClick = { navController.popBackStack() }, modifier = Modifier.align(Alignment.TopStart))
+        AuthBackButton(onClick = {  if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        } }, modifier = Modifier.align(Alignment.TopStart))
 
         Column(
             modifier = Modifier
@@ -98,7 +116,7 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(5.dp))
             UserNameInputField(
                 input = state.userName,
-                placeholder = stringResource(R.string.enter_fullname),
+                placeholder = if(sessionManager.getUserType() ==  UserType.PET_OWNER) stringResource(R.string.enter_fullname) else stringResource(R.string.enter_business_name),
                 onValueChange = { viewModel.onUserNameChange(it) }
             )
 
@@ -162,7 +180,7 @@ fun SignUpScreen(
 
                 append("")
 
-                pushStringAnnotation(tag = "LOGIN", annotation = "Login")
+                pushStringAnnotation(tag = "LOGIN", annotation = "Log In")
                 pushStyle(
                     SpanStyle(
                         color = PrimaryColor,

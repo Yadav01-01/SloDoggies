@@ -99,7 +99,7 @@ fun TransactionScreen(navController: NavHostController) {
                 ) {
                     StatusBox(title = "Total Spent", value = "$165.00", modifier = Modifier.weight(1f))
                     StatusBox(title = "Current Plan", value = "Standard", modifier = Modifier.weight(1f))
-                    StatusBox(title = if (selectedOption == "Ad Top-Ups")  "End Date" else "Next Renewal", value = "Oct 12,2025    ", modifier = Modifier.weight(1f))
+                    StatusBox(title = if (selectedOption == "Ad Top-Ups")  "End Date" else "Next Renewal", value = "10/12/2025", modifier = Modifier.weight(1f))
                 }
             }
             item {

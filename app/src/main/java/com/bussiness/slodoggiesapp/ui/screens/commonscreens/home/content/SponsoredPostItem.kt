@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -50,6 +51,7 @@ import com.bussiness.slodoggiesapp.model.common.MediaType
 import com.bussiness.slodoggiesapp.model.common.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
+import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
@@ -181,6 +183,7 @@ private fun PostMedia(mediaList: List<MediaItem>) {
 private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit) {
     var isLiked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
+    var deleteComment by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -255,6 +258,16 @@ private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () 
         CommentsDialog(
             comments = sampleComments,
             onDismiss = { showCommentsDialog = false }
+            ,onDeleteClick = { deleteComment = true }
+        )
+    }
+    if (deleteComment){
+        DeleteChatDialog(
+            onDismiss = { deleteComment = false },
+            onClickRemove = { deleteComment = false  },
+            iconResId = R.drawable.delete_mi,
+            text = "Delete Comment",
+            description = stringResource(R.string.delete_Comment)
         )
     }
 }

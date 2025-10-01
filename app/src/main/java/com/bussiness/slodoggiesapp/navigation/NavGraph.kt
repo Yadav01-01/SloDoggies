@@ -16,6 +16,7 @@ import com.bussiness.slodoggiesapp.ui.intro.OnboardingScreen
 import com.bussiness.slodoggiesapp.ui.intro.SplashScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.AddServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration.BusinessRegistrationScreen
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.settings.SubscriptionScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.ForgotPasswordScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.LoginScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.NewPasswordScreen

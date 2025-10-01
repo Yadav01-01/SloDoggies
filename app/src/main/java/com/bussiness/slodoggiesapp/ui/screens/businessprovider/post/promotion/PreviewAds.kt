@@ -22,6 +22,7 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitPreviewButton
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.PreviewHeading
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.PreviewSubHeading
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.SponsorPostCaption
@@ -107,7 +108,7 @@ fun PreviewAdsScreen(navController: NavHostController) {
             // --- Submit Button ---
             item {
                 Spacer(Modifier.height(15.dp))
-                SubmitButton(buttonText = "Submit", onClickButton = { navController.navigate(Routes.SPONSORED_ADS_SCREEN) })
+                SubmitPreviewButton(buttonText = "Submit", onClickButton = { navController.navigate(Routes.SPONSORED_ADS_SCREEN) })
                 Spacer(Modifier.height(10.dp))
             }
         }

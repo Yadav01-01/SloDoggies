@@ -93,8 +93,8 @@ fun LoginScreen(
             FormHeadingText("Email/ Phone ", modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(10.dp))
             EmailInputField(
-                email = state.email,
-                onValueChange = { viewModel.onEmailChange(it) }
+                email = state.contactInput,
+                onValueChange = { viewModel.onContactChange(it) }
             )
 
             Spacer(Modifier.height(10.dp))

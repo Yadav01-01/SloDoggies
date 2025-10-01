@@ -12,9 +12,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -29,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -44,6 +47,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -101,6 +105,7 @@ fun InputField(
     height: Dp = 48.dp,
     fontSize: Int = 15,
     modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     Box(
         modifier = modifier
@@ -139,7 +144,8 @@ fun InputField(
                 color = Color.Black
             ),
             cursorBrush = SolidColor(Color.Black),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = keyboardOptions,
         )
     }
 }
@@ -218,6 +224,69 @@ fun TopHeadingText(textHeading: String, onBackClick: () -> Unit) {
         )
     }
 }
+
+@Composable
+fun TopHeadingTextWithSkip(
+    textHeading: String,
+    onBackClick: () -> Unit,
+    onSkipClick: () -> Unit = {}
+) {
+    val statusBarPadding = WindowInsets.statusBars.asPaddingValues()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 15.dp,
+                end = 15.dp,
+                top = statusBarPadding.calculateTopPadding() + 15.dp,
+                bottom = 18.dp
+            )
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.back_ic),
+            contentDescription = "back",
+            tint = PrimaryColor,
+            modifier = Modifier
+                .clickable { onBackClick() }
+                .wrapContentSize()
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Text(
+            text = textHeading,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Medium,
+                fontSize = 20.sp
+            ),
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            color = Color(0xFF221B22)
+        )
+
+        Spacer(Modifier.weight(1f))
+
+        // Skip aligned to the right
+        Text(
+            text = "Skip",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp
+            ),
+            lineHeight = 20.sp, // corrected from 10.sp (too small, was cutting text)
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            color = PrimaryColor,
+            modifier = Modifier
+                .padding(end = 15.dp)
+                .clickable(
+                    indication = null, // removes ripple effect
+                    interactionSource = remember { MutableInteractionSource() } // required with indication=null
+                ) { onSkipClick() }
+        )
+
+    }
+}
+
 
 
 @Composable
@@ -491,7 +560,8 @@ fun DayTimeSelector(
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     color = Color.Black,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(end = 18.dp)
                 )
             } else {
                 Text(

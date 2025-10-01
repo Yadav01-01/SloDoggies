@@ -170,40 +170,24 @@ fun PostCard(
                 Spacer(modifier = Modifier.width(8.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = userName,
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.Medium,
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                fontSize = 12.sp,
-                                lineHeight = 20.sp,
-                                color = Color.Black
-                            )
-                        )
-                    }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = role,
-                            fontSize = 8.sp,
-                            color = Color(0xFF258694),
-                            lineHeight = 18.sp,
+                    Text(
+                        text = userName,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Medium,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            modifier = Modifier
-                                .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
-                                .padding(horizontal = 8.dp, vertical = 0.dp)
-                        )
-
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = " $timeAgo",
                             fontSize = 12.sp,
-                            color = Color(0xFF949494),
-                            modifier = Modifier
-                                .padding(vertical = 2.dp),
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            lineHeight = 20.sp,
+                            color = Color.Black
                         )
-                    }
+                    )
+                    Text(
+                        text = " $timeAgo",
+                        fontSize = 12.sp,
+                        color = Color(0xFF949494),
+                        modifier = Modifier,
+                        lineHeight = 15.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    )
                 }
             }
 

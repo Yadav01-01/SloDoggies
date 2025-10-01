@@ -57,6 +57,6 @@ class CommunityProfileViewModel @Inject constructor() : ViewModel() {
     }
 
     fun updateCommunityName(name: String) {
-        _communityName.value = name
+        _communityName.value = name.take(30)
     }
 }

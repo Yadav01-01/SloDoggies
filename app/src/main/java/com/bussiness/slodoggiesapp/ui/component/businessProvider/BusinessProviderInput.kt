@@ -340,6 +340,32 @@ fun  SubmitButton(modifier: Modifier = Modifier,buttonText : String, onClickButt
     }
 }
 
+
+@Composable
+fun  SubmitPreviewButton(modifier: Modifier = Modifier,buttonText : String, onClickButton : () -> Unit,buttonTextSize : Int = 15){
+    Button(
+        onClick = onClickButton,
+        modifier = modifier
+            .height(42.dp)
+            .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            PrimaryColor,
+            contentColor = Color.White
+        ),
+        shape = RoundedCornerShape(10.dp),
+        elevation = ButtonDefaults.buttonElevation(4.dp)
+    ) {
+        Text(
+            text = buttonText,
+            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+            fontSize = buttonTextSize.sp,
+            textAlign = TextAlign.Center,
+            color = Color.White
+        )
+    }
+}
+
+
 @Composable
 fun OutlineCustomButton(modifier: Modifier,onClick: () -> Unit,text: String) {
     OutlinedButton(

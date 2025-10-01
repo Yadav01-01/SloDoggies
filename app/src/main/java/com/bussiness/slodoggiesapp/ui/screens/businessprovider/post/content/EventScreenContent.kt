@@ -101,9 +101,9 @@ fun EventScreenContent(
 //        }
 
         item {
-            FormHeadingText(stringResource(R.string.flat_address))
+            FormHeadingText(stringResource(R.string.Business_address))
             InputField(
-                placeholder = stringResource(R.string.enter_flat_address),
+                placeholder = stringResource(R.string.Enter_Business_Address),
                 input = streetAddress ,
                 onValueChange = { viewModel.updateStreetAddress(it) }
             )

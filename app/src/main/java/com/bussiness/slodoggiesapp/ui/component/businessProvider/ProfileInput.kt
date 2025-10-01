@@ -79,7 +79,7 @@ fun AudienceSelection(
             .clip(RoundedCornerShape(10.dp))
             .background(if (selected) PrimaryColor else Color.White)
             .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 25.dp, vertical = 4.dp)
     )
 }
 

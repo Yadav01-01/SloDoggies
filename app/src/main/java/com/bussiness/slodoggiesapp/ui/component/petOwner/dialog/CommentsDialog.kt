@@ -70,10 +70,13 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 @Composable
 fun CommentsDialog(
     onDismiss: () -> Unit = {},
-    comments: List<Comment> = emptyList()
+    comments: List<Comment> = emptyList(),
+    onDeleteClick : () -> Unit
 ) {
+    var editingComment by remember { mutableStateOf<Comment?>(null) }
     var newComment by remember { mutableStateOf("") }
     var replyingTo by remember { mutableStateOf<String?>(null) }
+
 
 
     Dialog(
@@ -154,9 +157,13 @@ fun CommentsDialog(
                                 CommentItem(
                                     comment = comment,
                                     onReply = { replyingTo = comment.userName },
-                                    onEditClick = {},
-                                    onDeleteClick = {},
+                                    onEditClick = {
+                                        editingComment = comment
+                                        newComment = comment.text // prefill text in box
+                                    },
+                                    onDeleteClick = { onDeleteClick() }
                                 )
+
 
 
                                 // Replies
@@ -227,12 +234,49 @@ fun CommentsDialog(
 
                             }
                             // Comment input field
+                            editingComment?.let { comment ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp)
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = "Editing your comment",
+                                            fontSize = 16.sp,
+                                            color = PrimaryColor,
+                                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                            fontWeight = FontWeight.Medium,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                        IconButton(onClick = { editingComment = null; newComment = "" }, modifier = Modifier.size(20.dp)) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.black_cross_icon),
+                                                contentDescription = "Cancel edit"
+                                            )
+                                        }
+                                    }
+                                }
+                                HorizontalDivider(thickness = 1.dp, color = PrimaryColor)
+                            }
 
+                            // Input field
                             CommentInputBox(
                                 newComment = newComment,
                                 onCommentChange = { newComment = it },
                                 onSendClick = {
-                                    // Add comment logic
+                                    if (editingComment != null) {
+                                        // Update existing comment
+                                        // viewModel.updateComment(editingComment!!.id, newComment)
+                                        editingComment = null
+                                    } else if (replyingTo != null) {
+                                        // Add reply
+                                        // viewModel.addReply(replyingTo!!, newComment)
+                                        replyingTo = null
+                                    } else {
+                                        // Add new comment
+                                        // viewModel.addComment(newComment)
+                                    }
                                     newComment = ""
                                 }
                             )
@@ -246,6 +290,8 @@ fun CommentsDialog(
         }
     }
 }
+
+
 
 
 
@@ -736,6 +782,7 @@ fun CommentsDialogPreview() {
 
     CommentsDialog(
         comments = sampleComments,
-        onDismiss = {  }
+        onDismiss = {  },
+        onDeleteClick = {  }
     )
 }

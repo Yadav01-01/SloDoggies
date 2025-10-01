@@ -24,29 +24,41 @@ class VerifyOTPViewModel @Inject constructor(
     private val _successDialog = MutableStateFlow(false)
     val successDialog: StateFlow<Boolean> = _successDialog.asStateFlow()
 
+    private val _disclaimerDialog = MutableStateFlow(false)
+    val disclaimerDialog: StateFlow<Boolean> = _disclaimerDialog.asStateFlow()
+
     fun updateOtp(newOtp: String) {
         _otp.value = newOtp
+    }
+
+    fun showDisclaimerDialog() {
+        _disclaimerDialog.value = true
     }
 
     private fun showSuccessDialog() {
         _successDialog.value = true
     }
 
-    fun dismissSuccessDialog(navController: NavHostController) {
+    fun dismissSuccessDialog() {
         _successDialog.value = false
-        navController.navigate(Routes.MAIN_SCREEN){
-            popUpTo(Routes.SIGNUP_SCREEN) { inclusive = true }
-        }
-
     }
+    fun dismissDisclaimerDialog(navController: NavHostController) {
+        _disclaimerDialog.value = false
+        if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
+            navController.navigate(Routes.BUSINESS_REGISTRATION) {
+                popUpTo(Routes.SIGNUP_SCREEN) { inclusive = true }
+            }
+        } else {
+            navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) {
+                popUpTo(Routes.SIGNUP_SCREEN) { inclusive = true }
+            }
+        }
+    }
+
 
     fun isOtpValid(): Boolean = _otp.value.length == 4
 
-    fun onVerifyClick(
-        type: String,
-        navController: NavHostController,
-        context: Context
-    ) {
+    fun onVerifyClick(type: String, navController: NavHostController, context: Context) {
         if (type == "forgotPass") {
             navController.navigate(Routes.NEW_PASSWORD_SCREEN)
             return
@@ -55,13 +67,9 @@ class VerifyOTPViewModel @Inject constructor(
         if (isOtpValid()) {
             sessionManager.setLogin(true)
             showSuccessDialog()
-            if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
-                navController.navigate(Routes.BUSINESS_REGISTRATION)
-            } else {
-                navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN)
-            }
         } else {
             Toast.makeText(context, "Please enter valid OTP", Toast.LENGTH_SHORT).show()
         }
     }
+
 }
