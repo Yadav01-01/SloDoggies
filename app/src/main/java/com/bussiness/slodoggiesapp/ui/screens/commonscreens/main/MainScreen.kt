@@ -59,7 +59,7 @@ fun MainScreen(authNavController: NavHostController) {
                 modifier = Modifier
                     .padding(innerPadding)
                     .padding(
-                        bottom = if (currentRoute in bottomNavRoutes) 56.dp else 0.dp // bottom nav height
+                        bottom = if (currentRoute in bottomNavRoutes) 100.dp else 0.dp // bottom nav height
                     )
             )
 
