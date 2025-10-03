@@ -22,6 +22,7 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.EditBusi
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit.EditAddServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.sponsoredAds.SponsoredAdsScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.ClickedProfile
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen
@@ -58,6 +59,17 @@ fun MainNavGraph(
     authNavController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    // Helper function to safely navigate without duplicating backstack
+    fun NavHostController.safeNavigate(route: String) {
+        this.navigate(route) {
+            launchSingleTop = true
+            restoreState = true
+            popUpTo(this@safeNavigate.graph.startDestinationId) {
+                saveState = true
+            }
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = Routes.HOME_SCREEN,
@@ -102,33 +114,35 @@ fun MainNavGraph(
         composable(Routes.PREVIEW_ADS_SCREEN) { PreviewAdsScreen(navController) }
         composable(Routes.NEW_MESSAGE_SCREEN) { NewMessageScreen(navController) }
         composable(Routes.TRANSACTION_SCREEN) { TransactionScreen(navController) }
+        composable(Routes.CLICKED_PROFILE_SCREEN) { ClickedProfile(navController) }
 
+        // ----------------- Screens with arguments -----------------
         composable(
             route = "${Routes.VERIFY_ACCOUNT_SCREEN}?type={type}&data={data}",
             arguments = listOf(
-                navArgument("type") { type = NavType.StringType },
-                navArgument("data") { type = NavType.StringType },
+                navArgument("type") { type = NavType.StringType; defaultValue = "default" },
+                navArgument("data") { type = NavType.StringType; defaultValue = "" }
             )
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "default"
             val data = backStackEntry.arguments?.getString("data") ?: ""
-            VerifyAccount(navController, type = type,data = data)
+            VerifyAccount(navController, type = type, data = data)
         }
 
         composable(
             route = "${Routes.EDIT_ADD_SERVICE_SCREEN}/{type}",
-            arguments = listOf(navArgument("type") { type = NavType.StringType })
+            arguments = listOf(navArgument("type") { type = NavType.StringType; defaultValue = "add" })
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "add"
-            EditAddServiceScreen(navController,type)
+            EditAddServiceScreen(navController, type)
         }
 
         composable(
             route = "${Routes.FOLLOWER_SCREEN}/{type}",
-            arguments = listOf(navArgument("type") { type = NavType.StringType })
+            arguments = listOf(navArgument("type") { type = NavType.StringType; defaultValue = "Follower" })
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "Follower"
-            FollowerScreen(navController,type)
+            FollowerScreen(navController, type)
         }
     }
 }

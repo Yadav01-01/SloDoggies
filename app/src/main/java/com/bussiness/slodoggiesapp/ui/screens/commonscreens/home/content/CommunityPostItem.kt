@@ -55,7 +55,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
 @Composable
-fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> Unit,onReportClick: () -> Unit,onShareClick: () -> Unit){
+fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> Unit,onReportClick: () -> Unit,onShareClick: () -> Unit,onProfileClick: () -> Unit){
     var isFollowed by remember { mutableStateOf(false) }
 
     Card(
@@ -80,6 +80,10 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> 
                     modifier = Modifier
                         .size(40.dp)
                         .clip(CircleShape)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { onProfileClick() }
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))

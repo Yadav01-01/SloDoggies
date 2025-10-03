@@ -73,7 +73,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
-fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClick: () -> Unit,onShareClick: () -> Unit,normalPost : Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit) {
+fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClick: () -> Unit,onShareClick: () -> Unit,normalPost : Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit,onProfileClick: () -> Unit) {
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -82,7 +82,7 @@ fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClic
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            PostHeader(user = postItem.user, role = postItem.role, time = postItem.time, onReportClick = { onReportClick()},normalPost,onEditClick = { onEditClick() },onDeleteClick = { onDeleteClick() } )
+            PostHeader(user = postItem.user, role = postItem.role, time = postItem.time, onReportClick = { onReportClick()},normalPost,onEditClick = { onEditClick() },onDeleteClick = { onDeleteClick() },onProfileClick = { onProfileClick() } )
             PostCaption(caption = postItem.caption, description = postItem.description)
             PostImage(mediaList = postItem.mediaList)
             PostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares, onShareClick = {onShareClick()}, onSaveClick = { })
@@ -91,7 +91,7 @@ fun NormalPostItem(modifier: Modifier,postItem: PostItem.NormalPost,onReportClic
 }
 
 @Composable
-fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Unit,normalPost: Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit) {
+fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Unit,normalPost: Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit,onProfileClick: () -> Unit) {
     var isFollowed by remember { mutableStateOf(false) }
     var sessionManager = SessionManager.getInstance(LocalContext.current)
     Row(
@@ -105,7 +105,10 @@ fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Un
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (normalPost){
-                Box(Modifier.width(40.dp).height(40.dp)) {
+                Box(Modifier.width(40.dp).height(40.dp).clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { onProfileClick() }) {
 
                     Image(
                         painter = painterResource(id = R.drawable.dummy_person_image2),

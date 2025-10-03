@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile
+package com.bussiness.slodoggiesapp.ui.screens.commonscreens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -37,18 +37,15 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.OutlineCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -56,12 +53,11 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.ProfileViewModel
 
 @Composable
-fun ProfileScreen(navController: NavHostController) {
-    val viewModel : ProfileViewModel = hiltViewModel()
+
+fun ClickedProfile(navController: NavHostController, viewModel: ProfileViewModel = hiltViewModel()) {
 
     val email by viewModel.email.collectAsState()
     val description by viewModel.description.collectAsState()
-
     val sampleImages = listOf(
         GalleryItem(R.drawable.dog1),
         GalleryItem(R.drawable.dog2),
@@ -71,14 +67,24 @@ fun ProfileScreen(navController: NavHostController) {
         GalleryItem(R.drawable.dog2)
     )
 
-    BackHandler { 
-        navController.popBackStack()
+    BackHandler {
+        navController.navigate(Routes.HOME_SCREEN) {
+            launchSingleTop = true
+            popUpTo(Routes.HOME_SCREEN) {
+                inclusive = false
+            }
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
         ScreenHeadingText(textHeading = "My Profile",
-            onBackClick = { navController.popBackStack() },
+            onBackClick = { navController.navigate(Routes.HOME_SCREEN){
+                launchSingleTop = true
+                popUpTo(Routes.HOME_SCREEN) {
+                    inclusive = false
+                }
+            } },
             onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
@@ -130,14 +136,6 @@ fun ProfileScreen(navController: NavHostController) {
                                 modifier = Modifier.weight(1f)
                             )
 
-//                            Icon(
-//                                painter = painterResource(R.drawable.edit_ic_p),
-//                                contentDescription = "icon",
-//                                tint = Color.Unspecified,
-//                                modifier = Modifier.wrapContentSize()
-//                                    .clickable { navController.navigate(Routes.EDIT_PROFILE_SCREEN)  }
-//                            )
-
                         }
 
                         Spacer(Modifier.height(5.dp))
@@ -179,11 +177,6 @@ fun ProfileScreen(navController: NavHostController) {
             }
 
             item {
-                OutlineCustomButton(modifier = Modifier.fillMaxWidth().height(48.dp), text = "Sponsored Ads Dashboard",
-                    onClick = { navController.navigate(Routes.SPONSORED_ADS_SCREEN) })
-            }
-
-            item {
                 Text(
                     text = "Gallery",
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -208,20 +201,12 @@ fun ProfileScreen(navController: NavHostController) {
                     userScrollEnabled = false // Important to avoid nested scroll issues
                 ) {
                     items(sampleImages.size) { index ->
-                        GalleryItemCard(item = sampleImages[index], onClickItem = {navController.navigate(Routes.USER_POST_SCREEN)})
+                        GalleryItemCard(item = sampleImages[index], onClickItem = {navController.navigate(
+                            Routes.USER_POST_SCREEN)})
                     }
                 }
                 Spacer(Modifier.height(10.dp))
             }
         }
     }
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileDetailScreenPreview() {
-    val navController = rememberNavController()
-    ProfileScreen(navController = navController)
 }

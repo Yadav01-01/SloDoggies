@@ -6,13 +6,16 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -47,11 +50,25 @@ fun MainScreen(authNavController: NavHostController) {
             .fillMaxSize()
             .background(Color.White),
         containerColor = Color.White,
-        bottomBar = {
+    ) { innerPadding ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            // Main NavGraph
+            MainNavGraph(
+                navController = navController,
+                authNavController = authNavController,
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .padding(
+                        bottom = if (currentRoute in bottomNavRoutes) 56.dp else 0.dp // bottom nav height
+                    )
+            )
+
             AnimatedVisibility(
                 visible = currentRoute in bottomNavRoutes,
                 enter = fadeIn(),
-                exit = fadeOut()
+                exit = fadeOut(),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter) // bottom fix
             ) {
                 CustomBottomBar(
                     navController = navController,
@@ -65,16 +82,15 @@ fun MainScreen(authNavController: NavHostController) {
                         }
                     },
                     onCenterClick = {
-                        val destination = if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
-                            Routes.POST_SCREEN
-                        } else {
-                            Routes.PET_NEW_POST_SCREEN
-                        }
+                        val destination =
+                            if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
+                                Routes.POST_SCREEN
+                            } else {
+                                Routes.PET_NEW_POST_SCREEN
+                            }
 
                         navController.navigate(destination) {
-                            popUpTo(navController.graph.startDestinationId) {
-                                saveState = true
-                            }
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -82,15 +98,7 @@ fun MainScreen(authNavController: NavHostController) {
                 )
             }
         }
-    ) { innerPadding ->
-        MainNavGraph(
-            navController = navController,
-            authNavController = authNavController,
-            modifier = Modifier.padding(innerPadding)
-        )
     }
-
-
 }
 
 

@@ -85,9 +85,9 @@ fun HomeScreen(
         ) {
             items(posts) { post ->
                 when (post) {
-                    is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) })
-                    is PostItem.SponsoredPost -> SponsoredPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()})
-                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() },normalPost = true, onEditClick = {}, onDeleteClick = {})
+                    is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) })
+                    is PostItem.SponsoredPost -> SponsoredPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onProfileClick = { navController.navigate(Routes.CLICKED_PROFILE_SCREEN) })
+                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() },normalPost = true, onEditClick = {}, onDeleteClick = {}, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) })
                 }
             }
         }

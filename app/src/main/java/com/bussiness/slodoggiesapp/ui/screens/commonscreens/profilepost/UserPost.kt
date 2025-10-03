@@ -56,7 +56,8 @@ fun UserPost(navController: NavHostController) {
                         onShareClick = { /* TODO */ },
                         normalPost = false,
                         onEditClick = { navController.navigate(Routes.EDIT_POST_SCREEN) },
-                        onDeleteClick = { deleteDialog = true }
+                        onDeleteClick = { deleteDialog = true },
+                        onProfileClick = {  }
                     )
                 }
             }

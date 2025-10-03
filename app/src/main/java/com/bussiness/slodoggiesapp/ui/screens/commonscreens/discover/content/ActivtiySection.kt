@@ -34,7 +34,8 @@ fun ActivitiesPostsList(
                     onShareClick = onShareClick,
                     normalPost = true,
                     onEditClick = { /* Handle edit click */ },
-                    onDeleteClick = { /* Handle delete click */ }
+                    onDeleteClick = { /* Handle delete click */ },
+                    onProfileClick = { /* Handle profile click */ }
                 )
             }
         }
