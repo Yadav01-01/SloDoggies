@@ -218,11 +218,16 @@ fun PetProfileScreen(navController: NavHostController) {
                     ) {
 
 
-                        AsyncImage(
-                            model = R.drawable.ic_pet_face_iconss,
+//                        AsyncImage(
+//                            model = R.drawable.ic_pet_face_iconss,
+//                            contentDescription = "Pet Avatar",
+//                            placeholder = painterResource(R.drawable.ic_pet_face_iconss),
+//                            error = painterResource(R.drawable.ic_pet_face_iconss) ,
+//                            modifier = Modifier.size(90.dp)
+//                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.dog_ic),
                             contentDescription = "Pet Avatar",
-                            placeholder = painterResource(R.drawable.ic_pet_face_iconss),
-                            error = painterResource(R.drawable.ic_pet_face_iconss) ,
                             modifier = Modifier.size(90.dp)
                         )
 
@@ -233,14 +238,15 @@ fun PetProfileScreen(navController: NavHostController) {
                             modifier = Modifier.weight(1f)
                         ) {
                             Row(
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(bottom = 4.dp)
                             ) {
                                 Text(
-                                    text = "Pet name",
+                                    text = "Jimmi",
                                     fontSize = 16.sp,
                                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                     fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF949494)
+                                    color = Color.Black
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
 
@@ -263,16 +269,16 @@ fun PetProfileScreen(navController: NavHostController) {
                                     modifier = Modifier
                                         .weight(1f)
                                         .background(
-                                            color = Color(0xFFF6F6F6),
+                                            color = Color(0xFFE5EFF2),
                                             shape = RoundedCornerShape(50)
                                         )
                                         .padding(horizontal = 0.dp, vertical = 1.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "Breed",
+                                        text = "Brown Breed",
                                         fontSize = 12.sp,
-                                        color = Color(0xFF949494),
+                                        color = PrimaryColor,
                                         fontFamily = FontFamily(Font(R.font.outfit_medium))
                                     )
                                 }
@@ -281,16 +287,16 @@ fun PetProfileScreen(navController: NavHostController) {
                                     modifier = Modifier
                                         .weight(1f)
                                         .background(
-                                            color = Color(0xFFF6F6F6),
+                                            color = Color(0xFFFFF1E8),
                                             shape = RoundedCornerShape(50)
                                         )
                                         .padding(horizontal = 0.dp, vertical = 1.dp),
                                     contentAlignment = Alignment.Center // This works in Box
                                 ) {
                                     Text(
-                                        text = "Age",
+                                        text = "3 Years Olds",
                                         fontSize = 12.sp,
-                                        color = Color(0xFF949494),
+                                        color = Color(0xFFFF771C),
                                         fontFamily = FontFamily(Font(R.font.outfit_medium))
                                     )
                                 }
@@ -299,10 +305,12 @@ fun PetProfileScreen(navController: NavHostController) {
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Text(
-                                text = "Bio",
-                                fontSize = 13.sp,
+                                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ",
+                                fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                color = Color(0xFF949494)
+                                fontWeight = FontWeight.Normal,
+                                lineHeight = 15.sp,
+                                color = Color.Black
                             )
                         }
                     }
@@ -371,11 +379,16 @@ fun PetProfileScreen(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    AsyncImage(
-                        model = R.drawable.ic_person_icon1,
-                        contentDescription = "Owner Avatar",
-                        placeholder = painterResource(R.drawable.ic_person_icon1),
-                        error = painterResource(R.drawable.ic_person_icon1),
+//                    AsyncImage(
+//                        model = R.drawable.ic_person_icon1,
+//                        contentDescription = "Owner Avatar",
+//                        placeholder = painterResource(R.drawable.dummy_person_image1),
+//                        error = painterResource(R.drawable.ic_person_icon1),
+//                        modifier = Modifier.size(55.dp)
+//                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.dummy_person_image1),
+                        contentDescription = "Pet Avatar",
                         modifier = Modifier.size(55.dp)
                     )
 
@@ -388,10 +401,11 @@ fun PetProfileScreen(navController: NavHostController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Name",
-                                fontSize = 14.sp,
+                                text = "Lydia Vaccaro",
+                                fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                color = Color(0xFF949494)
+                                fontWeight = FontWeight.Medium,
+                                color = Color.Black
                             )
                             Spacer(modifier = Modifier.weight(1f))
 
@@ -410,26 +424,30 @@ fun PetProfileScreen(navController: NavHostController) {
                             modifier = Modifier
                                 .width(70.dp)
                                 .background(
-                                    color = Color(0xFFF6F6F6),
+                                    color = Color(0xFFE5EFF2),
                                     shape = RoundedCornerShape(50)
                                 )
                                 .padding(horizontal = 0.dp, vertical = 1.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "tag",
-                                fontSize = 12.sp,
+                                text = "Pet Mom",
+                                fontSize = 10.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF949494)
+                                lineHeight = 15.sp,
+                                color = PrimaryColor
                             )
                         }
+                        Spacer(Modifier.height(3.dp))
 
                         Text(
-                            text = "Bio",
+                            text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            color = Color(0xFF949494)
+                            fontWeight = FontWeight.Normal,
+                            color = Color.Black,
+                            lineHeight = 15.sp
                         )
                     }
                 }

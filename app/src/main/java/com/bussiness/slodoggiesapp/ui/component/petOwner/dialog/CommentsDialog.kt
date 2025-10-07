@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,10 +24,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenu
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -117,7 +117,7 @@ fun CommentsDialog(
                         .fillMaxWidth()
                         .heightIn(
                             min = Dp.Unspecified,              // let content shrink
-                            max = LocalConfiguration.current.screenHeightDp.dp * 0.7f // cap at 70%
+                            max = LocalConfiguration.current.screenHeightDp.dp * 0.6f // cap at 60%
                         ),
                     shape = RoundedCornerShape(16.dp),
                     color = Color.White
@@ -278,7 +278,8 @@ fun CommentsDialog(
                                         // viewModel.addComment(newComment)
                                     }
                                     newComment = ""
-                                }
+                                },
+                                onEmojiClick = {  }
                             )
 
 
@@ -299,8 +300,10 @@ fun CommentsDialog(
 fun CommentInputBox(
     newComment: String,
     onCommentChange: (String) -> Unit,
-    onSendClick: () -> Unit
+    onSendClick: () -> Unit,
+    onEmojiClick: () -> Unit
 ) {
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -312,7 +315,7 @@ fun CommentInputBox(
             painter = painterResource(id = R.drawable.ic_smile_icon),
             contentDescription = "Emoji",
             tint = Color.Gray,
-            modifier = Modifier.size(30.dp)
+            modifier = Modifier.size(30.dp).clickable { onEmojiClick()}
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -355,6 +358,7 @@ fun CommentInputBox(
         )
 
     }
+
 }
 
 @Composable
@@ -701,45 +705,56 @@ data class Comment(
 fun CommentOptionsPopup(
     showPopup: Boolean,
     onDismiss: () -> Unit,
-    onReport:  () -> Unit,
+    onReport: () -> Unit,
     anchorPosition: DpOffset = DpOffset.Zero,
     modifier: Modifier = Modifier
 ) {
-    if (showPopup) {
-        DropdownMenu(
-            expanded = showPopup,
-            onDismissRequest = onDismiss,
-            offset = DpOffset(anchorPosition.x - 160.dp, anchorPosition.y),
-            modifier = modifier
-                .width(160.dp)   .background(Color.White, RoundedCornerShape(8.dp))
-        ) {
-            DropdownMenuItem(
-                onClick = {
-                    onReport()
-                    onDismiss()
-                },
-                text = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_report_icon),
-                            contentDescription = "Report",
-                            tint = Color(0xFF258694),
-                            modifier = Modifier.size(17.dp)
-
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Report Comment", fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.outfit_regular)), color = Color.Black
-                        )
-                    }
+    DropdownMenu (
+        expanded = showPopup,
+        onDismissRequest = onDismiss,
+        offset = DpOffset(anchorPosition.x - 140.dp, anchorPosition.y),
+        modifier = modifier
+            .background(Color.White)
+            .wrapContentSize(),
+        containerColor = Color.White,
+        shape = RoundedCornerShape(10.dp), //  this controls the popup shape
+    ) {
+        DropdownMenuItem(
+            onClick = {
+                onReport()
+                onDismiss()
+            },
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_report_icon),
+                        contentDescription = "Report",
+                        tint = Color(0xFF258694),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Report Comment",
+                        fontSize = 14.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        color = Color.Black
+                    )
                 }
-            )
-
-        }
+            }
+        )
     }
 }
+
+
+
 fun Offset.toDpOffset(): DpOffset {
     return DpOffset(x.toDp(), y.toDp())
 }
+
+
 
 
 @Preview(showBackground = true)

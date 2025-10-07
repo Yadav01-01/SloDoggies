@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,11 +13,9 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -49,7 +46,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.DialogButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.RemoveButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
@@ -422,6 +418,40 @@ fun BottomToast(
         }
     }
 }
+
+@Composable
+fun CenterToast(
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.systemBars),
+            contentAlignment = Alignment.Center // Centered horizontally
+        ) {
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize() ,// Toggle on click
+                shape = RoundedCornerShape(10.dp),
+                color = Color.White
+            ) {
+                Text(
+                    text = "Removed",
+                    color = Color.Black,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun ReportBottomToast(

@@ -5,6 +5,7 @@ accompanistSystemuicontroller = "0.34.0"
 agp = "8.5.1"
 coilComposeVersion = "2.6.0"
 coreSplashscreen = "1.0.1"
+emoji = "0.22.0"
 hiltAndroid = "2.56.2"
 hiltNavigationCompose = "1.2.0"
 kotlin = "2.0.21"
@@ -34,6 +35,9 @@ androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", versi
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose-v260 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
+emoji = { module = "com.vanniktech:emoji", version.ref = "emoji" }
+emoji-compose = { module = "com.vanniktech:emoji-compose", version.ref = "emoji" }
+emoji-google = { module = "com.vanniktech:emoji-google", version.ref = "emoji" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

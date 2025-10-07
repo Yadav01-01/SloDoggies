@@ -21,11 +21,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -54,12 +51,10 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileImageWithUpload
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
 import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.ui.component.saveBitmapToCache
+import com.bussiness.slodoggiesapp.ui.dialog.ServiceAdEditDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.EditBusinessViewModel
 
@@ -296,11 +291,24 @@ fun EditBusinessScreen(
                 SubmitButton(
                     modifier = Modifier.fillMaxWidth(),
                     buttonText = stringResource(R.string.Save_Changes),
-                    onClickButton = { navController.navigate(Routes.SERVICES_SCREEN) },
+                    onClickButton = { viewModel.toggleUpdateDialog() },
                     buttonTextSize = 15
                 )
+                Spacer(Modifier.height(15.dp))
             }
         }
+    }
+    if (uiState.showUpdatedDialog){
+        ServiceAdEditDialog(
+            onDismiss = {
+                viewModel.hideUpdateDialog()
+                navController.navigate(Routes.SERVICES_SCREEN)
+            },
+            iconResId = R.drawable.ic_sucess_p,
+            text = "Profile Updated!",
+            description = "Your information has been saved.\n" +
+                    "Thanks for keeping things up to date!"
+        )
     }
 
     if (uiState.showImagePickerDialog) {

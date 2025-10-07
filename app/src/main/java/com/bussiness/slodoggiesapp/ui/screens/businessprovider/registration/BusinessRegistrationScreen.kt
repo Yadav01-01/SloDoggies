@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,7 +49,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
     var isNavigating by remember { mutableStateOf(false) }
 
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
         TopHeadingText(textHeading = stringResource(R.string.business_registration), onBackClick = {
             if (!isNavigating) {
@@ -60,7 +62,8 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(16.dp)
+                .background(Color.White),
             verticalArrangement = Arrangement.spacedBy(12.dp) // Handles spacing between items
         ) {
             item {

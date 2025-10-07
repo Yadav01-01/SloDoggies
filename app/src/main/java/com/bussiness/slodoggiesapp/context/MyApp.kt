@@ -9,8 +9,5 @@ class MyApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Initialize anything you want globally here, like logging, crash reporting, etc.
-        // For example:
-        // Timber.plant(Timber.DebugTree())
     }
 }

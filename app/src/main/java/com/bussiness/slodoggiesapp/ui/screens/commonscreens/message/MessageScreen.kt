@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -136,12 +135,12 @@ fun NewMessageButton(
         onClick = onClick,
         modifier = modifier.size(51.dp),
         containerColor = Color.White,
-        contentColor = Color.White
+        contentColor = Color.Unspecified,
     ) {
         Image(
             painter = painterResource(R.drawable.new_msg_ic),
             contentDescription = "New Message",
-            modifier = Modifier.size(51.dp),
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }

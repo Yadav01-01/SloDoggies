@@ -120,10 +120,11 @@ fun ChatHeaderItem(
     onBackClick: () -> Unit = {},
     onDeleteClick: () -> Unit,
     onReportClick: () -> Unit,
-    onBlockClick: () -> Unit,
+    onBlockClick: (Boolean) -> Unit,
     onFeedbackClick: () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
+    var isBlocked by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -200,6 +201,7 @@ fun ChatHeaderItem(
 
             OnMenuClick(
                 menuExpanded = menuExpanded,
+                isBlocked = isBlocked,
                 onDismiss = { menuExpanded = false },
                 onDeleteClick = {
                     menuExpanded = false
@@ -210,8 +212,9 @@ fun ChatHeaderItem(
                     onReportClick()
                 },
                 onBlockClick = {
+                    isBlocked = !isBlocked
+                    onBlockClick(isBlocked)
                     menuExpanded = false
-                    onBlockClick()
                 },
                 onFeedbackClick = {
                     menuExpanded = false
@@ -226,6 +229,7 @@ fun ChatHeaderItem(
 @Composable
 fun OnMenuClick(
     menuExpanded: Boolean,
+    isBlocked: Boolean,
     onDismiss: () -> Unit,
     onDeleteClick: () -> Unit,
     onReportClick: () -> Unit,
@@ -262,7 +266,7 @@ fun OnMenuClick(
 
         MenuItem(
             iconRes = R.drawable.block_mi,
-            label = "Block User",
+            label = if (isBlocked) "Unblock User" else "Block User", // dynamically change text
             onClick = {
                 onDismiss()
                 onBlockClick()

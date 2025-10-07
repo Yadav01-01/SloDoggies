@@ -26,7 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.model.businessProvider.ChatHeaderData
-import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.ui.component.common.BottomMessageBar
 import com.bussiness.slodoggiesapp.ui.component.common.ChatHeaderItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
@@ -101,10 +100,12 @@ fun ChatScreen(
                 modifier = Modifier.fillMaxSize().padding(bottom = 65.dp)
             )
 
-            BottomMessageBar(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                viewModel = viewModel
-            )
+            if (!isBlocked){
+                BottomMessageBar(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    viewModel = viewModel
+                )
+            }
 
         }
 

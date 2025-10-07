@@ -44,7 +44,6 @@ fun MainScreen(authNavController: NavHostController) {
 
     val bottomNavRoutes = bottomNavItems.map { it.route }
 
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()

@@ -203,7 +203,7 @@ private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () 
                 tint = if (isLiked) Color(0xFF00A6B8) else Color.Black
             ) { isLiked = !isLiked }
 
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             // Comment
             IconTextButton(
@@ -212,7 +212,7 @@ private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () 
                 onClick = { showCommentsDialog = true }
             )
 
-            Spacer(modifier = Modifier.width(20.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             // Share
             IconTextButton(

@@ -144,6 +144,15 @@ fun AddParticipantsScreen(
                                         .clickable { viewModel.removeParticipant(participant) }
                                 )
                             }
+                            Text(
+                                text = participant.name,
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 10.sp,
+                                color = Color(0xFF484848),
+                                lineHeight = 15.sp
+
+                            )
                         }
                     }
                 }

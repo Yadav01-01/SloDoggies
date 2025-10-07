@@ -177,6 +177,7 @@ fun PetNotificationsScreen(navController: NavHostController) {
                 NotificationItemRow(
                     notification = notification,
                     onFollowClick = { /* Handle follow action */ },
+                    onJoinChatClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
             }
@@ -188,6 +189,7 @@ fun PetNotificationsScreen(navController: NavHostController) {
 fun NotificationItemRow(
     notification: NotificationItem,
     onFollowClick: () -> Unit,
+    onJoinChatClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -318,7 +320,7 @@ fun NotificationItemRow(
             }
         }else{
             Button(
-                onClick = onFollowClick,
+                onClick = onJoinChatClick,
                 modifier = Modifier
                     .height(28.dp)
                     .padding(horizontal = 4.dp).align(Alignment.Top),

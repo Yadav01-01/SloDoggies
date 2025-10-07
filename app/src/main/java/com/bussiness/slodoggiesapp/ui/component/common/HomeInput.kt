@@ -373,7 +373,7 @@ fun ExpandableText(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = if (expanded) "Show less" else "more",
+            text = if (expanded) "less" else "more",
             color = PrimaryColor,
             fontSize = 14.sp,
             fontFamily = FontFamily(Font(R.font.outfit_medium)),

@@ -22,7 +22,7 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.EditBusi
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.ServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit.EditAddServiceScreen
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.sponsoredAds.SponsoredAdsScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.ClickedProfile
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.ClickedProfile
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.AddParticipantsScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityProfileScreen

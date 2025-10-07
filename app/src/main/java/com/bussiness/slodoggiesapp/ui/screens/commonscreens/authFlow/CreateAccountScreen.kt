@@ -55,7 +55,6 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.UserNameInputField
 import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
 import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
-import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -69,7 +68,7 @@ fun SignUpScreen(
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var isNavigating by remember { mutableStateOf(false) }
-    var sessionManager = SessionManager.getInstance(context)
+    val sessionManager = SessionManager.getInstance(context)
 
     BackHandler {
         if (!isNavigating) {
@@ -82,12 +81,12 @@ fun SignUpScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(horizontal = 24.dp, vertical = 32.dp)
+            .padding(horizontal = 24.dp, vertical = 10.dp)
     ) {
         AuthBackButton(onClick = {  if (!isNavigating) {
             isNavigating = true
             navController.popBackStack()
-        } }, modifier = Modifier.align(Alignment.TopStart))
+        } }, modifier = Modifier.align(Alignment.TopStart).padding(top = 10.dp))
 
         Column(
             modifier = Modifier
@@ -178,7 +177,7 @@ fun SignUpScreen(
                 append(stringResource(R.string.already_have_account))
                 pop()
 
-                append("")
+                append(" ")
 
                 pushStringAnnotation(tag = "LOGIN", annotation = "Log In")
                 pushStyle(

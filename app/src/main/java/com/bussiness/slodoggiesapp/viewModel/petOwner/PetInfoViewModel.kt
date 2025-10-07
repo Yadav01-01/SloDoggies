@@ -24,7 +24,7 @@ class PetInfoViewModel @Inject constructor() : ViewModel() {
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    val ageOptions = listOf("> than 1 Year","1 Year", "2 Year", "3 Year", "4 Year", "5 Year","6 Year", "7 Year", "8 Year", "9 Year", "10 Year",
+    val ageOptions = listOf("< than 1 Year","1 Year", "2 Year", "3 Year", "4 Year", "5 Year","6 Year", "7 Year", "8 Year", "9 Year", "10 Year",
         "11 Year", "12 Year", "13 Year", "14 Year", "15 Year", "16 Year", "17 Year", "18 Year", "19 Year", "20 Year" )
 
     fun setSelectedPhoto(uri: Uri?) {

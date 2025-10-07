@@ -245,9 +245,7 @@ fun PostHeader(user: String, role: String, time: String, onReportClick: () -> Un
                             )
                         }
                     }
-
                 }
-
             }
         }
 
@@ -383,9 +381,6 @@ fun PostContentMenu(
 }
 
 
-
-
-
 @Composable
 private fun PostCaption(caption: String, description: String) {
     // Add state to track if the full text should be shown
@@ -395,6 +390,14 @@ private fun PostCaption(caption: String, description: String) {
         modifier = Modifier.padding(horizontal = 12.dp, vertical = 0.dp)
     ) {
 
+        Text(
+            text = caption,
+            fontSize = 12.5.sp,
+            color = Color.Black,
+            fontFamily = FontFamily(Font(R.font.inter_regular)),
+            lineHeight = 17.sp,
+            maxLines = 1,
+        )
         Text(
             text = description,
             fontSize = 12.5.sp,
@@ -485,7 +488,7 @@ private fun PostCaption(caption: String, description: String) {
                 color = if (isLiked) PrimaryColor else Color.Black,
                 modifier = Modifier.widthIn(min = 24.dp) //  reserve width
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             // Comments section
             Icon(
@@ -508,7 +511,7 @@ private fun PostCaption(caption: String, description: String) {
                 color = Color.Black,
                 modifier = Modifier.widthIn(min = 24.dp) //  reserve width
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(14.dp))
 
             // Shares section
             Icon(

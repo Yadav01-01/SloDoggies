@@ -29,7 +29,8 @@ class EditBusinessViewModel @Inject constructor() : ViewModel() {
         val fromTime: String = "",
         val toTime: String = "",
         val zipCode: String = "",
-        val showImagePickerDialog: Boolean = false
+        val showImagePickerDialog: Boolean = false,
+        val showUpdatedDialog: Boolean = false
     )
 
     private val _uiState = MutableStateFlow(UiState())
@@ -93,6 +94,14 @@ class EditBusinessViewModel @Inject constructor() : ViewModel() {
 
     fun toggleImagePickerDialog() {
         _uiState.update { it.copy(showImagePickerDialog = true) }
+    }
+
+    fun toggleUpdateDialog() {
+        _uiState.update { it.copy(showUpdatedDialog = true) }
+    }
+
+    fun hideUpdateDialog() {
+        _uiState.update { it.copy(showUpdatedDialog = false) }
     }
 
     fun hideImagePickerDialog() {

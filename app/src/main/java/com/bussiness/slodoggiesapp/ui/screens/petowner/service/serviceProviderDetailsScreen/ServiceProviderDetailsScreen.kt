@@ -45,12 +45,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -385,11 +388,31 @@ fun EnhancedExpandableInfoSpinner(
                         .padding(start = 12.dp, end = 16.dp, bottom = 16.dp)
                 ) {
                     Text(
-                        text = "$ Business Description:$businessDescription",
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        fontSize = 12.sp,
-                        color = Color.Black
+                        buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                    fontWeight = FontWeight.Medium,
+                                    fontSize = 12.sp,
+                                    color = Color.Black
+                                )
+                            ) {
+                                append("Business Description : ")
+                            }
+                            withStyle(
+                                style = SpanStyle(
+                                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = 12.sp,
+                                    color = Color.Black
+                                )
+                            ) {
+                                append(businessDescription)
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth()
                     )
+
                     Spacer(modifier = Modifier.height(12.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(), // Required for Alignment.CenterEnd to work
@@ -556,8 +579,6 @@ fun SwitchButton(
     }
 
 }
-
-
 
 @Preview(showBackground = true)
 @Composable
