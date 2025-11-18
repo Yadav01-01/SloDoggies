@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.model.businessProvider.NotificationData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.NotificationData
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.NotificationItem
@@ -68,7 +68,6 @@ fun NotificationScreen(navController: NavHostController) {
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     style = MaterialTheme.typography.titleMedium
                 )
-
                 HorizontalDivider(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color.Black))
             }
 
@@ -82,7 +81,7 @@ fun NotificationScreen(navController: NavHostController) {
                     previewImageUrl = notification.previewImageUrl,
                     type = notification.type,
                     onJoinChatClick = {
-                        // Handle join chat button click
+                       navController.navigate(Routes.CHAT_SCREEN)
                     }
                 )
             }
@@ -92,14 +91,14 @@ fun NotificationScreen(navController: NavHostController) {
 
 // Dummy data
 val dummyNotifications = listOf(
-    NotificationData(
+    com.bussiness.slodoggiesapp.data.model.businessProvider.NotificationData(
         username = "Event Saved",
         message = "You’ve marked this event as Interested — we’ll keep you updated! \uD83D\uDC3E",
         time = "Just Now",
         previewImageUrl = null,
         type = "event"
     ),
-    NotificationData(
+    com.bussiness.slodoggiesapp.data.model.businessProvider.NotificationData(
         profileImageUrl = "https://example.com/user1.jpg",
         username = "_username",
         message = "⭐️⭐️⭐️⭐️⭐️ \"Great service!\"",
@@ -107,7 +106,7 @@ val dummyNotifications = listOf(
         previewImageUrl = null,
         type = "post"
     ),
-    NotificationData(
+    com.bussiness.slodoggiesapp.data.model.businessProvider.NotificationData(
         profileImageUrl = "https://example.com/user2.jpg",
         username = "_username",
         message = "liked your post.",
@@ -115,7 +114,7 @@ val dummyNotifications = listOf(
         previewImageUrl = "https://example.com/post1.jpg",
         type = "post"
     ),
-    NotificationData(
+    com.bussiness.slodoggiesapp.data.model.businessProvider.NotificationData(
         profileImageUrl = "https://example.com/user3.jpg",
         username = "_username",
         message = "started following you.",

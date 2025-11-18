@@ -3,7 +3,7 @@ package com.bussiness.slodoggiesapp.util
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.util.AppConstant.KEY_IS_LOGGED_IN
 import com.bussiness.slodoggiesapp.util.AppConstant.KEY_IS_SKIP_LOGIN
 import com.bussiness.slodoggiesapp.util.AppConstant.KEY_USER_TYPE
@@ -21,6 +21,11 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
 
     companion object {
         private const val PREF_NAME = "app_preferences"
+
+        // Keys for new data
+        private const val KEY_USER_ID = "key_user_id"
+        private const val KEY_TOKEN = "key_token"
+        private const val KEY_SIGNUP_FLOW = "signup_flow"
 
         @Volatile
         private var instance: SessionManager? = null
@@ -43,19 +48,51 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
     /** Get user login state */
     fun isLoggedIn(): Boolean = preferences.getBoolean(KEY_IS_LOGGED_IN, false)
 
-    /** Save user type (OWNER or PROFESSIONAL) */
+    /** Save user type (Owner or Professional) */
     fun setUserType(userType: UserType) {
         preferences.edit { putString(KEY_USER_TYPE, userType.name) }
     }
 
     /** Get saved user type safely */
     fun getUserType(): UserType {
-        val type = preferences.getString(KEY_USER_TYPE, UserType.PET_OWNER.name)
+        val type = preferences.getString(KEY_USER_TYPE, UserType.Owner.name)
         return try {
-            UserType.valueOf(type!!)
+            UserType.valueOf(type ?: UserType.Owner.name)
         } catch (e: Exception) {
-            UserType.PET_OWNER // default fallback
+            UserType.Owner // default fallback
         }
+    }
+
+    /** Save user ID */
+    fun setUserId(userId: String) {
+        preferences.edit { putString(KEY_USER_ID, userId) }
+    }
+
+    /** Get user ID safely */
+    fun getUserId(): String {
+        return preferences.getString(KEY_USER_ID, "") ?: ""
+    }
+
+    /** Save auth token */
+    fun setToken(token: String) {
+        preferences.edit { putString(KEY_TOKEN, token) }
+    }
+
+    /** Get saved auth token safely */
+    fun getToken(): String {
+        return preferences.getString(KEY_TOKEN, "") ?: ""
+    }
+
+    fun setSignupFlow(active: Boolean) {
+        preferences.edit { putBoolean(KEY_SIGNUP_FLOW, active) }
+    }
+
+    fun isSignupFlowActive(): Boolean {
+        return preferences.getBoolean(KEY_SIGNUP_FLOW, false)
+    }
+
+    fun clearSignupFlow() {
+        preferences.edit { remove(KEY_SIGNUP_FLOW) }
     }
 
     /** Clear session on logout */

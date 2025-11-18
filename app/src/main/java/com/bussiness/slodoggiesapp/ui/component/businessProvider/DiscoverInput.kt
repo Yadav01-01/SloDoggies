@@ -54,9 +54,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.EventPost
-import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
-import com.bussiness.slodoggiesapp.model.petOwner.PetPlaceItem
+import com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost
+import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
+import com.bussiness.slodoggiesapp.data.model.petOwner.PetPlaceItem
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostLikes
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostOptionsMenu
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -359,7 +359,7 @@ fun PetOwnerDetail(
 
 
 @Composable
-fun GalleryItemCard(item: GalleryItem, height: Int = 150,onClickItem: () -> Unit) {
+fun GalleryItemCard(item: com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem, height: Int = 150, onClickItem: () -> Unit) {
     Box(
         modifier = Modifier
             .height(height.dp) // You can adjust height here
@@ -392,7 +392,7 @@ fun GalleryItemCard(item: GalleryItem, height: Int = 150,onClickItem: () -> Unit
 }
 
 @Composable
-fun PetPlaceCard(placeItem: PetPlaceItem,onItemClick: () -> Unit) {
+fun PetPlaceCard(placeItem: com.bussiness.slodoggiesapp.data.model.petOwner.PetPlaceItem, onItemClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -450,7 +450,7 @@ fun PetPlaceCard(placeItem: PetPlaceItem,onItemClick: () -> Unit) {
 }
 
 @Composable
-fun SocialEventCard( event: EventPost,onJoinCommunity: () -> Unit,onReportClick: () -> Unit,onShareClick: () -> Unit,onSaveClick : () -> Unit) {
+fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost, onJoinCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onSaveClick : () -> Unit, onProfileClick: () -> Unit) {
     var isFollowed by remember { mutableStateOf(false) }
     Column(modifier = Modifier
         .background(Color.White)
@@ -472,6 +472,7 @@ fun SocialEventCard( event: EventPost,onJoinCommunity: () -> Unit,onReportClick:
                 modifier = Modifier
                     .size(36.dp)
                     .clip(CircleShape)
+                    .clickable { onProfileClick() }
             )
 
             Spacer(modifier = Modifier.width(8.dp))

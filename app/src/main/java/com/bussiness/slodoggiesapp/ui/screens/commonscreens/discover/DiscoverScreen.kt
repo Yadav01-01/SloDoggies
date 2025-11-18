@@ -26,11 +26,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.EventPost
-import com.bussiness.slodoggiesapp.model.businessProvider.SearchResult
-import com.bussiness.slodoggiesapp.model.common.MediaItem
-import com.bussiness.slodoggiesapp.model.common.MediaType
-import com.bussiness.slodoggiesapp.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost
+import com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult
+import com.bussiness.slodoggiesapp.data.model.common.MediaItem
+import com.bussiness.slodoggiesapp.data.model.common.MediaType
+import com.bussiness.slodoggiesapp.data.model.common.PostItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategorySection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HashtagSection
@@ -93,8 +93,8 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
         when (selectedCategory) {
             "Pets Near You" -> ShowPetsNearYou(searchResults, navController)
             "Pet Places"    -> PetPlacesResults( onItemClick = { viewModel.showPetPlaceDialog()})
-            "Activities"    -> { ActivitiesPostsList(posts = getSamplePosts(), onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }) }
-            "Events"        -> EventsResult(onClickMore = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onSavedClick = { viewModel.showSavedDialog() }, onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) })
+            "Activities"    -> { ActivitiesPostsList(posts = getSamplePosts(), onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)}) }
+            "Events"        -> EventsResult(onClickMore = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onSavedClick = { viewModel.showSavedDialog() }, onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)})
             else            -> ShowGeneralResults(searchResults, navController)
         }
     }
@@ -138,10 +138,10 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
 
 
 @Composable
-fun EventsResult(onClickMore: () -> Unit,onJoinClick : () -> Unit,onShareClick: () -> Unit,onSavedClick: () -> Unit) {
+fun EventsResult(onClickMore: () -> Unit,onJoinClick : () -> Unit,onShareClick: () -> Unit,onSavedClick: () -> Unit,onProfileClick: () -> Unit) {
 
     val sampleEvents = listOf(
-        EventPost(
+        com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost(
             userName = "Lydia Vaccaro with Wixx",
             userImage = R.drawable.user_ic,
             postImage = R.drawable.post_img,
@@ -162,7 +162,7 @@ fun EventsResult(onClickMore: () -> Unit,onJoinClick : () -> Unit,onShareClick: 
             comments = 20,
             shares = 10
         ),
-        EventPost(
+        com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost(
             userName = "Lydia Vaccaro with Wixx",
             userImage = R.drawable.user_ic,
             postImage = R.drawable.post_img,
@@ -183,7 +183,7 @@ fun EventsResult(onClickMore: () -> Unit,onJoinClick : () -> Unit,onShareClick: 
             comments = 20,
             shares = 10
         ),
-        EventPost(
+        com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost(
             userName = "Lydia Vaccaro with Wixx",
             userImage = R.drawable.user_ic,
             postImage = R.drawable.post_img,
@@ -204,7 +204,7 @@ fun EventsResult(onClickMore: () -> Unit,onJoinClick : () -> Unit,onShareClick: 
             comments = 20,
             shares = 10
         ),
-        EventPost(
+        com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost(
             userName = "Lydia Vaccaro with Wixx",
             userImage = R.drawable.user_ic,
             postImage = R.drawable.post_img,
@@ -234,13 +234,13 @@ fun EventsResult(onClickMore: () -> Unit,onJoinClick : () -> Unit,onShareClick: 
         items(sampleEvents) { event ->
             SocialEventCard( event = event , onReportClick = { onClickMore() },
                 onShareClick = { onShareClick() }, onSaveClick = { onSavedClick() },
-                onJoinCommunity = { onJoinClick()})
+                onJoinCommunity = { onJoinClick()}, onProfileClick = { onProfileClick() })
         }
     }
 }
 
 @Composable
-fun ShowGeneralResults(results: List<SearchResult>, controller: NavHostController) {
+fun ShowGeneralResults(results: List<com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult>, controller: NavHostController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -259,9 +259,9 @@ fun ShowGeneralResults(results: List<SearchResult>, controller: NavHostControlle
     }
 }
 
-fun getSamplePosts(): List<PostItem> {
+fun getSamplePosts(): List<com.bussiness.slodoggiesapp.data.model.common.PostItem> {
     return listOf(
-        PostItem.NormalPost(
+        com.bussiness.slodoggiesapp.data.model.common.PostItem.NormalPost(
             user = "Lydia Vaccaro with Wixx",
             role = "Pet Mom",
             time = "5 Min.",
@@ -270,13 +270,24 @@ fun getSamplePosts(): List<PostItem> {
             likes = 120,
             comments = 20,
             shares = 10,
+            postType = "other",
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.VIDEO, )
-            )
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageRes = R.drawable.dog1
+                ),
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageUrl = "https://picsum.photos/400"
+                ),
+//                MediaItem(
+//                    MediaType.VIDEO,
+//                    videoRes = R.raw.reel,
+//                    thumbnailRes = R.drawable.dummy_social_media_post
+//                )
+            ),
         ),
-        PostItem.NormalPost(
+        com.bussiness.slodoggiesapp.data.model.common.PostItem.NormalPost(
             user = "John Doe with Max",
             role = "Pet Dad",
             time = "15 Min.",
@@ -285,10 +296,17 @@ fun getSamplePosts(): List<PostItem> {
             likes = 85,
             comments = 12,
             shares = 5,
+            postType = "other",
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE)
-            )
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageRes = R.drawable.dog1
+                ),
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageUrl = "https://picsum.photos/400"
+                ),
+            ),
         )
     )
 }

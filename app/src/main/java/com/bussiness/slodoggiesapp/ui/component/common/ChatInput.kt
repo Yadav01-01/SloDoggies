@@ -50,7 +50,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.ChatWindow
+import com.bussiness.slodoggiesapp.data.model.common.ChatWindow
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
 
@@ -129,7 +129,7 @@ fun BottomMessageBar(
             }
         }
 
-        // 🔹 Input Row
+        // Input Row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,7 +198,7 @@ fun BottomMessageBar(
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            // 🔹 Send Button
+            // Send Button
             Box(
                 modifier = Modifier
                     .size(50.dp)
@@ -219,7 +219,7 @@ fun BottomMessageBar(
 }
 
 @Composable
-fun FeedbackBubble(message: ChatWindow.Feedback) {
+fun FeedbackBubble(message: com.bussiness.slodoggiesapp.data.model.common.ChatWindow.Feedback) {
     var feedbackText by remember { mutableStateOf(message.feedbackText) }
     var ratings by remember { mutableStateOf(message.userRatings.toMutableList()) }
 

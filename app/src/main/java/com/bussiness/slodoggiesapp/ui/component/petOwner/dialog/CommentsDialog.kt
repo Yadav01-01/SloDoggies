@@ -8,15 +8,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -78,17 +84,19 @@ fun CommentsDialog(
     var replyingTo by remember { mutableStateOf<String?>(null) }
 
 
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false )
+            decorFitsSystemWindows = false
+        )
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding(), // pushes content above keyboard
+                .windowInsetsPadding(
+                    WindowInsets.safeDrawing.union(WindowInsets.ime)
+                ),
             contentAlignment = Alignment.BottomCenter
         ) {
             Column(
@@ -154,15 +162,32 @@ fun CommentsDialog(
                                 .padding(horizontal = 16.dp)
                         ) {
                             itemsIndexed(comments) { index, comment ->
+//                                CommentItem(
+//                                    comment = comment,
+//                                    onReply = { replyingTo = comment.userName },
+//                                    onEditClick = {
+//                                        editingComment = comment
+//                                        newComment = comment.text // prefill text in box
+//                                    },
+//                                    onDeleteClick = { onDeleteClick() }
+//                                )
                                 CommentItem(
                                     comment = comment,
-                                    onReply = { replyingTo = comment.userName },
+                                    onReply = {
+                                        // If user taps reply, cancel edit mode immediately
+                                        editingComment = null
+                                        newComment = ""
+                                        replyingTo = comment.userName
+                                    },
                                     onEditClick = {
+                                        // If user taps edit, cancel reply mode immediately
+                                        replyingTo = null
                                         editingComment = comment
-                                        newComment = comment.text // prefill text in box
+                                        newComment = comment.text
                                     },
                                     onDeleteClick = { onDeleteClick() }
                                 )
+
 
 
 
@@ -197,7 +222,6 @@ fun CommentsDialog(
 
                                 .fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
-
                         ) {
                             // Reply indicator if replying to someone
                             replyingTo?.let { userName ->
@@ -259,7 +283,6 @@ fun CommentsDialog(
                                 }
                                 HorizontalDivider(thickness = 1.dp, color = PrimaryColor)
                             }
-
                             // Input field
                             CommentInputBox(
                                 newComment = newComment,
@@ -281,20 +304,13 @@ fun CommentsDialog(
                                 },
                                 onEmojiClick = {  }
                             )
-
-
                         }
-
                     }
                 }
             }
         }
     }
 }
-
-
-
-
 
 @Composable
 fun CommentInputBox(
@@ -698,7 +714,6 @@ data class Comment(
     val isLiked: Boolean,
     val replies: List<Comment> = emptyList(),
     var user: Boolean = false
-
 )
 
 @Composable
@@ -748,14 +763,9 @@ fun CommentOptionsPopup(
     }
 }
 
-
-
 fun Offset.toDpOffset(): DpOffset {
     return DpOffset(x.toDp(), y.toDp())
 }
-
-
-
 
 @Preview(showBackground = true)
 @Composable

@@ -34,15 +34,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.Event
+import com.bussiness.slodoggiesapp.data.model.businessProvider.Event
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
 fun EventCard(
-    event: Event,
+    event: com.bussiness.slodoggiesapp.data.model.businessProvider.Event,
     selectedOption: String,
-    onButtonClick: (Event) -> Unit
+    onButtonClick: (com.bussiness.slodoggiesapp.data.model.businessProvider.Event) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -180,7 +180,7 @@ fun EventCard(
 @Preview
 @Composable
 fun PreviewEventCard() {
-    val sampleEvent = Event(
+    val sampleEvent = com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
         id = "1",
         imageUrl = "https://via.placeholder.com/600x400.png?text=Event+Image",
         title = "Event Title",

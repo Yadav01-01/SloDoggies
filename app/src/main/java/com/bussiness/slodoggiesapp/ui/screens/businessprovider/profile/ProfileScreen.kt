@@ -27,6 +27,9 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,7 +48,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
+import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OutlineCustomButton
@@ -58,27 +61,33 @@ import com.bussiness.slodoggiesapp.viewModel.businessProvider.ProfileViewModel
 @Composable
 fun ProfileScreen(navController: NavHostController) {
     val viewModel : ProfileViewModel = hiltViewModel()
-
     val email by viewModel.email.collectAsState()
     val description by viewModel.description.collectAsState()
+    var isNavigating by remember { mutableStateOf(false) }
 
     val sampleImages = listOf(
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2)
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2)
     )
 
-    BackHandler { 
-        navController.popBackStack()
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
         ScreenHeadingText(textHeading = "My Profile",
-            onBackClick = { navController.popBackStack() },
+            onBackClick = {   if (!isNavigating) {
+                isNavigating = true
+                navController.popBackStack()
+            }},
             onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
@@ -129,15 +138,6 @@ fun ProfileScreen(navController: NavHostController) {
                                 fontWeight = FontWeight.SemiBold,
                                 modifier = Modifier.weight(1f)
                             )
-
-//                            Icon(
-//                                painter = painterResource(R.drawable.edit_ic_p),
-//                                contentDescription = "icon",
-//                                tint = Color.Unspecified,
-//                                modifier = Modifier.wrapContentSize()
-//                                    .clickable { navController.navigate(Routes.EDIT_PROFILE_SCREEN)  }
-//                            )
-
                         }
 
                         Spacer(Modifier.height(5.dp))
@@ -216,7 +216,6 @@ fun ProfileScreen(navController: NavHostController) {
         }
     }
 }
-
 
 
 @Preview(showBackground = true)

@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchBar
@@ -72,7 +72,7 @@ fun MessageScreen(
     Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
         Column(modifier = Modifier.fillMaxSize()) {
             HeadingTextWithIcon(
-                textHeading = "Message",
+                textHeading = "Messages",
                 onBackClick = {  if (canNavigate) {
                     canNavigate = false
                     navController.navigate(Routes.HOME_SCREEN) {
@@ -114,7 +114,7 @@ fun MessageScreen(
         }
 
         // FAB fixed at bottom-right, outside the LazyColumn
-        if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
+        if (sessionManager.getUserType() == UserType.Professional) {
             NewMessageButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

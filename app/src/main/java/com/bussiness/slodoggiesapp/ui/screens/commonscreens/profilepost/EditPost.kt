@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -74,6 +75,18 @@ fun EditPostScreen(
     viewModel: EditPostViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var isNavigating by remember { mutableStateOf(false) }
+
+    // Handle physical back button safely
+    BackHandler(enabled = !isNavigating) {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.navigate(Routes.USER_POST_SCREEN) {
+                popUpTo(Routes.EDIT_POST_SCREEN) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -81,15 +94,21 @@ fun EditPostScreen(
                 ParticipantTextWithIcon(
                     textHeading = stringResource(R.string.edit_info),
                     onBackClick = {
-                        navController.navigate(Routes.USER_POST_SCREEN) {
-                            popUpTo(Routes.USER_POST_SCREEN) { inclusive = true }
-                            launchSingleTop = true
+                        if (!isNavigating) {
+                            isNavigating = true
+                            navController.navigate(Routes.USER_POST_SCREEN) {
+                                popUpTo(Routes.EDIT_POST_SCREEN) { inclusive = true }
+                                launchSingleTop = true
+                            }
                         }
                     },
                     onClick = {
-                        navController.navigate(Routes.USER_POST_SCREEN) {
-                            popUpTo(Routes.USER_POST_SCREEN) { inclusive = true }
-                            launchSingleTop = true
+                        if (!isNavigating) {
+                            isNavigating = true
+                            navController.navigate(Routes.USER_POST_SCREEN) {
+                                popUpTo(Routes.EDIT_POST_SCREEN) { inclusive = true }
+                                launchSingleTop = true
+                            }
                         }
                     },
                     selected = uiState.description.isNotEmpty()

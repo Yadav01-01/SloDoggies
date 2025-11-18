@@ -1,75 +1,195 @@
 package com.bussiness.slodoggiesapp.viewModel.common
 
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.main.UserType
+import com.bussiness.slodoggiesapp.data.remote.Repository
+import com.bussiness.slodoggiesapp.data.uiState.VerifyOtpUiState
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class VerifyOTPViewModel @Inject constructor(
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val repository: Repository,
 ) : ViewModel() {
 
-    private val _otp = MutableStateFlow("")
-    val otp: StateFlow<String> = _otp.asStateFlow()
+    private val _uiState = MutableStateFlow(VerifyOtpUiState())
+    val uiState: StateFlow<VerifyOtpUiState> = _uiState.asStateFlow()
 
-    private val _successDialog = MutableStateFlow(false)
-    val successDialog: StateFlow<Boolean> = _successDialog.asStateFlow()
+    private val _events = MutableSharedFlow<UiEvent>()
+    val events = _events.asSharedFlow()
 
-    private val _disclaimerDialog = MutableStateFlow(false)
-    val disclaimerDialog: StateFlow<Boolean> = _disclaimerDialog.asStateFlow()
-
-    fun updateOtp(newOtp: String) {
-        _otp.value = newOtp
+    sealed class UiEvent {
+        data class ShowToast(val message: String) : UiEvent()
+        data object NavigateToNext : UiEvent()
     }
 
-    fun showDisclaimerDialog() {
-        _disclaimerDialog.value = true
+
+    // --- UI State Updates ---
+    fun updateOtp(newOtp: String) {
+        _uiState.update { it.copy(otp = newOtp) }
     }
 
     private fun showSuccessDialog() {
-        _successDialog.value = true
+        _uiState.update { it.copy(successDialogVisible = true, isLoading = false) }
     }
 
-    fun dismissSuccessDialog() {
-        _successDialog.value = false
+    fun dismissSuccessDialog(navController: NavHostController) {
+        _uiState.update { it.copy(successDialogVisible = false) }
+        navigateToNextScreen(navController)
     }
-    fun dismissDisclaimerDialog(navController: NavHostController) {
-        _disclaimerDialog.value = false
-        if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
-            navController.navigate(Routes.BUSINESS_REGISTRATION) {
-                popUpTo(Routes.SIGNUP_SCREEN) { inclusive = true }
-            }
+
+    fun onTimerFinish() {
+        _uiState.update { it.copy(isTimerFinished = true) }
+    }
+
+    fun resetTimer() {
+        _uiState.update { it.copy(isTimerFinished = false) }
+    }
+
+
+    private fun navigateToNextScreen(navController: NavHostController) {
+        val route = if (sessionManager.getUserType() == UserType.Professional) {
+            Routes.BUSINESS_REGISTRATION
         } else {
-            navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) {
-                popUpTo(Routes.SIGNUP_SCREEN) { inclusive = true }
-            }
+            Routes.NOTIFICATION_PERMISSION_SCREEN
+        }
+        navController.navigate(route) {
+            popUpTo(Routes.SIGNUP_SCREEN) { inclusive = true }
         }
     }
 
+    // --- OTP Validation ---
+    fun isOtpValid(): Boolean = _uiState.value.otp.length == 4
 
-    fun isOtpValid(): Boolean = _otp.value.length == 4
-
-    fun onVerifyClick(type: String, navController: NavHostController, context: Context) {
-        if (type == "forgotPass") {
-            navController.navigate(Routes.NEW_PASSWORD_SCREEN)
+    // --- Verify OTP and Register User ---
+    fun onVerifyClick(
+        type: String,
+        name: String,
+        emailOrPhone: String,
+        password: String
+    ) {
+        if (!isOtpValid()) {
+            viewModelScope.launch {
+                _events.emit(UiEvent.ShowToast("Please enter a valid OTP"))
+            }
             return
         }
 
-        if (isOtpValid()) {
-            sessionManager.setLogin(true)
-            showSuccessDialog()
-        } else {
-            Toast.makeText(context, "Please enter valid OTP", Toast.LENGTH_SHORT).show()
+        when (type) {
+            //  Forgot Password flow
+            "forgot" -> {
+                viewModelScope.launch {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+                    repository.verifyForgotOtp(emailOrPhone, uiState.value.otp)
+                        .collectLatest { result ->
+                            when (result) {
+                                is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
+
+                                is Resource.Success -> {
+                                    // Success → navigate to reset password screen
+                                    _uiState.update { it.copy(isLoading = false) }
+                                    _events.emit(UiEvent.NavigateToNext)
+                                }
+
+                                is Resource.Error -> {
+                                    _uiState.update { it.copy(isLoading = false) }
+                                    _events.emit(
+                                        UiEvent.ShowToast(result.message ?: "Failed to verify OTP")
+                                    )
+                                }
+
+                                else -> Unit
+                            }
+                        }
+                }
+            }
+
+            // Normal Registration flow
+            else -> {
+                viewModelScope.launch {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+                    repository.registerUser(
+                        fullName = name,
+                        emailOrPhone = emailOrPhone,
+                        password = password,
+                        deviceType = "Android",
+                        fcm_token = "ghjdfjhxfhfghdh",
+                        userType = sessionManager.getUserType().toString(),
+                        otp = _uiState.value.otp
+                    ).collectLatest { result ->
+                        when (result) {
+                            is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
+
+                            is Resource.Success -> {
+                                sessionManager.setLogin(true)
+                                sessionManager.setUserId(result.data.data?.user?.id.toString())
+                                sessionManager.setToken(result.data.data?.token.toString())
+                                showSuccessDialog()
+                            }
+
+                            is Resource.Error -> {
+                                _uiState.update { it.copy(isLoading = false) }
+                                _events.emit(UiEvent.ShowToast(result.message))
+                            }
+
+                            else -> Unit
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    fun resendOtp(emailOrPhone: String, type: String) {
+        viewModelScope.launch {
+
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            repository.resendOTP(emailOrPhone, type).collectLatest { result ->
+                when (result) {
+
+                    is Resource.Loading -> {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }
+
+                    is Resource.Success -> {
+                        _uiState.update { it.copy(isLoading = false) }
+
+                        result.data.message?.let { message ->
+                            _events.emit(UiEvent.ShowToast(message))
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update { it.copy(isLoading = false) }
+                        onError(result.message)
+                    }
+
+                    Resource.Idle -> Unit // No action needed
+                }
+            }
+        }
+    }
+
+
+    private fun onError(message: String?) {
+        _uiState.update { it.copy(errorMessage = message ?: "Something went wrong") }
     }
 
 }

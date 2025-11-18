@@ -87,22 +87,20 @@ fun PostScreen(navController: NavHostController) {
         }
         if (successDialog){
             PostSuccessDialog(
-                onDismiss = { successDialog = false },
+                onDismiss = { successDialog = false
+                            navController.navigate(Routes.HOME_SCREEN)},
                 text =  "Post Created!"
             )
         }
         if (eventSuccess){
             PostSuccessDialog(
-                onDismiss = { eventSuccess = false },
+                onDismiss = { eventSuccess = false
+                    navController.navigate(Routes.HOME_SCREEN)},
                 text =  "Event Created!"
             )
         }
-
     }
-
 }
-
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)

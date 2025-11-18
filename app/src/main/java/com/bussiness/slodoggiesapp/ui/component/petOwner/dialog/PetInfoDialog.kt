@@ -66,7 +66,8 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.petOwner.PetInfo
+import com.bussiness.slodoggiesapp.data.model.petOwner.PetInfo
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScrollableDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
@@ -240,11 +241,12 @@ fun PetInfoDialog(
                         }
 
                         item {
-                            CustomOutlinedTextField(
-                                value = uiState.petBio,
-                                onValueChange = { viewModel.updatePetBio(it) },
+                            FormHeadingText(stringResource(R.string.label_pet_bio))
+                            Spacer(Modifier.height(5.dp))
+                            DescriptionBox(
                                 placeholder = stringResource(R.string.placeholder_pet_bio),
-                                label = stringResource(R.string.label_pet_bio)
+                                value = uiState.petBio,
+                                onValueChange = { viewModel.updatePetBio(it)  }
                             )
                         }
 
@@ -255,7 +257,7 @@ fun PetInfoDialog(
                             ) {
                                 CommonWhiteButton(
                                     text = if (onProfile) stringResource(R.string.cancel) else stringResource(R.string.continue_btn),
-                                    onClick = { viewModel.onContinue(onProfile) },
+                                    onClick = { viewModel.onContinue(context,onProfile) },
                                     modifier = Modifier.weight(1f)
                                 )
                                 CommonBlueButton(

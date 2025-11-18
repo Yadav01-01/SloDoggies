@@ -38,16 +38,8 @@ import com.bussiness.slodoggiesapp.viewModel.businessProvider.BusinessRegistrati
 @Composable
 fun BusinessRegistrationScreen(navController: NavHostController,viewModel: BusinessRegistrationViewModel = hiltViewModel()){
 
-    val name by viewModel.name.collectAsState()
-    val email by viewModel.email.collectAsState()
-    val location by viewModel.location.collectAsState()
-    val url by viewModel.url.collectAsState()
-    val contact by viewModel.contact.collectAsState()
-    val streetAddress by viewModel.streetAddress.collectAsState()
-    val areaSector by viewModel.areaSector.collectAsState()
-    val landmark by viewModel.landmark.collectAsState()
+    val state by viewModel.uiState.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
-
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
@@ -69,7 +61,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
             item {
                 FormHeadingText(stringResource(R.string.business_name))
                 InputField(
-                    input = name,
+                    input = state.name,
                     onValueChange = { viewModel.updateName(it) },
                     placeholder = stringResource(R.string.enter_name)
                 )
@@ -78,7 +70,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
             item {
                 FormHeadingText(stringResource(R.string.email))
                 InputField(
-                    input = email,
+                    input = state.email,
                     onValueChange = { viewModel.updateEmail(it) },
                     placeholder = stringResource(R.string.enter_email)
                 )
@@ -87,21 +79,25 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
             item {
                 FormHeadingText(stringResource(R.string.Upload_business_logo))
                 Spacer(Modifier.height(5.dp))
-                MediaUploadSection(maxImages = 10) { uri ->
+                MediaUploadSection(maxImages = 1) { uri ->
                     // viewModel.addPetImage(uri)
                 }
             }
 
             item {
                 FormHeadingText(stringResource(R.string.Category))
-                CategoryInputField()
+                CategoryInputField(
+                    categories = state.categories,
+                    onCategoryAdded = { viewModel.addCategory(it) },
+                    onCategoryRemoved = { viewModel.removeCategory(it) }
+                )
             }
 
             item {
                 FormHeadingText(stringResource(R.string.Business_address))
                 InputField(
-                    input = location,
-                    onValueChange = { viewModel.updateLocation(it) },
+                    input = state.businessAddress,
+                    onValueChange = { viewModel.updateBusinessAddress(it) },
                     placeholder = stringResource(R.string.Enter_Business_Address)
                 )
             }
@@ -110,8 +106,8 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
                 FormHeadingText(stringResource(R.string.area_sector))
                 InputField(
                     placeholder = stringResource(R.string.enter_area_sector),
-                    input = areaSector,
-                    onValueChange = { viewModel.updateAreaSector(it) }
+                    input = state.city,
+                    onValueChange = { viewModel.updateCity(it) }
                 )
             }
 
@@ -119,8 +115,8 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
                 FormHeadingText(stringResource(R.string.landmark))
                 InputField(
                     placeholder = stringResource(R.string.enter_landmark),
-                    input = landmark,
-                    onValueChange = { viewModel.updateLandmark(it) }
+                    input = state.state,
+                    onValueChange = { viewModel.updateState(it) }
                 )
             }
 
@@ -128,16 +124,16 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
                 FormHeadingText(stringResource(R.string.zip_code))
                 InputField(
                     placeholder = stringResource(R.string.enter_zip_code),
-                    input = streetAddress ,
-                    onValueChange = { viewModel.updateStreetAddress(it) }
+                    input = state.zipCode ,
+                    onValueChange = { viewModel.updateZip(it) }
                 )
             }
 
             item {
                 FormHeadingText(stringResource(R.string.website_))
                 InputField(
-                    input = url,
-                    onValueChange = { viewModel.updateUrl(it) },
+                    input = state.website,
+                    onValueChange = { viewModel.updateWebsite(it) },
                     placeholder = "URL"
                 )
             }
@@ -145,7 +141,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
             item {
                 FormHeadingText(stringResource(R.string.contact_number))
                 InputField(
-                    input = contact,
+                    input = state.contact,
                     onValueChange = { viewModel.updateContact(it) },
                     placeholder = "Enter Contact"
                 )
@@ -165,7 +161,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 
             item {
                 FormHeadingText(stringResource(R.string.Upload_verification_docs))
-                MediaUploadSection(maxImages = 10) { uri ->
+                MediaUploadSection(maxImages = 6) { uri ->
                     // viewModel.addPetImage(uri)
                 }
             }
@@ -179,12 +175,9 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
-
         }
-
     }
 }
-
 
 
 @Preview(showBackground = true)

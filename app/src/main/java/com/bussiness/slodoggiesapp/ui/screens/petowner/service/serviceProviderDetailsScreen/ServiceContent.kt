@@ -110,7 +110,6 @@ data class ServiceItem(
     val amount: String
 )
 
-
 @Composable
 fun EnhancedExpandableFullGroomingPackage(packageName: String,description : String,amount : String) {
     var expanded by remember { mutableStateOf(false) }
@@ -159,66 +158,58 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
             }
             if (expanded) {
                 Column {
-
-                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                    Text(
-                        text = description,
-                        fontSize = 12.sp,
-                        color = Color(0xFF666666),
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(
-                            text = stringResource(R.string.amount),
+                            text = description,
+                            fontSize = 12.sp,
+                            color = Color(0xFF666666),
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = stringResource(R.string.amount),
+                                fontSize = 14.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium))
+                            )
+
+                            Text(
+                                text = "$$amount",
+                                fontSize = 14.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium))
+                            )
+                        }
+                        Spacer(Modifier.height(20.dp))
+                        Text(
+                            text = stringResource(R.string.photos),
                             fontSize = 14.sp,
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.outfit_medium))
                         )
 
-                        Text(
-                            text = "$$amount",
-                            fontSize = 14.sp,
-                            color = Color.Black,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium))
-                        )
                     }
 
-
-                    Spacer(Modifier.height(20.dp))
-
-                    Text(
-                        text = stringResource(R.string.photos),
-                        fontSize = 14.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium))
+                    Divider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        color = Color(0xFFE5EFF2),
+                        thickness = 1.dp
                     )
-
+                    ImageGalleryScreen()
                 }
-
-                Divider(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                    color = Color(0xFFE5EFF2),
-                    thickness = 1.dp
-                )
-
-                ImageGalleryScreen()
-            }
             }
         }
-
     }
 }
-
-
 
 @Composable
 fun ImageGalleryScreen() {
@@ -263,7 +254,6 @@ fun ImageGalleryScreen() {
                         onClick = { selectedImageIndex = index }
                     )
                 }
-
 
                 item {
                     Box {
@@ -323,7 +313,6 @@ fun ImageGridItem(
             .fillMaxWidth()
             .clickable { onClick() }
     ) {
-        val size = maxWidth
         Card(
             modifier = Modifier
                 .fillMaxWidth()

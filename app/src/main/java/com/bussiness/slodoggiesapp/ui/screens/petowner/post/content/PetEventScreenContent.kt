@@ -70,7 +70,7 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
         item {
             FormHeadingText(stringResource(R.string.upload_media))
             Spacer(Modifier.height(10.dp))
-            MediaUploadSection(maxImages = 10) { uri ->
+            MediaUploadSection(maxImages = 6) { uri ->
                 // This lambda is called whenever a new image is selected
                 // You can now send this URI to your API or store in ViewModel
 //                viewModel.addPetImage(uri)

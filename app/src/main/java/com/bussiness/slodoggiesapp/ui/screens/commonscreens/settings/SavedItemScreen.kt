@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
+import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
@@ -34,12 +34,15 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 fun SavedItemScreen(navController: NavHostController) {
 
     val dataList = listOf(
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2, isVideo = true),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2)
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(
+            R.drawable.dog2,
+            isVideo = true
+        ),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2)
     )
     var isNavigating by remember { mutableStateOf(false) }
 

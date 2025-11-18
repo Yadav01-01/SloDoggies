@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,8 +41,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.VerificationType
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
@@ -56,9 +57,27 @@ fun ForgotPasswordScreen(
     type : String,
     viewModel: ForgotPasswordViewModel = hiltViewModel()
 ) {
-    val state by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val otpState by viewModel.otpState.collectAsState()
     val context = LocalContext.current
     var isNavigating by remember { mutableStateOf(false) }
+
+    //  Handle OTP API result
+    LaunchedEffect(otpState) {
+        when (otpState) {
+            is Resource.Success -> {
+                Toast.makeText(context, "OTP sent successfully", Toast.LENGTH_SHORT).show()
+                navController.navigate("${Routes.VERIFY_OTP}?type=forgot&name=${""}&emailOrPhone=${uiState.email}&password=${""}")
+            }
+
+            is Resource.Error -> {
+                val message = (otpState as Resource.Error).message
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
+
+            else -> Unit
+        }
+    }
 
     BackHandler {
         if (!isNavigating) {
@@ -114,7 +133,7 @@ fun ForgotPasswordScreen(
             Spacer(modifier = Modifier.height(15.dp))
 
             EmailInputField(
-                email = state.email,
+                email = uiState.email,
                 onValueChange = { viewModel.onEmailChange(it) }
             )
 
@@ -123,9 +142,6 @@ fun ForgotPasswordScreen(
             ContinueButton(
                 onClick = {
                     viewModel.sendCode(
-                        onSuccess = {
-                            navController.navigate("${Routes.VERIFY_OTP}?type=forgotPass")
-                        },
                         onError = { message ->
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                         }
@@ -162,7 +178,7 @@ fun ForgotPasswordScreen(
                             fontFamily = FontFamily(Font(R.font.outfit_medium))
                         )
                     )
-                    append("LogIn")
+                    append("Login")
                     pop()
                 }
 

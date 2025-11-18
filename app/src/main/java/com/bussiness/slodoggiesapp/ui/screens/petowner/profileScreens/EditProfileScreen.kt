@@ -9,13 +9,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,17 +22,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,9 +38,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,7 +51,6 @@ import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.common.EmailTextField
 import com.bussiness.slodoggiesapp.ui.component.common.PhoneNumber
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
@@ -73,15 +59,12 @@ import com.bussiness.slodoggiesapp.ui.component.saveBitmapToCache
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.EditProfileViewModel
-import okhttp3.Route
-
 
 @Composable
 fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfileViewModel = hiltViewModel(),) {
 
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-
     val lifecycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(navController.currentBackStackEntry) {
@@ -284,8 +267,6 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
                 )
             }
         }
-
-
     }
     if (uiState.updateProfileDialog){
         UpdatedDialogWithExternalClose(
@@ -319,11 +300,7 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
             }
         )
     }
-
 }
-
-
-
 
 
 @Preview(showBackground = true)

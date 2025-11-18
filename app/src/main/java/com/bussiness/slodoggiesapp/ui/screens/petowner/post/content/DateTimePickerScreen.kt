@@ -49,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.component.common.PopupTimePicker
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import java.time.LocalDate
@@ -66,36 +67,27 @@ private val SelectedBlue = Color(0xFF258694)
 @Composable
 fun DateTimePickerScreen(
     modifier: Modifier = Modifier,
-    textHeading : String,
+    textHeading: String,
     onDateTimeSelected: (LocalDateTime) -> Unit = {}
 ) {
     val isCalendarVisible = remember { mutableStateOf(false) }
     val currentMonth = remember { mutableStateOf(YearMonth.now()) }
     val selectedDate = remember { mutableStateOf<LocalDate?>(null) }
+
     val selectedHour = remember { mutableStateOf(11) }
     val selectedMinute = remember { mutableStateOf(38) }
     val isAM = remember { mutableStateOf(true) }
+
+    // ✅ State for new iOS-style time picker visibility
+    val showTimePicker = remember { mutableStateOf(false) }
+
     val context = LocalContext.current
-    val timePickerDialog = remember {
-        TimePickerDialog(
-            context,
-            { _, hourOfDay: Int, minute: Int ->
-                val isAMSelected = hourOfDay < 12
-                selectedHour.value = if (hourOfDay % 12 == 0) 12 else hourOfDay % 12
-                selectedMinute.value = minute
-                isAM.value = isAMSelected
-            },
-            if (isAM.value) selectedHour.value % 12 else (selectedHour.value % 12) + 12,
-            selectedMinute.value,
-            false // 12-hour format
-        )
-    }
 
     Column(
         modifier = modifier
-            .fillMaxWidth().wrapContentHeight()
+            .fillMaxWidth()
+            .wrapContentHeight()
             .background(Color.White)
-            //.padding(vertical = 10.dp, horizontal = (12.5).dp)
     ) {
         // Header
         Text(
@@ -149,23 +141,20 @@ fun DateTimePickerScreen(
             )
         }
 
-
-
-
         // Calendar Section
         if (isCalendarVisible.value) {
-
-            Card(modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp), // space around card
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)) {
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+            ) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(12.dp))
-//                    .border(width = 1.dp, color = TextGrey, shape = RoundedCornerShape(12.dp))
                         .background(Color.White)
                         .padding(13.dp)
                 ) {
@@ -174,8 +163,7 @@ fun DateTimePickerScreen(
                         selectedDate = selectedDate.value,
                         onDateSelected = { date ->
                             selectedDate.value = date
-                            isCalendarVisible.value =
-                                false // date select karte hi calendar hide ho jaye
+                            isCalendarVisible.value = false
                             Toast.makeText(context, "Selected: $date", Toast.LENGTH_SHORT).show()
                         },
                         onMonthChanged = { newMonth ->
@@ -189,7 +177,6 @@ fun DateTimePickerScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(13.dp),
-//                    .border(width = 1.dp, color = TextGrey, shape = RoundedCornerShape(12.dp)),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -197,38 +184,36 @@ fun DateTimePickerScreen(
                         fontSize = 20.sp,
                         color = Color.Black,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        modifier = Modifier.weight(1f).padding(start = 8.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp)
                     )
 
                     Row(
-                        modifier = Modifier.wrapContentWidth()
+                        modifier = Modifier
+                            .wrapContentWidth()
                             .wrapContentHeight()
-                            .padding()
                             .border(
                                 width = 1.dp,
                                 color = Color(0xFFF2F2F2),
                                 shape = RoundedCornerShape(12.dp)
                             ),
-                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         // Hour and Minute Display
-
                         Row(
                             modifier = Modifier
-                                .wrapContentWidth().padding(horizontal = 10.dp),
+                                .wrapContentWidth()
+                                .padding(horizontal = 10.dp),
                             verticalAlignment = Alignment.CenterVertically
-                        )
-                        {
-
-
+                        ) {
                             Text(
                                 text = String.format("%02d", selectedHour.value),
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 color = Color.Black,
                                 modifier = Modifier
-                                    .clickable { timePickerDialog.show() }
+                                    .clickable { showTimePicker.value = true }
                                     .padding(horizontal = 8.dp)
                             )
 
@@ -247,7 +232,7 @@ fun DateTimePickerScreen(
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 color = Color.Black,
                                 modifier = Modifier
-                                    .clickable { timePickerDialog.show() }
+                                    .clickable { showTimePicker.value = true }
                                     .padding(horizontal = 8.dp)
                             )
                         }
@@ -304,7 +289,20 @@ fun DateTimePickerScreen(
             }
         }
     }
+
+
+    PopupTimePicker(
+        show = showTimePicker.value,
+        onDismiss = { showTimePicker.value = false },
+        onConfirm = { hour, minute, am ->
+            selectedHour.value = hour
+            selectedMinute.value = minute
+            isAM.value = am
+            showTimePicker.value = false
+        }
+    )
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

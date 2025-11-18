@@ -64,14 +64,9 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
 
     val writePost by viewModel.writePost.collectAsState()
     val hashtags by viewModel.hashtags.collectAsState()
-    val postalCode by viewModel.postalCode.collectAsState()
     val streetAddress by viewModel.streetAddress.collectAsState()
-    val areaSector by viewModel.areaSector.collectAsState()
-    val landmark by viewModel.landmark.collectAsState()
     var showPetInfoDialog by remember { mutableStateOf(false) }
     var petAddedSuccessDialog by remember { mutableStateOf(false) }
-    // Add state for selected people
-    val successDialog by remember { mutableStateOf(false) }
 
 
     LazyColumn(
@@ -94,7 +89,7 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
 
         item {
             FormHeadingText(stringResource(R.string.Upload_Media))
-            MediaUploadSection(maxImages = 10) { uri ->
+            MediaUploadSection(maxImages = 6) { uri ->
                 // Example: viewModel.addPetImage(uri)
             }
         }
@@ -143,46 +138,16 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
 
         item {
             FormHeadingText(stringResource(R.string.Enter_your_Address))
-        }
-
-        item {
-            FormHeadingText(stringResource(R.string.flat_address))
             InputField(
                 placeholder = stringResource(R.string.enter_flat_address),
                 input = streetAddress ,
-                onValueChange = { viewModel.updateStreetAddress(it) }
+                onValueChange = { viewModel.updateStreetAddress(it) },
+                readOnly = true
             )
         }
 
         item {
-            FormHeadingText(stringResource(R.string.area_sector))
-            InputField(
-                placeholder = stringResource(R.string.enter_area_sector),
-                input = areaSector,
-                onValueChange = { viewModel.updateAreaSector(it) }
-            )
-        }
-
-        item {
-            FormHeadingText(stringResource(R.string.landmark))
-            InputField(
-                placeholder = stringResource(R.string.enter_landmark),
-                input = landmark,
-                onValueChange = { viewModel.updateLandmark(it) }
-            )
-        }
-
-        item {
-            FormHeadingText("Zip Code")
-            InputField(
-                placeholder = "Enter your Zip Code",
-                input = postalCode,
-                onValueChange = { viewModel.updatePostalCode(it) }
-            )
-        }
-
-        item {
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(10.dp))
             SubmitButton(
                 modifier = Modifier,
                 buttonText = stringResource(R.string.post),

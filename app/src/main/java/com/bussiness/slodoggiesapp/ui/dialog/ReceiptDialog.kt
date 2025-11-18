@@ -14,7 +14,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,14 +33,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.AdTopUpTransaction
+import com.bussiness.slodoggiesapp.data.model.businessProvider.AdTopUpTransaction
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AdTopUpBtn
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
 fun ReceiptDialog(
     onDismiss: () -> Unit,
-    data : AdTopUpTransaction
+    data : com.bussiness.slodoggiesapp.data.model.businessProvider.AdTopUpTransaction
 ){
     Dialog(
         onDismissRequest = onDismiss,

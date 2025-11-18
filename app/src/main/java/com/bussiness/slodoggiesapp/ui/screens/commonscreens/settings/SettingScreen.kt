@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.common.SettingsItem
@@ -41,7 +41,7 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
     ) {
 
         BackHandler {
-            if (sessionManager.getUserType() == UserType.PET_OWNER){
+            if (sessionManager.getUserType() == UserType.Owner){
                 navController.navigate(Routes.PET_PROFILE_SCREEN){
                     popUpTo(Routes.PET_PROFILE_SCREEN) { inclusive = false }
                     launchSingleTop = true
@@ -57,7 +57,7 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
 
         }
         HeadingTextWithIcon(textHeading = "Settings",
-            onBackClick = {  if (sessionManager.getUserType() == UserType.PET_OWNER){
+            onBackClick = {  if (sessionManager.getUserType() == UserType.Owner){
                 navController.navigate(Routes.PET_PROFILE_SCREEN){
                     popUpTo(Routes.PET_PROFILE_SCREEN) { inclusive = false } // clear stack above home
                     launchSingleTop = true
@@ -82,16 +82,16 @@ fun SettingsScreen(navController: NavHostController, authNavController: NavHostC
         ) {
             item { SettingsItem(icon = R.drawable.ic_bookmark_icon, title = "Saved", onClick = { navController.navigate(Routes.SAVED_ITEM_SCREEN) }) }
 
-            item { SettingsItem(icon = R.drawable.ic_calendar_outline, title = "My Events", onClick = { if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER)
+            item { SettingsItem(icon = R.drawable.ic_calendar_outline, title = "My Events", onClick = { if (sessionManager.getUserType() == UserType.Professional)
                 navController.navigate(Routes.MY_EVENT_SCREEN) else navController.navigate(Routes.PET_EVENT_SCREEN)}) }
 
-            if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
+            if (sessionManager.getUserType() == UserType.Professional) {
                 item {
                     SettingsItem(icon = R.drawable.subspt_ic, title = "Subscription", onClick = { navController.navigate(Routes.SUBSCRIPTION_SCREEN) })
                 }
             }
 
-            if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
+            if (sessionManager.getUserType() == UserType.Professional) {
                 item {
                     SettingsItem(icon = R.drawable.transaction_ic, title = "Transaction", onClick = { navController.navigate(Routes.TRANSACTION_SCREEN) })
                 }

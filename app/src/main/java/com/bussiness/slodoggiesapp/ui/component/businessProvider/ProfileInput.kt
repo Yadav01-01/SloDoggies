@@ -11,24 +11,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -45,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -59,7 +54,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.AudienceData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import java.io.File
@@ -85,7 +80,7 @@ fun AudienceSelection(
 
 @Composable
 fun AudienceListItem(
-    data: AudienceData,
+    data: com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData,
     isFollower: Boolean,
     onPrimaryClick: () -> Unit,
     onFollowBackClick: () -> Unit,
@@ -318,29 +313,31 @@ fun ProfileHeadingText(text: String,modifier: Modifier){
 
 @Composable
 fun SponsorButton(
-    modifier: Modifier = Modifier,
     text: String,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    OutlinedButton(
-        onClick = onClick,
+    val borderColor = if (isSelected) PrimaryColor else TextGrey
+    val textColor = if (isSelected) PrimaryColor else TextGrey
+    val backgroundColor = Color.White
+
+    Box(
         modifier = modifier
             .height(36.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp)),
-        border = BorderStroke(1.dp, if (isSelected) PrimaryColor else TextGrey),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = Color.White,
-            contentColor = if (isSelected) PrimaryColor else TextGrey
-        ),
-        shape = RoundedCornerShape(10.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(backgroundColor)
+            .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(10.dp))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
     ) {
         Text(
             text = text,
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             fontFamily = FontFamily(Font(R.font.outfit_regular)),
-            color = if (isSelected) PrimaryColor else TextGrey
+            fontWeight = FontWeight.Normal,
+            color = textColor
         )
     }
 }

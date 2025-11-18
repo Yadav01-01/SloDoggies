@@ -39,7 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.AddParticipant
+import com.bussiness.slodoggiesapp.data.model.common.AddParticipant
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ParticipantTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -49,7 +49,7 @@ import com.bussiness.slodoggiesapp.viewModel.common.AddParticipantViewModel
 fun AddParticipantsScreen(
     navController: NavHostController,
     viewModel: AddParticipantViewModel = hiltViewModel(),
-    onDone: (List<AddParticipant>) -> Unit = {}
+    onDone: (List<com.bussiness.slodoggiesapp.data.model.common.AddParticipant>) -> Unit = {}
 ) {
     val query by viewModel.query.collectAsState()
     val selected by viewModel.selectedParticipants.collectAsState()

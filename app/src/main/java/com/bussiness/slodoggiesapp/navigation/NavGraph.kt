@@ -46,7 +46,6 @@ fun NavGraph(navController: NavHostController) {
 
             composable(Routes.LOGIN_SCREEN) { LoginScreen(navController) }
             composable(Routes.SIGNUP_SCREEN) { SignUpScreen(navController) }
-            composable(Routes.NEW_PASSWORD_SCREEN) { NewPasswordScreen(navController) }
 
             composable(Routes.AUTH_TERMS_AND_CONDITION_SCREEN) { AuthTermsAndConditionsScreen(navController) }
             composable(Routes.AUTH_PRIVACY_POLICY_SCREEN) { AuthPrivacyPolicyScreen(navController) }
@@ -62,6 +61,17 @@ fun NavGraph(navController: NavHostController) {
             composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
 
             // --- Screens with Arguments ---
+
+            composable(
+                route = "${Routes.NEW_PASSWORD_SCREEN}/{emailOrPhone}",
+                arguments = listOf(
+                    navArgument("emailOrPhone") { type = NavType.StringType; defaultValue = " " }
+                )
+            ) { backStackEntry ->
+                val emailOrPhone = backStackEntry.arguments?.getString("emailOrPhone") ?: " "
+                NewPasswordScreen(navController, emailOrPhone)
+            }
+
             composable(
                 route = "${Routes.FORGOT_PASSWORD_SCREEN}/{type}",
                 arguments = listOf(
@@ -73,15 +83,28 @@ fun NavGraph(navController: NavHostController) {
             }
 
             composable(
-                route = "${Routes.VERIFY_OTP}?type={type}&data={data}",
+                route = "${Routes.VERIFY_OTP}?type={type}&name={name}&emailOrPhone={emailOrPhone}&password={password}",
                 arguments = listOf(
                     navArgument("type") { type = NavType.StringType; defaultValue = "default" },
-                    navArgument("data") { type = NavType.StringType; defaultValue = "" }
+                    navArgument("name") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("emailOrPhone") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("password") { type = NavType.StringType; defaultValue = "" }
                 )
             ) { backStackEntry ->
                 val type = backStackEntry.arguments?.getString("type") ?: "default"
-                VerifyOTPScreen(navController, type = type)
+                val name = backStackEntry.arguments?.getString("name") ?: ""
+                val emailOrPhone = backStackEntry.arguments?.getString("emailOrPhone") ?: ""
+                val password = backStackEntry.arguments?.getString("password") ?: ""
+
+                VerifyOTPScreen(
+                    navController = navController,
+                    type = type,
+                    name = name,
+                    emailOrPhone = emailOrPhone,
+                    password = password
+                )
             }
+
         }
     }
 }

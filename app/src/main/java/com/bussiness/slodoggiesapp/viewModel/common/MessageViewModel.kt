@@ -1,7 +1,7 @@
 package com.bussiness.slodoggiesapp.viewModel.common
 
 import androidx.lifecycle.ViewModel
-import com.bussiness.slodoggiesapp.model.common.Message
+import com.bussiness.slodoggiesapp.data.model.common.Message
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
@@ -27,12 +27,15 @@ private val dummyMessages = listOf(
         profileImageUrl = "https://example.com/user1.jpg",
         username = "Merry",
         time = "14:41",
-        description = "I hope it goes well."
+        description = "I hope it goes well.",
+        count = "2"
     ),
     Message(
         profileImageUrl = "https://example.com/user2.jpg",
         username = "SLO K9 Spa",
         time = "15:41",
-        description = "So, what's your plan this weekend?"
+        description = "So, what's your plan this weekend?",
+        count = "1"
+
     )
 )

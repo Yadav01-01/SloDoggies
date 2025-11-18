@@ -20,14 +20,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -60,10 +58,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.ServicePackage
+import com.bussiness.slodoggiesapp.data.model.businessProvider.ServicePackage
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FullScreenImageViewerScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.EnhancedExpandableInfoSpinner
-import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.ImageGalleryScreen
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
@@ -216,7 +213,7 @@ fun TypeButton(
 
 @Composable
 fun ServicePackageCard(
-    data: ServicePackage,
+    data: com.bussiness.slodoggiesapp.data.model.businessProvider.ServicePackage,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier

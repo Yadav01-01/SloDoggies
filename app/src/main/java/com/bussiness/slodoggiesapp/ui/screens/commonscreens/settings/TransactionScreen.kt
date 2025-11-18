@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.model.businessProvider.AdTopUpTransaction
+import com.bussiness.slodoggiesapp.data.model.businessProvider.AdTopUpTransaction
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AdTopUpBtn
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ChoosePostTypeButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
@@ -33,17 +33,41 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 @Composable
 fun TransactionScreen(navController: NavHostController) {
     val sample = listOf(
-        AdTopUpTransaction("Ad Top-Up", "$25.00", "ATU-82341", "08/10/2025", "Successful"),
-        AdTopUpTransaction("Ad Top-Up", "$10.00", "ATU-82342", "07/10/2025", "Pending"),
-        AdTopUpTransaction("Ad Top-Up", "$50.00", "ATU-82343", "06/10/2025", "Failed")
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AdTopUpTransaction(
+            "Ad Top-Up",
+            "$25.00",
+            "ATU-82341",
+            "08/10/2025",
+            "Successful"
+        ),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AdTopUpTransaction(
+            "Ad Top-Up",
+            "$10.00",
+            "ATU-82342",
+            "07/10/2025",
+            "Pending"
+        ),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AdTopUpTransaction(
+            "Ad Top-Up",
+            "$50.00",
+            "ATU-82343",
+            "06/10/2025",
+            "Failed"
+        )
     )
 
     val subscriptionsSample = listOf(
-        AdTopUpTransaction("Standard Plan", "$25.00", "SUB-82341", "09/15/2025", "Renewed"),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AdTopUpTransaction(
+            "Standard Plan",
+            "$25.00",
+            "SUB-82341",
+            "09/15/2025",
+            "Renewed"
+        ),
     )
     var isNavigating by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf("Ad Top-Ups") }
-    var selectedTransaction by remember { mutableStateOf<AdTopUpTransaction?>(null) }
+    var selectedTransaction by remember { mutableStateOf<com.bussiness.slodoggiesapp.data.model.businessProvider.AdTopUpTransaction?>(null) }
 
     BackHandler {
         if (!isNavigating) {
@@ -155,8 +179,11 @@ fun TransactionScreen(navController: NavHostController) {
                 .padding(horizontal = 8.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            AdTopUpBtn(text = "Ad Top-Up", onClick = {  }, modifier = Modifier.weight(1f))
-            UpgradeBtn(text = "Upgrade Plan", onClick = {  }, modifier = Modifier.weight(1f))
+            if (selectedOption == "Ad Top-Ups"){
+                AdTopUpBtn(text = "Ad Top-Up", onClick = {  }, modifier = Modifier.weight(1f))
+            }else{
+                UpgradeBtn(text = "Upgrade Plan", onClick = {  }, modifier = Modifier.weight(1f))
+            }
         }
     }
     selectedTransaction?.let { tx ->

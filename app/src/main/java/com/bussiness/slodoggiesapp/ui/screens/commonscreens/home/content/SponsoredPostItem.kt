@@ -1,7 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,16 +44,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.MediaItem
-import com.bussiness.slodoggiesapp.model.common.MediaType
-import com.bussiness.slodoggiesapp.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.model.common.MediaItem
+import com.bussiness.slodoggiesapp.data.model.common.MediaType
+import com.bussiness.slodoggiesapp.data.model.common.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
-fun SponsoredPostItem(post: PostItem.SponsoredPost,onProfileClick: () -> Unit ,onReportClick: () -> Unit,onShareClick: () -> Unit) {
+fun SponsoredPostItem(
+    post: com.bussiness.slodoggiesapp.data.model.common.PostItem.SponsoredPost,
+    onProfileClick: () -> Unit,
+    onReportClick: () -> Unit,
+    onShareClick: () -> Unit,
+    onSponsoredClick: () -> Unit
+) {
 
     Card(
         modifier = Modifier
@@ -65,7 +69,7 @@ fun SponsoredPostItem(post: PostItem.SponsoredPost,onProfileClick: () -> Unit ,o
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.fillMaxWidth().clickable { onSponsoredClick() }) {
             PostHeader(user = post.user, time = post.time, onReportClick = { onReportClick()}, onProfileClick = { onProfileClick() })
             PostCaption(caption = post.caption, description = post.description)
             PostMedia(mediaList = post.mediaList)
@@ -124,7 +128,7 @@ private fun PostHeader(user: String, time: String, onReportClick: () -> Unit,onP
 
 
 @Composable
-private fun PostCaption(caption: String, description: String) {
+private fun PostCaption(caption: String, description: String,) {
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)) {
         Text(
             text = caption,
@@ -148,7 +152,7 @@ private fun PostCaption(caption: String, description: String) {
 
 
 @Composable
-private fun PostMedia(mediaList: List<MediaItem>) {
+private fun PostMedia(mediaList: List<com.bussiness.slodoggiesapp.data.model.common.MediaItem>) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -317,19 +321,24 @@ fun IconTextButton(
 @Preview(showBackground = true, backgroundColor = 0xFFF5F5F5)
 @Composable
 fun SponsoredPostPreview() {
-    val dummyPost = PostItem.SponsoredPost(
+    val dummyPost = com.bussiness.slodoggiesapp.data.model.common.PostItem.SponsoredPost(
         user = "Aisuke",
         role = "Pet Lover",
         time = "2 Days",
         caption = "Summer Special: 20% Off Grooming!",
         description = "Limited Time Offer",
-        mediaList = listOf(MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE)),
+        mediaList = listOf(
+            com.bussiness.slodoggiesapp.data.model.common.MediaItem(
+                com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
+                imageUrl = "https://picsum.photos/400"
+            ),
+        ),
         likes = 200,
         comments = 100,
         shares = 10
     )
 
     Column(modifier = Modifier.background(Color(0xFFF5F5F5)).fillMaxSize()) {
-        SponsoredPostItem(post = dummyPost, onReportClick = { }, onShareClick = { }, onProfileClick = { })
+        SponsoredPostItem(post = dummyPost, onReportClick = { }, onShareClick = { }, onProfileClick = { }, onSponsoredClick = {})
     }
 }

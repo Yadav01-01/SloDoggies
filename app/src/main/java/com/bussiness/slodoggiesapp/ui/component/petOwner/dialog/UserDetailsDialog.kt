@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,14 +61,21 @@ import com.bussiness.slodoggiesapp.viewModel.petOwner.UserDetailsViewModel
 @Composable
 fun UserDetailsDialog(
     navController: NavHostController,
-    viewModel: UserDetailsViewModel = hiltViewModel(),
     onDismiss: () -> Unit,
     onSubmit: () -> Unit,
     onVerify: (String, String) -> Unit
 ) {
+    val viewModel: UserDetailsViewModel = hiltViewModel()
+
+
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+
+    //  One-time effect to trigger API only once when dialog opens
+    LaunchedEffect(Unit) {
+        viewModel.fetchOwnerDetails()
+    }
 
     LaunchedEffect(navController.currentBackStackEntry) {
         navController.currentBackStackEntry
@@ -80,7 +88,6 @@ fun UserDetailsDialog(
                 }
             }
     }
-
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -139,13 +146,15 @@ fun UserDetailsDialog(
                         )
 
                         Spacer(modifier = Modifier.height(15.dp))
-                        Divider(thickness = 1.dp, color = TextGrey)
+                        HorizontalDivider(thickness = 1.dp, color = TextGrey)
                         Spacer(modifier = Modifier.height(12.dp))
 
                         // Add Photo Section
                         AddPhotoSection(
                             onPhotoSelected = { uri ->
-                                viewModel.setSelectedPhoto(uri) // send Uri to ViewModel
+                                if (uri != null) {
+                                    viewModel.addPhoto(uri)
+                                } // send Uri to ViewModel
                             }
                         )
 
@@ -155,7 +164,7 @@ fun UserDetailsDialog(
                         CustomOutlinedTextField(
                             value = state.name,
                             onValueChange = viewModel::onNameChanged,
-                            placeholder = stringResource(R.string.merry),
+                            placeholder = stringResource(R.string.enter_name_parent),
                             label = stringResource(R.string.pet_name)
                         )
 

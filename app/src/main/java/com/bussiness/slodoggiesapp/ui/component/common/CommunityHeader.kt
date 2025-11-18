@@ -6,10 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -49,16 +47,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.Community
-import com.bussiness.slodoggiesapp.model.common.AddParticipant
-import com.bussiness.slodoggiesapp.model.common.Participants
+import com.bussiness.slodoggiesapp.data.model.businessProvider.Community
+import com.bussiness.slodoggiesapp.data.model.common.AddParticipant
+import com.bussiness.slodoggiesapp.data.model.common.Participants
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-import okhttp3.internal.wait
 
 @Composable
 fun CommunityHeader(
-    community: Community,
-    onBackClick: () -> Unit ,
+    community: com.bussiness.slodoggiesapp.data.model.businessProvider.Community,
+    onBackClick: () -> Unit,
     onViewProfileClick: () -> Unit
 ) {
     Row(
@@ -257,7 +254,7 @@ fun CommunityParticipantsText(onAddIconClick: () -> Unit) {
 
 @Composable
 fun ParticipantsItem(
-    participants: Participants,
+    participants: com.bussiness.slodoggiesapp.data.model.common.Participants,
     onMenuClick: () -> Unit
 ) {
     Column {
@@ -308,9 +305,9 @@ fun ParticipantsItem(
 @Composable
 fun CommunityHeadingText(
     textHeading: String,
-    selectedParticipants: List<AddParticipant>,
+    selectedParticipants: List<com.bussiness.slodoggiesapp.data.model.common.AddParticipant>,
     onBackClick: () -> Unit,
-    onDone: (List<AddParticipant>) -> Unit
+    onDone: (List<com.bussiness.slodoggiesapp.data.model.common.AddParticipant>) -> Unit
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

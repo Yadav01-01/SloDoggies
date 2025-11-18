@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
@@ -109,7 +109,7 @@ fun HelpAndSupportScreen(navController: NavHostController,viewModel: HelpAndSupp
                         color = Color.Black
                     )
                     
-                    if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER){
+                    if (sessionManager.getUserType() == UserType.Professional){
 
                         InputField(input = phone, onValueChange = { viewModel.updatePhone(it)}, placeholder = "+1 (555) 123 456", height = 46.dp, fontSize = 12)
 

@@ -71,11 +71,8 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
                 )
             }
         }
-
-        PostOptionsMenu(modifier = Modifier.padding(end = 15.dp), onReportClick = onReportClick)
     }
 }
-
 
 @Composable
 fun SponsorPostCaption(caption: String, description: String) {
@@ -100,7 +97,6 @@ fun SponsorPostCaption(caption: String, description: String) {
     }
 }
 
-
 @Composable
 fun SponsorPostMedia(mediaList: String) {
     Box(
@@ -108,14 +104,12 @@ fun SponsorPostMedia(mediaList: String) {
             .fillMaxWidth()
             .height(353.dp)
     ) {
-
         AsyncImage(
             model = R.drawable.dog1,
             contentDescription = "Post image",
             contentScale = ContentScale.Crop,
             modifier =  Modifier.fillMaxWidth().height(350.dp)
         )
-
 
         Box(
             modifier = Modifier
@@ -166,6 +160,5 @@ fun PreviewSubHeading(heading : String,subHeading : String){
             fontWeight = FontWeight.Normal,
             color = Color.Black
         )
-
     }
 }

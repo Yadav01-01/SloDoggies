@@ -4,6 +4,8 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
+import com.bussiness.slodoggiesapp.data.remote.Repository
+import com.bussiness.slodoggiesapp.util.Messages
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class VerifyAccountViewModel @Inject constructor() : ViewModel() {
+class VerifyAccountViewModel @Inject constructor( private val repository: Repository) : ViewModel() {
 
     private val _otp = MutableStateFlow("")
     val otp: StateFlow<String> = _otp.asStateFlow()
@@ -28,7 +30,7 @@ class VerifyAccountViewModel @Inject constructor() : ViewModel() {
         context: Context
     ) {
         if (!isOtpValid()) {
-            Toast.makeText(context, "Please enter valid OTP", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, Messages.ENTER_VALID_OTP, Toast.LENGTH_SHORT).show()
             return
         }
 

@@ -8,12 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.model.businessProvider.SearchResult
+import com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchResultItem
 
 @Composable
-fun ShowPetsNearYou(results: List<SearchResult>, controller: NavHostController) {
+fun ShowPetsNearYou(results: List<com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult>, controller: NavHostController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)

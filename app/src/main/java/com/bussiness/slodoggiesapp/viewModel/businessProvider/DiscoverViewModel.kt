@@ -2,7 +2,7 @@ package com.bussiness.slodoggiesapp.viewModel.businessProvider
 
 import androidx.lifecycle.ViewModel
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.SearchResult
+import com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,12 +35,24 @@ class DiscoverViewModel @Inject constructor() : ViewModel() {
     // In real project -> Replace with Repository call (Flow from API)
     private val _searchResults = MutableStateFlow(
         listOf(
-            SearchResult("Jimmi", "Pet Dad", R.drawable.dog1),
-            SearchResult("Barry", "Pet Groomer", R.drawable.dog2),
-            SearchResult("Jully", "Trainer", R.drawable.dog_ic)
+            com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult(
+                "Jimmi",
+                "Pet Dad",
+                R.drawable.dog1
+            ),
+            com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult(
+                "Barry",
+                "Pet Groomer",
+                R.drawable.dog2
+            ),
+            com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult(
+                "Jully",
+                "Trainer",
+                R.drawable.dog_ic
+            )
         )
     )
-    val searchResults: StateFlow<List<SearchResult>> = _searchResults
+    val searchResults: StateFlow<List<com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult>> = _searchResults
 
     fun updateQuery(newQuery: String) {
         _query.value = newQuery

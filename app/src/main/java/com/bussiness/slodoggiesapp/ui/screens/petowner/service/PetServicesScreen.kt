@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -49,7 +48,6 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-
         BackHandler {
             if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
                 navController.navigate(Routes.HOME_SCREEN) {
@@ -57,7 +55,6 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
                 }
             }
         }
-
 
         HeadingTextWithIcon(
             textHeading = stringResource(R.string.services),
@@ -67,7 +64,6 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
                 }
             }
         )
-
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
@@ -127,7 +123,6 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
         }
     }
 }
-
 
 
 @Preview(showBackground = true)

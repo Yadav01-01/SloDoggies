@@ -16,7 +16,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -33,22 +32,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -71,10 +65,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.ui.component.common.PopupTimePicker
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.google.accompanist.flowlayout.FlowRow
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 
@@ -105,6 +99,7 @@ fun InputField(
     height: Dp = 48.dp,
     fontSize: Int = 15,
     modifier: Modifier = Modifier,
+    readOnly : Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     Box(
@@ -146,6 +141,7 @@ fun InputField(
             cursorBrush = SolidColor(Color.Black),
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = keyboardOptions,
+            readOnly = readOnly
         )
     }
 }
@@ -209,7 +205,6 @@ fun TopHeadingText(textHeading: String, onBackClick: () -> Unit) {
             contentDescription = "back",
             tint = PrimaryColor,
             modifier = Modifier
-                .clickable { onBackClick() }
                 .wrapContentSize()
         )
         Spacer(modifier = Modifier.width(16.dp))
@@ -365,11 +360,15 @@ fun CheckInputField(
 }
 
 @Composable
-fun CategoryInputField() {
+fun CategoryInputField(
+    categories: List<String>,
+    onCategoryAdded: (String) -> Unit,
+    onCategoryRemoved: (String) -> Unit
+) {
     var text by remember { mutableStateOf("") }
-    val categories = remember { mutableStateListOf<String>() }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+
         // Input Box
         Box(
             modifier = Modifier
@@ -407,17 +406,17 @@ fun CategoryInputField() {
                     innerTextField()
                 }
 
-                // Check Icon to add
                 if (text.isNotBlank()) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_check_icon_blue),
+                        imageVector = Icons.Filled.Add,
                         contentDescription = "Add Category",
-                        tint = Color(0xFF00B4D8),
+                        tint = PrimaryColor,
                         modifier = Modifier
                             .size(20.dp)
                             .clickable {
-                                if (text.isNotBlank() && !categories.contains(text.trim())) {
-                                    categories.add(text.trim())
+                                val trimmed = text.trim()
+                                if (trimmed.isNotEmpty()) {
+                                    onCategoryAdded(trimmed)
                                     text = ""
                                 }
                             }
@@ -453,9 +452,7 @@ fun CategoryInputField() {
                             contentDescription = "Remove",
                             modifier = Modifier
                                 .size(12.dp)
-                                .clickable {
-                                    categories.remove(category)
-                                }
+                                .clickable { onCategoryRemoved(category) }
                         )
                     }
                 }
@@ -463,6 +460,7 @@ fun CategoryInputField() {
         }
     }
 }
+
 
 @Composable
 fun ScreenHeadingText(
@@ -508,7 +506,6 @@ fun ScreenHeadingText(
     }
 }
 
-
 @Composable
 fun DayTimeSelector(
     onDone: (selectedDays: List<String>, from: String, to: String) -> Unit
@@ -523,26 +520,14 @@ fun DayTimeSelector(
 
     var fromTime by remember { mutableStateOf("--:--") }
     var toTime by remember { mutableStateOf("--:--") }
-    var expanded by remember { mutableStateOf(false) } // dropdown toggle
+    var expanded by remember { mutableStateOf(false) }
 
-    fun showTimePicker(onTimeSelected: (String) -> Unit) {
-        val cal = Calendar.getInstance()
-        TimePickerDialog(
-            context,
-            { _, hour: Int, minute: Int ->
-                onTimeSelected(String.format("%02d:%02d", hour, minute))
-            },
-            cal.get(Calendar.HOUR_OF_DAY),
-            cal.get(Calendar.MINUTE),
-            true
-        ).show()
-    }
+    var showTimePicker by remember { mutableStateOf(false) }
+    var isSelectingFrom by remember { mutableStateOf(true) }
 
-    Column(
-        modifier = Modifier.fillMaxWidth()
-    ) {
+    Column(modifier = Modifier.fillMaxWidth()) {
 
-        // ---- Clickable Box (summary + expand) ----
+        // ---- Summary Box ----
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -581,7 +566,7 @@ fun DayTimeSelector(
             )
         }
 
-        // ---- Expandable Section ----
+        // ---- Expanded Section ----
         AnimatedVisibility(visible = expanded) {
             Column(
                 modifier = Modifier
@@ -591,7 +576,7 @@ fun DayTimeSelector(
                     .padding(12.dp)
             ) {
 
-                // Day checkboxes
+                // Day Checkboxes
                 for (i in days.indices step 2) {
                     Row(modifier = Modifier.fillMaxWidth()) {
                         for (j in 0..1) {
@@ -615,23 +600,20 @@ fun DayTimeSelector(
                                                     selectedDays.clear()
                                                 }
                                             } else {
-                                                if (checked) selectedDays.add(day) else selectedDays.remove(day)
+                                                if (checked) selectedDays.add(day)
+                                                else selectedDays.remove(day)
                                             }
                                         }
                                     )
-
                                     Spacer(Modifier.width(10.dp))
-
-                                    Text(text = day,
+                                    Text(
+                                        text = day,
                                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                        fontWeight = FontWeight.Normal,
                                         fontSize = 14.sp,
                                         color = Color.Black
                                     )
                                 }
-                            } else {
-                                Spacer(modifier = Modifier.weight(1f))
-                            }
+                            } else Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }
@@ -646,18 +628,23 @@ fun DayTimeSelector(
                     TimePickerField(
                         label = "From",
                         time = fromTime,
-                        onClick = { showTimePicker { fromTime = it } },
+                        onClick = {
+                            isSelectingFrom = true
+                            showTimePicker = true
+                        },
                         modifier = Modifier.weight(1f)
                     )
 
                     TimePickerField(
                         label = "To",
                         time = toTime,
-                        onClick = { showTimePicker { toTime = it } },
+                        onClick = {
+                            isSelectingFrom = false
+                            showTimePicker = true
+                        },
                         modifier = Modifier.weight(1f)
                     )
                 }
-
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -667,7 +654,7 @@ fun DayTimeSelector(
                         if (selectedDays.isEmpty() || fromTime == "--:--" || toTime == "--:--") {
                             Toast.makeText(context, "Please select days & time", Toast.LENGTH_SHORT).show()
                         } else {
-                            expanded = false // collapse back
+                            expanded = false
                             onDone(selectedDays.toList(), fromTime, toTime)
                         }
                     },
@@ -685,7 +672,22 @@ fun DayTimeSelector(
             }
         }
     }
+
+    // ---- iOS-style Time Picker Popup ----
+    if (showTimePicker) {
+        PopupTimePicker(
+            show = showTimePicker,
+            onDismiss = { showTimePicker = false },
+            onConfirm = { hour, minute, am ->
+                val formatted = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')} ${if (am) "AM" else "PM"}"
+                if (isSelectingFrom) fromTime = formatted else toTime = formatted
+                showTimePicker = false
+            }
+        )
+    }
 }
+
+
 
 @Composable
 fun CustomCheckBox(

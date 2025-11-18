@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,9 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,10 +19,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -31,13 +31,16 @@ import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingTextWithSkip
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
+import com.bussiness.slodoggiesapp.ui.component.common.AppLoader
+import com.bussiness.slodoggiesapp.ui.component.common.AppLottieLoader
 import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
+import com.bussiness.slodoggiesapp.ui.component.common.createMultipartList
 import com.bussiness.slodoggiesapp.ui.dialog.AddedServiceDialog
 import com.bussiness.slodoggiesapp.ui.dialog.SubscriptionWarningDialog
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.AddServiceViewModel
+import com.bussiness.slodoggiesapp.viewModel.businessProvider.ServiceEvent
 
 @Composable
 fun AddServiceScreen(
@@ -45,23 +48,49 @@ fun AddServiceScreen(
     viewModel: AddServiceViewModel = hiltViewModel()
 ) {
 
-    val title by viewModel.title.collectAsState()
-    val description by viewModel.description.collectAsState()
-    val amount by viewModel.amount.collectAsState()
+    val state by viewModel.uiState.collectAsState()
+    val selectedPhoto by viewModel.selectedPhoto.collectAsState()
+    val context = LocalContext.current
     var isNavigating by remember { mutableStateOf(false) }
-    var addedServiceDialog by remember { mutableStateOf(false) }
-    var subscribeDisclaimer by remember { mutableStateOf(true) }
 
-    Column(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
+    // Listen to ViewModel events
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is ServiceEvent.ShowToast ->
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
 
-        TopHeadingTextWithSkip(textHeading = "Add Services", onBackClick = {
-            if (!isNavigating) {
-                isNavigating = true
-                navController.popBackStack() }
-        },
-            onSkipClick = { navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) } )
+                ServiceEvent.Success -> {
+                    viewModel.openAddedServiceDialog()
+                }
+            }
+        }
+    }
 
-        TopStepProgressBar(currentStep = 2, totalSteps = 3, modifier = Modifier.fillMaxWidth())
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+
+        TopHeadingTextWithSkip(
+            textHeading = "Add Services",
+            onBackClick = {
+                if (!isNavigating) {
+                    isNavigating = true
+                    navController.popBackStack()
+                }
+            },
+            onSkipClick = {
+                navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN)
+            }
+        )
+
+        TopStepProgressBar(
+            currentStep = 2,
+            totalSteps = 3,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         LazyColumn(
             modifier = Modifier
@@ -71,12 +100,12 @@ fun AddServiceScreen(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
-            // Service Title
+            // Title
             item { FormHeadingText("Service Title") }
             item {
                 InputField(
-                    input = title,
-                    onValueChange = { viewModel.updateTitle(it) },
+                    input = state.title,
+                    onValueChange = viewModel::updateTitle,
                     placeholder = "Enter title"
                 )
             }
@@ -85,8 +114,8 @@ fun AddServiceScreen(
             item { FormHeadingText("Description") }
             item {
                 InputField(
-                    input = description,
-                    onValueChange = { viewModel.updateDescription(it) },
+                    input = state.description,
+                    onValueChange = viewModel::updateDescription,
                     placeholder = "Type here"
                 )
             }
@@ -95,21 +124,22 @@ fun AddServiceScreen(
             item { FormHeadingText("Price (\$)") }
             item {
                 InputField(
-                    input = amount,
-                    onValueChange = { viewModel.updateAmount(it) },
+                    input = state.amount,
+                    onValueChange = viewModel::updateAmount,
                     placeholder = "Enter amount"
                 )
             }
 
-            // Additional Media
+            // Media Upload
             item { FormHeadingText("Additional Media") }
             item {
-                MediaUploadSection(maxImages = 10) { uri ->
-                    // viewModel.addPetImage(uri)
+                MediaUploadSection(
+                    maxImages = 6
+                ) { uri ->
+                    viewModel.setSelectedPhoto(uri)
                 }
             }
 
-            // Bottom Spacer
             item { Spacer(modifier = Modifier.height(25.dp)) }
 
             // Submit Button
@@ -117,39 +147,55 @@ fun AddServiceScreen(
                 SubmitButton(
                     modifier = Modifier.fillMaxWidth(),
                     buttonText = "Add Service",
+                    buttonTextSize = 15,
                     onClickButton = {
-                       addedServiceDialog = true
-                    },
-                    buttonTextSize = 15
+
+                        val images = createMultipartList(
+                            context = context,
+                            uris = listOfNotNull(selectedPhoto),
+                            keyName = "images[]"
+                        )
+
+                        viewModel.addOrUpdateService(
+                            serviceId = "",
+                            type = "addService",
+                            images = images
+                        )
+                    }
                 )
             }
         }
-
     }
-    if (addedServiceDialog){
+
+    // Added Service Dialog
+    if (state.addedServiceDialog) {
         AddedServiceDialog(
-            onDismiss = { addedServiceDialog = false },
+            onDismiss = { viewModel.closeAddedServiceDialog() },
             onAddAnotherClick = {
                 viewModel.updateTitle("")
                 viewModel.updateDescription("")
                 viewModel.updateAmount("")
-                addedServiceDialog = false
-                                },
-            onGoToHomeClick = {   navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN) }
+                viewModel.closeAddedServiceDialog()
+            },
+            onGoToHomeClick = {
+                navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN)
+            }
         )
     }
-    if (subscribeDisclaimer){
+
+    // Subscription Dialog
+    if (state.subscribeDisclaimer) {
         SubscriptionWarningDialog(
-            onDismiss = { subscribeDisclaimer = false },
             icon = R.drawable.caution_ic,
             heading = "Subscription Alert!",
             desc1 = stringResource(R.string.subscription_desc),
             buttonText = "Proceed",
-            onClick = { subscribeDisclaimer = false }
+            onDismiss = { viewModel.closeSubscriptionDisclaimer() },
+            onClick = { viewModel.closeSubscriptionDisclaimer() }
         )
     }
-
 }
+
 
 
 @Preview(showBackground = true)

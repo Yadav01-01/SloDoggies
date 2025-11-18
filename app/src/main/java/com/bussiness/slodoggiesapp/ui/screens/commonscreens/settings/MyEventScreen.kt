@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.model.businessProvider.Event
+import com.bussiness.slodoggiesapp.data.model.businessProvider.Event
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.common.EventCard
@@ -39,7 +39,7 @@ fun MyEventScreen(navController: NavHostController) {
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
         val sampleEvents = listOf(
-            Event(
+            com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
                 id = "1",
                 imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+1",
                 title = "Puppy Party",
@@ -49,7 +49,7 @@ fun MyEventScreen(navController: NavHostController) {
                 location = "Los Angeles County",
                 buttonText = "Join Chat"
             ),
-            Event(
+            com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
                 id = "2",
                 imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+2",
                 title = "Adoption Drive",
@@ -58,7 +58,7 @@ fun MyEventScreen(navController: NavHostController) {
                 duration = "60 Mins.",
                 location = "San Diego County",
                 buttonText = "Community Chat"
-            ), Event(
+            ), com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
                 id = "2",
                 imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+2",
                 title = "Adoption Drive",

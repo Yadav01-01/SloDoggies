@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.model.businessProvider.SubscriptionData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.SubscriptionData
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubscriptionItem
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -70,7 +70,7 @@ fun SubscriptionScreen(navController: NavHostController) {
 
 
 val subsDataList = listOf(
-    SubscriptionData(
+    com.bussiness.slodoggiesapp.data.model.businessProvider.SubscriptionData(
         planName = "Standard",
         price = "$49",
         description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
@@ -78,7 +78,7 @@ val subsDataList = listOf(
         features = listOf("Feature 1", "Feature 2", "Feature 3"),
         isActivated = true
     ),
-    SubscriptionData(
+    com.bussiness.slodoggiesapp.data.model.businessProvider.SubscriptionData(
         planName = "Premium",
         price = "$99",
         description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
@@ -86,7 +86,7 @@ val subsDataList = listOf(
         features = listOf("Feature 1", "Feature 2", "Feature 3"),
         isActivated = false
     ),
-    SubscriptionData(
+    com.bussiness.slodoggiesapp.data.model.businessProvider.SubscriptionData(
         planName = "Basic",
         price = "$19",
         description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",

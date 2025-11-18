@@ -1,14 +1,19 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.message
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -21,11 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.ChatHeaderData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.ChatHeaderData
 import com.bussiness.slodoggiesapp.ui.component.common.BottomMessageBar
 import com.bussiness.slodoggiesapp.ui.component.common.ChatHeaderItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
@@ -106,6 +114,25 @@ fun ChatScreen(
                     viewModel = viewModel
                 )
             }
+            if (isBlocked){
+                Surface(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(bottom = 10.dp)
+                        .align(Alignment.BottomCenter)
+                        .clickable {  isBlocked = !isBlocked }, // Toggle on click
+                    shape = RoundedCornerShape(10.dp),
+                    color = PrimaryColor
+                ) {
+                    Text(
+                        text = "Unblock Jane",
+                        color = Color.White,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(12.dp)
+                    )
+                }
+            }
 
         }
 
@@ -129,17 +156,14 @@ fun ChatScreen(
             )
         }
 
-        if (showToast) {
-            LaunchedEffect(Unit) {
-                delay(2000)
-                showToast = false
-            }
-            BottomToast(
-                isBlocked = isBlocked,
-                onToggle = { isBlocked = !isBlocked },
-                onDismiss = { showToast = false }
-            )
-        }
+//        if (showToast) {
+//
+//            BottomToast(
+//                isBlocked = isBlocked,
+//                onToggle = { isBlocked = !isBlocked },
+//                onDismiss = { showToast = false }
+//            )
+//        }
 
         if (deleteDialog) {
             DeleteChatDialog(
@@ -153,4 +177,10 @@ fun ChatScreen(
     }
 }
 
-var chatHeader = ChatHeaderData(imageUrl = "https://example.com/user2.jpg", name = "Merry", status = "Active Now")
+
+var chatHeader = com.bussiness.slodoggiesapp.data.model.businessProvider.ChatHeaderData(
+    imageUrl = "https://example.com/user2.jpg",
+    name = "Merry",
+    status = "Active Now"
+)
+

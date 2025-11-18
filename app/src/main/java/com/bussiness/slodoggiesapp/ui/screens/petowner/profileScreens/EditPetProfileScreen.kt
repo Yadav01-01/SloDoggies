@@ -222,7 +222,6 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
-
             item {
                 CustomOutlinedTextField(
                     value = uiState.petBio,

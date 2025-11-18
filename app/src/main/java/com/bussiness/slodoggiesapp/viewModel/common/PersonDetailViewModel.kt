@@ -3,7 +3,7 @@ package com.bussiness.slodoggiesapp.viewModel.common
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.GalleryItem
+import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +30,10 @@ data class PersonDetailUiState(
     ),
     val gallery: List<GalleryItem> = listOf(
         GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2, isVideo = true),
+        GalleryItem(
+            R.drawable.dog2,
+            isVideo = true
+        ),
         GalleryItem(R.drawable.dog1),
         GalleryItem(R.drawable.dog2),
         GalleryItem(R.drawable.dog1),

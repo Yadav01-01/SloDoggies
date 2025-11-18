@@ -27,7 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ExperienceRuleHeading
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.SponsoredEngagementCard
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
@@ -40,50 +41,14 @@ fun ExpiredScreen() {
     ) {
 
         // Ad Control Section
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(width = 1.dp, color = Color(0xFFDEEBEE), shape = RoundedCornerShape(10.dp))
-                .padding(top = 20.dp, bottom = 20.dp, start = 15.dp, end = 15.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Cat Food Discount", fontWeight = FontWeight.Medium, fontFamily = FontFamily(
-                    Font(R.font.poppins_semi_bold)
-                ), fontSize = 14.sp)
-                Text(
-                    text = "Expired",
-                    color = Color.White,
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                    modifier = Modifier
-                        .background(TextGrey, RoundedCornerShape(8.dp))
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                )
-            }
+        SponsoredEngagementCard(
+            descriptionText = "Cat Food Discount",
+            engagementData = "No engagement data available",
+            buttonText = "Ad Run Again",
+            onButtonClick = {  }
+        )
 
-            Text("No engagement data available", fontSize = 12.sp, fontFamily = FontFamily(Font(R.font.poppins)), color = Color.Black)
-
-            Spacer(Modifier.height(18.dp))
-
-            Button(
-                onClick = {  },
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier.fillMaxWidth().height(38.dp)
-            ) {
-                Text(text = "Ad Run Again"
-                    , color = Color.White,fontWeight = FontWeight.Medium,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    fontSize = 15.sp)
-            }
-        }
-
-        Text("Search Experience Rules", fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Black)
+        ExperienceRuleHeading()
 
         // Rules Section
         Column(

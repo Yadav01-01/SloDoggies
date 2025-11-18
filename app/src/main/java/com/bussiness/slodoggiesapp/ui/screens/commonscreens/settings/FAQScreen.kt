@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.FAQItem
+import com.bussiness.slodoggiesapp.data.model.common.FAQItem
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -83,7 +83,7 @@ fun FAQScreen(navController: NavHostController,viewModel: FAQViewModel = hiltVie
 }
 
 @Composable
-fun FAQItemCard(faq: FAQItem, isExpanded: Boolean, onClick: () -> Unit) {
+fun FAQItemCard(faq: com.bussiness.slodoggiesapp.data.model.common.FAQItem, isExpanded: Boolean, onClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

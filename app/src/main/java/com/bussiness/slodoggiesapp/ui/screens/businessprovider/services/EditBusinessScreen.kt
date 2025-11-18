@@ -210,7 +210,7 @@ fun EditBusinessScreen(
             // Category
             item {
                 FormHeadingText(stringResource(R.string.Category))
-                CategoryInputField()
+//                CategoryInputField()
             }
 
             // Business Address
@@ -283,7 +283,7 @@ fun EditBusinessScreen(
             // Verification Docs Upload
             item {
                 FormHeadingText(stringResource(R.string.Upload_verification_docs))
-                MediaUploadSection(maxImages = 10) { uri -> viewModel.addVerificationDoc(uri) }
+                MediaUploadSection(maxImages = 6) { uri -> viewModel.addVerificationDoc(uri) }
             }
 
             // Submit Button

@@ -2,9 +2,10 @@ package com.bussiness.slodoggiesapp.viewModel.common
 
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.model.common.PostItem
-import com.bussiness.slodoggiesapp.model.common.WelcomeUiState
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.model.common.WelcomeUiState
+import com.bussiness.slodoggiesapp.data.model.main.UserType
+import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _posts = MutableStateFlow<List<PostItem>>(emptyList())
@@ -58,12 +60,12 @@ class HomeViewModel @Inject constructor(
         val userType = sessionManager.getUserType()
         _welcomeUiState.value = WelcomeUiState(
             showDialog = true,
-            title = if (userType == UserType.PET_OWNER) {
+            title = if (userType == UserType.Owner) {
                 "Welcome to SloDoggies!"
             } else {
                 "Welcome to the Pack!"
             },
-            description = if (userType == UserType.PET_OWNER) {
+            description = if (userType == UserType.Owner) {
                 "You're officially part of the SloDoggies pack! Let's keep the tail wagging!"
             } else {
                 "Your business profile is all set. Start engaging with users, managing leads, and promoting your services to local dog owners!"
@@ -79,13 +81,13 @@ class HomeViewModel @Inject constructor(
 
     fun dismissWelcomeDialog() {
         _welcomeUiState.value = _welcomeUiState.value.copy(showDialog = false)
-        if (sessionManager.getUserType() == UserType.PET_OWNER) {
+        if (sessionManager.getUserType() == UserType.Owner) {
             _showPetInfoDialog.value = true
         }
     }
 
     fun onWelcomeSubmit() {
-        if (sessionManager.getUserType() == UserType.PET_OWNER) {
+        if (sessionManager.getUserType() == UserType.Owner) {
             _welcomeUiState.value = _welcomeUiState.value.copy(showDialog = false)
             _showPetInfoDialog.value = true
         } else {
@@ -98,6 +100,7 @@ class HomeViewModel @Inject constructor(
         _showUserDetailsDialog.value = false
         // 3. Show profile created dialog
         _profileCreatedUiState.value = true
+        sessionManager.clearSignupFlow()
     }
 
     fun showPetInfoDialog() {
@@ -127,10 +130,12 @@ class HomeViewModel @Inject constructor(
 
     fun dismissUserDetailsDialog() {
         _showUserDetailsDialog.value = false
+        sessionManager.clearSignupFlow()
     }
 
     fun dismissProfileCreatedDialog() {
         _profileCreatedUiState.value = false
+        sessionManager.clearSignupFlow()
     }
 
     fun dismissContinueAddPetDialog() {
@@ -161,4 +166,6 @@ class HomeViewModel @Inject constructor(
     fun resetPetInfoDialogCount() {
         _petInfoDialogCount.value = 0
     }
+
+
 }

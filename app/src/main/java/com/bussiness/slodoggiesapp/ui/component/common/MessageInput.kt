@@ -40,19 +40,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.ChatHeaderData
-import com.bussiness.slodoggiesapp.model.common.Message
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.businessProvider.ChatHeaderData
+import com.bussiness.slodoggiesapp.data.model.common.Message
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
-fun MessageItem(message: Message, onItemClick: () -> Unit) {
+fun MessageItem(message: com.bussiness.slodoggiesapp.data.model.common.Message, onItemClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,15 +100,40 @@ fun MessageItem(message: Message, onItemClick: () -> Unit) {
                     maxLines = 1
                 )
             }
-
-            Text(
-                text = message.description,
-                style = MaterialTheme.typography.bodySmall,
-                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                fontSize = 14.sp,
-                color = TextGrey,
-                maxLines = 1
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    text = message.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontSize = 14.sp,
+                    color = TextGrey,
+                    maxLines = 1
+                )
+                Box(
+                    modifier = Modifier
+                        .size(18.dp)
+                        .clip(CircleShape)
+                        .background( PrimaryColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    message.count?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 9.sp,
+                                color = Color.White
+                            ),
+                            maxLines = 1,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
         }
     }
     HorizontalDivider(thickness = 1.dp, color = Color(0xFFF4F4F4))
@@ -116,7 +142,7 @@ fun MessageItem(message: Message, onItemClick: () -> Unit) {
 
 @Composable
 fun ChatHeaderItem(
-    chatData: ChatHeaderData,
+    chatData: com.bussiness.slodoggiesapp.data.model.businessProvider.ChatHeaderData,
     onBackClick: () -> Unit = {},
     onDeleteClick: () -> Unit,
     onReportClick: () -> Unit,
@@ -275,7 +301,7 @@ fun OnMenuClick(
 
         MenuItem(
             iconRes = R.drawable.req_fb,
-            label = if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) "Req. Feedback"
+            label = if (sessionManager.getUserType() == UserType.Professional) "Req. Feedback"
             else "Give Feedback",
             onClick = {
                 onDismiss()

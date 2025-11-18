@@ -10,15 +10,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.bussiness.slodoggiesapp.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.model.common.PostItem
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.NormalPostItem
 
 
 @Composable
 fun ActivitiesPostsList(
-    posts: List<PostItem>,
+    posts: List<com.bussiness.slodoggiesapp.data.model.common.PostItem>,
     onReportClick: () -> Unit,
-    onShareClick: () -> Unit
+    onShareClick: () -> Unit,
+    onProfileClick: () -> Unit
 ) {
     Spacer(Modifier.height(5.dp))
     LazyColumn(
@@ -26,7 +27,7 @@ fun ActivitiesPostsList(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(posts) { post ->
-            if (post is PostItem.NormalPost) {
+            if (post is com.bussiness.slodoggiesapp.data.model.common.PostItem.NormalPost) {
                 NormalPostItem(
                     postItem = post,
                     modifier = Modifier.padding(0.dp),
@@ -35,7 +36,9 @@ fun ActivitiesPostsList(
                     normalPost = true,
                     onEditClick = { /* Handle edit click */ },
                     onDeleteClick = { /* Handle delete click */ },
-                    onProfileClick = { /* Handle profile click */ }
+                    onProfileClick = { onProfileClick() },
+                    onSelfPostEdit = { /* Handle self post edit click */ },
+                    onSelfPostDelete = { /* Handle self post delete click */ }
                 )
             }
         }

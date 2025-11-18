@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -131,7 +131,7 @@ fun JoinThePackScreen(
                     isSelected = selectedOption == "Pet Professional",
                     onClick = {
                         selectedOption = "Pet Professional"
-                        sessionManager.setUserType(UserType.BUSINESS_PROVIDER)
+                        sessionManager.setUserType(UserType.Professional)
                         navController.navigate(Routes.LOGIN_SCREEN)
                     }
                 )
@@ -144,7 +144,7 @@ fun JoinThePackScreen(
                     isSelected = selectedOption == "Pet Owner",
                     onClick = {
                         selectedOption = "Pet Owner"
-                        sessionManager.setUserType(UserType.PET_OWNER)
+                        sessionManager.setUserType(UserType.Owner)
                         navController.navigate(Routes.LOGIN_SCREEN)
                     }
                 )

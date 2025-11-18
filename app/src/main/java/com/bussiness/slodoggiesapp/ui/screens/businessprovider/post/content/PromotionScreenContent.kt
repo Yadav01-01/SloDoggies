@@ -19,7 +19,6 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,7 +67,7 @@ fun PromotionScreenContent(
         item {
             FormHeadingText(stringResource(R.string.upload_media))
             Spacer(Modifier.height(10.dp))
-            MediaUploadSection(maxImages = 10) { uri ->
+            MediaUploadSection(maxImages = 6) { uri ->
 //                viewModel.addPetImage(uri)
             }
         }
@@ -96,7 +95,11 @@ fun PromotionScreenContent(
         item {
             FormHeadingText(stringResource(R.string.category))
             Spacer(Modifier.height(10.dp))
-            CategoryInputField()
+//            CategoryInputField(
+//                categories = state.categories,
+//                onCategoryAdded = { viewModel.addCategory(it) },
+//                onCategoryRemoved = { viewModel.removeCategory(it) }
+//            )
         }
 
         item {

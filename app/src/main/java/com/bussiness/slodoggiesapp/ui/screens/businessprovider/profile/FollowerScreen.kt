@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.AudienceData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AudienceListItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AudienceSelection
@@ -41,20 +41,49 @@ fun FollowerScreen(navController: NavHostController, type: String) {
     var selectedOption by remember { mutableStateOf(type) }
     var query by remember { mutableStateOf("") }
     var removeDialog by remember { mutableStateOf(false) }
+    var removeFollowing by remember { mutableStateOf(false) }
     var removeToast by remember { mutableStateOf(false) }
     var isNavigating by remember { mutableStateOf(false) }
 
     val followersList = listOf(
-        AudienceData(R.drawable.profile1, "Adison Dias", true),
-        AudienceData(R.drawable.profile2, "Ryan Dias", false),
-        AudienceData(R.drawable.profile3, "Anika Torff", false)
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData(
+            R.drawable.profile1,
+            "Adison Dias",
+            true
+        ),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData(
+            R.drawable.profile2,
+            "Ryan Dias",
+            false
+        ),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData(
+            R.drawable.profile3,
+            "Anika Torff",
+            false
+        )
     )
 
     val followingList = listOf(
-        AudienceData(R.drawable.profile2, "Zain Dorwart", false),
-        AudienceData(R.drawable.profile1, "Marcus Culhane", true),
-        AudienceData(R.drawable.profile3, "Cristofer Torff", false),
-        AudienceData(R.drawable.profile1, "Lydia Vaccaro", false)
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData(
+            R.drawable.profile2,
+            "Zain Dorwart",
+            false
+        ),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData(
+            R.drawable.profile1,
+            "Marcus Culhane",
+            true
+        ),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData(
+            R.drawable.profile3,
+            "Cristofer Torff",
+            false
+        ),
+        com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData(
+            R.drawable.profile1,
+            "Lydia Vaccaro",
+            false
+        )
     )
 
     val listToShow = if (selectedOption == "Follower") followersList else followingList
@@ -118,7 +147,7 @@ fun FollowerScreen(navController: NavHostController, type: String) {
                     data = data,
                     isFollower = selectedOption == "Follower",
                     onPrimaryClick = { navController.navigate(Routes.CHAT_SCREEN) },
-                    onRemoveClick = { removeDialog = true },
+                    onRemoveClick = { if (selectedOption == "Follower") removeDialog = true else removeFollowing = true },
                     onFollowBackClick = { }
                 )
             }
@@ -130,7 +159,18 @@ fun FollowerScreen(navController: NavHostController, type: String) {
                 onClickRemove = { removeToast = true },
                 text = "Remove Follower?",
                 description = "We won’t tell Zain Dorwart they were removed from your followers.",
-                iconResId = R.drawable.remove_ic_user
+                iconResId = R.drawable.remove_ic_user,
+                buttonText = "Remove"
+            )
+        }
+        if (removeFollowing){
+            RemoveParticipantDialog(
+                onDismiss = { removeFollowing = false},
+                onClickRemove = { removeToast = true },
+                text = "Are you sure you want to unfollow User Name?",
+                description = "You’ll stop seeing their updates and posts in your feed — but don’t worry, they won’t be notified.",
+                iconResId = R.drawable.remove_ic_user,
+                buttonText = "Unfollow"
             )
         }
         if (removeToast){

@@ -24,44 +24,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.Review
+import com.bussiness.slodoggiesapp.data.model.businessProvider.Review
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.RatingBar
-
-//@Composable
-//fun RatingAndReviews(
-//    rating: Double,
-//    reviewsCount: Int,
-//    reviews: List<Review>
-//) {
-//    Column(modifier = Modifier.fillMaxSize()) {
-//        RatingSummaryService(rating = rating, reviewsCount = reviewsCount, reviews = reviews)
-//
-//        Spacer(Modifier.height(10.dp))
-//
-//        LazyColumn(
-//            modifier = Modifier.fillMaxSize()
-//        ) {
-//            items(reviews) { review ->
-//                ReviewItem(
-//                    profileImageUrl = review.profileImageUrl,
-//                    userName = review.userName,
-//                    rating = review.rating,
-//                    timeAgo = review.timeAgo,
-//                    reviewText = review.text,
-//                    onReplyClick = { /* Handle reply click here */ }
-//                )
-//                Divider(thickness = 0.5.dp, color = Color.LightGray)
-//            }
-//        }
-//    }
-//}
 
 
 @Composable
 fun RatingSummaryService(
     averageRating: Double,
     totalReviews: Int,
-    reviews: List<Review>
+    reviews: List<com.bussiness.slodoggiesapp.data.model.businessProvider.Review>
 ) {
     // Count ratings by stars
     val ratingDistribution = (1..5).associateWith { star ->
@@ -85,7 +56,8 @@ fun RatingSummaryService(
 
                 RatingBar(
                     rating = rating,
-                    percentage = percentage
+                    percentage = percentage,
+                    reviewNumbers = count.toString()
                 )
 
                 if (rating > 1) Spacer(modifier = Modifier.height(4.dp))

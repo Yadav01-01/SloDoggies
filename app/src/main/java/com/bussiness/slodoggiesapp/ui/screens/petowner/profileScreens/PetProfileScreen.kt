@@ -64,7 +64,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.petOwner.ProfileItem
+import com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
@@ -180,10 +180,16 @@ fun PetProfileScreen(navController: NavHostController) {
                 }
             } else {
                 val sampleProfiles = listOf(
-                    ProfileItem(1, R.drawable.dog_ic),
-                    ProfileItem(2, R.drawable.dog1),
-                    ProfileItem(3, R.drawable.dog3),
-                    ProfileItem(6, isAddButton = true)
+                    com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem(
+                        1,
+                        R.drawable.dog_ic
+                    ),
+                    com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem(2, R.drawable.dog1),
+                    com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem(3, R.drawable.dog3),
+                    com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem(
+                        6,
+                        isAddButton = true
+                    )
                 )
 
                 CircularProfileRow(
@@ -586,9 +592,9 @@ fun StatItem(number: String, label: String, navController: NavController) {
 
 @Composable
 fun CircularProfileRow(
-    profiles: List<ProfileItem>,
+    profiles: List<com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem>,
     modifier: Modifier = Modifier,
-    onProfileClick: (ProfileItem) -> Unit = {},
+    onProfileClick: (com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem) -> Unit = {},
     onAddClick: () -> Unit = {}
 ) {
     LazyRow(
@@ -615,7 +621,7 @@ fun CircularProfileRow(
 
 @Composable
 fun CircularProfileImage(
-    profile: ProfileItem,
+    profile: com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

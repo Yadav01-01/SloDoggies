@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,11 +48,13 @@ import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.NewPasswordViewMo
 @Composable
 fun NewPasswordScreen(
     navController: NavHostController,
+    emailOrPhone : String,
     viewModel: NewPasswordViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var isNavigating by remember { mutableStateOf(false) }
+
 
     BackHandler {
         if (!isNavigating) {
@@ -117,6 +120,7 @@ fun NewPasswordScreen(
             ContinueButton(
                 onClick = {
                     viewModel.updatePassword(
+                        emailOrPhone,
                         onSuccess = {
                         viewModel.showUpdatePasswordDialog()
                         },

@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,8 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ExperienceRuleHeading
 
 @Composable
 fun PendingScreen(){
@@ -65,8 +62,7 @@ fun PendingScreen(){
 
         }
 
-        Text("Search Experience Rules", fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color.Black)
+        ExperienceRuleHeading()
 
         // Rules Section
         Column(

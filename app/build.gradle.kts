@@ -38,6 +38,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     kapt {
         correctErrorTypes = true
@@ -50,6 +51,7 @@ android {
     }
 
 
+
 }
 dependencies {
 
@@ -59,8 +61,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
 
     // Instrumentation tests (androidTest)
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
 
@@ -118,6 +120,35 @@ dependencies {
 
     //systemUI
     implementation (libs.accompanist.systemuicontroller)
+
+    // Media3
+    implementation(libs.androidx.media3.exoplayer.v180)
+    implementation(libs.androidx.media3.ui.v180)
+    implementation(libs.androidx.media3.common)
+
+    // Retrofit + OkHttp
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
+
+    // Gson with lenient parsing
+    implementation(libs.gson)
+
+    //OkHttp
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.okhttp3.okhttp)
+    implementation(libs.okhttp3.logging.interceptor)
+
+    //lottie animation loader
+    implementation(libs.lottie.compose)
+
+    //google place API
+    implementation (libs.places)
 
 
 }

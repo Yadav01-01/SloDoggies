@@ -21,8 +21,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.BottomNavItem
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.common.BottomNavItem
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.MainNavGraph
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -36,10 +36,30 @@ fun MainScreen(authNavController: NavHostController) {
     val sessionManager = SessionManager.getInstance(context)
 
     val bottomNavItems = listOf(
-        BottomNavItem("Home", R.drawable.home_ic, Routes.HOME_SCREEN, R.drawable.out_home_ic),
-        BottomNavItem("Discover", R.drawable.discover_ic, Routes.DISCOVER_SCREEN, R.drawable.out_explore_ic),
-        BottomNavItem("Services", R.drawable.service_ic,if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) Routes.SERVICES_SCREEN else Routes.PET_SERVICES_SCREEN, R.drawable.out_service_ic),
-        BottomNavItem("Profile", R.drawable.profile_ic, if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) Routes.PROFILE_SCREEN else Routes.PET_PROFILE_SCREEN, R.drawable.out_profile_ic)
+        BottomNavItem(
+            "Home",
+            R.drawable.home_ic,
+            Routes.HOME_SCREEN,
+            R.drawable.out_home_ic
+        ),
+        BottomNavItem(
+            "Discover",
+            R.drawable.discover_ic,
+            Routes.DISCOVER_SCREEN,
+            R.drawable.out_explore_ic
+        ),
+        BottomNavItem(
+            "Services",
+            R.drawable.service_ic,
+            if (sessionManager.getUserType() == UserType.Professional) Routes.SERVICES_SCREEN else Routes.PET_SERVICES_SCREEN,
+            R.drawable.out_service_ic
+        ),
+        BottomNavItem(
+            "Profile",
+            R.drawable.profile_ic,
+            if (sessionManager.getUserType() == UserType.Professional) Routes.PROFILE_SCREEN else Routes.PET_PROFILE_SCREEN,
+            R.drawable.out_profile_ic
+        )
     )
 
     val bottomNavRoutes = bottomNavItems.map { it.route }
@@ -82,7 +102,7 @@ fun MainScreen(authNavController: NavHostController) {
                     },
                     onCenterClick = {
                         val destination =
-                            if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER) {
+                            if (sessionManager.getUserType() == UserType.Professional) {
                                 Routes.POST_SCREEN
                             } else {
                                 Routes.PET_NEW_POST_SCREEN

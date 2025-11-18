@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -33,7 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.ExperienceRuleHeading
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
@@ -257,8 +256,7 @@ fun ActiveScreen(clicks: Int = 1200, impressions: Int = 1300) {
 
         }
 
-        Text("Search Experience Rules", fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
+        ExperienceRuleHeading()
 
         // Rules Section
         Column(

@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -37,13 +39,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
+import com.bussiness.slodoggiesapp.ui.component.common.AppLottieLoader
 import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
 import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
+import com.bussiness.slodoggiesapp.ui.dialog.DisclaimerDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -57,6 +62,13 @@ fun LoginScreen(
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val sessionManager = SessionManager.getInstance(context)
+
+    LaunchedEffect(state.loginSuccess) {
+        if (state.loginSuccess) {
+            navController.navigate(Routes.MAIN_SCREEN)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -90,7 +102,7 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            FormHeadingText("Email/ Phone ", modifier = Modifier.align(Alignment.Start))
+            FormHeadingText(stringResource(R.string.Email_Phone), modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(10.dp))
             EmailInputField(
                 email = state.contactInput,
@@ -99,7 +111,7 @@ fun LoginScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            FormHeadingText("Password", modifier = Modifier.align(Alignment.Start))
+            FormHeadingText(stringResource(R.string.password), modifier = Modifier.align(Alignment.Start))
             Spacer(modifier = Modifier.height(10.dp))
             PasswordInput(
                 password = state.password,
@@ -126,13 +138,7 @@ fun LoginScreen(
             ContinueButton(
                 onClick = {
                     viewModel.login(
-                        onSuccess = {
-                            sessionManager.setLogin(true)
-                            navController.navigate(Routes.MAIN_SCREEN)
-                        },
-                        onError = { message ->
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                        }
+                        onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() }
                     )
                 },
                 text = "Login"
@@ -193,6 +199,17 @@ fun LoginScreen(
                 .wrapContentWidth()
         )
     }
+    if (sessionManager.getUserType() == UserType.Professional){
+        if (state.disclaimerDialog){
+            DisclaimerDialog(
+                onDismiss = { viewModel.dismissDisclaimerDialog() },
+                icon = R.drawable.caution_ic,
+                heading = "Disclaimer ",
+                desc1 = "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quao. Nemo enim ipsam voluptatem quia voluptas sit."
+            )
+        }
+    }
+
 }
 
 @Preview(showBackground = true)

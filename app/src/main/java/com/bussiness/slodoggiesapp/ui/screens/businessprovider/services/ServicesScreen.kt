@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.Review
-import com.bussiness.slodoggiesapp.model.businessProvider.ReviewReply
+import com.bussiness.slodoggiesapp.data.model.businessProvider.Review
+import com.bussiness.slodoggiesapp.data.model.businessProvider.ReviewReply
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AddServiceButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
@@ -54,7 +54,7 @@ fun ServiceScreen(navController: NavHostController) {
             timeAgo = "2 mins ago",
             review = "Consequat velit qui adipisicing sunt do rependerit ad laborum tempor ullamco exercitation. Ullamco tempor adipisicing et voluptate duis sit commodo aliqua",
             avatar = R.drawable.dummy_baby_pic,
-            reply = ReviewReply(
+            reply = com.bussiness.slodoggiesapp.data.model.businessProvider.ReviewReply(
                 providerName = "Rosy Morgan",
                 providerImage = "https://example.com/provider1.png",
                 providerRole = "Provider",
@@ -63,11 +63,13 @@ fun ServiceScreen(navController: NavHostController) {
             )
         ),
 
-        Review(name = "Coy Hetry",
+        Review(
+            name = "Coy Hetry",
             rating = 3,
             timeAgo = "30 mins ago",
             review = "Consequat velit qui adipisicing sunt do rependerit ad laborum tempor ullamco exercitation. Ullamco tempor adipisicing et voluptate duis sit commodo aliqua",
-            avatar = R.drawable.dummy_baby_pic)
+            avatar = R.drawable.dummy_baby_pic
+        )
     )
 
     BackHandler {

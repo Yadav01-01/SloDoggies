@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.BottomNavItem
+import com.bussiness.slodoggiesapp.data.model.common.BottomNavItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
@@ -45,9 +45,9 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 @Composable
 fun CustomBottomBar(
     navController: NavController,
-    items: List<BottomNavItem>,
+    items: List<com.bussiness.slodoggiesapp.data.model.common.BottomNavItem>,
     selectedRoute: String,
-    onItemClick: (BottomNavItem) -> Unit,
+    onItemClick: (com.bussiness.slodoggiesapp.data.model.common.BottomNavItem) -> Unit,
     onCenterClick: () -> Unit
 ) {
     val background = if (selectedRoute == Routes.HOME_SCREEN) Color(0xFFB9D4DB) else Color.White
@@ -130,9 +130,9 @@ fun CustomBottomBar(
 
 @Composable
 fun BottomNavItemComposable(
-    item: BottomNavItem,
+    item: com.bussiness.slodoggiesapp.data.model.common.BottomNavItem,
     selectedRoute: String,
-    onClick: (BottomNavItem) -> Unit
+    onClick: (com.bussiness.slodoggiesapp.data.model.common.BottomNavItem) -> Unit
 ) {
     val selected = item.route == selectedRoute
 
@@ -172,10 +172,30 @@ fun CustomBottomBarPreview() {
     val navController = rememberNavController()
     val currentRoute = Routes.DISCOVER_SCREEN
     val bottomNavItems = listOf(
-        BottomNavItem("Home", R.drawable.home_ic, Routes.HOME_SCREEN, R.drawable.out_home_ic),
-        BottomNavItem("Discover", R.drawable.discover_ic, Routes.DISCOVER_SCREEN, R.drawable.out_explore_ic),
-        BottomNavItem("Services", R.drawable.service_ic, Routes.SERVICES_SCREEN, R.drawable.out_service_ic),
-        BottomNavItem("Profile", R.drawable.profile_ic, Routes.PROFILE_SCREEN, R.drawable.out_profile_ic)
+        com.bussiness.slodoggiesapp.data.model.common.BottomNavItem(
+            "Home",
+            R.drawable.home_ic,
+            Routes.HOME_SCREEN,
+            R.drawable.out_home_ic
+        ),
+        com.bussiness.slodoggiesapp.data.model.common.BottomNavItem(
+            "Discover",
+            R.drawable.discover_ic,
+            Routes.DISCOVER_SCREEN,
+            R.drawable.out_explore_ic
+        ),
+        com.bussiness.slodoggiesapp.data.model.common.BottomNavItem(
+            "Services",
+            R.drawable.service_ic,
+            Routes.SERVICES_SCREEN,
+            R.drawable.out_service_ic
+        ),
+        com.bussiness.slodoggiesapp.data.model.common.BottomNavItem(
+            "Profile",
+            R.drawable.profile_ic,
+            Routes.PROFILE_SCREEN,
+            R.drawable.out_profile_ic
+        )
     )
 
 

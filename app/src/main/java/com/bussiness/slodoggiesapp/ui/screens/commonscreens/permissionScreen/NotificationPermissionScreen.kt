@@ -79,7 +79,7 @@ fun NotificationPermissionScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Please enable notifications to receive\nupdates and reminders",
+                text = "Please enable notifications to receive\nupdates and reminders.",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     color = Color.Black,

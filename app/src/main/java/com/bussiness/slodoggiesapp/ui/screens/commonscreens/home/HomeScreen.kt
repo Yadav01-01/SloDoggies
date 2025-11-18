@@ -24,16 +24,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.MediaItem
-import com.bussiness.slodoggiesapp.model.common.MediaType
-import com.bussiness.slodoggiesapp.model.common.PostItem
-import com.bussiness.slodoggiesapp.model.main.UserType
+import com.bussiness.slodoggiesapp.data.model.common.MediaItem
+import com.bussiness.slodoggiesapp.data.model.common.MediaType
+import com.bussiness.slodoggiesapp.data.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.common.HomeTopBar
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.PetInfoDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.UserDetailsDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.WelcomeDialog
+import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.dialog.ReportBottomToast
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.CommunityPostItem
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.NormalPostItem
@@ -58,11 +59,25 @@ fun HomeScreen(
     val showReportToast by viewModel.showReportToast.collectAsState()
     val dialogCount by viewModel.petInfoDialogCount.collectAsState()
     val shareContentDialog by viewModel.showShareContent.collectAsState()
+    var deleteDialog by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
     var selectedReason by remember { mutableStateOf("") }
     val context =  LocalContext.current
     val activity = context as? Activity
     val sessionManager = SessionManager.getInstance(context)
+
+    val onReportClick = remember { { viewModel.showReportDialog() } }
+    val onShareClick = remember { { viewModel.showShareContent() } }
+    val onProfileClick = remember { { navController.navigate(Routes.CLICKED_PROFILE_SCREEN) } }
+    val onSponsoredClick = remember { {
+        val destination = if (sessionManager.getUserType() == UserType.Owner) {
+            Routes.SERVICE_PROVIDER_DETAILS
+        } else {
+            Routes.SPONSORED_ADS_SCREEN
+        }
+        navController.navigate(destination)
+    }
+    }
 
     Column(
         modifier = Modifier
@@ -75,7 +90,7 @@ fun HomeScreen(
         }
 
         HomeTopBar(
-            onNotificationClick = { if (sessionManager.getUserType() == UserType.BUSINESS_PROVIDER)navController.navigate(Routes.NOTIFICATION_SCREEN) else navController.navigate(Routes.PET_NOTIFICATION_SCREEN) },
+            onNotificationClick = { if (sessionManager.getUserType() == UserType.Professional)navController.navigate(Routes.NOTIFICATION_SCREEN) else navController.navigate(Routes.PET_NOTIFICATION_SCREEN) },
             onMessageClick = { navController.navigate(Routes.MESSAGE_SCREEN) }
         )
 
@@ -86,8 +101,9 @@ fun HomeScreen(
             items(posts) { post ->
                 when (post) {
                     is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) })
-                    is PostItem.SponsoredPost -> SponsoredPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onProfileClick = { navController.navigate(Routes.CLICKED_PROFILE_SCREEN) })
-                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() },normalPost = true, onEditClick = {}, onDeleteClick = {}, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) })
+                    is PostItem.SponsoredPost -> SponsoredPostItem(post = post, onReportClick = onReportClick, onShareClick = onShareClick, onProfileClick = onProfileClick, onSponsoredClick = {  })
+                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() },normalPost = true, onEditClick = {}, onDeleteClick = {},
+                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) }, onSelfPostEdit = { navController.navigate(Routes.EDIT_POST_SCREEN)}, onSelfPostDelete = { deleteDialog = true })
                 }
             }
         }
@@ -105,57 +121,63 @@ fun HomeScreen(
         )
     }
 
-    if (showUserDetailsDialog) {
-        UserDetailsDialog(
-            navController = navController,
-            onDismiss = { viewModel.dismissUserDetailsDialog() },
-            onSubmit = {
-                viewModel.onUserDetailsSubmit()
-            },
-            onVerify = { data,type ->
-                viewModel.onVerify(navController,data,type)
-            }
-        )
-    }
-
-    if (profileCreatedUiState) {
-        WelcomeDialog(
-            onDismiss = { viewModel.dismissProfileCreatedDialog() },
-            onSubmitClick = { viewModel.dismissProfileCreatedDialog() },
-            icon = R.drawable.ic_party_popper_icon,
-            title = stringResource(R.string.profileCreateTitle),
-            description = stringResource(R.string.profileCreateDes),
-            button = stringResource(R.string.explore_now),
-        )
-    }
-
-    if (continueAddPet) {
-        WelcomeDialog(
-            onDismiss = { viewModel.dismissContinueAddPetDialog() },
-            onSubmitClick = { viewModel.dismissContinueAddPetDialog() },
-            icon = R.drawable.paw_print,
-            title = stringResource(R.string.add_pet),
-            description = stringResource(R.string.paw_description),
-            button = stringResource(R.string.paw_button),
-        )
-    }
-
-    if (showPetInfoDialog) {
-        if (dialogCount < 2) {
-            PetInfoDialog(
-                title = stringResource(R.string.tell_us_about_your_pet),
-                onDismiss = { viewModel.dismissPetInfoDialog() },
-                addPet = { petInfo ->
-                    viewModel.incrementPetInfoDialogCount()
-                    viewModel.showPetInfoDialog()
-                },
-                onContinueClick = {
-                    viewModel.dismissPetInfoDialog()
+    if (sessionManager.isSignupFlowActive()){
+        if (showUserDetailsDialog) {
+            UserDetailsDialog(
+                navController = navController,
+                onDismiss = { viewModel.dismissUserDetailsDialog() },
+                onSubmit = { viewModel.onUserDetailsSubmit() },
+                onVerify = { data,type ->
+                    viewModel.onVerify(navController,data,type)
                 }
             )
-        } else {
-            LaunchedEffect(Unit) {
-                viewModel.showContinueAddPetDialog()
+        }
+    }
+
+    if (sessionManager.isSignupFlowActive()){
+        if (profileCreatedUiState) {
+            WelcomeDialog(
+                onDismiss = { viewModel.dismissProfileCreatedDialog() },
+                onSubmitClick = { viewModel.dismissProfileCreatedDialog() },
+                icon = R.drawable.ic_party_popper_icon,
+                title = stringResource(R.string.profileCreateTitle),
+                description = stringResource(R.string.profileCreateDes),
+                button = stringResource(R.string.explore_now),
+            )
+        }
+    }
+
+    if (sessionManager.isSignupFlowActive()){
+        if (continueAddPet) {
+            WelcomeDialog(
+                onDismiss = { viewModel.dismissContinueAddPetDialog() },
+                onSubmitClick = { viewModel.dismissContinueAddPetDialog() },
+                icon = R.drawable.paw_print,
+                title = stringResource(R.string.add_pet),
+                description = stringResource(R.string.paw_description),
+                button = stringResource(R.string.paw_button),
+            )
+        }
+    }
+
+    if (sessionManager.isSignupFlowActive()){
+        if (showPetInfoDialog) {
+            if (dialogCount < 2) {
+                PetInfoDialog(
+                    title = stringResource(R.string.tell_us_about_your_pet),
+                    onDismiss = { viewModel.dismissPetInfoDialog() },
+                    addPet = { petInfo ->
+                        viewModel.incrementPetInfoDialogCount()
+                        viewModel.showPetInfoDialog()
+                    },
+                    onContinueClick = {
+                        viewModel.dismissPetInfoDialog()
+                    }
+                )
+            } else {
+                LaunchedEffect(Unit) {
+                    viewModel.showContinueAddPetDialog()
+                }
             }
         }
     }
@@ -174,6 +196,16 @@ fun HomeScreen(
             onReasonSelected = {  reason -> selectedReason = reason },
             onMessageChange = { message = it },
             title = "Report Post"
+        )
+    }
+
+    if (deleteDialog) {
+        DeleteChatDialog(
+            onDismiss = { deleteDialog = false },
+            onClickRemove = { deleteDialog = false  },
+            iconResId = R.drawable.delete_mi,
+            text = stringResource(R.string.Delete_Post),
+            description = stringResource(R.string.Delete_desc)
         )
     }
 
@@ -202,10 +234,21 @@ fun getSamplePosts(): List<PostItem> {
             likes = 120,
             comments = 20,
             shares = 10,
+            postType = "self",
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_social_media_post, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image2, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_social_media_post, MediaType.VIDEO,)
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageRes = R.drawable.dog1
+                ),
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageUrl = "https://picsum.photos/400"
+                ),
+                MediaItem(
+                    MediaType.VIDEO,
+                    videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                    thumbnailRes = null
+                )
             )
         ),
         PostItem.CommunityPost(
@@ -233,7 +276,10 @@ fun getSamplePosts(): List<PostItem> {
             caption = "Summer Special: 20% Off Grooming!",
             description = "Limited Time Offer",
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_baby_pic, MediaType.IMAGE)
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageRes = R.drawable.dog1
+                ),
             ),
             likes = 200,
             comments = 100,
@@ -250,10 +296,22 @@ fun getSamplePosts(): List<PostItem> {
             likes = 85,
             comments = 12,
             shares = 5,
+            postType = "other",
             mediaList = listOf(
-                MediaItem(R.drawable.dummy_social_media_post, MediaType.IMAGE),
-                MediaItem(R.drawable.dummy_person_image3, MediaType.IMAGE)
-            )
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageRes = R.drawable.dog1
+                ),
+                MediaItem(
+                    MediaType.IMAGE,
+                    imageUrl = "https://picsum.photos/400"
+                ),
+//                MediaItem(
+//                    MediaType.VIDEO,
+//                    videoRes = R.raw.reel,
+//                    thumbnailRes = R.drawable.dummy_social_media_post
+//                )
+            ),
         )
     )
 }

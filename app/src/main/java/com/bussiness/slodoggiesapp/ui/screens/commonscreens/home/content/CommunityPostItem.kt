@@ -46,7 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.model.common.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
@@ -55,7 +55,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
 @Composable
-fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> Unit,onReportClick: () -> Unit,onShareClick: () -> Unit,onProfileClick: () -> Unit){
+fun CommunityPostItem(postItem: com.bussiness.slodoggiesapp.data.model.common.PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onProfileClick: () -> Unit){
     var isFollowed by remember { mutableStateOf(false) }
 
     Card(
@@ -210,20 +210,6 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> 
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-//                Row(verticalAlignment = Alignment.CenterVertically) {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.time_ic),
-//                        contentDescription = "Duration",
-//                        tint = Color.Unspecified
-//                    )
-//                    Spacer(modifier = Modifier.width(4.dp))
-//                    Text(
-//                        text = postItem.eventDuration,
-//                        fontSize = 12.sp,
-//                        color = Color.Gray,
-//                        fontFamily = FontFamily(Font(R.font.outfit_regular))
-//                    )
-//                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = R.drawable.cal_ic),
@@ -291,7 +277,6 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,onJoinedCommunity: () -> 
                 )
             }
 
-
             Spacer(modifier = Modifier.height(10.dp))
 
             // Actions
@@ -306,7 +291,7 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
     var isBookmarked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
     var deleteComment by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+
     Row(
         modifier = Modifier
             .padding(horizontal = 12.dp, vertical = 2.dp)
@@ -375,7 +360,6 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
                 )
             }
         }
-
     }
     if (showCommentsDialog) {
         val sampleComments = listOf(

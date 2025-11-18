@@ -37,17 +37,37 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.petOwner.PetOwnerBottomNavItem
+import com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 
 val bottomNavItems = listOf(
-    PetOwnerBottomNavItem("Home", R.drawable.pet_ic_home, Routes.PET_HOME_SCREEN),
-    PetOwnerBottomNavItem("Discover", R.drawable.pet_ic_discover, Routes.PET_DISCOVER_SCREEN),
-    PetOwnerBottomNavItem("Post", R.drawable.pet_ic_post, Routes.PET_NEW_POST_SCREEN),
-    PetOwnerBottomNavItem("Services", R.drawable.pet_ic_sevice, Routes.PET_SERVICES_SCREEN),
-    PetOwnerBottomNavItem("Profile", R.drawable.pet_ic_profile, Routes.PET_PROFILE_SCREEN)
+    com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem(
+        "Home",
+        R.drawable.pet_ic_home,
+        Routes.PET_HOME_SCREEN
+    ),
+    com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem(
+        "Discover",
+        R.drawable.pet_ic_discover,
+        Routes.PET_DISCOVER_SCREEN
+    ),
+    com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem(
+        "Post",
+        R.drawable.pet_ic_post,
+        Routes.PET_NEW_POST_SCREEN
+    ),
+    com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem(
+        "Services",
+        R.drawable.pet_ic_sevice,
+        Routes.PET_SERVICES_SCREEN
+    ),
+    com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem(
+        "Profile",
+        R.drawable.pet_ic_profile,
+        Routes.PET_PROFILE_SCREEN
+    )
 )
 
 //@RequiresApi(Build.VERSION_CODES.Q)
@@ -168,9 +188,9 @@ fun CustomBottomBar(
     iconSize: Dp = 22.dp,
     labelFontSize: TextUnit = 10.sp,
     navController: NavController,
-    items: List<PetOwnerBottomNavItem>,
+    items: List<com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem>,
     selectedRoute: String,
-    onItemClick: (PetOwnerBottomNavItem) -> Unit
+    onItemClick: (com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem) -> Unit
 ) {
             Box(
             modifier = Modifier
@@ -278,7 +298,7 @@ fun CustomBottomBar(
 
 @Composable
 private fun BottomNavItem(
-    item: PetOwnerBottomNavItem,
+    item: com.bussiness.slodoggiesapp.data.model.petOwner.PetOwnerBottomNavItem,
     selected: Boolean,
     selectedItemColor: Color,
     unselectedItemColor: Color,

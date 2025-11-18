@@ -3,7 +3,6 @@ package com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -61,7 +58,7 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit,viewM
 
         item {
             FormHeadingText("Upload Media")
-            MediaUploadSection(maxImages = 10) { uri ->
+            MediaUploadSection(maxImages = 6) { uri ->
 //            viewModel.addPetImage(uri)
             }
             Spacer(Modifier.height(15.dp))
@@ -112,42 +109,13 @@ fun PostScreenContent( onClickLocation: () -> Unit,onClickPost: () -> Unit,viewM
 
         item {
             FormHeadingText(stringResource(R.string.Enter_your_Address))
-        }
-
-        item {
-            FormHeadingText(stringResource(R.string.flat_address))
             InputField(
                 placeholder = stringResource(R.string.enter_flat_address),
-                input = streetAddress ,
-                onValueChange = { viewModel.updateStreetAddress(it) }
+                input = streetAddress,
+                onValueChange = { viewModel.updateStreetAddress(it) },
+                readOnly = true
             )
-        }
 
-        item {
-            FormHeadingText(stringResource(R.string.area_sector))
-            InputField(
-                placeholder = stringResource(R.string.enter_area_sector),
-                input = areaSector,
-                onValueChange = { viewModel.updateAreaSector(it) }
-            )
-        }
-
-        item {
-            FormHeadingText(stringResource(R.string.landmark))
-            InputField(
-                placeholder = stringResource(R.string.enter_landmark),
-                input = landmark,
-                onValueChange = { viewModel.updateLandmark(it) }
-            )
-        }
-
-        item {
-            FormHeadingText("Zip Code")
-            InputField(
-                placeholder = "Enter your Zip Code",
-                input = postalCode,
-                onValueChange = { viewModel.updatePostalCode(it) }
-            )
         }
 
         item {

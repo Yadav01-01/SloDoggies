@@ -2,105 +2,148 @@ package com.bussiness.slodoggiesapp.viewModel.businessProvider
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.bussiness.slodoggiesapp.data.remote.Repository
+import com.bussiness.slodoggiesapp.data.uiState.BusinessRegistrationUiState
+import com.bussiness.slodoggiesapp.network.Resource
+import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BusinessRegistrationViewModel @Inject constructor() : ViewModel() {
+class BusinessRegistrationViewModel @Inject constructor(
+    private val repository: Repository,
+    private val sessionManager: SessionManager
+) : ViewModel() {
 
-    // Form State
-    private val _name = MutableStateFlow("")
-    val name: StateFlow<String> = _name
+    private val _uiState = MutableStateFlow(BusinessRegistrationUiState())
+    val uiState: StateFlow<BusinessRegistrationUiState> = _uiState.asStateFlow()
 
-    private val _email = MutableStateFlow("")
-    val email: StateFlow<String> = _email
+    // --- Field Updaters ---
+    fun updateName(value: String) = _uiState.update { it.copy(name = value.trim()) }
+    fun updateEmail(value: String) = _uiState.update { it.copy(email = value.trim()) }
+    fun updateBusinessAddress(value: String) = _uiState.update { it.copy(businessAddress = value.trim()) }
+    fun updateWebsite(value: String) = _uiState.update { it.copy(website = value.trim()) }
+    fun updateContact(value: String) = _uiState.update { it.copy(contact = value.trim()) }
+    fun updateCity(value: String) = _uiState.update { it.copy(city = value.trim()) }
+    fun updateState(value: String) = _uiState.update { it.copy(state = value.trim()) }
+    fun updateZip(value: String) = _uiState.update { it.copy(zipCode = value.trim()) }
 
-    private val _location = MutableStateFlow("")
-    val location: StateFlow<String> = _location
 
-    private val _url = MutableStateFlow("")
-    val url: StateFlow<String> = _url
-
-    private val _contact = MutableStateFlow("")
-    val contact: StateFlow<String> = _contact
-
-    private val _streetAddress = MutableStateFlow("")
-    val streetAddress: StateFlow<String> = _streetAddress
-
-    private val _areaSector = MutableStateFlow("")
-    val areaSector: StateFlow<String> = _areaSector
-
-    private val _landmark = MutableStateFlow("")
-    val landmark: StateFlow<String> = _landmark
-
-    fun updateLandmark(newLandmark: String) {
-        _landmark.value = newLandmark
+    init {
+        getPreFillDetail()
     }
 
-    fun updateAreaSector(newAreaSector: String) {
-        _areaSector.value = newAreaSector
-    }
-
-    fun updateStreetAddress(newStreetAddress: String) {
-        _streetAddress.value = newStreetAddress
-    }
-
-
-
-    private val _category = MutableStateFlow<String?>(null)
-    val category: StateFlow<String?> = _category
-
-    private val _imageUri = MutableStateFlow<Uri?>(null)
-    val imageUri: StateFlow<Uri?> = _imageUri
-
-    private val _formSubmitted = MutableStateFlow(false)
-    val formSubmitted: StateFlow<Boolean> = _formSubmitted
-
-    // Form State Updaters
-    fun updateName(value: String) {
-        _name.value = value
-    }
-
-    fun updateEmail(value: String) {
-        _email.value = value
-    }
-
-    fun updateLocation(value: String) {
-        _location.value = value
-    }
-
-    fun updateUrl(value: String) {
-        _url.value = value
-    }
-
-    fun updateContact(value: String) {
-        _contact.value = value
-    }
-
-
-
-    fun selectCategory(category: String) {
-        _category.value = category
-    }
-
-    fun selectImage(uri: Uri?) {
-        _imageUri.value = uri
-    }
-
-    // Validation Logic
-    private fun isFormValid(): Boolean {
-        return _name.value.isNotBlank() && _category.value != null && _imageUri.value != null
-    }
-
-    // Submit Form
-    fun submitForm() {
-        if (isFormValid()) {
-            _formSubmitted.value = true
-            // TODO: API Call or next screen logic
-        } else {
-            _formSubmitted.value = false
+    fun addCategory(category: String) {
+        _uiState.update {
+            it.copy(categories = it.categories + category)
         }
+    }
+
+    fun removeCategory(category: String) {
+        _uiState.update {
+            it.copy(categories = it.categories - category)
+        }
+    }
+
+    fun addImage(uri: Uri) {
+        _uiState.update {
+            it.copy(verificationDocs = it.verificationDocs + uri)
+        }
+    }
+
+    fun removeImage(uri: Uri) {
+        _uiState.update {
+            it.copy(verificationDocs = it.verificationDocs - uri)
+        }
+    }
+
+    private fun getPreFillDetail(){
+        viewModelScope.launch {
+            repository.getBusinessDetail(sessionManager.getUserId()).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
+                    is Resource.Success -> {
+                        val response = result.data
+                        if (response.success && response.data != null) {
+                            val data = response.data
+                            _uiState.update {
+                                it.copy(
+                                    name = data.name.orEmpty(),
+                                    email = data.email.orEmpty(),
+                                    contact = data.phone.orEmpty(),
+                                    isLoading = false
+                                )
+                            }
+                        } else {
+                            onError(response.message ?: "Failed to fetch owner details")
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update { it.copy(isLoading = false) }
+                        onError(result.message)
+                    }
+
+                    Resource.Idle -> Unit
+                }
+
+            }
+        }
+    }
+
+    // --- Submit Form ---
+    fun submitForm(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            val state = _uiState.value
+            if (!state.isValid) {
+                onError("Please fill all required fields and upload at least one image.")
+                return@launch
+            }
+
+            _uiState.update { it.copy(isLoading = true) }
+
+            try {
+                repository.getBusinessDetail(sessionManager.getUserId()).collectLatest { result ->
+                    when (result) {
+                        is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
+                        is Resource.Success -> {
+                            val response = result.data
+                            if (response.success && response.data != null) {
+
+                            } else {
+                                onError(response.message ?: "Failed to fetch owner details")
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            _uiState.update { it.copy(isLoading = false) }
+                            onError(result.message)
+                        }
+
+                        Resource.Idle -> Unit
+                    }
+
+                }
+
+                // Simulate Success
+                _uiState.update { it.copy(isLoading = false, formSubmitted = true) }
+                onSuccess()
+
+            } catch (e: Exception) {
+                _uiState.update { it.copy(isLoading = false) }
+                onError(e.message ?: "Submission failed, please try again.")
+            }
+        }
+    }
+
+    private fun onError(message: String?) {
+        _uiState.update { it.copy(errorMessage = message ?: "Something went wrong") }
     }
 }

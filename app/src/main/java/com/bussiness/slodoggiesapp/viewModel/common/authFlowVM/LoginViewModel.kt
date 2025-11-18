@@ -2,50 +2,52 @@ package com.bussiness.slodoggiesapp.viewModel.common.authFlowVM
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bussiness.slodoggiesapp.data.remote.Repository
+import com.bussiness.slodoggiesapp.data.uiState.LoginUiState
+import com.bussiness.slodoggiesapp.network.Resource
+import com.bussiness.slodoggiesapp.util.Messages
+import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor() : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val repository: Repository,
+    private var sessionManager: SessionManager
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState
 
     fun onContactChange(newInput: String) {
         val trimmedInput = newInput.trim()
-
         val isEmail = android.util.Patterns.EMAIL_ADDRESS.matcher(trimmedInput).matches()
-        val isPhone = trimmedInput.matches(Regex("^[6-9][0-9]{9}$")) // 10-digit Indian mobile numbers
+        val isPhone = trimmedInput.matches(Regex("^[6-9][0-9]{9}$")) // 10-digit valid mobile numbers
 
-        when {
-            isEmail -> {
-                _uiState.value = _uiState.value.copy(
-                    contactInput = trimmedInput,
-                    isValid = true,
-                    contactType = ContactType.EMAIL,
-                    errorMessage = null
-                )
-            }
-            isPhone -> {
-                _uiState.value = _uiState.value.copy(
-                    contactInput = trimmedInput,
-                    isValid = true,
-                    contactType = ContactType.PHONE,
-                    errorMessage = null
-                )
-            }
-            else -> {
-                _uiState.value = _uiState.value.copy(
-                    contactInput = trimmedInput,
-                    isValid = false,
-                    contactType = null,
-                    errorMessage = "Enter valid email or phone number"
-                )
-            }
+        _uiState.value = when {
+            isEmail -> _uiState.value.copy(
+                contactInput = trimmedInput,
+                isValid = true,
+                contactType = ContactType.EMAIL,
+                errorMessage = null
+            )
+            isPhone -> _uiState.value.copy(
+                contactInput = trimmedInput,
+                isValid = true,
+                contactType = ContactType.PHONE,
+                errorMessage = null
+            )
+            else -> _uiState.value.copy(
+                contactInput = trimmedInput,
+                isValid = false,
+                contactType = null,
+                errorMessage = Messages.VALID_INPUT
+            )
         }
     }
 
@@ -53,38 +55,76 @@ class LoginViewModel @Inject constructor() : ViewModel() {
         _uiState.value = _uiState.value.copy(password = newPassword)
     }
 
-    fun login(onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun showDisclaimerDialog() {
+        _uiState.value = _uiState.value.copy(disclaimerDialog = true)
+    }
+
+    fun dismissDisclaimerDialog() {
+        _uiState.value = _uiState.value.copy(disclaimerDialog = false)
+    }
+
+
+    fun login(onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
         val state = _uiState.value
 
-        if (state.contactInput.isBlank() || state.password.isBlank()) {
-            onError("Email/Phone and Password cannot be empty")
-            return
-        }
-
-        if (!state.isValid) {
-            onError(state.errorMessage ?: "Invalid input")
-            return
+        // Local validation before hitting API
+        when {
+            state.contactInput.isBlank() -> {
+                onError(Messages.VALID_INPUT)
+                return
+            }
+            state.password.isBlank() -> {
+                onError(Messages.PASSWORD_CANNOT_EMPTY)
+                return
+            }
+            !state.isValid -> {
+                onError(state.errorMessage ?: Messages.INVALID_INPUT)
+                return
+            }
         }
 
         viewModelScope.launch {
-            try {
-                // TODO: Replace with repository.login(state.contactInput, state.password)
-                delay(500) // simulate API call
-                onSuccess()
-            } catch (e: Exception) {
-                onError(e.message ?: "Login failed")
+            repository.userLogin(
+                emailOrPhone = state.contactInput,
+                password = state.password,
+                deviceType = "android",
+                fcm_token = "1234567890"
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success == true) {
+                                _uiState.value = _uiState.value.copy(loginSuccess = true)
+                                onSuccess()
+                                sessionManager.setUserId(response.data?.user?.id.toString())
+                                sessionManager.setToken(response.data?.token.toString())
+                                sessionManager.setLogin(true)
+                            } else {
+                                onError(response.message ?: "Login failed")
+                            }
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+
+                    Resource.Idle -> TODO()
+                }
             }
         }
     }
 }
 
-data class LoginUiState(
-    val contactInput: String = "",
-    val password: String = "",
-    val contactType: ContactType? = null,
-    val isValid: Boolean = false,
-    val errorMessage: String? = null
-)
+
+
+
 
 enum class ContactType {
     EMAIL, PHONE

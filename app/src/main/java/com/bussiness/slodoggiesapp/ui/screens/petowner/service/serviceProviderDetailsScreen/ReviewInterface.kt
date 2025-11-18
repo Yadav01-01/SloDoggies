@@ -17,11 +17,10 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
@@ -41,15 +40,35 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData
 
 
 @Composable
 fun ReviewInterface() {
     var reviewText by remember { mutableStateOf("") }
     var selectedRating by remember { mutableStateOf(0) }
+    val ratings = com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData(
+        overallRating = 4.0f,
+        totalReviews = 42,
+        ratingPercentages = mapOf(
+            5 to 0.8f,
+            4 to 0.6f,
+            3 to 0.3f,
+            2 to 0.1f,
+            1 to 0.05f
+        ),
+        reviewCounts = mapOf(
+            5 to 10,
+            4 to 500,
+            3 to 28,
+            2 to 18,
+            1 to 15
+        )
+    )
 
     LazyColumn(
         modifier = Modifier
@@ -61,7 +80,7 @@ fun ReviewInterface() {
     ) {
         // Rating Summary Section
         item {
-            RatingSummary()
+            RatingSummary(ratings)
         }
 
         item {
@@ -142,11 +161,10 @@ fun ReviewInterface() {
             Spacer(modifier = Modifier.height(30.dp))
         }
     }
-
 }
 
 @Composable
-fun RatingSummary() {
+fun RatingSummary(ratingData: com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData) {
     Row(
         modifier = Modifier.fillMaxWidth().border(
             width = 1.dp,
@@ -159,16 +177,12 @@ fun RatingSummary() {
         // Rating Bars
         Column(modifier = Modifier.weight(1f)) {
             for (rating in 5 downTo 1) {
+                val percentage = ratingData.ratingPercentages[rating] ?: 0f
+                val reviewCount = ratingData.reviewCounts[rating] ?: 0
                 RatingBar(
                     rating = rating,
-                    percentage = when (rating) {
-                        5 -> 0.8f
-                        4 -> 0.6f
-                        3 -> 0.3f
-                        2 -> 0.1f
-                        1 -> 0.05f
-                        else -> 0f
-                    }
+                    percentage = percentage,
+                    reviewNumbers = reviewCount.toString()
                 )
                 if (rating > 1) Spacer(modifier = Modifier.height(4.dp))
             }
@@ -219,7 +233,7 @@ fun RatingSummary() {
 }
 
 @Composable
-fun RatingBar(rating: Int, percentage: Float) {
+fun RatingBar(rating: Int, percentage: Float,reviewNumbers : String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
@@ -254,6 +268,14 @@ fun RatingBar(rating: Int, percentage: Float) {
                     .background(Color(0xFF258694), RoundedCornerShape(4.dp))
             )
         }
+        Text(
+            text = "$reviewNumbers",
+            fontSize = 12.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+            color = Color.Gray,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.widthIn(min = 32.dp)
+        )
     }
 }
 
@@ -288,19 +310,14 @@ fun ReviewItem(
     review: String,
     avatarColor: Color
 ) {
-
     Column {
-
-
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
             // Avatar
-
             Image(    painter = painterResource(id = R.drawable.dummy_baby_pic),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
-                //  tint = Color(0xFFFF8C00),
                 modifier = Modifier
                     .size(38.dp) // Use size() instead of separate height/width for square dimensions
                     .background(
@@ -325,14 +342,11 @@ fun ReviewItem(
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         color = Color.Black
                     )
-
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Row {
-
-
                     // Star Rating
                     Row {
                         repeat(rating) {
@@ -364,9 +378,7 @@ fun ReviewItem(
                         color = Color(0xFF949494)
                     )
                 }
-
                 Spacer(modifier = Modifier.height(8.dp))
-
             }
         }
 
@@ -398,18 +410,9 @@ fun StarRating(
             Image(painter = painterResource(id = if (i <= rating)  R.drawable.filled_new_ic else R.drawable.ic_black_outlined_star ),
                 contentDescription = "Rate $i stars",
                 modifier = Modifier
-//                    .size(if (i <= rating) 32.dp else 25.dp)
                     .size(25.dp)
                     .clickable { onRatingChanged(i) }
                     .padding(2.dp))
         }
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun ReviewInterfacePreview() {
-//    ReviewInterface(serviceDetail.ratingReviews)
-//
-//}

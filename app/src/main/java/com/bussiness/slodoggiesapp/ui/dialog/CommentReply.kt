@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.dialog
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,14 +14,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DialogButton
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -47,27 +53,45 @@ fun CommentReplyDialog(
     message: String,
     onMessageChange: (String) -> Unit,
 ){
-    Dialog(onDismissRequest = onDismiss) {
-        BoxWithConstraints(
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(10.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            val maxWidthPx = maxWidth
+                .padding(horizontal = 10.dp)
 
-            Box(
+        ) {
+            Spacer(Modifier.height(45.dp))
+
+            // Close button
+            Box(Modifier.fillMaxWidth()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_cross_iconx),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape)
+                        .clickable { onDismiss() }
+                )
+            }
+
+            Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
-
-                ) {
-                // Main Dialog Card
+                    .padding(top = 10.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = Color.White
+            ) {
                 Column(
                     modifier = Modifier
                         .background(Color.White, shape = RoundedCornerShape(12.dp))
                         .padding(horizontal = 10.dp, vertical = 10.dp)
-                        .align(Alignment.Center)
                 ) {
 
                     Text(
@@ -130,19 +154,6 @@ fun CommentReplyDialog(
                         )
                     }
                 }
-
-                // External Cross (X) Button
-                Icon(
-                    painter = painterResource(R.drawable.ic_cross_iconx),
-                    contentDescription = "Close",
-                    tint = Color.Unspecified,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .offset(x = 0.dp, y = (-50).dp)
-                        .wrapContentSize()
-                        .background(Color(0xFFF0F0F0), CircleShape)
-                        .clickable { onDismiss() }
-                )
             }
         }
     }

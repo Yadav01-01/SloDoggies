@@ -136,8 +136,7 @@ fun PetNotificationsScreen(navController: NavHostController) {
     }
 
     BackHandler {
-        if (!navController.popBackStack(Routes.HOME_SCREEN,
-                false)) {
+        if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
             navController.navigate(Routes.HOME_SCREEN) {
                 launchSingleTop = true
             }

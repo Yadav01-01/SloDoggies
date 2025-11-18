@@ -81,7 +81,6 @@ fun ServiceProviderDetailsScreen(navController: NavHostController,viewModel: Ser
             }
         }
 
-
         HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = {
             navController.navigate(Routes.PET_SERVICES_SCREEN) {
                 popUpTo(Routes.PET_SERVICES_SCREEN) { inclusive = false }
@@ -288,8 +287,6 @@ fun ProviderDetails(
                     )
                 }
             }
-            // Service Name
-
 
             Row(
                 modifier = Modifier
@@ -322,14 +319,9 @@ fun ProviderDetails(
                     )
                 }
             }
-
-
             EnhancedExpandableInfoSpinner(phoneNumber = phoneNumber, website = website, address = address, businessDescription = businessDescription)
         }
-
-
     }
-
 }
 
 

@@ -1,6 +1,5 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,12 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.material.icons.filled.MoreVert
@@ -37,20 +35,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.businessProvider.RatingSummaryData
-import com.bussiness.slodoggiesapp.model.businessProvider.Review
-import com.bussiness.slodoggiesapp.model.businessProvider.ReviewReply
+import com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.Review
+import com.bussiness.slodoggiesapp.data.model.businessProvider.ReviewReply
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
-fun ReviewContent(reviewList: List<Review>,onClickReply: () -> Unit) {
-    val ratingData = RatingSummaryData(
+fun ReviewContent(reviewList: List<com.bussiness.slodoggiesapp.data.model.businessProvider.Review>, onClickReply: () -> Unit) {
+    val ratingData = com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData(
         overallRating = 4.0f,
         totalReviews = 52,
         ratingPercentages = mapOf(
@@ -59,6 +57,13 @@ fun ReviewContent(reviewList: List<Review>,onClickReply: () -> Unit) {
             3 to 0.3f,
             2 to 0.1f,
             1 to 0.05f
+        ),
+        reviewCounts = mapOf(
+            5 to 10,
+            4 to 500,
+            3 to 28,
+            2 to 18,
+            1 to 15
         )
     )
 
@@ -78,7 +83,6 @@ fun ReviewContent(reviewList: List<Review>,onClickReply: () -> Unit) {
                 data = review,
                 onClickMore = {},
                 onClickReply = { onClickReply() }
-
             )
         }
     }
@@ -86,7 +90,7 @@ fun ReviewContent(reviewList: List<Review>,onClickReply: () -> Unit) {
 
 
 @Composable
-fun RatingSummary(ratingData: RatingSummaryData) {
+fun RatingSummary(ratingData: com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,15 +104,24 @@ fun RatingSummary(ratingData: RatingSummaryData) {
         verticalAlignment = Alignment.Top
     ) {
         // Rating Bars
-        Column(modifier = Modifier.weight(1f)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
             for (rating in 5 downTo 1) {
+                val percentage = ratingData.ratingPercentages[rating] ?: 0f
+                val reviewCount = ratingData.reviewCounts[rating] ?: 0
+
                 RatingBar(
                     rating = rating,
-                    percentage = ratingData.ratingPercentages[rating] ?: 0f
+                    percentage = percentage,
+                    reviewNumbers = reviewCount.toString()
                 )
-                if (rating > 1) Spacer(modifier = Modifier.height(4.dp))
             }
         }
+
 
         Spacer(modifier = Modifier.width(24.dp))
 
@@ -166,49 +179,65 @@ fun RatingSummary(ratingData: RatingSummaryData) {
 
 
 @Composable
-fun RatingBar(rating: Int, percentage: Float) {
+fun RatingBar(
+    rating: Int,
+    percentage: Float,
+    reviewNumbers: String
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
+        // Rating Number (1–5)
         Text(
-            text = "$rating",
+            text = rating.toString(),
             fontSize = 14.sp,
             fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            color = Color.Black,
-            modifier = Modifier.width(16.dp)
+            color = Color.Black
         )
 
+        // Star Icon
         Icon(
             painter = painterResource(id = R.drawable.ic_round_star),
             contentDescription = null,
             tint = Color.Unspecified,
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(18.dp)
         )
 
-        Spacer(modifier = Modifier.width(8.dp))
-
+        // Progress Bar
         Box(
             modifier = Modifier
                 .height(8.dp)
-                .width(120.dp)
-                .background(Color(0xFFF8F9FA), RoundedCornerShape(4.dp))
+                .weight(1f)
+                .background(Color(0xFFF1F3F4), RoundedCornerShape(4.dp))
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(percentage)
+                    .fillMaxWidth(percentage.coerceIn(0f, 1f))
                     .background(Color(0xFF258694), RoundedCornerShape(4.dp))
             )
         }
+
+        // Review count text
+        Text(
+            text = "$reviewNumbers",
+            fontSize = 12.sp,
+            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+            color = Color.Gray,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.widthIn(min = 32.dp)
+        )
     }
 }
 
 
 
+
 @Composable
 fun ReviewItemPanel(
-    data : Review ,
+    data : com.bussiness.slodoggiesapp.data.model.businessProvider.Review,
     onClickMore: () -> Unit,
     onClickReply: () -> Unit
 ) {
@@ -317,7 +346,7 @@ fun ReviewItemPanel(
 
 @Composable
 fun ReviewReplyItem(
-    reply: ReviewReply,
+    reply: com.bussiness.slodoggiesapp.data.model.businessProvider.ReviewReply,
     modifier: Modifier = Modifier
 ) {
     Row(

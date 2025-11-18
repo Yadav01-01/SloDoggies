@@ -171,7 +171,7 @@ fun PhoneNumber(
     onPhoneChange: (String) -> Unit,
     onVerify: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholder: String = "555 123 456",
+    placeholder: String = "Mobile number",
     fontSize: Int = 15
 ) {
     Box(

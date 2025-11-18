@@ -121,7 +121,8 @@ fun CommunityProfileScreen(
                 onClickRemove = { participants.toMutableList().removeAt(0) },
                 iconResId = R.drawable.remove_ic_user,
                 text = stringResource(R.string.are_you_sure),
-                description = "You want to remove Lydia Vaccaro?"
+                description = "You want to remove Lydia Vaccaro?",
+                buttonText = "Remove"
             )
         }
     }

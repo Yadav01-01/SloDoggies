@@ -8,7 +8,7 @@ object Routes {
     const val LOGIN_SCREEN = "login"
     const val SIGNUP_SCREEN = "signup"
     const val FORGOT_PASSWORD_SCREEN = "forgotPassword"
-    const val VERIFY_OTP = "verifyOTP/{type}"
+    const val VERIFY_OTP = "verifyOTP/{type}/{name}/{emailOrPhone}/{password}"
     const val NEW_PASSWORD_SCREEN = "newPassword"
     const val BUSINESS_REGISTRATION = "businessRegistration"
     const val ADD_SERVICE = "addServices"

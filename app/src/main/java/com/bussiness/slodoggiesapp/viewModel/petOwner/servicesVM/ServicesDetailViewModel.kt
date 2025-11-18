@@ -3,7 +3,7 @@ package com.bussiness.slodoggiesapp.viewModel.petOwner.servicesVM
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bussiness.slodoggiesapp.model.petOwner.ServiceDetailModel
+import com.bussiness.slodoggiesapp.data.model.petOwner.ServiceDetailModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

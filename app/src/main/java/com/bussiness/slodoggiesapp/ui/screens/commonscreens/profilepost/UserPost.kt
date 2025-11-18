@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,9 +17,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.common.MediaItem
-import com.bussiness.slodoggiesapp.model.common.MediaType
-import com.bussiness.slodoggiesapp.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.model.common.MediaItem
+import com.bussiness.slodoggiesapp.data.model.common.MediaType
+import com.bussiness.slodoggiesapp.data.model.common.PostItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
@@ -28,6 +29,13 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 @Composable
 fun UserPost(navController: NavHostController) {
     var deleteDialog by remember { mutableStateOf(false) }
+    var isNavigating by remember { mutableStateOf(false) }
+    BackHandler {
+        if (!isNavigating) {
+            isNavigating = true
+            navController.popBackStack()
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,7 +43,10 @@ fun UserPost(navController: NavHostController) {
     ) {
         HeadingTextWithIcon(
             textHeading = stringResource(R.string.posts),
-            onBackClick = { navController.popBackStack() }
+            onBackClick = {  if (!isNavigating) {
+                isNavigating = true
+                navController.popBackStack()
+            } }
         )
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
@@ -57,7 +68,9 @@ fun UserPost(navController: NavHostController) {
                         normalPost = false,
                         onEditClick = { navController.navigate(Routes.EDIT_POST_SCREEN) },
                         onDeleteClick = { deleteDialog = true },
-                        onProfileClick = {  }
+                        onProfileClick = {  },
+                        onSelfPostEdit = {  },
+                        onSelfPostDelete = {  }
                     )
                 }
             }
@@ -85,11 +98,22 @@ fun getSamplePosts(): List<PostItem> = listOf(
         likes = 120,
         comments = 20,
         shares = 10,
+        postType = "other",
         mediaList = listOf(
-            MediaItem(R.drawable.new_dog_ic, MediaType.IMAGE),
-            MediaItem(R.drawable.dog3, MediaType.IMAGE),
-            MediaItem(R.drawable.new_dog_ic, MediaType.VIDEO,)
-        )
+            MediaItem(
+                MediaType.IMAGE,
+                imageRes = R.drawable.dog1
+            ),
+            MediaItem(
+                MediaType.IMAGE,
+                imageUrl = "https://picsum.photos/400"
+            ),
+//            MediaItem(
+//                MediaType.VIDEO,
+//                videoRes = R.raw.reel,
+//                thumbnailRes = R.drawable.dummy_social_media_post
+//            )
+        ),
     ),
     PostItem.NormalPost(
         user = "John Doe with Max",
@@ -100,9 +124,16 @@ fun getSamplePosts(): List<PostItem> = listOf(
         likes = 85,
         comments = 12,
         shares = 5,
+        postType = "other",
         mediaList = listOf(
-            MediaItem(R.drawable.dog1, MediaType.IMAGE),
-            MediaItem(R.drawable.new_dog_ic, MediaType.IMAGE)
-        )
+            MediaItem(
+                MediaType.IMAGE,
+                imageRes = R.drawable.dog1
+            ),
+            MediaItem(
+                MediaType.IMAGE,
+                imageUrl = "https://picsum.photos/400"
+            ),
+        ),
     )
 )

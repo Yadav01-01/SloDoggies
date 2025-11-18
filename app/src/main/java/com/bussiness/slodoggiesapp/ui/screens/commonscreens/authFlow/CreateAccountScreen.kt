@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
 
-import android.widget.Toast
+import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,29 +48,54 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.model.main.UserType
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.UserNameInputField
+import com.bussiness.slodoggiesapp.ui.component.common.AppLottieLoader
 import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
 import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.SessionManager
-import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.SignUpViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.SendOtpViewModel
+import com.google.gson.Gson
 
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
-    viewModel: SignUpViewModel = hiltViewModel()
+    viewModel: SendOtpViewModel = hiltViewModel()
 ) {
+    val otpState by viewModel.otpState.collectAsState()
+
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var isNavigating by remember { mutableStateOf(false) }
     val sessionManager = SessionManager.getInstance(context)
+
+
+    LaunchedEffect(otpState) {
+        when (otpState) {
+            is Resource.Success -> {
+                //  Navigate with encoded data
+                navController.navigate("${Routes.VERIFY_OTP}?type=signUp&name=${state.userName}&emailOrPhone=${state.contactInput}&password=${state.password}")
+
+                //  Reset state to prevent re-triggering navigation
+                viewModel.resetOtpState()
+            }
+
+            is Resource.Error -> {
+                // Example: handle errors properly here (optional)
+                // Toast.makeText(context, otpState.message ?: "Something went wrong", Toast.LENGTH_SHORT).show()
+            }
+
+            else -> Unit
+        }
+    }
+
 
     BackHandler {
         if (!isNavigating) {
@@ -86,7 +113,9 @@ fun SignUpScreen(
         AuthBackButton(onClick = {  if (!isNavigating) {
             isNavigating = true
             navController.popBackStack()
-        } }, modifier = Modifier.align(Alignment.TopStart).padding(top = 10.dp))
+        } }, modifier = Modifier
+            .align(Alignment.TopStart)
+            .padding(top = 10.dp))
 
         Column(
             modifier = Modifier
@@ -115,7 +144,7 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.height(5.dp))
             UserNameInputField(
                 input = state.userName,
-                placeholder = if(sessionManager.getUserType() ==  UserType.PET_OWNER) stringResource(R.string.enter_fullname) else stringResource(R.string.enter_business_name),
+                placeholder = if(sessionManager.getUserType() ==  com.bussiness.slodoggiesapp.data.model.main.UserType.Owner) stringResource(R.string.enter_fullname) else stringResource(R.string.enter_business_name),
                 onValueChange = { viewModel.onUserNameChange(it) }
             )
 
@@ -150,16 +179,7 @@ fun SignUpScreen(
             Spacer(Modifier.height(20.dp))
 
             ContinueButton(
-                onClick = {
-                    viewModel.createAccount(
-                        onSuccess = {
-                            navController.navigate("${Routes.VERIFY_OTP}?type=signUp")
-                        },
-                        onError = { message ->
-                            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                        }
-                    )
-                },
+                onClick = { viewModel.sendOtp() },
                 text = stringResource(R.string.create_account)
             )
 
@@ -261,7 +281,9 @@ fun SignUpScreen(
             }
 
             Box(
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
                 contentAlignment = Alignment.Center
             ) {
                 ClickableText(
@@ -294,6 +316,7 @@ fun SignUpScreen(
                 .wrapContentWidth()
         )
     }
+
 
 }
 

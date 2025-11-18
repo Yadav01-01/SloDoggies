@@ -48,7 +48,7 @@
     <string name="event_duration">Event Duration</string>
     <string name="select_duration">Select Duration</string>
     <string name="location">Location</string>
-    <string name="use_my_current_location">use my current location</string>
+    <string name="use_my_current_location">Use my current location</string>
     <string name="zip_code">Zip Code</string>
     <string name="enter_zip_code">Enter your Zip Code</string>
     <string name="new_post">New post\n</string>
@@ -61,7 +61,7 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="create_account">Create Account</string>
     <string name="already_have_account">Already have an account? </string>
-    <string name="login"> Log In</string>
+    <string name="login"> Login</string>
     <string name="new_password">New Password</string>
     <string name="update_password">Update Password</string>
     <string name="new_pass_title">Password Updated Successfully!</string>
@@ -97,7 +97,7 @@
     <string name="resend">Resend</string>
     <string name="didnt_receive_code">Didn’t receive the code?</string>
     <string name="business_registration">Business Registration</string>
-    <string name="business_name">Business name</string>
+    <string name="business_name">Business Name</string>
     <string name="Upload_business_logo">Upload Business Logo</string>
     <string name="Category">Category</string>
     <string name="website_">Website</string>
@@ -143,7 +143,7 @@
     <string name="Duration">Duration</string>
     <string name="send">Send</string>
     <string name="flat_address">Street address</string>
-    <string name="enter_flat_address">Enter Street Address</string>
+    <string name="enter_flat_address">Address</string>
     <string name="area_sector">City</string>
     <string name="enter_area_sector">Enter City</string>
     <string name="landmark">State</string>
@@ -184,13 +184,15 @@
     <string name="Full_Name">Full Name</string>
     <string name="Enter_Full_Name">Enter Full Name</string>
     <string name="current_location">Current Location</string>
-    <string name="Enter_your_Address">Enter your Address</string>
+    <string name="Enter_your_Address">Your Address</string>
     <string name="enter_business_name">Enter Full Business Name</string>
-    <string name="Business_address">Business address</string>
+    <string name="Business_address">Business Address</string>
     <string name="Enter_Business_Address">Enter Business Address</string>
     <string name="submit_n_next"><![CDATA[Submit & Next]]></string>
     <string name="delete_Comment">Are you sure you want to delete this comment?</string>
     <string name="subscription_desc">To add services, you need to purchase a subscription plan. Without a subscription, you won’t be able to access this feature. You may choose to subscribe now or skip and continue.</string>
+    <string name="enter_name_parent">Enter Name</string>
+    <string name="Email_Phone">Email/ Phone</string>
 
 
 </resources>

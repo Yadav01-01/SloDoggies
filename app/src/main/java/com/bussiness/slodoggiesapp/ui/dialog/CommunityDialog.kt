@@ -155,6 +155,7 @@ fun RemoveParticipantDialog(
     onClickRemove: () -> Unit,
     @DrawableRes iconResId: Int,
     text: String,
+    buttonText : String,
     description: String
 ) {
     Dialog(
@@ -249,7 +250,7 @@ fun RemoveParticipantDialog(
                             modifier = Modifier.weight(1f)
                         )
                         RemoveButton(
-                            text = "Remove",
+                            text = buttonText,
                             selected = true,
                             onClick = {
                                 onClickRemove()
@@ -408,7 +409,7 @@ fun BottomToast(
                 color = PrimaryColor
             ) {
                 Text(
-                    text = if (isBlocked) "Unblock Jane" else "Block Jane",
+                    text = "Unblock Jane",
                     color = Color.White,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     fontSize = 15.sp,
