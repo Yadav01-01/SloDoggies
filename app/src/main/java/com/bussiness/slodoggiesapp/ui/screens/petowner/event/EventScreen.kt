@@ -32,6 +32,7 @@ fun EventScreen(navController: NavHostController) {
 
     var selectedOption by remember { mutableStateOf("My Events") }
 
+    
     val sampleEvents = listOf(
         com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
             id = "1",
