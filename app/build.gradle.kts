@@ -150,5 +150,7 @@ dependencies {
     //google place API
     implementation (libs.places)
 
+    implementation (libs.accompanist.permissions)
+    implementation (libs.play.services.location)
 
 }

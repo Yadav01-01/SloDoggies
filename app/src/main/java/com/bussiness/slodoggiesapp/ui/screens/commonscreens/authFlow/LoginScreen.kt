@@ -55,10 +55,7 @@ import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.authFlowVM.LoginViewModel
 
 @Composable
-fun LoginScreen(
-    navController: NavHostController,
-    viewModel: LoginViewModel = hiltViewModel()
-) {
+fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = hiltViewModel()) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val sessionManager = SessionManager.getInstance(context)

@@ -57,6 +57,19 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.userLogin(emailOrPhone,password, deviceType, fcm_token) })
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun updatePetRequest(
+        petName: String,
+        petBreed: String,
+        petAge: String,
+        petBio: String,
+        petId: String,
+        userId: String,
+        image: MultipartBody.Part
+    ): Flow<Resource<CommonResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.updatePetRequest(petName,petBreed,petAge,petBio,petId,userId/*,image*/) })
+    }.flowOn(Dispatchers.IO)
+
     override suspend fun verifyForgotOtp(
         emailOrPhone: String,
         otp: String

@@ -69,6 +69,8 @@ fun HomeScreen(
     val onReportClick = remember { { viewModel.showReportDialog() } }
     val onShareClick = remember { { viewModel.showShareContent() } }
     val onProfileClick = remember { { navController.navigate(Routes.CLICKED_PROFILE_SCREEN) } }
+
+
     val onSponsoredClick = remember { {
         val destination = if (sessionManager.getUserType() == UserType.Owner) {
             Routes.SERVICE_PROVIDER_DETAILS
@@ -103,25 +105,24 @@ fun HomeScreen(
                     is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) })
                     is PostItem.SponsoredPost -> SponsoredPostItem(post = post, onReportClick = onReportClick, onShareClick = onShareClick, onProfileClick = onProfileClick, onSponsoredClick = {  })
                     is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() },normalPost = true, onEditClick = {}, onDeleteClick = {},
-                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) }, onSelfPostEdit = { navController.navigate(Routes.EDIT_POST_SCREEN)}, onSelfPostDelete = { deleteDialog = true })
+                    onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) }, onSelfPostEdit = { navController.navigate(Routes.EDIT_POST_SCREEN)}, onSelfPostDelete = { deleteDialog = true })
                 }
             }
         }
     }
 
     // --- Dialogs ---
-    if (welcomeUiState.showDialog) {
-        WelcomeDialog(
-            onDismiss = { viewModel.dismissWelcomeDialog() },
-            onSubmitClick = { viewModel.onWelcomeSubmit() },
-            icon = R.drawable.ic_party_popper_icon,
-            title = welcomeUiState.title,
-            description = welcomeUiState.description,
-            button = welcomeUiState.button
-        )
-    }
-
     if (sessionManager.isSignupFlowActive()){
+        if (welcomeUiState.showDialog) {
+            WelcomeDialog(
+                onDismiss = { viewModel.dismissWelcomeDialog() },
+                onSubmitClick = { viewModel.onWelcomeSubmit() },
+                icon = R.drawable.ic_party_popper_icon,
+                title = welcomeUiState.title,
+                description = welcomeUiState.description,
+                button = welcomeUiState.button
+            )
+        }
         if (showUserDetailsDialog) {
             UserDetailsDialog(
                 navController = navController,
@@ -132,9 +133,6 @@ fun HomeScreen(
                 }
             )
         }
-    }
-
-    if (sessionManager.isSignupFlowActive()){
         if (profileCreatedUiState) {
             WelcomeDialog(
                 onDismiss = { viewModel.dismissProfileCreatedDialog() },
@@ -145,9 +143,6 @@ fun HomeScreen(
                 button = stringResource(R.string.explore_now),
             )
         }
-    }
-
-    if (sessionManager.isSignupFlowActive()){
         if (continueAddPet) {
             WelcomeDialog(
                 onDismiss = { viewModel.dismissContinueAddPetDialog() },
@@ -158,9 +153,6 @@ fun HomeScreen(
                 button = stringResource(R.string.paw_button),
             )
         }
-    }
-
-    if (sessionManager.isSignupFlowActive()){
         if (showPetInfoDialog) {
             if (dialogCount < 2) {
                 PetInfoDialog(

@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+//noinspection UsingMaterialAndMaterial3Libraries
 import androidx.compose.material.Surface
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +50,7 @@ import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.Person
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PersonItem
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetInfoViewModel
+import com.bussiness.slodoggiesapp.viewModel.petadd.PetAddViewModel
 
 @Composable
 fun FillPetInfoDialog(
@@ -59,7 +61,10 @@ fun FillPetInfoDialog(
     onProfile : Boolean = false
 ) {
     val context =  LocalContext.current
-    val viewModel: PetInfoViewModel = hiltViewModel()
+  /*  val viewModel: PetInfoViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()  */
+
+    val viewModel: PetAddViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Dialog(
@@ -144,7 +149,6 @@ fun FillPetInfoDialog(
                         }
                     }
 
-
                     // Add Photo Section
                     item {
                         AddPhotoSection(
@@ -158,8 +162,8 @@ fun FillPetInfoDialog(
                     item {
                         Spacer(modifier = Modifier.height(5.dp))
                         CustomOutlinedTextField(
-                            value = uiState.petName,
-                            onValueChange = { viewModel.updatePetName(it) },
+                            value = uiState?.name?:"",
+                            onValueChange = { viewModel.onPetNameChange(it) },
                             placeholder = stringResource(R.string.placeholder_pet_name),
                             label = stringResource(R.string.label_pet_name),
                         )
@@ -169,8 +173,8 @@ fun FillPetInfoDialog(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         CustomOutlinedTextField(
-                            value = uiState.petBreed,
-                            onValueChange = { viewModel.updatePetBreed(it) },
+                            value = uiState?.breed?:"",
+                            onValueChange = { viewModel.onPetBreedChange(it) },
                             placeholder = stringResource(R.string.placeholder_pet_breed),
                             label = stringResource(R.string.label_pet_breed)
                         )
@@ -182,10 +186,10 @@ fun FillPetInfoDialog(
                         FormHeadingText("Pet Age")
                         Spacer(Modifier.height(8.dp))
                         CustomDropdownBox(
-                            label = uiState.petAge.ifEmpty { "Enter pet age" },
+                            label = uiState?.age?:"".ifEmpty { "Enter pet age" },
                             items = viewModel.ageOptions,
-                            selectedItem = uiState.petAge,
-                            onItemSelected = { viewModel.updatePetAge(it) }
+                            selectedItem = uiState?.age?:"",
+                            onItemSelected = { viewModel.onPetAgeChange(it) }
                         )
                     }
 
@@ -193,8 +197,8 @@ fun FillPetInfoDialog(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         CustomOutlinedTextField(
-                            value = uiState.petBio,
-                            onValueChange = { viewModel.updatePetBio(it) },
+                            value = uiState?.bio?:"",
+                            onValueChange = { viewModel.onPetBioChange(it) },
                             placeholder = stringResource(R.string.placeholder_pet_bio),
                             label = stringResource(R.string.label_pet_bio)
                         )

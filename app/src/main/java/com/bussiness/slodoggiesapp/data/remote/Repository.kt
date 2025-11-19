@@ -30,6 +30,18 @@ interface Repository {
                            fcm_token: String,
     ): Flow<Resource<LoginResponse>>
 
+
+    suspend fun updatePetRequest(petName: String,
+                                 petBreed: String,
+                                 petAge: String,
+                                 petBio: String,
+                                 petId: String,
+                                 userId: String,
+                                 image: MultipartBody.Part,
+    ): Flow<Resource<CommonResponse>>
+
+
+
     suspend fun verifyForgotOtp(emailOrPhone: String, otp: String): Flow<Resource<CommonResponse>>
 
     suspend fun resetPassword(emailOrPhone: String, password: String, ): Flow<Resource<CommonResponse>>

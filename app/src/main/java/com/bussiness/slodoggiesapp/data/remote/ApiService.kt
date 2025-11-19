@@ -31,7 +31,7 @@ interface ApiService {
         @Field("emailOrPhone") emailOrPhone: String,
         @Field("password") password: String,
         @Field("deviceType") deviceType: String,
-        @Field("fcm_token") fcm_token: String,
+        @Field("fcm_token") fcmToken: String,
         @Field("userType") userType: String,
         @Field("otp") otp: String
     ) : Response<RegisterResponse>
@@ -42,7 +42,7 @@ interface ApiService {
         @Field("emailOrPhone") emailOrPhone: String,
         @Field("password") password: String,
         @Field("deviceType") deviceType: String,
-        @Field("fcm_token") fcm_token: String,
+        @Field("fcm_token") fcmToken: String,
     ) : Response<LoginResponse>
 
     @FormUrlEncoded
@@ -50,6 +50,19 @@ interface ApiService {
     suspend fun verifyForgotOtp(
         @Field("emailOrPhone") emailOrPhone: String,
         @Field("otp") otp: String
+    ) : Response<CommonResponse>
+
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.UPDATE_BREED)
+    suspend fun updatePetRequest(
+        @Field("pet_name") petName: String,
+        @Field("pet_breed") petBreed: String,
+        @Field("pet_age") petAge: String,
+        @Field("pet_bio") petBio: String,
+        @Field("pet_id") petId: String,
+        @Field("user_id") userId: String
+       /* @Part petImage:MultipartBody.Part*/
     ) : Response<CommonResponse>
 
     @FormUrlEncoded

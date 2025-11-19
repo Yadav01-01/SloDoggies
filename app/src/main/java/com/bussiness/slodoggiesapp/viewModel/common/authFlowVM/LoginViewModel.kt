@@ -63,10 +63,8 @@ class LoginViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(disclaimerDialog = false)
     }
 
-
     fun login(onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
         val state = _uiState.value
-
         // Local validation before hitting API
         when {
             state.contactInput.isBlank() -> {
@@ -94,7 +92,6 @@ class LoginViewModel @Inject constructor(
                     is Resource.Loading -> {
                         _uiState.value = _uiState.value.copy(isLoading = true)
                     }
-
                     is Resource.Success -> {
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         result.data.let { response ->
@@ -109,21 +106,18 @@ class LoginViewModel @Inject constructor(
                             }
                         }
                     }
-
                     is Resource.Error -> {
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         onError(result.message)
                     }
-
                     Resource.Idle -> TODO()
                 }
             }
         }
     }
+
+
 }
-
-
-
 
 
 enum class ContactType {

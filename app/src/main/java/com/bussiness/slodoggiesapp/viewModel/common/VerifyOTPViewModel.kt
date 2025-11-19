@@ -118,7 +118,6 @@ class VerifyOTPViewModel @Inject constructor(
                         }
                 }
             }
-
             // Normal Registration flow
             else -> {
                 viewModelScope.launch {

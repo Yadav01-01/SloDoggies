@@ -13,8 +13,11 @@ object Messages {
     const val ENTER_PET_BREED = "Please enter pet breed"
     const val ENTER_PET_AGE = "Please select pet age"
     const val ENTER_PET_BIO = "Please enter pet bio"
-    const val NAME_CANNOT_EMPTY = "Name cannot be empty"
+    const val NAME_CANNOT_EMPTY = "Name can't be empty"
     const val PROFILE_IMAGE_CANNOT_EMPTY = "Profile image cannot be empty"
-    const val PASSWORD_CANNOT_EMPTY = "Password cannot be empty"
+    const val PASSWORD_CANNOT_EMPTY = "Password can't be empty"
     const val INVALID_INPUT = "Invalid input"
+    const val PET_NAME = "Name can't be empty"
+    const val BREED_NAME = "Name can't be empty"
+    const val BIO_SMS = "Bio can't be empty"
 }

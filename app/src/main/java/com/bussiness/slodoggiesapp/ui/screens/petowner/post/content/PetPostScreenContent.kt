@@ -1,5 +1,19 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.post.content
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
+import android.net.Uri
+import android.provider.Settings
+import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +41,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -58,17 +74,93 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialo
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
+import com.bussiness.slodoggiesapp.viewModel.location.LocationAction
+import com.bussiness.slodoggiesapp.viewModel.location.LocationViewModel
+import com.bussiness.slodoggiesapp.viewModel.petadd.PetAddViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.Priority
 
+@SuppressLint("ContextCastToActivity")
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,onClickPost: () -> Unit,viewModel: PostContentViewModel = hiltViewModel()) {
 
     val writePost by viewModel.writePost.collectAsState()
     val hashtags by viewModel.hashtags.collectAsState()
-    val streetAddress by viewModel.streetAddress.collectAsState()
     var showPetInfoDialog by remember { mutableStateOf(false) }
     var petAddedSuccessDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val activity = LocalContext.current as Activity
+    val permission = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
+    val viewModelLocation: LocationViewModel = hiltViewModel()
+    val viewModelUpdatePet: PetAddViewModel = hiltViewModel()
+    val action by viewModelLocation.action.collectAsState()
+    val locationState by viewModelLocation.locationState.collectAsState()
+    val updatePetState by viewModelUpdatePet.uiState.collectAsState()
+    var wasPermissionGranted by remember { mutableStateOf(permission.status.isGranted) }
 
 
+    val gpsLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { resultCode ->
+        if (resultCode.resultCode == Activity.RESULT_OK) {
+            // User clicked YES → fetch location
+            viewModelLocation.fetchLocation()
+        } else {
+            Toast.makeText(context, "GPS is required to fetch location", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // ---------- When status change this handler work ----------
+    LaunchedEffect(permission.status) {
+        if (permission.status.isGranted && !wasPermissionGranted) {
+            // Permission was JUST granted
+            val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            viewModelLocation.checkRequirements(
+                hasPermission = true,
+                isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            )
+        }
+        // Update the previous state
+        wasPermissionGranted = permission.status.isGranted
+    }
+
+    // ---------- ACTION handler ----------
+    LaunchedEffect(action) {
+        when (action) {
+            is LocationAction.RequestPermission -> {
+                permission.launchPermissionRequest()
+                viewModelLocation.clearAction()
+            }
+
+            is LocationAction.AskToEnableGPS -> {
+                askToEnableGPS(activity,gpsLauncher,viewModelLocation)
+                viewModelLocation.clearAction()
+            }
+
+            is LocationAction.FetchLocation -> {
+                viewModelLocation.fetchLocation()
+                viewModelLocation.clearAction()
+            }
+
+            is LocationAction.FetchSuccess -> {
+                viewModelLocation.clearAction()
+            }
+            is LocationAction.Error -> {
+                Toast.makeText(context, (action as LocationAction.Error).message, Toast.LENGTH_LONG).show()
+                viewModelLocation.clearAction()
+            }
+            null -> Unit
+        }
+    }
+
+    // UI START ---------------------------------------------------------
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -112,12 +204,35 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
             )
         }
 
-
         item {
             FormHeadingText(stringResource(R.string.current_location))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable { onClickLocation() }
+                modifier = Modifier.clickable {
+                /*onClickLocation()*/
+                    when {
+                        permission.status.isGranted -> {
+                            // Permission granted → check GPS & fetch
+                            val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                            viewModelLocation.checkRequirements(
+                                hasPermission = true,
+                                isGPSEnabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                            )
+                        }
+                        permission.status.shouldShowRationale -> {
+                            // Denied once → show permission dialog again
+                            permission.launchPermissionRequest()
+                        }
+                        else -> {
+                            // Permanently denied → guide to Settings
+                            Toast.makeText(context, "Location permission permanently denied. Enable from settings.", Toast.LENGTH_LONG).show()
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = Uri.fromParts("package", context.packageName, null)
+                            context.startActivity(intent)
+                        }
+                    }
+
+                }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.precise_loc),
@@ -140,7 +255,7 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
             FormHeadingText(stringResource(R.string.Enter_your_Address))
             InputField(
                 placeholder = stringResource(R.string.enter_flat_address),
-                input = streetAddress ,
+                input = locationState.address?:"Address".ifEmpty { "Address" } ,
                 onValueChange = { viewModel.updateStreetAddress(it) },
                 readOnly = true
             )
@@ -162,19 +277,59 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
             "Add Your Pet",
             onDismiss = { showPetInfoDialog = false },
             onAddPet = {
-                // Handle pet info saving
-                showPetInfoDialog = false
-                petAddedSuccessDialog = true
+                viewModelUpdatePet.updatePet(
+                    onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                    onSuccess = {
+                        showPetInfoDialog = false
+                        petAddedSuccessDialog = true
+                    }
+                )
             },
             onCancel = { showPetInfoDialog = false },
             onProfile = true
         )
     }
+
     if (petAddedSuccessDialog){
         UpdatedDialogWithExternalClose(onDismiss = { petAddedSuccessDialog = false }, iconResId = R.drawable.ic_sucess_p, text = "Pet Added Successfully!",
             description = "Thanks for keeping things up to date!")
     }
+
 }
+
+fun askToEnableGPS(
+    activity: Activity,
+    launcher: ManagedActivityResultLauncher<IntentSenderRequest, ActivityResult>,
+    viewModelLocation: LocationViewModel
+) {
+    val locationRequest = com.google.android.gms.location.LocationRequest.Builder(
+        Priority.PRIORITY_HIGH_ACCURACY, 1000
+    ).build()
+
+    val builder = LocationSettingsRequest.Builder()
+        .addLocationRequest(locationRequest)
+        .setAlwaysShow(true)
+
+    val client = LocationServices.getSettingsClient(activity)
+    val task = client.checkLocationSettings(builder.build())
+
+    task.addOnSuccessListener {
+        // GPS already enabled
+        viewModelLocation.fetchLocation()
+    }
+
+    task.addOnFailureListener { e ->
+        if (e is ResolvableApiException) {
+            try {
+                launcher.launch(IntentSenderRequest.Builder(e.resolution).build())
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
+        }
+    }
+}
+
+
 
 @Composable
 fun WhosThisPostAbout(

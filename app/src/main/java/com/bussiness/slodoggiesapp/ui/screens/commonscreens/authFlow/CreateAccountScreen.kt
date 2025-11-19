@@ -141,6 +141,7 @@ fun SignUpScreen(
             )
 
             FormHeadingText(stringResource(R.string.FullName), modifier = Modifier.align(Alignment.Start))
+
             Spacer(modifier = Modifier.height(5.dp))
             UserNameInputField(
                 input = state.userName,

@@ -16,4 +16,5 @@ object ApiEndPoint {
     const val CREATE_OWNER_POST = "create_owner_post"
     const val CREATE_BUSINESS_POST = "create_business_post"
     const val CREATE_EVENT = "create_event"
+    const val UPDATE_BREED = "add_update_pet"
 }
