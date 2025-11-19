@@ -298,11 +298,11 @@ fun getSamplePosts(): List<PostItem> {
                     MediaType.IMAGE,
                     imageUrl = "https://picsum.photos/400"
                 ),
-//                MediaItem(
-//                    MediaType.VIDEO,
+                MediaItem(
+                    MediaType.VIDEO,
 //                    videoRes = R.raw.reel,
-//                    thumbnailRes = R.drawable.dummy_social_media_post
-//                )
+                    thumbnailRes = R.drawable.dummy_social_media_post
+                )
             ),
         )
     )

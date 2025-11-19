@@ -7,7 +7,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,7 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData
+import com.bussiness.slodoggiesapp.data.model.common.AudienceItem
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import java.io.File
@@ -80,7 +78,7 @@ fun AudienceSelection(
 
 @Composable
 fun AudienceListItem(
-    data: com.bussiness.slodoggiesapp.data.model.businessProvider.AudienceData,
+    data: AudienceItem,
     isFollower: Boolean,
     onPrimaryClick: () -> Unit,
     onFollowBackClick: () -> Unit,
@@ -92,8 +90,8 @@ fun AudienceListItem(
             .padding(vertical = 0.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = data.profileImage),
+        AsyncImage(
+            model = data.profilePic,
             contentDescription = "Profile Image",
             modifier = Modifier
                 .size(44.dp)

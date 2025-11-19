@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.model.petOwner.PetInfo
 import com.bussiness.slodoggiesapp.data.remote.Repository
+import com.bussiness.slodoggiesapp.data.uiState.PetInfoUiState
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.ui.component.common.createMultipartList
 import com.bussiness.slodoggiesapp.util.Messages
@@ -14,12 +15,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import javax.inject.Inject
-
-
 
 @HiltViewModel
 class PetInfoViewModel @Inject constructor(
@@ -27,59 +23,57 @@ class PetInfoViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
+    /** UI State */
     private val _uiState = MutableStateFlow(PetInfoUiState())
-    val uiState: StateFlow<PetInfoUiState> = _uiState
+    val uiState: StateFlow<PetInfoUiState> = _uiState.asStateFlow()
 
+    /** Selected Image */
     private val _selectedPhoto = MutableStateFlow<Uri?>(null)
-    private val selectedPhoto: StateFlow<Uri?> = _selectedPhoto
+    private val selectedPhoto: StateFlow<Uri?> = _selectedPhoto.asStateFlow()
 
+    /** UI Events - One-time events */
     private val _uiEvent = Channel<UiEvent>()
     val uiEvent = _uiEvent.receiveAsFlow()
 
-    val ageOptions = listOf("< than 1 Year") + (1..20).map { "$it Year" }
+    /** Age List */
+    val ageOptions: List<String> = listOf("< than 1 Year") + (1..20).map { "$it Year" }
 
-    fun setSelectedPhoto(uri: Uri?) {
-        _selectedPhoto.value = uri
-    }
+    fun setSelectedPhoto(uri: Uri?) { _selectedPhoto.value = uri }
 
     fun updatePetName(name: String) = update { it.copy(petName = name.take(24)) }
     fun updatePetBreed(breed: String) = update { it.copy(petBreed = breed) }
     fun updatePetAge(age: String) = update { it.copy(petAge = age) }
     fun updatePetBio(bio: String) = update { it.copy(petBio = bio.take(150)) }
 
-    /** Validation */
-    private fun validate(): String? {
-        val s = _uiState.value
-        return when {
-            s.petName.isBlank() -> Messages.ENTER_PET_NAME
-            s.petBreed.isBlank() -> Messages.ENTER_PET_BREED
-            s.petAge.isBlank() -> Messages.ENTER_PET_AGE
-            s.petBio.isBlank() -> Messages.ENTER_PET_BIO
-            _selectedPhoto.value == null -> "Please select a pet image"
+
+    private fun validate(): String? = with(_uiState.value) {
+        when {
+            petName.isBlank() -> Messages.ENTER_PET_NAME
+            petBreed.isBlank() -> Messages.ENTER_PET_BREED
+            petAge.isBlank() -> Messages.ENTER_PET_AGE
+            petBio.isBlank() -> Messages.ENTER_PET_BIO
+            selectedPhoto.value == null -> Messages.SELECT_PET_IMAGE
             else -> null
         }
     }
 
-    /** Continue button */
-    fun onContinue(context: Context, onProfile: Boolean) {
+
+    private fun submitPet(
+        context: Context,
+        onSuccess: (PetInfo) -> UiEvent
+    ) {
+
         val error = validate()
         if (error != null) {
             sendEvent(UiEvent.ShowToast(error))
             return
         }
 
-        if (!onProfile) {
-            sendEvent(UiEvent.CloseDialog)
-            return
-        }
-
         viewModelScope.launch {
 
-            // Convert selectedPhoto to multipart list
-            val imageList = listOfNotNull(selectedPhoto.value)
             val imageParts = createMultipartList(
                 context = context,
-                uris = imageList,
+                uris = listOfNotNull(selectedPhoto.value),
                 keyName = "pet_images[]"
             )
 
@@ -93,36 +87,38 @@ class PetInfoViewModel @Inject constructor(
             ).collectLatest { result ->
 
                 when (result) {
-
-                    is Resource.Loading -> {
-
-                    }
+                    is Resource.Loading -> sendEvent(UiEvent.Loading(true))
 
                     is Resource.Success -> {
-                        sendEvent(UiEvent.ContinueSuccess(_uiState.value.toPetInfo()))
+                        sendEvent(UiEvent.Loading(false))
+                        sendEvent(onSuccess(_uiState.value.toPetInfo()))
+                        resetForm()
                     }
 
                     is Resource.Error -> {
-                        sendEvent(UiEvent.ShowToast(result.message ?: "Something went wrong"))
+                        sendEvent(UiEvent.Loading(false))
+                        sendEvent(UiEvent.ShowToast(result.message))
                     }
 
-                    Resource.Idle -> TODO()
+                    Resource.Idle -> Unit
                 }
             }
         }
     }
 
 
-    /** Add Pet button */
-    fun onAddPet() {
-        val error = validate()
-        if (error == null) {
-            sendEvent(UiEvent.AddPetSuccess(_uiState.value.toPetInfo()))
-            resetForm()
-        } else {
-            sendEvent(UiEvent.ShowToast(error))
+    fun onContinue(context: Context, onProfile: Boolean) {
+        if (!onProfile) {
+            sendEvent(UiEvent.CloseDialog)
+            return
         }
+        submitPet(context) { UiEvent.ContinueSuccess(it) }
     }
+
+    fun onAddPet(context: Context) {
+        submitPet(context) { UiEvent.AddPetSuccess(it) }
+    }
+
 
     private fun resetForm() {
         _uiState.value = PetInfoUiState()
@@ -139,30 +135,12 @@ class PetInfoViewModel @Inject constructor(
 }
 
 
-//  UI State
-data class PetInfoUiState(
-    val petName: String = "",
-    val petBreed: String = "",
-    val petAge: String = "",
-    val petBio: String = "",
-    val managedBy: String = "Pet Mom",
-    val showAgeDropdown: Boolean = false,
-    val showManagedByDropdown: Boolean = false
-) {
-    fun toPetInfo(): PetInfo =
-        PetInfo(
-            name = petName,
-            breed = petBreed,
-            age = petAge,
-            bio = petBio,
-            managedBy = managedBy
-        )
-}
 
-//  UI Events
+
 sealed class UiEvent {
     data class ShowToast(val message: String) : UiEvent()
     data class ContinueSuccess(val petInfo: PetInfo) : UiEvent()
     data class AddPetSuccess(val petInfo: PetInfo) : UiEvent()
+    data class Loading(val show: Boolean) : UiEvent()
     data object CloseDialog : UiEvent()
 }

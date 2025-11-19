@@ -1,7 +1,10 @@
 package com.bussiness.slodoggiesapp.data.remote
 
 import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
+import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
+import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
@@ -280,6 +283,20 @@ class RepositoryImpl @Inject constructor(
         )
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun getFollowerList(userId: String): Flow<Resource<FollowersResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getFollowerList(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getFollowingList(userId: String): Flow<Resource<FollowingResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getFollowingList(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getBusinessProfileDetail(userId: String): Flow<Resource<BusinessDetailsResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getBusinessProfileDetail(userId) })
+    }.flowOn(Dispatchers.IO)
 
 
     /**

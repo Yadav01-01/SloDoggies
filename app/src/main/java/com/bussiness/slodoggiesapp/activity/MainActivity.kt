@@ -6,15 +6,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.navigation.NavGraph
@@ -49,8 +54,20 @@ class MainActivity : ComponentActivity() {
 
                     // Loader always on top (last drawn)
                     if (isLoading) {
-                        AppLottieLoader(true)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .zIndex(10f) // Always on top
+                                .background(Color(0x80000000)) // Dim background
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) { }
+                        ) {
+                            AppLottieLoader(true)
+                        }
                     }
+
                 }
             }
         }

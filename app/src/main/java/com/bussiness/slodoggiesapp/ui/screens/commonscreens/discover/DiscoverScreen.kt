@@ -272,19 +272,19 @@ fun getSamplePosts(): List<com.bussiness.slodoggiesapp.data.model.common.PostIte
             shares = 10,
             postType = "other",
             mediaList = listOf(
-                MediaItem(
-                    MediaType.IMAGE,
+                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
+                    com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
                     imageRes = R.drawable.dog1
                 ),
-                MediaItem(
-                    MediaType.IMAGE,
+                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
+                    com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
                     imageUrl = "https://picsum.photos/400"
                 ),
-//                MediaItem(
-//                    MediaType.VIDEO,
+                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
+                    com.bussiness.slodoggiesapp.data.model.common.MediaType.VIDEO,
 //                    videoRes = R.raw.reel,
-//                    thumbnailRes = R.drawable.dummy_social_media_post
-//                )
+                    thumbnailRes = R.drawable.dummy_social_media_post
+                )
             ),
         ),
         com.bussiness.slodoggiesapp.data.model.common.PostItem.NormalPost(
@@ -298,12 +298,12 @@ fun getSamplePosts(): List<com.bussiness.slodoggiesapp.data.model.common.PostIte
             shares = 5,
             postType = "other",
             mediaList = listOf(
-                MediaItem(
-                    MediaType.IMAGE,
+                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
+                    com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
                     imageRes = R.drawable.dog1
                 ),
-                MediaItem(
-                    MediaType.IMAGE,
+                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
+                    com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
                     imageUrl = "https://picsum.photos/400"
                 ),
             ),

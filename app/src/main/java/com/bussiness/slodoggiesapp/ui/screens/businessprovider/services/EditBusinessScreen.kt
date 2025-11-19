@@ -69,7 +69,7 @@ fun EditBusinessScreen(
     val launcherGallery = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let { viewModel.updateProfileImage(it) }
+        uri?.let { viewModel.updateLogoImage(it) }
     }
 
     val launcherCamera = rememberLauncherForActivityResult(
@@ -77,7 +77,7 @@ fun EditBusinessScreen(
     ) { bitmap: Bitmap? ->
         bitmap?.let {
             val uri = saveBitmapToCache(context, it)
-            viewModel.updateProfileImage(uri)
+            viewModel.updateLogoImage(uri)
         }
     }
 
@@ -147,7 +147,7 @@ fun EditBusinessScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         AsyncImage(
-                            model = uiState.profileImageUri,
+                            model = uiState.businessLogo,
                             contentDescription = "Business Logo",
                             contentScale = ContentScale.Crop,
                             placeholder = painterResource(id = R.drawable.fluent_color_paw),

@@ -1,6 +1,9 @@
 package com.bussiness.slodoggiesapp.data.remote
 
+import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
+import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
+import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
@@ -103,5 +106,16 @@ interface Repository {
         images: List<MultipartBody.Part>
     ): Flow<Resource<CommonResponse>>
 
+    suspend fun getFollowerList(
+        userId: String,
+    ) : Flow<Resource<FollowersResponse>>
+
+    suspend fun getFollowingList(
+        userId: String,
+    ) : Flow<Resource<FollowingResponse>>
+
+    suspend fun getBusinessProfileDetail(
+        userId: String,
+    ) : Flow<Resource<BusinessDetailsResponse>>
 
 }

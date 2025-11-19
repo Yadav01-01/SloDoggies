@@ -2,6 +2,7 @@ package com.bussiness.slodoggiesapp.viewModel.businessProvider
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.bussiness.slodoggiesapp.data.uiState.EditBusinessUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,99 +13,81 @@ import javax.inject.Inject
 @HiltViewModel
 class EditBusinessViewModel @Inject constructor() : ViewModel() {
 
-    data class UiState(
-        val profileImageUri: Uri? = null,
-        val businessName: String = "",
-        val providerName: String = "",
-        val email: String = "",
-        val bio: String = "",
-        val businessAddress: String = "",
-        val city: String = "",
-        val landmark: String = "",
-        val url: String = "",
-        val contact: String = "",
-        val businessLogos: List<Uri> = emptyList(),
-        val verificationDocs: List<Uri> = emptyList(),
-        val availableDays: List<String> = emptyList(),
-        val fromTime: String = "",
-        val toTime: String = "",
-        val zipCode: String = "",
-        val showImagePickerDialog: Boolean = false,
-        val showUpdatedDialog: Boolean = false
-    )
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    fun updateProfileImage(uri: Uri) {
-        _uiState.update { it.copy(profileImageUri = uri) }
+    private val _uiState = MutableStateFlow(EditBusinessUiState())
+    val uiState: StateFlow<EditBusinessUiState> = _uiState.asStateFlow()
+
+    // -------------------- UPDATE FUNCTIONS --------------------
+
+    fun updateLogoImage(uri: Uri) {
+        _uiState.update { it.copy(businessLogo = uri) }
     }
 
-    fun updateBusinessName(value: String) {
+    fun updateBusinessName(value: String) =
         _uiState.update { it.copy(businessName = value) }
-    }
 
-    fun updateProviderName(value: String) {
+    fun updateProviderName(value: String) =
         _uiState.update { it.copy(providerName = value) }
-    }
 
-    fun updateEmail(value: String) {
+    fun updateEmail(value: String) =
         _uiState.update { it.copy(email = value) }
-    }
 
-    fun updateBio(value: String) {
+    fun updateBio(value: String) =
         _uiState.update { it.copy(bio = value) }
-    }
 
-    fun updateBusinessAddress(value: String) {
+    fun updateBusinessAddress(value: String) =
         _uiState.update { it.copy(businessAddress = value) }
-    }
 
-    fun updateCity(value: String) {
+    fun updateCity(value: String) =
         _uiState.update { it.copy(city = value) }
-    }
 
-    fun updateLandmark(value: String) {
-        _uiState.update { it.copy(landmark = value) }
-    }
+    fun updateState(value: String) =
+        _uiState.update { it.copy(state = value) }
 
-    fun updateZipCode(value: String) {
+    fun updateZipCode(value: String) =
         _uiState.update { it.copy(zipCode = value) }
-    }
 
-    fun updateUrl(value: String) {
+    fun updateLandmark(value: String) =
+        _uiState.update { it.copy(landmark = value) }
+
+    fun updateUrl(value: String) =
         _uiState.update { it.copy(url = value) }
-    }
 
-    fun updateContact(value: String) {
+    fun updateContact(value: String) =
         _uiState.update { it.copy(contact = value) }
-    }
 
     fun updateAvailableDays(days: List<String>, from: String, to: String) {
-        _uiState.update { it.copy(availableDays = days, fromTime = from, toTime = to) }
+        _uiState.update {
+            it.copy(
+                availableDays = days,
+                fromTime = from,
+                toTime = to
+            )
+        }
     }
 
-    fun addBusinessLogo(uri: Uri) {
-        _uiState.update { it.copy(businessLogos = it.businessLogos + uri) }
-    }
+    // -------------------- MULTIPLE FILES --------------------
 
     fun addVerificationDoc(uri: Uri) {
         _uiState.update { it.copy(verificationDocs = it.verificationDocs + uri) }
     }
 
-    fun toggleImagePickerDialog() {
+    // -------------------- DIALOGS --------------------
+
+    fun showImagePickerDialog() =
         _uiState.update { it.copy(showImagePickerDialog = true) }
-    }
 
-    fun toggleUpdateDialog() {
-        _uiState.update { it.copy(showUpdatedDialog = true) }
-    }
-
-    fun hideUpdateDialog() {
-        _uiState.update { it.copy(showUpdatedDialog = false) }
-    }
-
-    fun hideImagePickerDialog() {
+    fun hideImagePickerDialog() =
         _uiState.update { it.copy(showImagePickerDialog = false) }
-    }
+
+    fun showUpdateDialog() =
+        _uiState.update { it.copy(showUpdatedDialog = true) }
+
+    fun hideUpdateDialog() =
+        _uiState.update { it.copy(showUpdatedDialog = false) }
+
+    fun toggleImagePickerDialog() { _uiState.update { it.copy(showImagePickerDialog = true) } }
+
+    fun toggleUpdateDialog() { _uiState.update { it.copy(showUpdatedDialog = true) } }
 }

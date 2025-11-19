@@ -1,6 +1,9 @@
 package com.bussiness.slodoggiesapp.data.remote
 
+import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
+import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
+import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
@@ -168,6 +171,24 @@ interface ApiService {
         @PartMap data: Map<String, @JvmSuppressWildcards RequestBody>,
         @Part images: List<MultipartBody.Part>
     ): Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_FOLLOWER_LIST)
+    suspend fun getFollowerList(
+        @Field("user_id") userId: String,
+    ) : Response<FollowersResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_FOLLOWING_LIST)
+    suspend fun getFollowingList(
+        @Field("user_id") userId: String,
+    ) : Response<FollowingResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_BUSINESS_PROFILE)
+    suspend fun getBusinessProfileDetail(
+        @Field("user_id") userId: String,
+    ) : Response<BusinessDetailsResponse>
 
 
 }

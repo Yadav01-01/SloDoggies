@@ -108,6 +108,10 @@ fun PetInfoDialog(
                 is UiEvent.CloseDialog -> {
                     onDismiss()
                 }
+
+                is UiEvent.Loading -> {
+
+                }
             }
         }
     }
@@ -257,13 +261,19 @@ fun PetInfoDialog(
                             ) {
                                 CommonWhiteButton(
                                     text = if (onProfile) stringResource(R.string.cancel) else stringResource(R.string.continue_btn),
-                                    onClick = { viewModel.onContinue(context,onProfile) },
+                                    onClick = {
+                                        if (onProfile) {
+                                            onDismiss()
+                                        } else {
+                                            viewModel.onContinue(context, onProfile = false)
+                                        }
+                                    },
                                     modifier = Modifier.weight(1f)
                                 )
                                 CommonBlueButton(
                                     text = stringResource(R.string.add_pet),
                                     fontSize = 16.sp,
-                                    onClick = { viewModel.onAddPet() },
+                                    onClick = { viewModel.onAddPet(context) },
                                     modifier = Modifier.weight(1f)
                                 )
                             }
