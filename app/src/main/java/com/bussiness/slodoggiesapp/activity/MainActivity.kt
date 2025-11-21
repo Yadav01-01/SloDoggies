@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -23,9 +24,11 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.navigation.NavGraph
+import com.bussiness.slodoggiesapp.ui.component.LoaderOverlay
 import com.bussiness.slodoggiesapp.ui.component.common.AppLottieLoader
 import com.bussiness.slodoggiesapp.ui.component.common.SetStatusBarColor
 import com.bussiness.slodoggiesapp.viewModel.common.GlobalLoaderViewModel
+import com.google.android.libraries.places.api.Places
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,7 +37,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
+       /* setContent {
             MaterialTheme {
                 val useDarkIcons = MaterialTheme.colorScheme.background.luminance() > 0.5f
                 SetStatusBarColor(color = Color.Transparent, darkIcons = useDarkIcons)
@@ -62,6 +65,25 @@ class MainActivity : ComponentActivity() {
                             AppLottieLoader(true)
                         }
                     }
+                }
+            }
+        }*/
+
+
+//        Places.initialize(applicationContext, "AIzaSyDyJ8qKFZj-GibbXlON9L8ErJzZm4ZlBKs")
+
+        setContent {
+            MaterialTheme {
+                val useDarkIcons = MaterialTheme.colorScheme.background.luminance() > 0.5f
+                SetStatusBarColor(color = Color.Transparent, darkIcons = useDarkIcons)
+                val mainNavController = rememberNavController()
+                val loaderViewModel: GlobalLoaderViewModel = hiltViewModel()
+                // ✅ Global loader state
+                val isLoading by loaderViewModel.isLoading.collectAsState()
+                Box(Modifier.fillMaxSize()) {
+                    NavGraph(navController = mainNavController)
+                    // ✅ Global overlay (sab screens, dialogs ke upar)
+                    LoaderOverlay(isVisible = isLoading)
                 }
             }
         }

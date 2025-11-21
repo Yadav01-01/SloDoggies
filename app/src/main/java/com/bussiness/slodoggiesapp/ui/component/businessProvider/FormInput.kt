@@ -99,8 +99,9 @@ fun InputField(
     height: Dp = 48.dp,
     fontSize: Int = 15,
     modifier: Modifier = Modifier,
-    readOnly : Boolean = false,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    readOnly: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    onClick: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -113,9 +114,27 @@ fun InputField(
                 color = Color(0xFFAEAEAE),
                 shape = RoundedCornerShape(8.dp)
             )
-            .padding(horizontal = 12.dp, vertical = 8.dp), // inner padding
-        contentAlignment = Alignment.CenterStart
     ) {
+
+        // Actual text field (disabled when readOnly)
+        BasicTextField(
+            value = input,
+            onValueChange = onValueChange,
+            singleLine = true,
+            enabled = !readOnly,      // 👈 IMPORTANT!!
+            textStyle = TextStyle(
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                fontSize = fontSize.sp,
+                color = Color.Black
+            ),
+            cursorBrush = SolidColor(Color.Black),
+            modifier = Modifier
+                .matchParentSize()
+                .padding(horizontal = 12.dp, vertical = 8.dp),
+            keyboardOptions = keyboardOptions,
+            readOnly = readOnly
+        )
+
         // Placeholder
         if (input.isEmpty()) {
             Text(
@@ -123,29 +142,28 @@ fun InputField(
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = fontSize.sp,
                 color = Color(0xFFAEAEAE),
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
 
-        // Text Input
-        BasicTextField(
-            value = input,
-            onValueChange = onValueChange,
-            singleLine = true,
-            textStyle = TextStyle(
-                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                fontSize = fontSize.sp,
-                color = Color.Black
-            ),
-            cursorBrush = SolidColor(Color.Black),
-            modifier = Modifier.fillMaxWidth(),
-            keyboardOptions = keyboardOptions,
-            readOnly = readOnly
-        )
+        // Transparent clickable layer
+        if (readOnly) {
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        onClick()
+                    }
+            )
+        }
     }
 }
-
 
 @Composable
 fun DescriptionBox(

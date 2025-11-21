@@ -1,26 +1,21 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -31,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
@@ -43,17 +40,47 @@ import com.bussiness.slodoggiesapp.ui.component.common.SupportContactFAQTextCard
 import com.bussiness.slodoggiesapp.ui.component.common.SupportContactTextCard
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
-import com.bussiness.slodoggiesapp.viewModel.common.HelpAndSupportViewModel
+import com.bussiness.slodoggiesapp.viewModel.helpsupport.HelpSupportViewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun HelpAndSupportScreen(navController: NavHostController,viewModel: HelpAndSupportViewModel = hiltViewModel()) {
+fun HelpAndSupportScreen(navController: NavHostController) {
 
-    val phone by viewModel.phone.collectAsState()
-    val email by viewModel.email.collectAsState()
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
-    var isNavigating by remember { mutableStateOf(false) }
 
+    var isNavigating by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    val viewModel: HelpSupportViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+
+    // ------------------- Load Data -------------------
+    fun loadData() {
+        viewModel.helpSupportRequest(
+            onError = { msg ->
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                isRefreshing = false
+            },
+            onSuccess = {
+                isRefreshing = false
+            }
+        )
+    }
+
+    // Pull Refresh State
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            loadData()
+        }
+    )
+
+    // First Load
+    LaunchedEffect(Unit) { loadData() }
+
+    // Back Handler
     BackHandler {
         if (!isNavigating) {
             isNavigating = true
@@ -61,84 +88,140 @@ fun HelpAndSupportScreen(navController: NavHostController,viewModel: HelpAndSupp
         }
     }
 
-    Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
+    // ------------------- UI -------------------
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
-        HeadingTextWithIcon(textHeading = "Help & Support", onBackClick = { if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        }})
+        // ----- HEADER (Not Refreshable) -----
+        HeadingTextWithIcon(
+            textHeading = "Help & Support",
+            onBackClick = {
+                if (!isNavigating) {
+                    isNavigating = true
+                    navController.popBackStack()
+                }
+            }
+        )
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
-        Spacer(Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-        Column  (
+        // ----- REFRESHABLE AREA STARTS HERE -----
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ){
-            Box(
+                .pullRefresh(pullRefreshState)
+        ) {
+
+            Column(
                 modifier = Modifier
-                    .border(
-                        width = 1.dp,
-                        color = PrimaryColor,
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(Color.White)
-                    .padding(24.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(16.dp)
             ) {
-                Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(
-                        text = "Need a paw? We're here for you!",
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        color = Color.Black
-                    )
+                // ---------------- Box Card ----------------
+                Box(
+                    modifier = Modifier
+                        .border(
+                            width = 1.dp,
+                            color = PrimaryColor,
+                            shape = RoundedCornerShape(10.dp)
+                        )
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.White)
+                        .padding(24.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-                    Text(
-                        text = "Whether you're having trouble with your profile,\n" +
-                                "reporting a bug, or just need help finding features,\n" +
-                                "our support team is ready to assist.",
-                        fontSize = 14.sp,
-                        lineHeight = 18.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black
-                    )
-                    
-                    if (sessionManager.getUserType() == UserType.Professional){
+                        Text(
+                            text = "Need a paw? We're here for you!",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            color = Color.Black
+                        )
 
-                        InputField(input = phone, onValueChange = { viewModel.updatePhone(it)}, placeholder = "+1 (555) 123 456", height = 46.dp, fontSize = 12)
+                        // HTML Content
+                        val contentText = uiState.data?.content ?: ""
+                        AndroidView(
+                            factory = { context ->
+                                TextView(context).apply {
+                                    setTextColor(android.graphics.Color.parseColor("#252E32"))
+                                    textSize = 16f
+                                    movementMethod = android.text.method.LinkMovementMethod.getInstance()
+                                }
+                            },
+                            update = { view ->
+                                view.text = HtmlCompat.fromHtml(
+                                    contentText,
+                                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                                )
+                            }
+                        )
 
-                        InputField(input = email, onValueChange = { viewModel.updateEmail(it)}, placeholder = "help@slodoggies.com", height = 46.dp, fontSize = 12 )
+                        // Professional User Editable
+                        if (sessionManager.getUserType() == UserType.Professional) {
 
-                    }else{
-                        DisplaySupportData(icon = R.drawable.filled_call_ic, text = "(555) 123 456")
+                            InputField(
+                                input = uiState.data?.phone ?: "+1 (555) 123 456",
+                                onValueChange = {},
+                                placeholder = "+1 (555) 123 456",
+                                height = 46.dp,
+                                fontSize = 12
+                            )
 
-                        DisplaySupportData(icon = R.drawable.filled_mail, text = "help@slodoggies.com")
+                            InputField(
+                                input = uiState.data?.email ?: "help@slodoggies.com",
+                                onValueChange = {},
+                                placeholder = "help@slodoggies.com",
+                                height = 46.dp,
+                                fontSize = 12
+                            )
+                        } else {
+                            // Customer info display only
+                            DisplaySupportData(
+                                icon = R.drawable.filled_call_ic,
+                                text = uiState.data?.phone ?: "(555) 123 456"
+                            )
+                            DisplaySupportData(
+                                icon = R.drawable.filled_mail,
+                                text = uiState.data?.email ?: "help@slodoggies.com"
+                            )
+                        }
                     }
-
-
                 }
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                SupportContactFAQTextCard(
+                    heading = "Need Quick Answers?",
+                    onFaqClick = { navController.navigate(Routes.FAQ_SCREEN) }
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                SupportContactTextCard(
+                    heading = "Feedback & Suggestions",
+                    subHeading = "We’d love to hear from you! Help us make Slo doggies better by sharing your feedback and ideas."
+                )
             }
-            Spacer(modifier = Modifier.height(15.dp))
 
-            SupportContactFAQTextCard(heading = "Need Quick Answers?", onFaqClick = { navController.navigate(Routes.FAQ_SCREEN)})
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            SupportContactTextCard(heading = "Feedback & Suggestions", subHeading = "We’d love to hear from you! Help us make Slodoggies better by sharing your feedback and ideas.")
+            // Pull-to-refresh indicator UNDER the header
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }
 
-
 @Preview
 @Composable
-fun HelpAndSupportPreview(){
+fun HelpAndSupportPreview() {
     HelpAndSupportScreen(navController = NavHostController(LocalContext.current))
 }
-

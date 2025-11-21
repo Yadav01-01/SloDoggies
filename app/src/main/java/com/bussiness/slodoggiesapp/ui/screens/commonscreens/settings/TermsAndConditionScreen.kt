@@ -1,7 +1,11 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import android.annotation.SuppressLint
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,11 +17,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -27,69 +28,39 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.termscondition.TermsAndConditionViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun TermsAndConditionsScreen(navController: NavHostController) {
-
-    var isNavigating by remember { mutableStateOf(false) }
-
-    BackHandler {
-        if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        }
-    }
-
-    Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
-
-        HeadingTextWithIcon(textHeading = "Terms & Conditions", onBackClick = {  if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        } })
-
-        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
-
-        Spacer(Modifier.height(10.dp))
-
-        Column  (
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 10.dp)
-        ){
-            Text(
-                text = "By using this app, you agree to engage respectfully and use it solely for its intended purpose: to connect with fellow pet enthusiasts, discover local pet service providers, share pet-related experiences, and explore pet-friendly events and activities.\n" +
-                        "\n" +
-                        "You are responsible for the accuracy and security of your account information. All content within the app — including text, images, and media — is owned by or licensed to the platform and may not be copied, modified, or distributed without written permission.\n" +
-                        "\n" +
-                        "You agree not to misuse the platform, post harmful or inappropriate content, or attempt to disrupt the app’s functionality or community experience.\n" +
-                        "\n" +
-                        "We are committed to protecting your privacy. Your personal information will never be sold or used outside the scope of providing and improving this app experience.\n" +
-                        "\n" +
-                        "Use of this app constitutes your acceptance of these Terms and any future updates. If you do not agree with any part of these Terms, please discontinue use of the app.\n" +
-                        "\n" +
-                        "For questions or concerns, contact us at support@petsloapp.com.",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    color = Color(0xFF252E32)
-                )
-            )
-        }
-    }
-
+    ShowDataTermCondition(navController,"Settings")
+}
+// ==================================================================
+//                    AUTH TERMS SCREEN (UNCHANGED)
+// ==================================================================
+@Composable
+fun AuthTermsAndConditionsScreen(navController: NavHostController) {
+    ShowDataTermCondition(navController,"Login")
 }
 
 @Composable
-fun AuthTermsAndConditionsScreen(navController: NavHostController) {
-
+fun ShowDataTermCondition(navController: NavHostController, type: String) {
     var isNavigating by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    val viewModel: TermsAndConditionViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
+    // ---------------- BACK HANDLER ----------------
     BackHandler {
         if (!isNavigating) {
             isNavigating = true
@@ -97,49 +68,112 @@ fun AuthTermsAndConditionsScreen(navController: NavHostController) {
         }
     }
 
-    Column (modifier = Modifier.fillMaxSize().background(Color.White).statusBarsPadding() ){
+    // ---------------- DATA LOADER FUNCTION ----------------
+    fun loadData() {
+        viewModel.termsConditionRequest(
+            onError = { msg ->
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                isRefreshing = false
+            },
+            onSuccess = {
+                isRefreshing = false
+            }
+        )
+    }
 
-        HeadingTextWithIcon(textHeading = "Terms & Conditions", onBackClick = {  if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        } })
+    // FIRST LOAD
+    LaunchedEffect(Unit) { loadData() }
+    val parentModifier = if (type == "Login") {
+        Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+    } else {
+        Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    }
+    // ---------------- UI ----------------
+    Column(modifier = parentModifier) {
+
+        HeadingTextWithIcon(
+            textHeading = "Terms & Conditions",
+            onBackClick = {
+                if (!isNavigating) {
+                    isNavigating = true
+                    navController.popBackStack()
+                }
+            }
+        )
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
         Spacer(Modifier.height(10.dp))
 
-        Column  (
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ){
-            Text(
-                text = "By using this app, you agree to engage respectfully and use it solely for its intended purpose: to connect with fellow pet enthusiasts, discover local pet service providers, share pet-related experiences, and explore pet-friendly events and activities.\n" +
-                        "\n" +
-                        "You are responsible for the accuracy and security of your account information. All content within the app — including text, images, and media — is owned by or licensed to the platform and may not be copied, modified, or distributed without written permission.\n" +
-                        "\n" +
-                        "You agree not to misuse the platform, post harmful or inappropriate content, or attempt to disrupt the app’s functionality or community experience.\n" +
-                        "\n" +
-                        "We are committed to protecting your privacy. Your personal information will never be sold or used outside the scope of providing and improving this app experience.\n" +
-                        "\n" +
-                        "Use of this app constitutes your acceptance of these Terms and any future updates. If you do not agree with any part of these Terms, please discontinue use of the app.\n" +
-                        "\n" +
-                        "For questions or concerns, contact us at support@petsloapp.com.",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    color = Color(0xFF252E32)
-                )
-            )
+        // ------------ PULL TO REFRESH WRAPPER --------------
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+            onRefresh = {
+                isRefreshing=true
+                loadData() }
+        ) {
+            val termsText = uiState.data?.content
+
+            if (termsText.isNullOrBlank()) {
+                // ------------ NO DATA FOUND VIEW ------------
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 50.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = "No Data Found",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
+                }
+
+            } else {
+                // ------------ MAIN HTML CONTENT ------------
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                ) {
+                    AndroidView(
+                        factory = { context ->
+                            TextView(context).apply {
+                                setTextColor(android.graphics.Color.parseColor("#252E32"))
+                                textSize = 16f
+
+                                // Optional: Enable clickable links
+                                movementMethod = android.text.method.LinkMovementMethod.getInstance()
+                            }
+                        },
+                        update = { view ->
+                            view.text = HtmlCompat.fromHtml(
+                                termsText,
+                                HtmlCompat.FROM_HTML_MODE_LEGACY
+                            )
+                        }
+                    )
+                }
+
+            }
         }
+
     }
 
 }
+
 
 @Preview
 @Composable
-fun TAndCPreview(){
+fun TermConditionPreview(){
     TermsAndConditionsScreen(navController = NavHostController(LocalContext.current))
 }

@@ -1,7 +1,10 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,10 +18,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -28,94 +34,141 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.privacypolicy.PrivacyPolicyViewModel
+import com.bussiness.slodoggiesapp.viewModel.termscondition.TermsAndConditionViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun PrivacyPolicyScreen(navController: NavHostController) {
-
-    var isNavigating by remember { mutableStateOf(false) }
-
-    BackHandler {
-        if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        }
-    }
-    Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
-
-        HeadingTextWithIcon(textHeading = "Privacy Policy", onBackClick = {  if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        } })
-
-        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
-
-        Spacer(Modifier.height(10.dp))
-
-        Column  (
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 10.dp)
-        ){
-            Text(
-                text = " We value your privacy and are committed to protecting your personal information. When you use our app, we may collect basic details such as your name, location, email, pet information, and activity within the app to provide a personalized experience and improve our services. Your information is never sold or shared with third parties without your consent, except as required by law or to ensure the safety and integrity of our platform. We use secure methods to store and manage your data and take reasonable steps to prevent unauthorized access. By using the app, you consent to the collection and use of your information as outlined in this policy. If you have any questions or concerns, please contact us at support@petsloapp.com.",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    color = Color(0xFF252E32)
-                )
-            )
-        }
-    }
-
+    ShowDataPrivacyPolicy(navController,"Settings")
+}
+// ==================================================================
+//                    AUTH TERMS SCREEN (UNCHANGED)
+// ==================================================================
+@Composable
+fun AuthPrivacyPolicyScreen(navController: NavHostController) {
+    ShowDataPrivacyPolicy(navController,"Login")
 }
 
 @Composable
-fun AuthPrivacyPolicyScreen(navController: NavHostController) {
-
+fun ShowDataPrivacyPolicy(navController: NavHostController, type: String) {
     var isNavigating by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    val viewModel: PrivacyPolicyViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
+    // ---------------- BACK HANDLER ----------------
     BackHandler {
         if (!isNavigating) {
             isNavigating = true
             navController.popBackStack()
         }
     }
-    Column (modifier = Modifier.fillMaxSize().background(Color.White).statusBarsPadding() ){
 
-        HeadingTextWithIcon(textHeading = "Privacy Policy", onBackClick = {  if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        } })
-
-        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
-
-        Spacer(Modifier.height(10.dp))
-
-        Column  (
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ){
-            Text(
-                text = " We value your privacy and are committed to protecting your personal information. When you use our app, we may collect basic details such as your name, location, email, pet information, and activity within the app to provide a personalized experience and improve our services. Your information is never sold or shared with third parties without your consent, except as required by law or to ensure the safety and integrity of our platform. We use secure methods to store and manage your data and take reasonable steps to prevent unauthorized access. By using the app, you consent to the collection and use of your information as outlined in this policy. If you have any questions or concerns, please contact us at support@petsloapp.com.",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    color = Color(0xFF252E32)
-                )
-            )
-        }
+    // ---------------- DATA LOADER FUNCTION ----------------
+    fun loadData() {
+        viewModel.privacyPolicyRequest(
+            onError = { msg ->
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                isRefreshing = false
+            },
+            onSuccess = {
+                isRefreshing = false
+            }
+        )
     }
 
+    // FIRST LOAD
+    LaunchedEffect(Unit) { loadData() }
+    val parentModifier = if (type == "Login") {
+        Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+    } else {
+        Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    }
+    // ---------------- UI ----------------
+    Column(modifier = parentModifier) {
+        HeadingTextWithIcon(
+            textHeading = "Privacy Policy",
+            onBackClick = {
+                if (!isNavigating) {
+                    isNavigating = true
+                    navController.popBackStack()
+                }
+            }
+        )
+        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
+        Spacer(Modifier.height(10.dp))
+        // ------------ PULL TO REFRESH WRAPPER --------------
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing = isRefreshing),
+            onRefresh = {
+                isRefreshing=true
+                loadData() }
+        ) {
+            val termsText = uiState.data?.content
+
+            if (termsText.isNullOrBlank()) {
+                // ------------ NO DATA FOUND VIEW ------------
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 50.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = "No Data Found",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
+                }
+            } else {
+                // ------------ MAIN CONTENT ------------
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                ) {
+                    AndroidView(
+                        factory = { context ->
+                            TextView(context).apply {
+                                setTextColor(android.graphics.Color.parseColor("#252E32"))
+                                textSize = 16f
+
+                                // Optional: Enable clickable links
+                                movementMethod = android.text.method.LinkMovementMethod.getInstance()
+                            }
+                        },
+                        update = { view ->
+                            view.text = HtmlCompat.fromHtml(
+                                termsText,
+                                HtmlCompat.FROM_HTML_MODE_LEGACY
+                            )
+                        }
+                    )
+                }
+            }
+        }
+    }
 }
+
 
 @Preview
 @Composable

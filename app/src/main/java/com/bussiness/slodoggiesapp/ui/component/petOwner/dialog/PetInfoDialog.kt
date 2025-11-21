@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -209,6 +210,7 @@ fun PetInfoDialog(
 
                         item {
                             AddPhotoSection(
+                                uriImage =null,
                                 onPhotoSelected = { uri ->
                                     viewModel.setSelectedPhoto(uri)
                                 }
@@ -294,9 +296,11 @@ val samplePeople = Person("1", "Jimmy", "https://example.com/jimmy.jpg")
 @Composable
 fun AddPhotoSection(
     modifier: Modifier = Modifier,
-    onPhotoSelected: (Uri?) -> Unit
+    onPhotoSelected: (Uri?) -> Unit,
+    uriImage:Uri?=null
 ) {
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
+    selectedImageUri =uriImage
     val context = LocalContext.current
 
     // Camera launcher
@@ -305,7 +309,7 @@ fun AddPhotoSection(
     ) { bitmap ->
         bitmap?.let {
             val uri = saveBitmapToCache(context, it)
-            selectedImageUri = uri
+            selectedImageUri=uri
             onPhotoSelected(uri)
         }
     }
@@ -325,7 +329,7 @@ fun AddPhotoSection(
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        selectedImageUri = uri
+        selectedImageUri=uri
         onPhotoSelected(uri)
     }
 
@@ -354,7 +358,7 @@ fun AddPhotoSection(
                 },
             contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
+            /*AsyncImage(
                 model = selectedImageUri,
                 contentDescription = stringResource(R.string.cd_pet_photo),
                 placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
@@ -363,7 +367,27 @@ fun AddPhotoSection(
                     .size(70.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
+            )*/
+
+            var loadedBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+            AsyncImage(
+                model = selectedImageUri,
+                contentDescription = stringResource(R.string.cd_pet_photo),
+                placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
+                error = painterResource(id = R.drawable.ic_black_profile_icon),
+                modifier = Modifier
+                    .size(70.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop,
+
+                onSuccess = { success ->
+                    val drawable = success.result.drawable
+                    loadedBitmap = (drawable as BitmapDrawable).bitmap
+
+                }
             )
+
 
             Image(
                 painter = painterResource(id = R.drawable.ic_post_icon),

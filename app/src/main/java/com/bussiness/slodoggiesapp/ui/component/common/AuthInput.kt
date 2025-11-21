@@ -81,13 +81,21 @@ fun AuthBackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 @Composable
 fun MediaUploadSection(
     maxImages: Int = 6,
-    onMediaSelected: (Uri) -> Unit // Callback for API
+    imageList: MutableList<Uri> = mutableListOf(),
+    onMediaSelected: (Uri) -> Unit = { }, // Callback for API
+    onMediaUnSelected: (Uri) -> Unit = { }
 ) {
     val context = LocalContext.current
-    val imageUris = remember { mutableStateListOf<Uri>() }
+//    val imageUris = remember { mutableStateListOf<Uri>() }
+    val imageUris = remember {
+        if (imageList.isNotEmpty()) {
+            mutableStateListOf(*imageList.toTypedArray())
+        } else {
+            mutableStateListOf()
+        }
+    }
     var showDialog by remember { mutableStateOf(false) }
     val cameraImageUri = remember { mutableStateOf<Uri?>(null) }
-
     // Camera launcher
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -179,7 +187,8 @@ fun MediaUploadSection(
                         Text("Gallery", Modifier
                             .clickable {
                                 galleryLauncher.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+//                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
                                 )
                                 showDialog = false
                             }.fillMaxWidth()
@@ -221,7 +230,8 @@ fun MediaUploadSection(
                             .align(Alignment.TopEnd)
                             .offset(x = (6).dp, y = (-6).dp) //overlap outside image
                             .size(20.dp)
-                            .clickable { imageUris.remove(uri) }
+                            .clickable { imageUris.remove(uri)
+                                        onMediaUnSelected(uri)}
                     )
                 }
 
@@ -229,7 +239,6 @@ fun MediaUploadSection(
         }
     }
 }
-
 
 /**
  * Create a new image URI in MediaStore

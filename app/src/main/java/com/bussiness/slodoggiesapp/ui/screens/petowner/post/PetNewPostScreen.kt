@@ -85,6 +85,7 @@ fun PetNewPostScreen(navController: NavHostController) {
             "Post" -> PetPostScreenContent(onClickLocation = { }, onClickPost = { successDialog = true }, addPetClick = {  })
             "Event" -> PetEventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
         }
+
     }
     if (successDialog){
         PostSuccessDialog(

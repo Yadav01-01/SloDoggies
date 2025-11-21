@@ -8,11 +8,15 @@ import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
+import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
+import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
@@ -56,17 +60,66 @@ interface ApiService {
     ) : Response<CommonResponse>
 
 
-    @FormUrlEncoded
+    @GET(ApiEndPoint.TERMS_CONDITION)
+    suspend fun termsConditionRequest() : Response<TermsConditionModel>
+
+    @GET(ApiEndPoint.HELP_SUPPORT)
+    suspend fun helpSupportRequest() : Response<TermsConditionModel>
+
+    @GET(ApiEndPoint.PRIVACY_POLICY)
+    suspend fun privacyPolicyRequest() : Response<TermsConditionModel>
+
+    @GET(ApiEndPoint.ABOUT_US)
+    suspend fun aboutUsRequest() : Response<TermsConditionModel>
+
+
+    @Multipart
     @POST(ApiEndPoint.UPDATE_BREED)
     suspend fun updatePetRequest(
-        @Field("pet_name") petName: String,
-        @Field("pet_breed") petBreed: String,
-        @Field("pet_age") petAge: String,
-        @Field("pet_bio") petBio: String,
-        @Field("pet_id") petId: String,
-        @Field("user_id") userId: String
-       /* @Part petImage:MultipartBody.Part*/
+        @Part("pet_name") petName: RequestBody,
+        @Part("pet_breed") petBreed: RequestBody,
+        @Part("pet_age") petAge: RequestBody,
+        @Part("pet_bio") petBio: RequestBody,
+        @Part("pet_id") petId: RequestBody,
+        @Part("user_id") userId: RequestBody,
+        @Part petImage:MultipartBody.Part?
+    ) : Response<UpdatePetModel>
+
+
+    @Multipart
+    @POST(ApiEndPoint.CREATE_POST_OWNER)
+    suspend fun createPostOwnerRequest(
+        @Part("user_id") userId: RequestBody,
+        @Part("post_title") postTitle: RequestBody,
+        @Part("hash_tag") hashTag: RequestBody,
+        @Part("address") petBio: RequestBody,
+        @Part("latitude") latitude: RequestBody,
+        @Part("longitude") longitude: RequestBody,
+        @Part("pet_id") petId: RequestBody,
+        @Part("user_type") userType: RequestBody,
+        @Part petImage:List<MultipartBody.Part>?
     ) : Response<CommonResponse>
+
+    @Multipart
+    @POST(ApiEndPoint.CREATE_EVENT_OWNER)
+    suspend fun createEventOwnerRequest(
+        @Part("user_id") userId: RequestBody,
+        @Part("event_title") postTitle: RequestBody,
+        @Part("event_description") eventDescription: RequestBody,
+        @Part("event_start_date") eventStartDate: RequestBody,
+        @Part("event_start_time") eventStartTime: RequestBody,
+        @Part("event_end_date") eventEndDate: RequestBody,
+        @Part("event_end_time") eventEndTime: RequestBody,
+        @Part("address") petBio: RequestBody,
+        @Part("latitude") latitude: RequestBody,
+        @Part("longitude") longitude: RequestBody,
+        @Part("city") city: RequestBody,
+        @Part("state") state: RequestBody,
+        @Part("zip_code") zipCode: RequestBody,
+        @Part("user_type") userType: RequestBody,
+        @Part petImage:List<MultipartBody.Part>?
+    ) : Response<CommonResponse>
+
 
     @FormUrlEncoded
     @POST(ApiEndPoint.RESET_PASSWORD)
@@ -74,6 +127,10 @@ interface ApiService {
         @Field("emailOrPhone") emailOrPhone: String,
         @Field("password") password: String,
     ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.PET_LIST)
+    suspend fun petListRequest(@Field("user_id") userId: String) : Response<PetListModel>
 
     @FormUrlEncoded
     @POST(ApiEndPoint.RESEND_PASSWORD)
@@ -98,6 +155,10 @@ interface ApiService {
     suspend fun getOwnerDetail(
         @Field("user_id") userId: String,
     ) : Response<OwnerDetailsResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.LOG_OUT)
+    suspend fun logOutRequest( @Field("user_id") userId: String,) : Response<CommonResponse>
 
     @Multipart
     @POST(ApiEndPoint.UPDATE_OWNER_DETAIL)

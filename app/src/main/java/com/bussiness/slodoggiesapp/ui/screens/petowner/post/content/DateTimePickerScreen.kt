@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.post.content
 
 
+import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.os.Build
 import android.widget.Toast
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -63,6 +65,7 @@ private val TextDark = Color(0xFF333333)
 private val TextGray = Color(0xFF999999)
 private val SelectedBlue = Color(0xFF258694)
 
+@SuppressLint("DefaultLocale")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DateTimePickerScreen(
@@ -74,15 +77,12 @@ fun DateTimePickerScreen(
     val currentMonth = remember { mutableStateOf(YearMonth.now()) }
     val selectedDate = remember { mutableStateOf<LocalDate?>(null) }
 
-    val selectedHour = remember { mutableStateOf(11) }
-    val selectedMinute = remember { mutableStateOf(38) }
+    val selectedHour = remember { mutableIntStateOf(11) }
+    val selectedMinute = remember {mutableIntStateOf(38) }
     val isAM = remember { mutableStateOf(true) }
 
-    // ✅ State for new iOS-style time picker visibility
     val showTimePicker = remember { mutableStateOf(false) }
-
     val context = LocalContext.current
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -140,7 +140,6 @@ fun DateTimePickerScreen(
                     .align(Alignment.CenterEnd)
             )
         }
-
         // Calendar Section
         if (isCalendarVisible.value) {
             Card(
@@ -171,7 +170,6 @@ fun DateTimePickerScreen(
                         }
                     )
                 }
-
                 // Time Selection Section
                 Row(
                     modifier = Modifier
@@ -188,7 +186,6 @@ fun DateTimePickerScreen(
                             .weight(1f)
                             .padding(start = 8.dp)
                     )
-
                     Row(
                         modifier = Modifier
                             .wrapContentWidth()
@@ -208,7 +205,7 @@ fun DateTimePickerScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = String.format("%02d", selectedHour.value),
+                                text = String.format("%02d", selectedHour.intValue),
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 color = Color.Black,

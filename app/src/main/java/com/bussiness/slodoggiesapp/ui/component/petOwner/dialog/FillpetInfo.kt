@@ -41,6 +41,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.petlist.Data
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
@@ -54,6 +55,7 @@ import com.bussiness.slodoggiesapp.viewModel.petadd.PetAddViewModel
 
 @Composable
 fun FillPetInfoDialog(
+    data: MutableList<Data>? = null,
     title: String,
     onDismiss: () -> Unit = {},
     onAddPet: () -> Unit = {},
@@ -139,21 +141,31 @@ fun FillPetInfoDialog(
                             horizontalArrangement = Arrangement.spacedBy(12.dp),
                             contentPadding = PaddingValues(horizontal = 0.dp)
                         ) {
-                            items(pets) { pet ->
-                                PersonItem(
-                                    person = pet,
-                                    selected = false,
-                                    onClick = { /* handle click */ }
-                                )
+                            data?.let {
+                                items(
+                                    items = it,
+                                    key = { pet -> pet.id?:0 }   // ← stable key
+                                ) { pet ->
+                                    PersonItem(
+                                        person = pet,
+                                        selected = false,
+                                        onClick = { }
+                                    )
+                                }
                             }
+
+
                         }
                     }
 
                     // Add Photo Section
                     item {
                         AddPhotoSection(
+                            uriImage =uiState.image,
                             onPhotoSelected = { uri ->
-                                // handle photo
+                                if (uri != null) {
+                                    viewModel.onPetImageChange(uri)
+                                }
                             }
                         )
                     }
@@ -162,7 +174,7 @@ fun FillPetInfoDialog(
                     item {
                         Spacer(modifier = Modifier.height(5.dp))
                         CustomOutlinedTextField(
-                            value = uiState?.name?:"",
+                            value = uiState.name ?:"",
                             onValueChange = { viewModel.onPetNameChange(it) },
                             placeholder = stringResource(R.string.placeholder_pet_name),
                             label = stringResource(R.string.label_pet_name),
@@ -173,7 +185,7 @@ fun FillPetInfoDialog(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         CustomOutlinedTextField(
-                            value = uiState?.breed?:"",
+                            value = uiState.breed ?:"",
                             onValueChange = { viewModel.onPetBreedChange(it) },
                             placeholder = stringResource(R.string.placeholder_pet_breed),
                             label = stringResource(R.string.label_pet_breed)
@@ -186,9 +198,9 @@ fun FillPetInfoDialog(
                         FormHeadingText("Pet Age")
                         Spacer(Modifier.height(8.dp))
                         CustomDropdownBox(
-                            label = uiState?.age?:"".ifEmpty { "Enter pet age" },
+                            label = uiState.age ?:"".ifEmpty { "Enter pet age" },
                             items = viewModel.ageOptions,
-                            selectedItem = uiState?.age?:"",
+                            selectedItem = uiState.age ?:"",
                             onItemSelected = { viewModel.onPetAgeChange(it) }
                         )
                     }
@@ -197,7 +209,7 @@ fun FillPetInfoDialog(
                     item {
                         Spacer(modifier = Modifier.height(16.dp))
                         CustomOutlinedTextField(
-                            value = uiState?.bio?:"",
+                            value = uiState.bio ?:"",
                             onValueChange = { viewModel.onPetBioChange(it) },
                             placeholder = stringResource(R.string.placeholder_pet_bio),
                             label = stringResource(R.string.label_pet_bio)

@@ -519,6 +519,7 @@ fun PetProfileScreen(navController: NavHostController) {
     }
     if (showPetInfoDialog) {
         FillPetInfoDialog(
+            data = null,
             "Add Your Pet",
             onDismiss = { showPetInfoDialog = false },
             onAddPet = {

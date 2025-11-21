@@ -1,40 +1,42 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
-
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.text.HtmlCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.aboutus.AboutUsViewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AboutUsScreen(navController: NavHostController) {
+
     var isNavigating by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    val viewModel: AboutUsViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     BackHandler {
         if (!isNavigating) {
@@ -42,39 +44,95 @@ fun AboutUsScreen(navController: NavHostController) {
             navController.popBackStack()
         }
     }
-    Column (modifier = Modifier.fillMaxSize().background(Color.White) ){
 
-        HeadingTextWithIcon(textHeading = "About Us", onBackClick = { if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        } })
+    fun loadData() {
+        viewModel.aboutUsRequest(
+            onError = { msg ->
+                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                isRefreshing = false
+            },
+            onSuccess = {
+                isRefreshing = false
+            }
+        )
+    }
+    LaunchedEffect(Unit) { loadData() }
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            isRefreshing = true
+            loadData()
+        }
+    )
 
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        // ---------------------- TOP BAR -------------------------
+        HeadingTextWithIcon(
+            textHeading = "About Us",
+            onBackClick = {
+                if (!isNavigating) {
+                    isNavigating = true
+                    navController.popBackStack()
+                }
+            }
+        )
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
-
         Spacer(Modifier.height(10.dp))
-
-        Column  (
-            modifier = Modifier
+        // ---------------------- PULL TO REFRESH STARTS HERE -------------------------
+        Box(modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 10.dp)
-        ){
-            Text(
-                text = " Our app is designed to bring together pet lovers and pet service providers across San Luis Obispo County, California. Whether you're a devoted pet parent looking to connect with others, discover local events, or find trusted services like grooming, walking, or boarding — or a business looking to reach engaged pet owners — our platform is here to help. We believe in building a supportive, friendly, and informed pet community where users can share experiences, promote well-being, and celebrate the joy that pets bring into our lives.",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    color = Color(0xFF252E32)
-                )
+                .pullRefresh(pullRefreshState)) {
+            val termsText = uiState.data?.content
+            if (termsText.isNullOrBlank()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 50.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = "No Data Found",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 20.dp, vertical = 10.dp)
+                ) {
+                    AndroidView(
+                        factory = { context ->
+                            TextView(context).apply {
+                                setTextColor(android.graphics.Color.parseColor("#252E32"))
+                                textSize = 16f
+                                movementMethod = android.text.method.LinkMovementMethod.getInstance()
+                            }
+                        },
+                        update = { view ->
+                            view.text = HtmlCompat.fromHtml(
+                                termsText,
+                                HtmlCompat.FROM_HTML_MODE_LEGACY
+                            )
+                        }
+                    )
+                }
+            }
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
             )
         }
     }
-
 }
 
-@Preview
-@Composable
-fun AboutUsPreview(){
-    AboutUsScreen(navController = NavHostController(LocalContext.current))
-}

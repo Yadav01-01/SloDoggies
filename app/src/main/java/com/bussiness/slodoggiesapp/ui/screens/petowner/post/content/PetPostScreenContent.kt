@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.petlist.Data
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
@@ -74,9 +75,11 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialo
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
+import com.bussiness.slodoggiesapp.viewModel.createpostowner.PostCreateOwnerViewModel
 import com.bussiness.slodoggiesapp.viewModel.location.LocationAction
 import com.bussiness.slodoggiesapp.viewModel.location.LocationViewModel
 import com.bussiness.slodoggiesapp.viewModel.petadd.PetAddViewModel
+import com.bussiness.slodoggiesapp.viewModel.petlist.PetListViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -91,8 +94,6 @@ import com.google.android.gms.location.Priority
 @Composable
 fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,onClickPost: () -> Unit,viewModel: PostContentViewModel = hiltViewModel()) {
 
-    val writePost by viewModel.writePost.collectAsState()
-    val hashtags by viewModel.hashtags.collectAsState()
     var showPetInfoDialog by remember { mutableStateOf(false) }
     var petAddedSuccessDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -100,11 +101,13 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
     val permission = rememberPermissionState(Manifest.permission.ACCESS_FINE_LOCATION)
     val viewModelLocation: LocationViewModel = hiltViewModel()
     val viewModelUpdatePet: PetAddViewModel = hiltViewModel()
+    val viewModelPetList: PetListViewModel = hiltViewModel()
+    val viewModelPostCreateOwner: PostCreateOwnerViewModel = hiltViewModel()
+    val uiStatePostCreateOwner by viewModelPostCreateOwner.uiState.collectAsState()
     val action by viewModelLocation.action.collectAsState()
     val locationState by viewModelLocation.locationState.collectAsState()
-    val updatePetState by viewModelUpdatePet.uiState.collectAsState()
+    val updatePetListState by viewModelPetList.uiState.collectAsState()
     var wasPermissionGranted by remember { mutableStateOf(permission.status.isGranted) }
-
 
     val gpsLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
@@ -169,29 +172,37 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
             .imePadding(),
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
+
         item {
             // Add the WhosThisPostAbout section at the top
-            WhosThisPostAbout(
-                selectedPet = viewModel.selectedPet,
-                allPets = samplePeople,
-                onAddPersonClick = { showPetInfoDialog = true },
-                onPersonClick = { pet -> viewModel.selectPerson(pet) }
-            )
+            updatePetListState.data?.let {
+                WhosThisPostAbout(
+                    selectedPet = viewModelPetList.selectedPet,
+                    allPets = it,
+                    onAddPersonClick = { showPetInfoDialog = true },
+                    onPersonClick = { pet -> viewModelPetList.selectPerson(pet)
+                        viewModelPostCreateOwner.onPetID(pet.id.toString())
+                    }
+                )
+            }
         }
 
         item {
             FormHeadingText(stringResource(R.string.Upload_Media))
-            MediaUploadSection(maxImages = 6) { uri ->
-                // Example: viewModel.addPetImage(uri)
-            }
+            MediaUploadSection(maxImages = 6,
+                imageList=uiStatePostCreateOwner.image?: mutableListOf(),
+                onMediaSelected = {
+                    viewModelPostCreateOwner.addPhoto(it) } ,
+                onMediaUnSelected = {  viewModelPostCreateOwner.removePhoto(it) })
+
         }
 
         item {
             FormHeadingText(stringResource(R.string.Write_Post))
             DescriptionBox(
                 placeholder = stringResource(R.string.Enter_Description),
-                value = writePost,
-                onValueChange = { viewModel.updateWritePost(it) }
+                value = uiStatePostCreateOwner.writePost?:"",
+                onValueChange = { viewModelPostCreateOwner.onWritePost(it) }
             )
         }
 
@@ -199,8 +210,8 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
             FormHeadingText(stringResource(R.string.Hashtags))
             InputField(
                 placeholder = stringResource(R.string.Add_Hashtags),
-                input = hashtags,
-                onValueChange = { viewModel.updateHashtags(it) }
+                input = uiStatePostCreateOwner.hashTage?:"",
+                onValueChange = { viewModelPostCreateOwner.onHashTagChange(it) }
             )
         }
 
@@ -256,7 +267,7 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
             InputField(
                 placeholder = stringResource(R.string.enter_flat_address),
                 input = locationState.address?:"Address".ifEmpty { "Address" } ,
-                onValueChange = { viewModel.updateStreetAddress(it) },
+                onValueChange = {},
                 readOnly = true
             )
         }
@@ -266,22 +277,35 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
             SubmitButton(
                 modifier = Modifier,
                 buttonText = stringResource(R.string.post),
-                onClickButton = { onClickPost() }
+                onClickButton = {
+                    viewModelPostCreateOwner.onLocation(locationState.address?:"")
+                    viewModelPostCreateOwner.onLatitude(locationState.latitude.toString())
+                    viewModelPostCreateOwner.onLongitude(locationState.longitude.toString())
+                    viewModelPostCreateOwner.createPostOwner(context=context,
+                        onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                        onSuccess = {
+                            onClickPost()
+                        }
+                    )
+                }
             )
             Spacer(Modifier.height(30.dp))
         }
+
     }
 
     if (showPetInfoDialog) {
         FillPetInfoDialog(
+            data=updatePetListState.data,
             "Add Your Pet",
             onDismiss = { showPetInfoDialog = false },
             onAddPet = {
-                viewModelUpdatePet.updatePet(
+                viewModelUpdatePet.updatePet(context=context,
                     onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                     onSuccess = {
                         showPetInfoDialog = false
                         petAddedSuccessDialog = true
+                        viewModelPetList.petListRequest()
                     }
                 )
             },
@@ -330,13 +354,12 @@ fun askToEnableGPS(
 }
 
 
-
 @Composable
 fun WhosThisPostAbout(
-    selectedPet: Person? = null,
-    allPets: List<Person> = emptyList(),
+    selectedPet: Data? = null,
+    allPets: MutableList<Data> = mutableListOf(),
     onAddPersonClick: () -> Unit = {},
-    onPersonClick: (Person) -> Unit = {}
+    onPersonClick: (Data) -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -362,7 +385,6 @@ fun WhosThisPostAbout(
             item {
                 AddPersonButton(onClick = onAddPersonClick)
             }
-
             items(reorderedPets) { pet ->
                 PersonItem(
                     person = pet,
@@ -373,9 +395,6 @@ fun WhosThisPostAbout(
         }
     }
 }
-
-
-
 
 @Composable
 fun AddPersonButton(
@@ -426,7 +445,7 @@ fun AddPersonButton(
 
 @Composable
 fun PersonItem(
-    person: Person,
+    person: Data,
     selected: Boolean = false,
     onClick: () -> Unit
 ) {
@@ -447,8 +466,8 @@ fun PersonItem(
         verticalArrangement = Arrangement.Center
     ) {
         AsyncImage(
-            model = person.imageUrl,
-            contentDescription = person.name,
+            model = person.pet_image?:"",
+            contentDescription = person.pet_name?:"",
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape),
@@ -460,7 +479,7 @@ fun PersonItem(
         Spacer(modifier = Modifier.height(4.dp))
 
         Text(
-            text = person.name,
+            text = person.pet_name?:"",
             fontSize = 12.sp,
             color = if (selected) Color.White else Color.Black,
             maxLines = 1,
@@ -469,18 +488,6 @@ fun PersonItem(
         )
     }
 }
-
-val samplePeople = listOf(
-    Person("1", "Jimmy", "https://example.com/jimmy.jpg"),
-    Person("2", "Barry", "https://example.com/barry.jpg"),
-    Person("3", "Bill", "https://example.com/bill.jpg"),
-    Person("4", "Julia", "https://example.com/julia.jpg"),
-    Person("5", "velit", "https://example.com/julia.jpg"),
-    Person("6", "Julia", "https://example.com/julia.jpg"),
-    Person("7", "velit", "https://example.com/julia.jpg"),
-    Person("8", "Bill", "https://example.com/julia.jpg"),
-    Person("9", "Julia", "https://example.com/julia.jpg"),
-)
 
 // Data class for Person
 data class Person(
