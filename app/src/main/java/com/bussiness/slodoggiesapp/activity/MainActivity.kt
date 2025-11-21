@@ -52,18 +52,7 @@ class MainActivity : ComponentActivity() {
                     }
                     // Loader always on top (last drawn)
                     if (isLoading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .zIndex(10f) // Always on top
-                                .background(Color(0x80000000)) // Dim background
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = null
-                                ) { }
-                        ) {
-                            AppLottieLoader(true)
-                        }
+                        AppLottieLoader(true)
                     }
                 }
             }
@@ -78,11 +67,11 @@ class MainActivity : ComponentActivity() {
                 SetStatusBarColor(color = Color.Transparent, darkIcons = useDarkIcons)
                 val mainNavController = rememberNavController()
                 val loaderViewModel: GlobalLoaderViewModel = hiltViewModel()
-                // ✅ Global loader state
+
                 val isLoading by loaderViewModel.isLoading.collectAsState()
                 Box(Modifier.fillMaxSize()) {
                     NavGraph(navController = mainNavController)
-                    // ✅ Global overlay (sab screens, dialogs ke upar)
+
                     LoaderOverlay(isVisible = isLoading)
                 }
             }

@@ -28,14 +28,18 @@ import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.uiState.FollowerFollowingUiState
 import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.ui.component.LoaderOverlay
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AudienceListItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AudienceSelection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchBar
+import com.bussiness.slodoggiesapp.ui.component.common.NoDataView
 import com.bussiness.slodoggiesapp.ui.dialog.CenterToast
 import com.bussiness.slodoggiesapp.ui.dialog.RemoveParticipantDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.common.FollowerFollowingViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
 
 
@@ -46,23 +50,17 @@ fun FollowerScreen(
 ) {
     val viewModel: FollowerFollowingViewModel = hiltViewModel()
 
-    // Local UI state for small screen interactions
     var screenState by remember {
         mutableStateOf(FollowerFollowingUiState(selectedOption = type))
     }
-
-    // Backend ViewModel state
     val uiState by viewModel.uiState.collectAsState()
-
     fun updateState(update: FollowerFollowingUiState.() -> FollowerFollowingUiState) {
         screenState = screenState.update()
     }
-
-    val listToShow = when (screenState.selectedOption) {
-        "Follower" -> uiState.followers
-        "Following" -> uiState.following
-        else -> emptyList()
-    }
+    val listToShow = if (screenState.selectedOption == "Follower")
+        uiState.followers
+    else
+        uiState.following
 
 
     BackHandler {
@@ -72,14 +70,12 @@ fun FollowerScreen(
         }
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
 
-        // Header
         ScreenHeadingText(
             textHeading = "My Profile",
             onBackClick = {
@@ -93,70 +89,110 @@ fun FollowerScreen(
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(uiState.isRefreshing),
+            onRefresh = {
+                viewModel.loadFollowers(reset = true)
+            }
         ) {
 
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
 
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
+                item {
 
-                    Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
 
-                        AudienceSelection(
-                            text = "${uiState.followers.size} Followers",
-                            selected = screenState.selectedOption == "Follower",
-                            onClick = {
-                                updateState { copy(selectedOption = "Follower") }
-                                viewModel.updateSelectedOption("Follower")
-                            }
-                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 
-                        AudienceSelection(
-                            text = "${uiState.following.size} Following",
-                            selected = screenState.selectedOption == "Following",
-                            onClick = {
-                                updateState { copy(selectedOption = "Following") }
-                                viewModel.updateSelectedOption("Following")
-                            }
-                        )
+                            AudienceSelection(
+                                text = "${uiState.followers.size} Followers",
+                                selected = screenState.selectedOption == "Follower",
+                                onClick = {
+                                    updateState { copy(selectedOption = "Follower") }
+                                    viewModel.updateSelectedOption("Follower")
+                                }
+                            )
+
+                            AudienceSelection(
+                                text = "${uiState.following.size} Following",
+                                selected = screenState.selectedOption == "Following",
+                                onClick = {
+                                    updateState { copy(selectedOption = "Following") }
+                                    viewModel.updateSelectedOption("Following")
+                                }
+                            )
+                        }
                     }
                 }
-            }
+
+                item {
+                    SearchBar(
+                        query = screenState.query,
+                        onQueryChange = { updateState { copy(query = it) } },
+                        placeholder = "Search"
+                    )
+                }
 
 
-            item {
-                SearchBar(
-                    query = screenState.query,
-                    onQueryChange = { updateState { copy(query = it) } },
-                    placeholder = "Search"
-                )
-            }
-
-            items(listToShow) { data ->
-
-                AudienceListItem(
-                    data = data,
-                    isFollower = screenState.selectedOption == "Follower",
-                    onPrimaryClick = { navController.navigate(Routes.CHAT_SCREEN) },
-                    onRemoveClick = {
-                        if (screenState.selectedOption == "Follower") {
-                            updateState { copy(removeDialog = true) }
-                        } else {
-                            updateState { copy(removeFollowing = true) }
-                        }
-                    },
-                    onFollowBackClick = {
-                        // TODO: call follow back API
+                if (listToShow.isEmpty()) {
+                    item {
+                        NoDataView(
+                            if (screenState.selectedOption == "Follower")
+                                "You don’t have any followers yet."
+                            else
+                                "You are not following anyone yet."
+                        )
                     }
-                )
+                    return@LazyColumn
+                }
+
+
+
+
+                items(listToShow) { data ->
+                    AudienceListItem(
+                        data = data,
+                        isFollower = screenState.selectedOption == "Follower",
+                        onPrimaryClick = {
+                            navController.navigate(Routes.CHAT_SCREEN)
+                        },
+                        onRemoveClick = {
+                            if (screenState.selectedOption == "Follower") {
+                                updateState { copy(removeDialog = true) }
+                            } else {
+                                updateState { copy(removeFollowing = true) }
+                            }
+                        },
+                        onFollowBackClick = {
+                            // Follow-back logic
+                        }
+                    )
+                }
+
+
+                if (!uiState.endReached && uiState.isMoreLoading) {
+                    item {
+//                        LoaderOverlay(true)
+                    }
+                }
+
+                if (!uiState.endReached) {
+                    item {
+                        LaunchedEffect(Unit) {
+                            viewModel.loadFollowers()
+                        }
+                    }
+                }
+
             }
         }
 
@@ -176,7 +212,6 @@ fun FollowerScreen(
             )
         }
 
-
         if (screenState.removeFollowing) {
             RemoveParticipantDialog(
                 onDismiss = { updateState { copy(removeFollowing = false) } },
@@ -192,7 +227,6 @@ fun FollowerScreen(
             )
         }
 
-
         if (screenState.removeToast) {
             LaunchedEffect(Unit) {
                 delay(1000)
@@ -204,6 +238,7 @@ fun FollowerScreen(
         }
     }
 }
+
 
 
 

@@ -63,7 +63,13 @@ class UserPostViewModel @Inject constructor(
                             }
                         }
 
-                        Resource.Idle -> TODO()
+                        Resource.Idle -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                )
+                            }
+                        }
                     }
                 }
         }

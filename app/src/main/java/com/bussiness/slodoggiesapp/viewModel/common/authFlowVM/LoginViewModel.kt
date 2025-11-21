@@ -97,10 +97,10 @@ class LoginViewModel @Inject constructor(
                         result.data.let { response ->
                             if (response.success == true) {
                                 _uiState.value = _uiState.value.copy(loginSuccess = true)
-                                onSuccess()
                                 sessionManager.setUserId(response.data?.user?.id.toString())
                                 sessionManager.setToken(response.data?.token.toString())
                                 sessionManager.setLogin(true)
+                                onSuccess()
                             } else {
                                 onError(response.message ?: "Login failed")
                             }

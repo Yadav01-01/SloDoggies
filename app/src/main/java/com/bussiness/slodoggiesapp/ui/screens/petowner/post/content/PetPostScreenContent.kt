@@ -75,10 +75,10 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialo
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.location.LocationAction
+import com.bussiness.slodoggiesapp.viewModel.common.location.LocationViewModel
 import com.bussiness.slodoggiesapp.viewModel.createpostowner.PostCreateOwnerViewModel
-import com.bussiness.slodoggiesapp.viewModel.location.LocationAction
-import com.bussiness.slodoggiesapp.viewModel.location.LocationViewModel
-import com.bussiness.slodoggiesapp.viewModel.petadd.PetAddViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.petadd.PetAddViewModel
 import com.bussiness.slodoggiesapp.viewModel.petlist.PetListViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted

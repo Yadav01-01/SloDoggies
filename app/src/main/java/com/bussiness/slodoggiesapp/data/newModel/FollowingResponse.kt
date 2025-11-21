@@ -10,29 +10,43 @@ data class FollowingResponse(
     val code: Int,
 
     @SerializedName("message")
-    override val message: String,
+    override val message: String?,
 
     @SerializedName("data")
-    val data: List<Following> = emptyList()
+    val data: FollowingData?
 ) : BaseResponse
 
-data class Following(
+data class FollowingData(
+    @SerializedName("page")
+    val page: Int?,
 
+    @SerializedName("limit")
+    val limit: Int?,
+
+    @SerializedName("total_following")
+    val totalFollowing: Int?,
+
+    @SerializedName("total_page")
+    val totalPage: Int?,
+
+    @SerializedName("data")
+    val data: List<FollowingItem>?
+)
+
+data class FollowingItem(
     @SerializedName("id")
-    val id: Int = 0,
+    val id: Int,
 
     @SerializedName("name")
-    val name: String = "",
+    val name: String?,
 
     @SerializedName("profile_pic")
-    val profilePic: String = "",
+    val profilePic: String?,
 
-    // Followers API only
     @SerializedName("is_following_me")
-    val isFollowingMe: Boolean = false,
+    val isFollowingMe: Boolean?,
 
-    // Followers API only (not in your sample — keep as safe default)
     @SerializedName("is_verified")
-    val isVerified: Boolean = false,
+    val isVerified: Boolean? = null
+)
 
-    )

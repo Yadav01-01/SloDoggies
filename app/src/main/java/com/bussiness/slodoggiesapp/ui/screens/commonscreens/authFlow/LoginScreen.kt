@@ -60,11 +60,6 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = hi
     val context = LocalContext.current
     val sessionManager = SessionManager.getInstance(context)
 
-    LaunchedEffect(state.loginSuccess) {
-        if (state.loginSuccess) {
-            navController.navigate(Routes.MAIN_SCREEN)
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -135,7 +130,10 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = hi
             ContinueButton(
                 onClick = {
                     viewModel.login(
-                        onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() }
+                        onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                        onSuccess = {
+                            navController.navigate(Routes.MAIN_SCREEN)
+                        }
                     )
                 },
                 text = "Login"

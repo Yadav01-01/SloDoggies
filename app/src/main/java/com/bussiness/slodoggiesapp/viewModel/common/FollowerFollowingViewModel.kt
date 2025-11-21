@@ -3,8 +3,8 @@ package com.bussiness.slodoggiesapp.viewModel.common
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.model.common.AudienceItem
-import com.bussiness.slodoggiesapp.data.newModel.Follow
-import com.bussiness.slodoggiesapp.data.newModel.Following
+import com.bussiness.slodoggiesapp.data.newModel.FollowerItem
+import com.bussiness.slodoggiesapp.data.newModel.FollowingItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.FollowerFollowingUiState
 import com.bussiness.slodoggiesapp.network.Resource
@@ -26,117 +26,200 @@ class FollowerFollowingViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(FollowerFollowingUiState())
     val uiState: StateFlow<FollowerFollowingUiState> = _uiState
 
+    // Independent pagination states for each list
+    private var followerPage = 1
+    private var followerTotalPages = 1
+    private var followerLoadingMore = false
+
+    private var followingPage = 1
+    private var followingTotalPages = 1
+    private var followingLoadingMore = false
+
     init {
-        loadData("Follower")
+        loadFollowers(reset = true)
     }
 
+    /**
+     * When user switches tabs
+     */
     fun updateSelectedOption(type: String) {
-        _uiState.update { it.copy(selectedOption = type) }
-        loadData(type)
+        _uiState.update {
+            it.copy(
+                selectedOption = type,
+                // UI will show previous data until new is loaded
+            )
+        }
+
+        if (type == "Follower") {
+            if (_uiState.value.followers.isEmpty())
+                loadFollowers(reset = true)
+        } else {
+            if (_uiState.value.following.isEmpty())
+                loadFollowing(reset = true)
+        }
     }
 
+    // ---------------------------
+    //  Mappers
+    // ---------------------------
 
-    private fun Follow.toAudienceItem(): AudienceItem {
-        return AudienceItem(
-            id = id,
-            name = name.orEmpty(),
-            profilePic = profilePic,
-            isVerified = isVerified ?: false,
-            isFollowing = isFollowing ?: false
-        )
-    }
+    private fun FollowerItem.toAudienceItem() = AudienceItem(
+        id = id,
+        name = name.orEmpty(),
+        profilePic = profilePic.orEmpty(),
+        isVerified = isVerified ?: false,
+        isFollowing = isFollowing ?: false
+    )
 
+    private fun FollowingItem.toAudienceItem() = AudienceItem(
+        id = id,
+        name = name.orEmpty(),
+        profilePic = profilePic.orEmpty(),
+        isVerified = isVerified ?: false,
+        isFollowingMe = isFollowingMe ?: false
+    )
 
+    // ---------------------------
+    //  FOLLOWERS API
+    // ---------------------------
+    fun loadFollowers(reset: Boolean = false) {
+        val userId = sessionManager.getUserId()
 
-    private fun Following.toAudienceItem(): AudienceItem {
-        return AudienceItem(
-            id = id,
-            name = name,
-            profilePic = profilePic,
-            isVerified = isVerified ?: false,
-            isFollowingMe = isFollowingMe ?: false
-        )
-    }
+        if (reset) {
+            followerPage = 1
+            followerTotalPages = 1
+        }
 
-
-    private fun loadData(type: String) {
-        val userId = sessionManager.getUserId() ?: return
+        // prevent double load
+        if (!reset && (followerLoadingMore || followerPage > followerTotalPages)) return
 
         viewModelScope.launch {
-            if (type == "Follower") loadFollowers(userId)
-            else loadFollowing(userId)
-        }
-    }
+            repository.getFollowerList(
+                userId = userId,
+                page = followerPage.toString(),
+                limit = "20"
+            ).collectLatest { result ->
 
-    private suspend fun loadFollowers(userId: String) {
-        repository.getFollowerList(userId).collectLatest { result ->
-            when (result) {
-                is Resource.Loading -> _uiState.update {
-                    it.copy(isLoading = true)
-                }
+                when (result) {
 
-                is Resource.Success -> {
-                    val list = result.data.data ?: emptyList()
-                    val mapped = list.map { it.toAudienceItem() }
-
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            followers = mapped,
-                            isEmptyData = mapped.isEmpty(),
-                            error = null
-                        )
+                    is Resource.Loading -> {
+                        if (reset) {
+                            _uiState.update { it.copy(isRefreshing = false) }
+                        } else {
+                            followerLoadingMore = true
+                        }
                     }
-                }
 
-                is Resource.Error -> _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = result.message,
-                        isEmptyData = true
-                    )
-                }
+                    is Resource.Success -> {
+                        val response = result.data.data
+                        val newData = response?.followers?.map { it.toAudienceItem() }.orEmpty()
 
-                Resource.Idle -> Unit
+                        followerTotalPages = response?.totalPage ?: 1
+
+                        _uiState.update {
+                            it.copy(
+                                isRefreshing = false,
+                                followers = if (reset) newData else it.followers + newData,
+                                isEmptyData = newData.isEmpty() && reset,
+                                error = null
+                            )
+                        }
+
+                        followerPage++
+                        followerLoadingMore = false
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                isRefreshing = false,
+                                error = result.message ?: "Something went wrong",
+                                isEmptyData = true
+                            )
+                        }
+                        followerLoadingMore = false
+                    }
+
+                    Resource.Idle -> Unit
+                }
             }
         }
     }
 
+    // ---------------------------
+    //  FOLLOWING API
+    // ---------------------------
+    fun loadFollowing(reset: Boolean = false) {
 
+        val userId = sessionManager.getUserId()
 
-    private suspend fun loadFollowing(userId: String) {
-        repository.getFollowingList(userId).collectLatest { result ->
-            when (result) {
-                is Resource.Loading -> _uiState.update {
-                    it.copy(isLoading = true)
-                }
+        if (reset) {
+            followingPage = 1
+            followingTotalPages = 1
+        }
 
-                is Resource.Success -> {
-                    val list = result.data.data ?: emptyList()
-                    val mapped = list.map { it.toAudienceItem() }
+        if (!reset && (followingLoadingMore || followingPage > followingTotalPages)) return
 
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            following = mapped,
-                            isEmptyData = mapped.isEmpty(),
-                            error = null
-                        )
+        viewModelScope.launch {
+            repository.getFollowingList(
+                userId = userId,
+                page = followingPage.toString(),
+                limit = "20"
+            ).collectLatest { result ->
+
+                when (result) {
+
+                    is Resource.Loading -> {
+                        if (reset) {
+                            _uiState.update { it.copy(isRefreshing = false) }
+                        } else {
+                            followingLoadingMore = true
+                        }
                     }
-                }
 
-                is Resource.Error -> _uiState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = result.message,
-                        isEmptyData = true
-                    )
-                }
+                    is Resource.Success -> {
 
-                Resource.Idle -> Unit
+                        val response = result.data.data
+                        val newData = response?.data?.map { it.toAudienceItem() }.orEmpty()
+
+                        followingTotalPages = response?.totalPage ?: 1
+
+                        _uiState.update {
+                            it.copy(
+                                isRefreshing = false,
+                                following = if (reset) newData else it.following + newData,
+                                isEmptyData = newData.isEmpty() && reset,
+                                error = null
+                            )
+                        }
+
+                        followingPage++
+                        followingLoadingMore = false
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                isRefreshing = false,
+                                error = result.message ?: "Something went wrong",
+                                isEmptyData = true
+                            )
+                        }
+                        followingLoadingMore = false
+                    }
+
+                    Resource.Idle -> Unit
+                }
             }
         }
     }
 
-
+    // Called when list scroll reaches bottom
+    fun loadNextPage() {
+        if (uiState.value.selectedOption == "Follower") {
+            loadFollowers(reset = false)
+        } else {
+            loadFollowing(reset = false)
+        }
+    }
 }

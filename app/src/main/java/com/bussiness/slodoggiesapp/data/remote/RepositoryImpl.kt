@@ -366,32 +366,15 @@ class RepositoryImpl @Inject constructor(
         emit(result)
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun createOwnerPost(
-        fields: Map<String, String>,
-        images: List<MultipartBody.Part>
-    ): Flow<Resource<CommonResponse>> = flow {
 
+    override suspend fun getFollowerList(userId: String,page: String,limit: String): Flow<Resource<FollowersResponse>> = flow {
         emit(Resource.Loading)
-
-        val partMap = fields.mapValues { entry ->
-            entry.value.toRequestBody("text/plain".toMediaTypeOrNull())
-        }
-
-        emit(
-            safeApiCall {
-                api.createOwnerPost(partMap, images)
-            }
-        )
+        emit(safeApiCall { api.getFollowerList(userId,page,limit) })
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getFollowerList(userId: String): Flow<Resource<FollowersResponse>> = flow {
+    override suspend fun getFollowingList(userId: String,page: String,limit: String): Flow<Resource<FollowingResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.getFollowerList(userId) })
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun getFollowingList(userId: String): Flow<Resource<FollowingResponse>> = flow {
-        emit(Resource.Loading)
-        emit(safeApiCall { api.getFollowingList(userId) })
+        emit(safeApiCall { api.getFollowingList(userId,page,limit) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getBusinessProfileDetail(userId: String): Flow<Resource<BusinessDetailsResponse>> = flow{
@@ -402,7 +385,7 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getMyPostDetails(userId: String): Flow<Resource<MyPostsResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.getMyPostDetail(userId) })
-    }
+    }.flowOn(Dispatchers.IO)
 
 
     /**

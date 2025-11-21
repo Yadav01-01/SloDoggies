@@ -13,5 +13,8 @@ data class FollowerFollowingUiState(
     val removeFollowing: Boolean = false,
     val removeToast: Boolean = false,
     val isNavigating: Boolean = false,
-    val isEmptyData: Boolean = false
+    val isEmptyData: Boolean = false,
+    val isMoreLoading: Boolean = false,
+    val endReached: Boolean = false,
+    val isRefreshing: Boolean = false
 )

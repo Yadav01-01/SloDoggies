@@ -144,17 +144,17 @@ interface Repository {
                                      serviceId : String
     ) : Flow<Resource<CommonResponse>>
 
-    suspend fun createOwnerPost(
-        fields: Map<String, String>,
-        images: List<MultipartBody.Part>
-    ): Flow<Resource<CommonResponse>>
 
     suspend fun getFollowerList(
         userId: String,
+        page : String,
+        limit : String
     ) : Flow<Resource<FollowersResponse>>
 
     suspend fun getFollowingList(
         userId: String,
+        page : String,
+        limit : String
     ) : Flow<Resource<FollowingResponse>>
 
     suspend fun getBusinessProfileDetail(

@@ -210,40 +210,21 @@ interface ApiService {
         @Part("service_id") serviceId : RequestBody,
     ) : Response<CommonResponse>
 
-//    @Multipart
-//    @POST(ApiEndPoint.CREATE_OWNER_POST)
-//    suspend fun createOwnerPost(
-//        @Part("user_id") userId: RequestBody,
-//        @Part("pet_id") petId : RequestBody,
-//        @Part("post_title") postTitle : RequestBody,
-//        @Part("hash_tag") hashTag : RequestBody,
-//        @Part("address") address : RequestBody,
-//        @Part("city") city : RequestBody,
-//        @Part("state") state : RequestBody,
-//        @Part("zip_code") zipCode : RequestBody,
-//        @Part images: List<MultipartBody.Part>,
-//        @Part("user_type") userType : RequestBody,
-//        @Part("latitude") latitude : RequestBody,
-//        @Part("longitude") longitude : RequestBody,
-//    ) :  Response<CommonResponse>
-
-    @Multipart
-    @POST(ApiEndPoint.CREATE_OWNER_POST)
-    suspend fun createOwnerPost(
-        @PartMap data: Map<String, @JvmSuppressWildcards RequestBody>,
-        @Part images: List<MultipartBody.Part>
-    ): Response<CommonResponse>
 
     @FormUrlEncoded
     @POST(ApiEndPoint.GET_FOLLOWER_LIST)
     suspend fun getFollowerList(
         @Field("user_id") userId: String,
+        @Field("page") page : String,
+        @Field("limit") limit : String
     ) : Response<FollowersResponse>
 
     @FormUrlEncoded
     @POST(ApiEndPoint.GET_FOLLOWING_LIST)
     suspend fun getFollowingList(
         @Field("user_id") userId: String,
+        @Field("page") page : String,
+        @Field("limit") limit : String
     ) : Response<FollowingResponse>
 
     @FormUrlEncoded
