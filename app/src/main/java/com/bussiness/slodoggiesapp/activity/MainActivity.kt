@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
                 val isLoading by loaderViewModel.isLoading.collectAsState()
                 Box(Modifier.fillMaxSize()) {
                     NavGraph(navController = mainNavController)
-                    // ✅ Global overlay (sab screens, dialogs ke upar)
+
                     LoaderOverlay(isVisible = isLoading)
                 }
             }

@@ -5,6 +5,7 @@ import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
+import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
@@ -144,21 +145,26 @@ interface Repository {
                                      serviceId : String
     ) : Flow<Resource<CommonResponse>>
 
-    suspend fun createOwnerPost(
-        fields: Map<String, String>,
-        images: List<MultipartBody.Part>
-    ): Flow<Resource<CommonResponse>>
 
     suspend fun getFollowerList(
         userId: String,
+        page : String,
+        limit : String
     ) : Flow<Resource<FollowersResponse>>
 
     suspend fun getFollowingList(
         userId: String,
+        page : String,
+        limit : String
     ) : Flow<Resource<FollowingResponse>>
 
     suspend fun getBusinessProfileDetail(
         userId: String,
     ) : Flow<Resource<BusinessDetailsResponse>>
+
+    suspend fun getMyPostDetails(
+        userId: String,
+    ) : Flow<Resource<MyPostsResponse>>
+
 
 }

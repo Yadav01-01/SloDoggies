@@ -3,17 +3,19 @@ package com.bussiness.slodoggiesapp.data.uiState
 import android.net.Uri
 
 data class  EditBusinessUiState(
-    val businessName: String = "",
-    val providerName: String = "",
-    val email: String = "",
-    val bio: String = "",
-    val businessAddress: String = "",
-    val city: String = "",
+    var businessName: String = "",
+    var providerName: String = "",
+    var email: String = "",
+    var bio: String = "",
+    var businessAddress: String = "",
+    var category: String = "",
+    var city: String = "",
     val state: String = "",
     val zipCode: String = "",
-    val landmark: String = "",
     val url: String = "",
     val contact: String = "",
+    val latitude: String = "",
+    val longitude: String = "",
 
     // Changed to nullable
     val businessLogo: Uri? = null,
@@ -22,9 +24,11 @@ data class  EditBusinessUiState(
     val verificationDocs: List<Uri> = emptyList(),
 
     val availableDays: List<String> = emptyList(),
-    val fromTime: String = "",
-    val toTime: String = "",
+    val fromAndToTime: String = "",
 
     val showImagePickerDialog: Boolean = false,
-    val showUpdatedDialog: Boolean = false
+    val showUpdatedDialog: Boolean = false,
+    val errorMessage: String? = null,
+    val isLoading : Boolean = false
+
 )

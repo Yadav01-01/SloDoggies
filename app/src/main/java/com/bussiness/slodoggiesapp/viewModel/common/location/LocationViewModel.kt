@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.viewModel.location
+package com.bussiness.slodoggiesapp.viewModel.common.location
 
 import android.annotation.SuppressLint
 import android.app.Application

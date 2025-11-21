@@ -2,7 +2,11 @@ package com.bussiness.slodoggiesapp.data.newModel
 
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Server response wrapper for followers API.
+ */
 data class FollowersResponse(
+
     @SerializedName("success")
     override val success: Boolean,
 
@@ -13,27 +17,48 @@ data class FollowersResponse(
     override val message: String,
 
     @SerializedName("data")
-    val data: List<Follow> = emptyList()
+    val data: FollowersData? = null
 ) : BaseResponse
 
+/**
+ * Paginated follower data.
+ */
+data class FollowersData(
 
-data class Follow(
+    @SerializedName("page")
+    val page: String? = null,
+
+    @SerializedName("limit")
+    val limit: String? = null,
+
+    @SerializedName("total_followers")
+    val totalFollowers: Int? = null,
+
+    @SerializedName("total_page")
+    val totalPage: Int? = null,
+
+    @SerializedName("data")
+    val followers: List<FollowerItem> = emptyList()
+)
+
+/**
+ * Single follower record.
+ */
+data class FollowerItem(
 
     @SerializedName("id")
-    val id: Int = 0,
+    val id: Int,
 
     @SerializedName("name")
-    val name: String = "",
+    val name: String,
 
     @SerializedName("profile_pic")
-    val profilePic: String = "",
+    val profilePic: String? = null,
 
-    // Followers API only
     @SerializedName("is_following")
-    val isFollowing: Boolean = false,
+    val isFollowing: Boolean? = null,
 
-    // Followers API only (not in your sample — keep as safe default)
     @SerializedName("is_verified")
-    val isVerified: Boolean = false,
-
+    val isVerified: Boolean? = null
 )
+

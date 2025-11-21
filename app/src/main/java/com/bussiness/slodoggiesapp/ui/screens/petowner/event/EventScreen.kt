@@ -32,9 +32,9 @@ fun EventScreen(navController: NavHostController) {
 
     var selectedOption by remember { mutableStateOf("My Events") }
 
-    
+
     val sampleEvents = listOf(
-        com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
+        Event(
             id = "1",
             imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+1",
             title = "Puppy Party",
@@ -46,7 +46,7 @@ fun EventScreen(navController: NavHostController) {
     )
 
     val sampleEvents2 = listOf(
-        com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
+        Event(
             id = "2",
             imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+2",
             title = "Adoption Drive",
@@ -55,7 +55,7 @@ fun EventScreen(navController: NavHostController) {
             duration = "60 Mins.",
             location = "San Diego County"
         ),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
+        Event(
             id = "3",
             imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+3",
             title = "Training Session",
