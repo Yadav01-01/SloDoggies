@@ -50,6 +50,7 @@ interface ApiService {
         @Field("password") password: String,
         @Field("deviceType") deviceType: String,
         @Field("fcm_token") fcmToken: String,
+        @Field("userType") userType: String
     ) : Response<LoginResponse>
 
     @FormUrlEncoded
@@ -96,7 +97,7 @@ interface ApiService {
         @Part("latitude") latitude: RequestBody,
         @Part("longitude") longitude: RequestBody,
         @Part("pet_id") petId: RequestBody,
-        @Part("user_type") userType: RequestBody,
+        @Part("userType") userType: RequestBody,
         @Part petImage:List<MultipartBody.Part>?
     ) : Response<CommonResponse>
 
@@ -116,7 +117,7 @@ interface ApiService {
         @Part("city") city: RequestBody,
         @Part("state") state: RequestBody,
         @Part("zip_code") zipCode: RequestBody,
-        @Part("user_type") userType: RequestBody,
+        @Part("userType") userType: RequestBody,
         @Part petImage:List<MultipartBody.Part>?
     ) : Response<CommonResponse>
 

@@ -31,6 +31,8 @@ import com.bussiness.slodoggiesapp.ui.dialog.PostSuccessDialog
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.EventScreenContent
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.PostScreenContent
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.PromotionScreenContent
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PetEventScreenContent
+import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PetPostScreenContent
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -81,8 +83,10 @@ fun PostScreen(navController: NavHostController) {
         }
 
         when (selected) {
-            "Post" -> PostScreenContent(onClickLocation = { }, onClickPost = { successDialog = true })
-            "Event" -> EventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
+            "Post" -> PetPostScreenContent(onClickPost = { successDialog = true })
+//            "Post" -> PostScreenContent(onClickLocation = { }, onClickPost = { successDialog = true })
+            "Event" -> PetEventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
+//            "Event" -> EventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
             "Ads." -> PromotionScreenContent(onClickLocation = { },onClickSave = { navController.navigate(Routes.BUDGET_SCREEN)})
         }
         if (successDialog){

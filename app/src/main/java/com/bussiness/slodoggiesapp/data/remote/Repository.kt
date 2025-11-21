@@ -34,6 +34,7 @@ interface Repository {
                            password: String,
                            deviceType: String,
                            fcm_token: String,
+                           userType: String
     ): Flow<Resource<LoginResponse>>
 
 

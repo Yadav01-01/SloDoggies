@@ -126,9 +126,11 @@ class PostCreateOwnerViewModel @Inject constructor(private val repository: Repos
             onError(Messages.UPLOAD_IMAGE_SMS)
             return false
         }
-        if (state.petId == null) {
-            onError(Messages.PET_SELECT_SMS)
-            return false
+        if (sessionManager.getUserType().toString().equals("Owner",true)){
+            if (state.petId == null) {
+                onError(Messages.PET_SELECT_SMS)
+                return false
+            }
         }
         if (state.writePost.isNullOrEmpty()) {
             onError(Messages.WRITE_POST_SMS)

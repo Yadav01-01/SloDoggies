@@ -86,7 +86,8 @@ class LoginViewModel @Inject constructor(
                 emailOrPhone = state.contactInput,
                 password = state.password,
                 deviceType = "android",
-                fcm_token = "1234567890"
+                fcm_token = "1234567890",
+                userType = sessionManager.getUserType().toString()
             ).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -115,8 +116,6 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-
-
 }
 
 

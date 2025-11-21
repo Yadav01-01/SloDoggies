@@ -34,4 +34,5 @@ object Messages {
     const val STATE_SMS = "State can't be empty"
     const val ZIP_CODE_SMS = "Zip Code can't be empty"
     const val EVENT_LOCATION_SMS = "Street can't be empty"
+    const val DATE_TIME_COMPARE_SMS = "End date & time must be greater than start date & time"
 }

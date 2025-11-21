@@ -115,11 +115,32 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
         }
 
         item {
-            DateTimePickerScreen(textHeading = stringResource(R.string.event_sdate))
+
+            DateTimePickerScreen(textHeading = stringResource(R.string.event_sdate) ,
+                date = uiStatePostCreateOwner.startDate,
+                time=uiStatePostCreateOwner.startTime,
+                timeSelect = { time->
+                    viewModelEventCreateOwner.onStartTimeChange(time)
+                    Log.d("Select time","******"+uiStatePostCreateOwner.startTime)
+                },
+                dateSelect = { date->
+                    viewModelEventCreateOwner.onStartDateChange(date)
+                    Log.d("Select time","******"+uiStatePostCreateOwner.startTime)
+                } )
 
             Spacer(Modifier.height(15.dp))
 
-            DateTimePickerScreen(textHeading = stringResource(R.string.event_edate))
+            DateTimePickerScreen(textHeading = stringResource(R.string.event_edate),
+                date = uiStatePostCreateOwner.endDate,
+                time=uiStatePostCreateOwner.endTime,
+                timeSelect = { time->
+                    viewModelEventCreateOwner.onEndTimeChange(time)
+                },
+                dateSelect = { date->
+                    viewModelEventCreateOwner.onEndDateChange(date)
+                    Log.d("Select time","******"+uiStatePostCreateOwner.startTime)
+                } )
+
         }
 
         item {

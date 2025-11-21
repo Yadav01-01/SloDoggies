@@ -74,7 +74,7 @@ import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialog
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
+import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.createpostowner.PostCreateOwnerViewModel
 import com.bussiness.slodoggiesapp.viewModel.location.LocationAction
 import com.bussiness.slodoggiesapp.viewModel.location.LocationViewModel
@@ -92,7 +92,7 @@ import com.google.android.gms.location.Priority
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,onClickPost: () -> Unit,viewModel: PostContentViewModel = hiltViewModel()) {
+fun PetPostScreenContent(onClickPost: () -> Unit) {
 
     var showPetInfoDialog by remember { mutableStateOf(false) }
     var petAddedSuccessDialog by remember { mutableStateOf(false) }
@@ -108,7 +108,7 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
     val locationState by viewModelLocation.locationState.collectAsState()
     val updatePetListState by viewModelPetList.uiState.collectAsState()
     var wasPermissionGranted by remember { mutableStateOf(permission.status.isGranted) }
-
+    val sessionManager = SessionManager(context)
     val gpsLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { resultCode ->
@@ -173,19 +173,22 @@ fun PetPostScreenContent( onClickLocation: () -> Unit,addPetClick: () -> Unit,on
         verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
 
-        item {
-            // Add the WhosThisPostAbout section at the top
-            updatePetListState.data?.let {
-                WhosThisPostAbout(
-                    selectedPet = viewModelPetList.selectedPet,
-                    allPets = it,
-                    onAddPersonClick = { showPetInfoDialog = true },
-                    onPersonClick = { pet -> viewModelPetList.selectPerson(pet)
-                        viewModelPostCreateOwner.onPetID(pet.id.toString())
-                    }
-                )
+        if (sessionManager.getUserType().toString().equals("Owner",true)){
+            item {
+                // Add the WhosThisPostAbout section at the top
+                updatePetListState.data?.let {
+                    WhosThisPostAbout(
+                        selectedPet = viewModelPetList.selectedPet,
+                        allPets = it,
+                        onAddPersonClick = { showPetInfoDialog = true },
+                        onPersonClick = { pet -> viewModelPetList.selectPerson(pet)
+                            viewModelPostCreateOwner.onPetID(pet.id.toString())
+                        }
+                    )
+                }
             }
         }
+
 
         item {
             FormHeadingText(stringResource(R.string.Upload_Media))
@@ -520,8 +523,6 @@ fun WhosThisPostAboutWithPeoplePreview() {
 @Composable
 fun PetPostScreenContentPreview() {
     PetPostScreenContent(
-        onClickLocation = { /* Handle location click */ },
         onClickPost = { /* Handle post click */ },
-        addPetClick = { /* Handle add pet click */ }
     )
 }

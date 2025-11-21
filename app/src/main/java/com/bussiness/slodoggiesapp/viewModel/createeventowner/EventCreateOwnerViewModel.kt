@@ -2,6 +2,8 @@ package com.bussiness.slodoggiesapp.viewModel.createeventowner
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.remote.Repository
@@ -15,6 +17,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +43,7 @@ class EventCreateOwnerViewModel @Inject constructor(private val repository: Repo
     fun onStartDateChange(startDate: String) {
         _uiState.value = _uiState.value.copy(startDate = startDate)
     }
+
     fun onStartTimeChange(startTime: String) {
         _uiState.value = _uiState.value.copy(startTime = startTime)
     }
@@ -85,8 +91,10 @@ class EventCreateOwnerViewModel @Inject constructor(private val repository: Repo
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun createEventOwner(context: Context, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
         val state = _uiState.value
+
         if (!validateEvent(state, onError)) return
         val imageParts = state.image?.let {
             createMultipartList(
@@ -100,10 +108,10 @@ class EventCreateOwnerViewModel @Inject constructor(private val repository: Repo
                 userId = sessionManager.getUserId(),
                 postTitle = state.title?:"",
                 eventDescription =state.description?:"",
-                eventStartDate = "2025-11-20",
-                eventStartTime = "13:55:35",
-                eventEndDate = "2025-12-12",
-                eventEndTime = "13:55:35",
+                eventStartDate = state.startDate?:"",
+                eventStartTime = state.startTime?:"",
+                eventEndDate =state.endDate?:"",
+                eventEndTime =state.endTime?:"",
                 address = state.location?:"",
                 latitude = state.latitude?:"",
                 longitude = state.longitude?:"",
@@ -148,6 +156,7 @@ class EventCreateOwnerViewModel @Inject constructor(private val repository: Repo
     }
 
     // Validation function
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun validateEvent(state: EventCreateOwnerUiState, onError: (String) -> Unit): Boolean {
         if (state.image.isNullOrEmpty()) {
             onError(Messages.UPLOAD_IMAGE_SMS)
@@ -169,6 +178,10 @@ class EventCreateOwnerViewModel @Inject constructor(private val repository: Repo
             onError(Messages.END_DATE_SMS)
             return false
         }
+        if (!isEndDateTimeValid(state.startDate, state.startTime, state.endDate, state.endTime)) {
+            onError(Messages.DATE_TIME_COMPARE_SMS)
+            return false
+        }
         if (state.location.isNullOrEmpty()) {
             onError(Messages.EVENT_LOCATION_SMS)
             return false
@@ -188,7 +201,43 @@ class EventCreateOwnerViewModel @Inject constructor(private val repository: Repo
         return true
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun isEndDateTimeValid(
+        startDate: String?,      // "2025-11-28"
+        startTime: String?,      // "12:05 AM" or "03:40 PM"
+        endDate: String?,        // "2025-11-28"
+        endTime: String?         // "01:20 PM"
+    ): Boolean {
+        return try {
+            // Convert AM/PM time to 24-hour LocalTime
+            fun parseTimeWithAmPm(time: String): LocalTime {
+                val parts = time.trim().split(" ")
+                val hm = parts[0].split(":")
+                val hour = hm[0].toInt()
+                val minute = hm[1].toInt()
+                val amPm = parts[1].uppercase()
+                val hour24 = when {
+                    amPm == "AM" && hour == 12 -> 0        // 12 AM → 00
+                    amPm == "PM" && hour != 12 -> hour + 12 // PM → +12 except 12PM
+                    else -> hour
+                }
+                return LocalTime.of(hour24, minute)
+            }
+            // Parse Dates
+            val startLocalDate = LocalDate.parse(startDate)
+            val endLocalDate = LocalDate.parse(endDate)
+            // Parse Times (AM/PM supported)
+            val startLocalTime = parseTimeWithAmPm(startTime!!)
+            val endLocalTime = parseTimeWithAmPm(endTime!!)
+            // Final LocalDateTime
+            val startDateTime = LocalDateTime.of(startLocalDate, startLocalTime)
+            val endDateTime = LocalDateTime.of(endLocalDate, endLocalTime)
+            // Rule: end must be strictly greater
+            endDateTime.isAfter(startDateTime)
+        } catch (e: Exception) {
+            false
+        }
+    }
 }
 
 

@@ -100,7 +100,9 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = hi
             Spacer(modifier = Modifier.height(12.dp))
 
             FormHeadingText(stringResource(R.string.Email_Phone), modifier = Modifier.align(Alignment.Start))
+
             Spacer(modifier = Modifier.height(10.dp))
+
             EmailInputField(
                 email = state.contactInput,
                 onValueChange = { viewModel.onContactChange(it) }
@@ -109,7 +111,9 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = hi
             Spacer(Modifier.height(10.dp))
 
             FormHeadingText(stringResource(R.string.password), modifier = Modifier.align(Alignment.Start))
+
             Spacer(modifier = Modifier.height(10.dp))
+
             PasswordInput(
                 password = state.password,
                 onPasswordChange = { viewModel.onPasswordChange(it) }

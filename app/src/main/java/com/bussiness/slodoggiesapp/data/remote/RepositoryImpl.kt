@@ -58,10 +58,11 @@ class RepositoryImpl @Inject constructor(
         emailOrPhone: String,
         password: String,
         deviceType: String,
-        fcm_token: String
+        fcm_token: String,
+        userType: String
     ): Flow<Resource<LoginResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.userLogin(emailOrPhone,password, deviceType, fcm_token) })
+        emit(safeApiCall { api.userLogin(emailOrPhone,password, deviceType, fcm_token,userType) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun updatePetRequest(

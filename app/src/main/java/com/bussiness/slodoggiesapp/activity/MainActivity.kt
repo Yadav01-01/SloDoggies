@@ -37,48 +37,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-       /* setContent {
-            MaterialTheme {
-                val useDarkIcons = MaterialTheme.colorScheme.background.luminance() > 0.5f
-                SetStatusBarColor(color = Color.Transparent, darkIcons = useDarkIcons)
-                val mainNavController = rememberNavController()
-                val loaderViewModel: GlobalLoaderViewModel = hiltViewModel()
-                val isLoading by loaderViewModel.isLoading.collectAsState()
-
-                //  Use Box to layer loader above everything
-                Box(modifier = Modifier.fillMaxSize()) {
-                    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                        NavGraph(navController = mainNavController)
-                    }
-                    // Loader always on top (last drawn)
-                    if (isLoading) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .zIndex(10f) // Always on top
-                                .background(Color(0x80000000)) // Dim background
-                                .clickable(
-                                    interactionSource = remember { MutableInteractionSource() },
-                                    indication = null
-                                ) { }
-                        ) {
-                            AppLottieLoader(true)
-                        }
-                    }
-                }
-            }
-        }*/
-
-
-//        Places.initialize(applicationContext, "AIzaSyDyJ8qKFZj-GibbXlON9L8ErJzZm4ZlBKs")
-
         setContent {
             MaterialTheme {
                 val useDarkIcons = MaterialTheme.colorScheme.background.luminance() > 0.5f
                 SetStatusBarColor(color = Color.Transparent, darkIcons = useDarkIcons)
                 val mainNavController = rememberNavController()
                 val loaderViewModel: GlobalLoaderViewModel = hiltViewModel()
-                // ✅ Global loader state
                 val isLoading by loaderViewModel.isLoading.collectAsState()
                 Box(Modifier.fillMaxSize()) {
                     NavGraph(navController = mainNavController)

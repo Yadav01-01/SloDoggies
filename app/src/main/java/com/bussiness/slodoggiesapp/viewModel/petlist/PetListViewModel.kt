@@ -33,7 +33,10 @@ class PetListViewModel @Inject constructor(
     val uiState: StateFlow<PetListModel> = _uiState
 
     init {
-        petListRequest ()
+        if (sessionManager.getUserType().toString().equals("Owner",true)){
+            petListRequest ()
+        }
+
     }
 
     var selectedPet by mutableStateOf<Data?>(null)

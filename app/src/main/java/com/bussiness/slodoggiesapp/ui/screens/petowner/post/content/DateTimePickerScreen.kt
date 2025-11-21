@@ -4,6 +4,7 @@ package com.bussiness.slodoggiesapp.ui.screens.petowner.post.content
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -34,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,24 +73,58 @@ private val SelectedBlue = Color(0xFF258694)
 fun DateTimePickerScreen(
     modifier: Modifier = Modifier,
     textHeading: String,
-    onDateTimeSelected: (LocalDateTime) -> Unit = {}
+    onDateTimeSelected: (LocalDateTime) -> Unit = {},
+    timeSelect: (String) -> Unit = {},
+    dateSelect: (String) -> Unit = {},
+    date:String? = null,
+    time:String? = null
 ) {
     val isCalendarVisible = remember { mutableStateOf(false) }
     val currentMonth = remember { mutableStateOf(YearMonth.now()) }
-    val selectedDate = remember { mutableStateOf<LocalDate?>(null) }
 
+    val selectedDate = remember { mutableStateOf<LocalDate?>(null) }
     val selectedHour = remember { mutableIntStateOf(11) }
     val selectedMinute = remember {mutableIntStateOf(38) }
+
     val isAM = remember { mutableStateOf(true) }
+
+    Log.d("selectedDate", "****${selectedDate.value}")
+    LaunchedEffect(time) {
+        // -------- TIME SETTING --------
+        if (!time.isNullOrEmpty()) {
+            try {
+                // Example time: "12:05 AM"
+                val parts = time.split(" ")
+                val timePart = parts[0]           // "12:05"
+                val ampmPart = parts[1]           // "AM" or "PM"
+                val hm = timePart.split(":")
+                val hour = hm[0].toInt()
+                val minute = hm[1].toInt()
+                selectedHour.intValue = hour
+                selectedMinute.intValue = minute
+                // AM / PM Logic
+                isAM.value = ampmPart.equals("AM", ignoreCase = true)
+
+            } catch (_: Exception) {}
+        }
+        // -------- DATE SETTING --------
+        if (!date.isNullOrEmpty()) {
+            try {
+                // Example: "2025-11-28"
+                val parsedDate = LocalDate.parse(date)
+                selectedDate.value = parsedDate
+            } catch (_: Exception) {}
+        }
+    }
+
 
     val showTimePicker = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    Column(
-        modifier = modifier
+
+    Column(modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(Color.White)
-    ) {
+            .background(Color.White)) {
         // Header
         Text(
             text = textHeading,
@@ -116,7 +152,7 @@ fun DateTimePickerScreen(
                 val formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy")
                 Text(
                     text = "${selectedDate.value!!.format(formatter)} " +
-                            String.format("%02d:%02d", selectedHour.value, selectedMinute.value) +
+                            String.format("%02d:%02d", selectedHour.intValue, selectedMinute.intValue) +
                             " ${if (isAM.value) "AM" else "PM"}",
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -130,7 +166,6 @@ fun DateTimePickerScreen(
                     color = TextGrey
                 )
             }
-
             // Calendar icon on right side
             Image(
                 painter = painterResource(id = R.drawable.ic_date_iconn),
@@ -163,8 +198,12 @@ fun DateTimePickerScreen(
                         onDateSelected = { date ->
                             selectedDate.value = date
                             isCalendarVisible.value = false
-                            Toast.makeText(context, "Selected: $date", Toast.LENGTH_SHORT).show()
-                        },
+                            dateSelect(date.toString())
+                            if (isAM.value){
+                                timeSelect(String.format("%02d:%02d", selectedHour.intValue, selectedMinute.intValue)+" "+"AM")
+                            }else{
+                                timeSelect(String.format("%02d:%02d", selectedHour.intValue, selectedMinute.intValue)+" "+"PM")
+                            }                        },
                         onMonthChanged = { newMonth ->
                             currentMonth.value = newMonth
                         }
@@ -224,7 +263,7 @@ fun DateTimePickerScreen(
 
                             // Minute
                             Text(
-                                text = String.format("%02d", selectedMinute.value),
+                                text = String.format("%02d", selectedMinute.intValue),
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 color = Color.Black,
@@ -253,7 +292,8 @@ fun DateTimePickerScreen(
                                     .width(60.dp)
                                     .height(32.dp)
                                     .background(if (isAM.value) PrimaryColor else Color.Transparent)
-                                    .clickable { isAM.value = true },
+                                    .clickable { isAM.value = true
+                                               },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -285,19 +325,26 @@ fun DateTimePickerScreen(
                 }
             }
         }
-    }
 
+    }
 
     PopupTimePicker(
         show = showTimePicker.value,
         onDismiss = { showTimePicker.value = false },
         onConfirm = { hour, minute, am ->
-            selectedHour.value = hour
-            selectedMinute.value = minute
+            selectedHour.intValue = hour
+            selectedMinute.intValue = minute
             isAM.value = am
-            showTimePicker.value = false
+            if (isAM.value){
+                timeSelect(String.format("%02d:%02d", selectedHour.intValue, selectedMinute.intValue)+" "+"AM")
+            }else{
+                timeSelect(String.format("%02d:%02d", selectedHour.intValue, selectedMinute.intValue)+" "+"PM")
+            }
+             showTimePicker.value = false
         }
     )
+
+
 }
 
 
