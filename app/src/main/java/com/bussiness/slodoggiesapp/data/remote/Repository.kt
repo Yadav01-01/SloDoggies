@@ -9,6 +9,9 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
+import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
+import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
@@ -41,10 +44,49 @@ interface Repository {
                                  petBio: String,
                                  petId: String,
                                  userId: String,
-                                 image: MultipartBody.Part,
-    ): Flow<Resource<CommonResponse>>
+                                 image: MultipartBody.Part?,
+    ): Flow<Resource<UpdatePetModel>>
+
+    suspend fun createPostOwnerRequest(writePost: String,
+                                 hashTage: String,
+                                 location: String,
+                                 latitude: String,
+                                 longitude: String,
+                                 userId: String,
+                                 petId: String,
+                                 userType: String,
+                                 image: List<MultipartBody.Part>?): Flow<Resource<CommonResponse>>
+
+    suspend fun createEventOwnerRequest(userId: String,
+                                        postTitle: String,
+                                        eventDescription: String,
+                                        eventStartDate: String,
+                                        eventStartTime: String,
+                                        eventEndDate: String,
+                                        eventEndTime: String,
+                                        address: String,
+                                        latitude: String,
+                                        longitude: String,
+                                        city: String,
+                                        state: String,
+                                        zipCode: String,
+                                        userType: String,
+                                        image: List<MultipartBody.Part>?): Flow<Resource<CommonResponse>>
 
 
+
+    suspend fun petListRequest(userId: String
+    ): Flow<Resource<PetListModel>>
+
+    suspend fun termsConditionRequest(): Flow<Resource<TermsConditionModel>>
+
+    suspend fun logOutRequest(userId: String): Flow<Resource<CommonResponse>>
+
+    suspend fun helpSupportRequest(): Flow<Resource<TermsConditionModel>>
+
+    suspend fun aboutUsRequest(): Flow<Resource<TermsConditionModel>>
+
+    suspend fun privacyPolicyRequest(): Flow<Resource<TermsConditionModel>>
 
     suspend fun verifyForgotOtp(emailOrPhone: String, otp: String): Flow<Resource<CommonResponse>>
 

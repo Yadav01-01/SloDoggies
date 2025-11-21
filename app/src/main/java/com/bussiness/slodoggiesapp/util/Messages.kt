@@ -1,5 +1,7 @@
 package com.bussiness.slodoggiesapp.util
 
+import android.location.Location
+
 object Messages {
     const val VALID_INPUT = "Enter valid email or phone number"
     const val FAILED_TO_CREATE_ACC = "Failed to create account"
@@ -19,6 +21,17 @@ object Messages {
     const val INVALID_INPUT = "Invalid input"
     const val SELECT_PET_IMAGE = "Please select a pet image"
     const val PET_NAME = "Name can't be empty"
-    const val BREED_NAME = "Name can't be empty"
+    const val BREED_NAME = "Breed can't be empty"
     const val BIO_SMS = "Bio can't be empty"
+    const val WRITE_POST_SMS = "Write post can't be empty"
+    const val UPLOAD_IMAGE_SMS = "Select at least one media"
+    const val PET_SELECT_SMS = "Please select pet"
+    const val EVENT_TITLE_SMS = "Title can't be empty"
+    const val EVENT_DESCRIPTION_SMS = "Title can't be empty"
+    const val START_DATE_SMS = "Start Date can't be empty"
+    const val END_DATE_SMS = "End Date can't be empty"
+    const val CITY_SMS = "City can't be empty"
+    const val STATE_SMS = "State can't be empty"
+    const val ZIP_CODE_SMS = "Zip Code can't be empty"
+    const val EVENT_LOCATION_SMS = "Street can't be empty"
 }

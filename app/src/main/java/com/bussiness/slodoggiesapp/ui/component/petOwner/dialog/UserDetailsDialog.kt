@@ -151,6 +151,7 @@ fun UserDetailsDialog(
 
                         // Add Photo Section
                         AddPhotoSection(
+                            uriImage =null,
                             onPhotoSelected = { uri ->
                                 if (uri != null) {
                                     viewModel.addPhoto(uri)

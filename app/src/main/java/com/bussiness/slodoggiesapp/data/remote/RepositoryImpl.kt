@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.data.remote
 
+import android.util.Log
 import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
 import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
@@ -10,6 +11,9 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
+import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
+import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.LoaderManager
 import kotlinx.coroutines.Dispatchers
@@ -68,11 +72,107 @@ class RepositoryImpl @Inject constructor(
         petBio: String,
         petId: String,
         userId: String,
-        image: MultipartBody.Part
-    ): Flow<Resource<CommonResponse>> = flow{
+        image: MultipartBody.Part?
+    ): Flow<Resource<UpdatePetModel>> = flow{
+        // Convert text params to RequestBody
+        val id = userId.toRequestBody("text/plain".toMediaTypeOrNull())
+        val name = petName.toRequestBody("text/plain".toMediaTypeOrNull())
+        val breed = petBreed.toRequestBody("text/plain".toMediaTypeOrNull())
+        val age = petAge.toRequestBody("text/plain".toMediaTypeOrNull())
+        val bio = petBio.toRequestBody("text/plain".toMediaTypeOrNull())
+        val petUserId = petId.toRequestBody("text/plain".toMediaTypeOrNull())
         emit(Resource.Loading)
-        emit(safeApiCall { api.updatePetRequest(petName,petBreed,petAge,petBio,petId,userId/*,image*/) })
+        emit(safeApiCall { api.updatePetRequest(name,breed,age,bio,petUserId,id,image) })
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun createPostOwnerRequest(
+        writePost: String,
+        hashTage: String,
+        location: String,
+        latitude: String,
+        longitude: String,
+        userId: String,
+        petId: String,
+        userType: String,
+        image: List<MultipartBody.Part>?
+    ): Flow<Resource<CommonResponse>> = flow {
+        // Convert text params to RequestBody
+        val id = userId.toRequestBody("text/plain".toMediaTypeOrNull())
+        val petUserid = petId.toRequestBody("text/plain".toMediaTypeOrNull())
+        val post = writePost.toRequestBody("text/plain".toMediaTypeOrNull())
+        val tage = hashTage.toRequestBody("text/plain".toMediaTypeOrNull())
+        val locationUser = location.toRequestBody("text/plain".toMediaTypeOrNull())
+        val lat = latitude.toRequestBody("text/plain".toMediaTypeOrNull())
+        val longi = longitude.toRequestBody("text/plain".toMediaTypeOrNull())
+        val type = userType.toRequestBody("text/plain".toMediaTypeOrNull())
+        emit(Resource.Loading)
+        emit(safeApiCall { api.createPostOwnerRequest(id,post,tage,locationUser,lat,longi,petUserid,type,image) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun createEventOwnerRequest(
+        userId: String,
+        postTitle: String,
+        eventDescription: String,
+        eventStartDate: String,
+        eventStartTime: String,
+        eventEndDate: String,
+        eventEndTime: String,
+        address: String,
+        latitude: String,
+        longitude: String,
+        city: String,
+        state: String,
+        zipCode: String,
+        userType: String,
+        image: List<MultipartBody.Part>?
+    ): Flow<Resource<CommonResponse>> = flow {
+        // Convert text params to RequestBody
+        val id = userId.toRequestBody("text/plain".toMediaTypeOrNull())
+        val title = postTitle.toRequestBody("text/plain".toMediaTypeOrNull())
+        val description = eventDescription.toRequestBody("text/plain".toMediaTypeOrNull())
+        val startDate = eventStartDate.toRequestBody("text/plain".toMediaTypeOrNull())
+        val startTime = eventStartTime.toRequestBody("text/plain".toMediaTypeOrNull())
+        val endDate = eventEndDate.toRequestBody("text/plain".toMediaTypeOrNull())
+        val endTime = eventEndTime.toRequestBody("text/plain".toMediaTypeOrNull())
+        val location = address.toRequestBody("text/plain".toMediaTypeOrNull())
+        val lat = latitude.toRequestBody("text/plain".toMediaTypeOrNull())
+        val longi = longitude.toRequestBody("text/plain".toMediaTypeOrNull())
+        val cityUser = city.toRequestBody("text/plain".toMediaTypeOrNull())
+        val stateUser = state.toRequestBody("text/plain".toMediaTypeOrNull())
+        val zipCodeUser = zipCode.toRequestBody("text/plain".toMediaTypeOrNull())
+        val type = userType.toRequestBody("text/plain".toMediaTypeOrNull())
+        emit(Resource.Loading)
+        emit(safeApiCall { api.createEventOwnerRequest(id,title,description,startDate,startTime,endDate,endTime,location,lat,longi,cityUser,stateUser,zipCodeUser,type,image) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun petListRequest(userId: String): Flow<Resource<PetListModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.petListRequest(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun termsConditionRequest(): Flow<Resource<TermsConditionModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.termsConditionRequest() })
+    }
+
+    override suspend fun logOutRequest(userId:String): Flow<Resource<CommonResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.logOutRequest(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun helpSupportRequest(): Flow<Resource<TermsConditionModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.helpSupportRequest() })
+    }
+
+  override suspend fun privacyPolicyRequest(): Flow<Resource<TermsConditionModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.privacyPolicyRequest() })
+    }
+    override suspend fun aboutUsRequest(): Flow<Resource<TermsConditionModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.aboutUsRequest() })
+    }
 
     override suspend fun verifyForgotOtp(
         emailOrPhone: String,
@@ -327,12 +427,9 @@ class RepositoryImpl @Inject constructor(
                     Resource.Success(response.body()!!)
                 }
             }
-        } catch (e: IOException) {
-            Resource.Error("Network error, please check your connection")
-        } catch (e: HttpException) {
-            Resource.Error("HTTP error ${e.code()}: ${e.message()}")
         } catch (e: Exception) {
-            Resource.Error("Unexpected error: ${e.localizedMessage ?: "Unknown error"}")
+            Log.d("@Error","*****"+e.message.toString())
+            Resource.Error(e.message.toString())
         }
     }
 }
