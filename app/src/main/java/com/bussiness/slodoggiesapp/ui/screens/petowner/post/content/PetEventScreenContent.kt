@@ -87,11 +87,12 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
         item {
             FormHeadingText(stringResource(R.string.upload_media))
             Spacer(Modifier.height(10.dp))
-            MediaUploadSection(maxImages = 6,
+            MediaUploadSection(maxImages = 1,
                 imageList=uiStatePostCreateOwner.image?: mutableListOf(),
                 onMediaSelected = {
                 viewModelEventCreateOwner.addPhoto(it) } ,
-                onMediaUnSelected = {  viewModelEventCreateOwner.removePhoto(it) })
+                onMediaUnSelected = {  viewModelEventCreateOwner.removePhoto(it)},
+                type="image")
         }
 
         item {
