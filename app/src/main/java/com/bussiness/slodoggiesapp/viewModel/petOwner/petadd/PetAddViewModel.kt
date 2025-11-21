@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.viewModel.petadd
+package com.bussiness.slodoggiesapp.viewModel.petOwner.petadd
 
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel

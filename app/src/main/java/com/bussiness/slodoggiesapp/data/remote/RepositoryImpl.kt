@@ -6,6 +6,7 @@ import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
+import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
@@ -297,6 +298,11 @@ class RepositoryImpl @Inject constructor(
         emit(Resource.Loading)
         emit(safeApiCall { api.getBusinessProfileDetail(userId) })
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun getMyPostDetails(userId: String): Flow<Resource<MyPostsResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getMyPostDetail(userId) })
+    }
 
 
     /**

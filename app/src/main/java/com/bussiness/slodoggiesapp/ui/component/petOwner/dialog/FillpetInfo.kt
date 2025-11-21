@@ -50,7 +50,7 @@ import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.Person
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PersonItem
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetInfoViewModel
-import com.bussiness.slodoggiesapp.viewModel.petadd.PetAddViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.petadd.PetAddViewModel
 
 @Composable
 fun FillPetInfoDialog(

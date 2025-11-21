@@ -77,25 +77,31 @@ class FollowerFollowingViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     val list = result.data.data ?: emptyList()
-
                     val mapped = list.map { it.toAudienceItem() }
 
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            followers = mapped
+                            followers = mapped,
+                            isEmptyData = mapped.isEmpty(),
+                            error = null
                         )
                     }
                 }
 
                 is Resource.Error -> _uiState.update {
-                    it.copy(isLoading = false, error = result.message)
+                    it.copy(
+                        isLoading = false,
+                        error = result.message,
+                        isEmptyData = true
+                    )
                 }
 
                 Resource.Idle -> Unit
             }
         }
     }
+
 
 
     private suspend fun loadFollowing(userId: String) {
@@ -107,24 +113,30 @@ class FollowerFollowingViewModel @Inject constructor(
 
                 is Resource.Success -> {
                     val list = result.data.data ?: emptyList()
-
                     val mapped = list.map { it.toAudienceItem() }
 
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            following = mapped
+                            following = mapped,
+                            isEmptyData = mapped.isEmpty(),
+                            error = null
                         )
                     }
                 }
 
                 is Resource.Error -> _uiState.update {
-                    it.copy(isLoading = false, error = result.message)
+                    it.copy(
+                        isLoading = false,
+                        error = result.message,
+                        isEmptyData = true
+                    )
                 }
 
                 Resource.Idle -> Unit
             }
         }
     }
+
 
 }

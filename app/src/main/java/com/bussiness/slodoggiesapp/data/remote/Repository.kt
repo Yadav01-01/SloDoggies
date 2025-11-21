@@ -5,6 +5,7 @@ import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
+import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
@@ -117,5 +118,10 @@ interface Repository {
     suspend fun getBusinessProfileDetail(
         userId: String,
     ) : Flow<Resource<BusinessDetailsResponse>>
+
+    suspend fun getMyPostDetails(
+        userId: String,
+    ) : Flow<Resource<MyPostsResponse>>
+
 
 }

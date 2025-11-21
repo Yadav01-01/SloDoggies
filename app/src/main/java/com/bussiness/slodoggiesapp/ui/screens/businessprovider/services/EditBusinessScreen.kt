@@ -237,8 +237,8 @@ fun EditBusinessScreen(
             item {
                 FormHeadingText(stringResource(R.string.landmark))
                 InputField(
-                    input = uiState.landmark,
-                    onValueChange = { viewModel.updateLandmark(it) },
+                    input = uiState.state,
+                    onValueChange = { viewModel.updateState(it) },
                     placeholder = stringResource(R.string.enter_landmark)
                 )
             }
@@ -276,7 +276,7 @@ fun EditBusinessScreen(
             item {
                 FormHeadingText(stringResource(R.string.available_days))
                 DayTimeSelector { selectedDays, from, to ->
-                    viewModel.updateAvailableDays(selectedDays, from, to)
+//                    viewModel.updateAvailableDays(selectedDays, from, to)
                 }
             }
 

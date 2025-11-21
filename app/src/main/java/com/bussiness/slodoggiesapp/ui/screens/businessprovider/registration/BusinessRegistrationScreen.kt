@@ -79,7 +79,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
             item {
                 FormHeadingText(stringResource(R.string.Upload_business_logo))
                 Spacer(Modifier.height(5.dp))
-                MediaUploadSection(maxImages = 1) { uri ->
+                MediaUploadSection(maxImages = 6) { uri ->
                     // viewModel.addPetImage(uri)
                 }
             }

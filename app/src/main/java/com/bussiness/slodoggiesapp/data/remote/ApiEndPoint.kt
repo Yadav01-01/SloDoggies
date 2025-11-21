@@ -20,4 +20,5 @@ object ApiEndPoint {
     const val GET_FOLLOWER_LIST = "get_followers"
     const val GET_FOLLOWING_LIST = "get_following"
     const val GET_BUSINESS_PROFILE = "get_business_profile"
+    const val GET_MY_POST = "get_my_posts"
 }

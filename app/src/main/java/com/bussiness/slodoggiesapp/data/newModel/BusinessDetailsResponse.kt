@@ -27,6 +27,9 @@ data class BusinessDetails(
     @SerializedName("name")
     val name: String,
 
+    @SerializedName("provider_name")
+    val providerName: String,
+
     @SerializedName("email")
     val email: String,
 

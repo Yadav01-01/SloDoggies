@@ -12,5 +12,6 @@ data class FollowerFollowingUiState(
     val removeDialog: Boolean = false,
     val removeFollowing: Boolean = false,
     val removeToast: Boolean = false,
-    val isNavigating: Boolean = false
+    val isNavigating: Boolean = false,
+    val isEmptyData: Boolean = false
 )

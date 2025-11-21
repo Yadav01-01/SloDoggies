@@ -30,30 +30,46 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
             MaterialTheme {
-                val useDarkIcons = MaterialTheme.colorScheme.background.luminance() > 0.5f
-                SetStatusBarColor(color = Color.Transparent, darkIcons = useDarkIcons)
-                val mainNavController = rememberNavController()
+
+                val useDarkIcons =
+                    MaterialTheme.colorScheme.background.luminance() > 0.5f
+
+                SetStatusBarColor(
+                    color = Color.Transparent,
+                    darkIcons = useDarkIcons
+                )
+
+                // Global loader from ViewModel
                 val loaderViewModel: GlobalLoaderViewModel = hiltViewModel()
                 val isLoading by loaderViewModel.isLoading.collectAsState()
 
-                //  Use Box to layer loader above everything
+                // Entire UI wrapped so overlay is above dialogs too
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+
+                    val mainNavController = rememberNavController()
+
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
                         NavGraph(navController = mainNavController)
                     }
-                    // Loader always on top (last drawn)
+
+                    // Loader Overlay (Always on top)
                     if (isLoading) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .zIndex(10f) // Always on top
-                                .background(Color(0x80000000)) // Dim background
+                                .zIndex(100f)
+                                .background(Color(0x80000000))
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null
@@ -67,3 +83,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

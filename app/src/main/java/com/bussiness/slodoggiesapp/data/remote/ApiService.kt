@@ -5,6 +5,7 @@ import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
+import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
@@ -190,5 +191,10 @@ interface ApiService {
         @Field("user_id") userId: String,
     ) : Response<BusinessDetailsResponse>
 
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_MY_POST)
+    suspend fun getMyPostDetail(
+        @Field("user_id") userId: String,
+    ) : Response<MyPostsResponse>
 
 }
