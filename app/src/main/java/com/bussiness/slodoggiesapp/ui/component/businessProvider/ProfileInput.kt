@@ -92,6 +92,8 @@ fun AudienceListItem(
     ) {
         AsyncImage(
             model = data.profilePic,
+            placeholder = painterResource(R.drawable.ic_person_icon),
+            error = painterResource(R.drawable.ic_person_icon),
             contentDescription = "Profile Image",
             modifier = Modifier
                 .size(44.dp)
