@@ -31,14 +31,14 @@ fun NoDataView(text : String) {
         Image(
             painter = painterResource(id = R.drawable.no_data_image),
             contentDescription = null,
-            modifier = Modifier.size(60.dp)
+            modifier = Modifier.size(100.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            fontFamily = FontFamily(Font(R.font.poppins_bold)),
-            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily(Font(R.font.inter_regular)),
+            fontWeight = FontWeight.Normal,
             color = PrimaryColor,
             fontSize = 16.sp
         )

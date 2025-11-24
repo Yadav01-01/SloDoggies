@@ -75,7 +75,6 @@ class BusinessRegistrationViewModel @Inject constructor(
                             val data = response.data
                             _uiState.update {
                                 it.copy(
-                                    name = data.name.orEmpty(),
                                     email = data.email.orEmpty(),
                                     contact = data.phone.orEmpty(),
                                     isLoading = false

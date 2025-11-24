@@ -149,7 +149,7 @@ class FollowerFollowingViewModel @Inject constructor(
     // ---------------------------
     //  FOLLOWING API
     // ---------------------------
-    fun loadFollowing(reset: Boolean = false) {
+    private fun loadFollowing(reset: Boolean = false) {
 
         val userId = sessionManager.getUserId()
 
