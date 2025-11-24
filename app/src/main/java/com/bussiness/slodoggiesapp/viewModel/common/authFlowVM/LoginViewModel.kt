@@ -1,5 +1,9 @@
 package com.bussiness.slodoggiesapp.viewModel.common.authFlowVM
 
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.remote.Repository
@@ -7,6 +11,7 @@ import com.bussiness.slodoggiesapp.data.uiState.LoginUiState
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.util.SessionManager
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +28,13 @@ class LoginViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState
+    var fcmToken by mutableStateOf<String?>(null)
+        private set
+
+
+    init {
+        fetchToken()
+    }
 
     fun onContactChange(newInput: String) {
         val trimmedInput = newInput.trim()
@@ -63,6 +75,19 @@ class LoginViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(disclaimerDialog = false)
     }
 
+    fun fetchToken() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    fcmToken = task.result
+                    Log.d("FCM", "FCM Token: ${task.result}")
+                } else {
+                    fcmToken = "Fetching FCM token failed"
+                    Log.e("FCM", "Fetching FCM token failed", task.exception)
+                }
+            }
+    }
+
     fun login(onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
         val state = _uiState.value
         // Local validation before hitting API
@@ -85,8 +110,8 @@ class LoginViewModel @Inject constructor(
             repository.userLogin(
                 emailOrPhone = state.contactInput,
                 password = state.password,
-                deviceType = "android",
-                fcm_token = "1234567890",
+                deviceType = "Android",
+                fcm_token = fcmToken.toString(),
                 userType = sessionManager.getUserType().toString()
             ).collectLatest { result ->
                 when (result) {
@@ -117,6 +142,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 }
+
 
 
 enum class ContactType {

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     id("org.jetbrains.kotlin.kapt")
+    id ("com.google.gms.google-services")
 }
 
 android {
@@ -148,5 +149,8 @@ dependencies {
     implementation (libs.play.services.location)
     implementation (libs.accompanist.swiperefresh)
 
+
+    implementation (platform("com.google.firebase:firebase-bom:33.1.2"))
+    implementation ("com.google.firebase:firebase-messaging")
 
 }

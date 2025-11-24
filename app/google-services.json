@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "967754527962",
+    "project_id": "slodoggies",
+    "storage_bucket": "slodoggies.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967754527962:android:38f59c10b044d2e1e921e3",
+        "android_client_info": {
+          "package_name": "com.bussiness.slodoggiesapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbhB0bgAcHnmKwPh5xONh50Tu0eHxkHwQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

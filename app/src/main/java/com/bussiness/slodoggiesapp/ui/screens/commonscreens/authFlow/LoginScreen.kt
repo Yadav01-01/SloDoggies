@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -45,7 +44,6 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.EmailInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopIndicatorBar
-import com.bussiness.slodoggiesapp.ui.component.common.AppLottieLoader
 import com.bussiness.slodoggiesapp.ui.component.common.AuthBackButton
 import com.bussiness.slodoggiesapp.ui.component.common.PasswordInput
 import com.bussiness.slodoggiesapp.ui.dialog.DisclaimerDialog
@@ -59,6 +57,7 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = hi
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val sessionManager = SessionManager.getInstance(context)
+
 
 
     Box(

@@ -1,5 +1,9 @@
 package com.bussiness.slodoggiesapp.viewModel.common
 
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
@@ -9,6 +13,7 @@ import com.bussiness.slodoggiesapp.data.uiState.VerifyOtpUiState
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.SessionManager
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,12 +36,17 @@ class VerifyOTPViewModel @Inject constructor(
 
     private val _events = MutableSharedFlow<UiEvent>()
     val events = _events.asSharedFlow()
+    var fcmToken by mutableStateOf<String?>(null)
+        private set
+
+    init {
+        fetchToken()
+    }
 
     sealed class UiEvent {
         data class ShowToast(val message: String) : UiEvent()
         data object NavigateToNext : UiEvent()
     }
-
 
     // --- UI State Updates ---
     fun updateOtp(newOtp: String) {
@@ -59,7 +69,6 @@ class VerifyOTPViewModel @Inject constructor(
     fun resetTimer() {
         _uiState.update { it.copy(isTimerFinished = false) }
     }
-
 
     private fun navigateToNextScreen(navController: NavHostController) {
         val route = if (sessionManager.getUserType() == UserType.Professional) {
@@ -94,25 +103,21 @@ class VerifyOTPViewModel @Inject constructor(
             "forgot" -> {
                 viewModelScope.launch {
                     _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
                     repository.verifyForgotOtp(emailOrPhone, uiState.value.otp)
                         .collectLatest { result ->
                             when (result) {
                                 is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
-
                                 is Resource.Success -> {
                                     // Success → navigate to reset password screen
                                     _uiState.update { it.copy(isLoading = false) }
                                     _events.emit(UiEvent.NavigateToNext)
                                 }
-
                                 is Resource.Error -> {
                                     _uiState.update { it.copy(isLoading = false) }
                                     _events.emit(
                                         UiEvent.ShowToast(result.message ?: "Failed to verify OTP")
                                     )
                                 }
-
                                 else -> Unit
                             }
                         }
@@ -122,31 +127,27 @@ class VerifyOTPViewModel @Inject constructor(
             else -> {
                 viewModelScope.launch {
                     _uiState.update { it.copy(isLoading = true, errorMessage = null) }
-
                     repository.registerUser(
                         fullName = name,
                         emailOrPhone = emailOrPhone,
                         password = password,
                         deviceType = "Android",
-                        fcm_token = "ghjdfjhxfhfghdh",
+                        fcm_token = fcmToken.toString(),
                         userType = sessionManager.getUserType().toString(),
                         otp = _uiState.value.otp
                     ).collectLatest { result ->
                         when (result) {
                             is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
-
                             is Resource.Success -> {
                                 sessionManager.setLogin(true)
                                 sessionManager.setUserId(result.data.data?.user?.id.toString())
                                 sessionManager.setToken(result.data.data?.token.toString())
                                 showSuccessDialog()
                             }
-
                             is Resource.Error -> {
                                 _uiState.update { it.copy(isLoading = false) }
                                 _events.emit(UiEvent.ShowToast(result.message))
                             }
-
                             else -> Unit
                         }
                     }
@@ -184,6 +185,20 @@ class VerifyOTPViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+
+    fun fetchToken() {
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    fcmToken = task.result
+                    Log.d("FCM", "FCM Token: ${task.result}")
+                } else {
+                    fcmToken = "Fetching FCM token failed"
+                    Log.e("FCM", "Fetching FCM token failed", task.exception)
+                }
+            }
     }
 
 
