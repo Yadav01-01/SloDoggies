@@ -11,6 +11,7 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
@@ -368,14 +369,14 @@ class RepositoryImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
 
-    override suspend fun getFollowerList(userId: String,page: String,limit: String): Flow<Resource<FollowersResponse>> = flow {
+    override suspend fun getFollowerList(userId: String,page: String,limit: String, search : String): Flow<Resource<FollowersResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.getFollowerList(userId,page,limit) })
+        emit(safeApiCall { api.getFollowerList(userId,page,limit,search) })
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getFollowingList(userId: String,page: String,limit: String): Flow<Resource<FollowingResponse>> = flow {
+    override suspend fun getFollowingList(userId: String,page: String,limit: String, search : String): Flow<Resource<FollowingResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.getFollowingList(userId,page,limit) })
+        emit(safeApiCall { api.getFollowingList(userId,page,limit,search) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getBusinessProfileDetail(userId: String): Flow<Resource<BusinessDetailsResponse>> = flow{
@@ -386,6 +387,19 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getMyPostDetails(userId: String): Flow<Resource<MyPostsResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.getMyPostDetail(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun addAndRemoveFollowers(
+        userId: String,
+        followerId: String
+    ): Flow<Resource<CommonResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.addAndRemoveFollowers(userId,followerId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getOwnerProfileDetails(userId: String): Flow<Resource<PetOwnerDetailsResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getOwnerProfile(userId) })
     }.flowOn(Dispatchers.IO)
 
 

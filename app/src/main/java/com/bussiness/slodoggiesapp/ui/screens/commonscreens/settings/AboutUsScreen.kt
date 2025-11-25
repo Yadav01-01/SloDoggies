@@ -26,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-import com.bussiness.slodoggiesapp.viewModel.aboutus.AboutUsViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.aboutus.AboutUsViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

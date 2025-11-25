@@ -9,6 +9,7 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
@@ -217,7 +218,8 @@ interface ApiService {
     suspend fun getFollowerList(
         @Field("user_id") userId: String,
         @Field("page") page : String,
-        @Field("limit") limit : String
+        @Field("limit") limit : String,
+        @Field("search") search : String,
     ) : Response<FollowersResponse>
 
     @FormUrlEncoded
@@ -225,7 +227,8 @@ interface ApiService {
     suspend fun getFollowingList(
         @Field("user_id") userId: String,
         @Field("page") page : String,
-        @Field("limit") limit : String
+        @Field("limit") limit : String,
+        @Field("search") search : String,
     ) : Response<FollowingResponse>
 
     @FormUrlEncoded
@@ -239,5 +242,18 @@ interface ApiService {
     suspend fun getMyPostDetail(
         @Field("user_id") userId: String,
     ) : Response<MyPostsResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.ADD_REMOVE_FOLLOWER)
+    suspend fun addAndRemoveFollowers(
+        @Field("user_id") userId: String,
+        @Field("followed_id") followerId: String,
+    ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_OWNER_GALLERY)
+    suspend fun getOwnerProfile(
+        @Field("user_id") userId: String,
+    ) : Response<PetOwnerDetailsResponse>
 
 }

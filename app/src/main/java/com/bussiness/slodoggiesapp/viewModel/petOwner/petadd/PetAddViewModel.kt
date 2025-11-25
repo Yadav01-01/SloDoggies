@@ -15,7 +15,7 @@ import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.ui.component.common.createSingleMultipart
 import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.util.SessionManager
-import com.bussiness.slodoggiesapp.viewModel.petlist.PetListViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.petlist.PetListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

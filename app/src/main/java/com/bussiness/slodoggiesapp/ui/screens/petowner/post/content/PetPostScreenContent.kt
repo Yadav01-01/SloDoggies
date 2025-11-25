@@ -77,9 +77,9 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.location.LocationAction
 import com.bussiness.slodoggiesapp.viewModel.common.location.LocationViewModel
-import com.bussiness.slodoggiesapp.viewModel.createpostowner.PostCreateOwnerViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.createpostowner.PostCreateOwnerViewModel
 import com.bussiness.slodoggiesapp.viewModel.petOwner.petadd.PetAddViewModel
-import com.bussiness.slodoggiesapp.viewModel.petlist.PetListViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.petlist.PetListViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState

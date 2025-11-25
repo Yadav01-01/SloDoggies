@@ -16,5 +16,8 @@ data class FollowerFollowingUiState(
     val isEmptyData: Boolean = false,
     val isMoreLoading: Boolean = false,
     val endReached: Boolean = false,
-    val isRefreshing: Boolean = false
+    val isRefreshing: Boolean = false,
+    val selectedUserId : String = "",
+    val totalFollower : String = "",
+    val totalFollowing : String = ""
 )

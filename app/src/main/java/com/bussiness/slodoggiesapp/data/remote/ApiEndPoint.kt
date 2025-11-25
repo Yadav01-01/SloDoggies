@@ -27,4 +27,7 @@ object ApiEndPoint {
     const val ABOUT_US = "about_us"
     const val HELP_SUPPORT = "help_support"
     const val LOG_OUT = "logout"
+    const val ADD_REMOVE_FOLLOWER = "add_remove_follower"
+    const val MY_EVENT_LIST = "get_my_event_list"
+    const val GET_OWNER_GALLERY = "get_owner_gallery"
 }

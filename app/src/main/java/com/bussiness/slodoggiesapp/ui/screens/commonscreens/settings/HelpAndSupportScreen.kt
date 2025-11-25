@@ -40,7 +40,7 @@ import com.bussiness.slodoggiesapp.ui.component.common.SupportContactFAQTextCard
 import com.bussiness.slodoggiesapp.ui.component.common.SupportContactTextCard
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
-import com.bussiness.slodoggiesapp.viewModel.helpsupport.HelpSupportViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.helpsupport.HelpSupportViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

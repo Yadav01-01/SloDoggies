@@ -31,9 +31,9 @@ import com.bussiness.slodoggiesapp.ui.component.common.ToggleItem
 import com.bussiness.slodoggiesapp.ui.dialog.LogoutDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
-import com.bussiness.slodoggiesapp.viewModel.aboutus.AboutUsViewModel
-import com.bussiness.slodoggiesapp.viewModel.createpostowner.PostCreateOwnerViewModel
-import com.bussiness.slodoggiesapp.viewModel.logout.LogOutViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.aboutus.AboutUsViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.createpostowner.PostCreateOwnerViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.logout.LogOutViewModel
 
 @Composable
 fun SettingsScreen(navController: NavHostController, authNavController: NavHostController) {
