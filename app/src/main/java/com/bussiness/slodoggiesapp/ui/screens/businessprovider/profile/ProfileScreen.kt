@@ -25,6 +25,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -56,10 +57,15 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.ProfileViewModel
+import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesViewModel
 
 @Composable
 fun ProfileScreen(navController: NavHostController) {
+
+    val viewModelDashboard: BusinessServicesViewModel = hiltViewModel()
+    val uiState by viewModelDashboard.uiState.collectAsState()
     val viewModel : ProfileViewModel = hiltViewModel()
     val email by viewModel.email.collectAsState()
     val description by viewModel.description.collectAsState()
@@ -73,6 +79,11 @@ fun ProfileScreen(navController: NavHostController) {
         com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
         com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2)
     )
+
+
+    LaunchedEffect(Unit) {
+        viewModelDashboard.getBusinessDetail()
+    }
 
     BackHandler {
         if (!isNavigating) {
@@ -112,14 +123,14 @@ fun ProfileScreen(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AsyncImage(
-                        model = "",
+                        model = uiState.data?.business?.business_logo?:"",
                         contentDescription = "image",
                         placeholder = painterResource(R.drawable.fluent_color_paw),
                         error = painterResource(R.drawable.fluent_color_paw),
                         modifier = Modifier
                             .size(95.dp)
                             .clip(CircleShape),
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Crop
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
@@ -131,7 +142,7 @@ fun ProfileScreen(navController: NavHostController) {
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Rosy Morgan",
+                                text = uiState.data?.business?.business_name?:"",
                                 color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 fontSize = 16.sp,
@@ -143,7 +154,7 @@ fun ProfileScreen(navController: NavHostController) {
                         Spacer(Modifier.height(5.dp))
 
                         Text(
-                            text = email,
+                            text = uiState.data?.business?.email?:"",
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontSize = 12.sp,
                             color = PrimaryColor,
@@ -151,7 +162,7 @@ fun ProfileScreen(navController: NavHostController) {
                         )
 
                         Text(
-                            text = description,
+                            text = uiState.data?.business?.bio?:"",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color.Black,
@@ -170,11 +181,11 @@ fun ProfileScreen(navController: NavHostController) {
                         .height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ProfileDetail(label = "120", value = "Posts", modifier = Modifier.weight(1f), onDetailClick = { })
+                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.post?:"0"), value = "Posts", modifier = Modifier.weight(1f), onDetailClick = { })
                     VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
-                    ProfileDetail(label = "27.7M", value = "Followers", modifier = Modifier.weight(1f), onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
+                    ProfileDetail(label =formatStringNumberShorthand(uiState.data?.follower?:"0"), value = "Followers", modifier = Modifier.weight(1f), onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
                     VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
-                    ProfileDetail(label = "219", value = "Following",  modifier = Modifier.weight(1f),onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}")})
+                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.following?:"0"), value = "Following",  modifier = Modifier.weight(1f),onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}")})
                 }
             }
 

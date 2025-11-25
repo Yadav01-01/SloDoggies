@@ -11,6 +11,9 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
+import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
@@ -40,6 +43,23 @@ class RepositoryImpl @Inject constructor(
     ): Flow<Resource<OtpResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.sendOtp(emailOrPhone, apiType) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun sendOtpRequest(
+        emailOrPhone: String,
+        userId: String
+    ): Flow<Resource<OtpVerifyModel>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.sendOtpRequest(emailOrPhone, userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun otpVerifyEmailPhoneRequest(
+        emailOrPhone: String,
+        userId: String,
+        otp: String
+    ): Flow<Resource<OtpVerifyModel>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.verifyOtpEmailPhoneRequest(emailOrPhone, userId,otp) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun registerUser(
@@ -143,8 +163,53 @@ class RepositoryImpl @Inject constructor(
         val zipCodeUser = zipCode.toRequestBody("text/plain".toMediaTypeOrNull())
         val type = userType.toRequestBody("text/plain".toMediaTypeOrNull())
         emit(Resource.Loading)
-        emit(safeApiCall { api.createEventOwnerRequest(id,title,description,startDate,startTime,endDate,endTime,location,lat,longi,cityUser,stateUser,zipCodeUser,type,image) })
+        emit(safeApiCall { api.createEventOwnerRequest(id,title,description,startDate,startTime,endDate,
+            endTime,location,lat,longi,cityUser,stateUser,zipCodeUser,type,image) })
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun updateRegistrationRequest(
+        userId: String,
+        businessName: String,
+        providerName: String,
+        email: String,
+        businessLogo: MultipartBody.Part?,
+        businessCategory: String,
+        businessAddress: String,
+        latitude: String,
+        longitude: String,
+        city: String,
+        state: String,
+        zipCode: String,
+        websiteUrl: String,
+        contactNumber: String,
+        availableDays: String,
+        availableTime: String,
+        bio: String,
+        imageDoc: List<MultipartBody.Part>?
+    ): Flow<Resource<CommonResponse>> = flow{
+        // Convert text params to RequestBody
+        val id = userId.toRequestBody("text/plain".toMediaTypeOrNull())
+        val busName = businessName.toRequestBody("text/plain".toMediaTypeOrNull())
+        val provName = providerName.toRequestBody("text/plain".toMediaTypeOrNull())
+        val email = email.toRequestBody("text/plain".toMediaTypeOrNull())
+        val category = businessCategory.toRequestBody("text/plain".toMediaTypeOrNull())
+        val address = businessAddress.toRequestBody("text/plain".toMediaTypeOrNull())
+        val lat = latitude.toRequestBody("text/plain".toMediaTypeOrNull())
+        val longi = longitude.toRequestBody("text/plain".toMediaTypeOrNull())
+        val cityUser = city.toRequestBody("text/plain".toMediaTypeOrNull())
+        val stateUser = state.toRequestBody("text/plain".toMediaTypeOrNull())
+        val zipCodeUser = zipCode.toRequestBody("text/plain".toMediaTypeOrNull())
+        val webUrl = websiteUrl.toRequestBody("text/plain".toMediaTypeOrNull())
+        val phone = contactNumber.toRequestBody("text/plain".toMediaTypeOrNull())
+        val days = availableDays.toRequestBody("text/plain".toMediaTypeOrNull())
+        val time = availableTime.toRequestBody("text/plain".toMediaTypeOrNull())
+        val bioUser = bio.toRequestBody("text/plain".toMediaTypeOrNull())
+        emit(Resource.Loading)
+        emit(safeApiCall { api.updateRegistrationRequest(id,busName,provName,email,businessLogo,category,address,lat,longi,cityUser,stateUser,zipCodeUser,webUrl,phone,
+            days,time,bioUser,imageDoc) })
+    }.flowOn(Dispatchers.IO)
+
+
 
     override suspend fun petListRequest(userId: String): Flow<Resource<PetListModel>> = flow{
         emit(Resource.Loading)
@@ -196,7 +261,8 @@ class RepositoryImpl @Inject constructor(
         apiType: String
     ): Flow<Resource<OtpResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.resendPassword(emailOrPhone,apiType) })
+//        emit(safeApiCall { api.resendPassword(emailOrPhone,apiType) })
+        emit(safeApiCall { api.sendOtp(emailOrPhone,apiType) })
     }
 
     override suspend fun addPets(
@@ -271,6 +337,16 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getBusinessDetail(userId: String): Flow<Resource<OwnerDetailsResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.getBusinessDetail(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getBusinessProfile(userId: String): Flow<Resource<BusinessProfileModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getBusinessProfile(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getBusinessDashboard(userId: String): Flow<Resource<BusinessDetailsModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getBusinessDashboard(userId) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun registerAndUpdateBusiness(
@@ -412,8 +488,13 @@ class RepositoryImpl @Inject constructor(
                 }
             }
         } catch (e: Exception) {
+            LoaderManager.hide()
             Log.d("@Error","*****"+e.message.toString())
             Resource.Error(e.message.toString())
         }
     }
+
+
+
+
 }

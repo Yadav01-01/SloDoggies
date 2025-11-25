@@ -9,6 +9,7 @@ coilComposeVersion = "2.6.0"
 converterGson = "2.11.0"
 coreSplashscreen = "1.0.1"
 espressoCoreVersion = "3.5.0"
+firebaseBom = "33.1.2"
 gson = "2.11.0"
 hiltAndroid = "2.56.2"
 hiltNavigationCompose = "1.2.0"
@@ -38,6 +39,7 @@ placesVersion = "3.2.0"
 playServicesLocation = "21.3.0"
 retrofit = "2.11.0"
 securityCrypto = "1.1.0"
+roomRuntimeAndroid = "2.8.4"
 
 
 [libraries]
@@ -61,6 +63,8 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 coil-compose-v260 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { module = "com.google.firebase:firebase-messaging" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroid" }
@@ -89,6 +93,7 @@ places = { module = "com.google.android.libraries.places:places", version.ref = 
 places-v320 = { module = "com.google.android.libraries.places:places", version.ref = "placesVersion" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

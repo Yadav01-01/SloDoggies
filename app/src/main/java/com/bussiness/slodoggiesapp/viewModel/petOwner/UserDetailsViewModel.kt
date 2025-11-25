@@ -41,6 +41,7 @@ class UserDetailsViewModel @Inject constructor(
     fun onNameChanged(name: String) = _uiState.update { it.copy(name = name.take(30)) }
     fun onPhoneChanged(phone: String) = _uiState.update { it.copy(phoneNumber = phone.take(10)) }
     fun onBioChanged(bio: String) = _uiState.update { it.copy(bio = bio) }
+
     fun onEmailChanged(email: String) = _uiState.update { it.copy(email = email) }
 
     fun setPhoneVerified(verified: Boolean) = _uiState.update { it.copy(isPhoneVerified = verified) }

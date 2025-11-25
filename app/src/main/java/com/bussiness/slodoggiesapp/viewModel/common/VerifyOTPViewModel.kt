@@ -170,7 +170,6 @@ class VerifyOTPViewModel @Inject constructor(
 
                     is Resource.Success -> {
                         _uiState.update { it.copy(isLoading = false) }
-
                         result.data.message?.let { message ->
                             _events.emit(UiEvent.ShowToast(message))
                         }
@@ -187,7 +186,6 @@ class VerifyOTPViewModel @Inject constructor(
         }
     }
 
-
     fun fetchToken() {
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener { task ->
@@ -200,7 +198,6 @@ class VerifyOTPViewModel @Inject constructor(
                 }
             }
     }
-
 
     private fun onError(message: String?) {
         _uiState.update { it.copy(errorMessage = message ?: "Something went wrong") }

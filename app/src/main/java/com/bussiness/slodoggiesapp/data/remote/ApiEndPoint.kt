@@ -2,6 +2,8 @@ package com.bussiness.slodoggiesapp.data.remote
 
 object ApiEndPoint {
     const val SEND_OTP = "send_otp"
+    const val SEND_EMAIL_PHONE_OTP = "send_email_phone_otp"
+    const val VERIFY_EMAIL_PHONE_OTP = "verify_email_phone_otp"
     const val USER_REGISTER = "user_register"
     const val USER_LOGIN = "user_login"
     const val VERIFY_FORGOT_OTP = "verify_forgot_otp"
@@ -20,6 +22,7 @@ object ApiEndPoint {
     const val GET_FOLLOWER_LIST = "get_followers"
     const val GET_FOLLOWING_LIST = "get_following"
     const val GET_BUSINESS_PROFILE = "get_business_profile"
+    const val GET_BUSINESS_PROFILE_DASHBOARD = "get_business_dashboard"
     const val GET_MY_POST = "get_my_posts"
     const val PET_LIST = "get_pet_lists"
     const val TERMS_CONDITION = "term_and_condition"
@@ -27,4 +30,5 @@ object ApiEndPoint {
     const val ABOUT_US = "about_us"
     const val HELP_SUPPORT = "help_support"
     const val LOG_OUT = "logout"
+
 }

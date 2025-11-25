@@ -2,9 +2,12 @@ package com.bussiness.slodoggiesapp.ui.component.common
 
 import android.content.Context
 import android.net.Uri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.net.URL
 
 fun createMultipartList(
     context: Context,
@@ -32,3 +35,92 @@ fun createMultipartList(
 
     return parts
 }
+
+suspend fun createMultipartListUriUrl(
+    context: Context,
+    items: List<String>, // can be Uri.toString() or URL string
+    keyName: String
+): List<MultipartBody.Part> = withContext(Dispatchers.IO) {
+    val parts = mutableListOf<MultipartBody.Part>()
+
+    items.forEachIndexed { index, item ->
+
+        val bytes: ByteArray? = if (item.startsWith("http://") || item.startsWith("https://")) {
+            // Remote URL: download bytes
+            try {
+                val url = URL(item)
+                url.openStream().use { it.readBytes() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        } else {
+            // Local URI
+            try {
+                val uri = Uri.parse(item)
+                context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+
+        bytes?.let {
+            val fileName = "file_${System.currentTimeMillis()}_$index.jpg"
+            val body = it.toRequestBody("image/*".toMediaType())
+            parts.add(
+                MultipartBody.Part.createFormData(
+                    keyName,
+                    fileName,
+                    body
+                )
+            )
+        }
+    }
+
+    parts
+}
+
+
+/*fun createMultipartListUriUrl(
+    context: Context,
+    items: List<String>, // can be Uri.toString() or URL string
+    keyName: String
+): List<MultipartBody.Part> {
+    val parts = mutableListOf<MultipartBody.Part>()
+    items.forEachIndexed { index, item ->
+
+        val bytes: ByteArray? = if (item.startsWith("http://") || item.startsWith("https://")) {
+            // Remote URL: download bytes
+            try {
+                val url = URL(item)
+                url.openStream().use { it.readBytes() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        } else {
+            // Local URI
+            val uri = Uri.parse(item)
+            try {
+                context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+        bytes?.let {
+            val fileName = "file_${System.currentTimeMillis()}_$index.jpg"
+            val body = it.toRequestBody("image/*".toMediaType())
+            parts.add(
+                MultipartBody.Part.createFormData(
+                    keyName,
+                    fileName,
+                    body
+                )
+            )
+        }
+    }
+
+    return parts
+}*/

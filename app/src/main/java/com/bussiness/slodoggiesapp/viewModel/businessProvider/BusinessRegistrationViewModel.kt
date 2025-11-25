@@ -4,8 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.remote.Repository
-import com.bussiness.slodoggiesapp.data.uiState.BusinessRegistrationUiState
-import com.bussiness.slodoggiesapp.network.Resource
+
+
 import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +22,7 @@ class BusinessRegistrationViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(BusinessRegistrationUiState())
+    /*private val _uiState = MutableStateFlow(BusinessRegistrationUiState())
     val uiState: StateFlow<BusinessRegistrationUiState> = _uiState.asStateFlow()
 
     // --- Field Updaters ---
@@ -40,7 +40,7 @@ class BusinessRegistrationViewModel @Inject constructor(
         getPreFillDetail()
     }
 
-    fun addCategory(category: String) {
+   *//* fun addCategory(category: String) {
         _uiState.update {
             it.copy(categories = it.categories + category)
         }
@@ -50,8 +50,9 @@ class BusinessRegistrationViewModel @Inject constructor(
         _uiState.update {
             it.copy(categories = it.categories - category)
         }
-    }
+    }*//*
 
+*//*
     fun addImage(uri: Uri) {
         _uiState.update {
             it.copy(verificationDocs = it.verificationDocs + uri)
@@ -63,6 +64,7 @@ class BusinessRegistrationViewModel @Inject constructor(
             it.copy(verificationDocs = it.verificationDocs - uri)
         }
     }
+*//*
 
     private fun getPreFillDetail(){
         viewModelScope.launch {
@@ -144,5 +146,5 @@ class BusinessRegistrationViewModel @Inject constructor(
 
     private fun onError(message: String?) {
         _uiState.update { it.copy(errorMessage = message ?: "Something went wrong") }
-    }
+    }*/
 }

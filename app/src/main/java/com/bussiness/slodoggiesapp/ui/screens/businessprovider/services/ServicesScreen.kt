@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
@@ -38,10 +41,15 @@ import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ReviewContent
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ServicePackageSection
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.businessprofile.BusinessProfileViewModel
+import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesViewModel
 
 @Composable
 fun ServiceScreen(navController: NavHostController) {
 
+
+    val viewModel: BusinessServicesViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
     var selected by remember { mutableStateOf("Services") }
     var commentReply by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
@@ -72,6 +80,13 @@ fun ServiceScreen(navController: NavHostController) {
         )
     )
 
+
+
+    LaunchedEffect(Unit) {
+        viewModel.getBusinessDetail()
+    }
+
+
     BackHandler {
         navController.navigate(Routes.HOME_SCREEN) {
             launchSingleTop = true
@@ -100,15 +115,18 @@ fun ServiceScreen(navController: NavHostController) {
                 .padding(horizontal = 16.dp, vertical = 5.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+
+            val data=uiState.data?.business
             PetSitterCard(
-                name = "Pet Sitter Name",
+                name = data?.business_name?:"",
+                image=data?.business_logo?:"",
                 rating = 4.5f,
                 ratingCount = 100,
-                providerName = "Provider Name",
-                about = "About the sitter",
-                phone = "123-456-7890",
-                website = "www.example.com",
-                address = "123 Main St, City, Country",
+                providerName = data?.provider_name?:"",
+                about = data?.bio?:"",
+                phone = data?.phone?:"",
+                website = data?.website_url?:"",
+                address = data?.address?:"",
                 onEditClick = { navController.navigate(Routes.EDIT_BUSINESS_SCREEN)}
             )
 
@@ -144,6 +162,9 @@ fun ServiceScreen(navController: NavHostController) {
             )
         }
     }
+
+
+
     if (commentReply) {
         CommentReplyDialog(
             onDismiss = { commentReply = false },

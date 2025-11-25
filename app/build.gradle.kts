@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.room.runtime.android)
 
     // Instrumentation tests (androidTest)
     androidTestImplementation(libs.androidx.junit)
@@ -150,7 +151,7 @@ dependencies {
     implementation (libs.accompanist.swiperefresh)
 
 
-    implementation (platform("com.google.firebase:firebase-bom:33.1.2"))
-    implementation ("com.google.firebase:firebase-messaging")
+    implementation (platform(libs.firebase.bom))
+    implementation (libs.firebase.messaging)
 
 }
