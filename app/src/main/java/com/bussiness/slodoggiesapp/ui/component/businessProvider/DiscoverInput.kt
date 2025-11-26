@@ -359,7 +359,7 @@ fun PetOwnerDetail(
 
 
 @Composable
-fun GalleryItemCard(item: com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem, height: Int = 150, onClickItem: () -> Unit) {
+fun GalleryItemCard(item: GalleryItem, height: Int = 150, onClickItem: () -> Unit) {
     Box(
         modifier = Modifier
             .height(height.dp) // You can adjust height here
@@ -392,7 +392,7 @@ fun GalleryItemCard(item: com.bussiness.slodoggiesapp.data.model.businessProvide
 }
 
 @Composable
-fun PetPlaceCard(placeItem: com.bussiness.slodoggiesapp.data.model.petOwner.PetPlaceItem, onItemClick: () -> Unit) {
+fun PetPlaceCard(placeItem: PetPlaceItem, onItemClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()

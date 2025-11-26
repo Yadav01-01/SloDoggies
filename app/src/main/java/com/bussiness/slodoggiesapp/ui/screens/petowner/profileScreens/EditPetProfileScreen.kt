@@ -68,12 +68,15 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfileViewModel = hiltViewModel()) {
+fun EditPetProfileScreen(navController: NavHostController,petId:String, viewModel: PetProfileViewModel = hiltViewModel()) {
 
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     var selectedAge by remember { mutableStateOf("") }
-    var managedBy by remember { mutableStateOf("") }
+
+    LaunchedEffect (Unit) {
+        viewModel.getPetProfile(petId)
+    }
 
     // Gallery launcher
     val launcherGallery = rememberLauncherForActivityResult(
@@ -156,7 +159,7 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
                                 .clip(CircleShape)
                         ) {
                             AsyncImage(
-                                model = uiState.profileImageUri,
+                                model = uiState.petProfileData?.pet_image,
                                 contentDescription = "Pet Photo",
                                 contentScale = ContentScale.Crop,
                                 placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
@@ -184,23 +187,29 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
 
             // Fields
             item {
-                CustomOutlinedTextField(
-                    value = uiState.petName,
-                    onValueChange = viewModel::onPetNameChange,
-                    placeholder = "Enter pet name",
-                    label = "Pet Name"
-                )
+                uiState.petProfileData?.let {
+                    it.pet_name?.let { it1 ->
+                        CustomOutlinedTextField(
+                            value = it1,
+                            onValueChange = viewModel::onPetNameChange,
+                            placeholder = "Enter pet name",
+                            label = "Pet Name"
+                        )
+                    }
+                }
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
             item {
-                CustomOutlinedTextField(
-                    value = uiState.petBreed,
-                    onValueChange = viewModel::onPetBreedChange,
-                    placeholder = "Enter Breed",
-                    label = "Pet Breed"
-                )
+                uiState.petProfileData?.pet_breed?.let {
+                    CustomOutlinedTextField(
+                        value = it,
+                        onValueChange = viewModel::onPetBreedChange,
+                        placeholder = "Enter Breed",
+                        label = "Pet Breed"
+                    )
+                }
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -223,37 +232,26 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
             item {
-                CustomOutlinedTextField(
-                    value = uiState.petBio,
-                    onValueChange = viewModel::onPetBioChange,
-                    placeholder = "Enter Bio",
-                    label = "Pet Bio",
-                    modifier = Modifier
-                        .bringIntoViewRequester(bringIntoViewRequester)
-                        .onFocusEvent { focusState ->
-                            if (focusState.isFocused) {
-                                coroutineScope.launch {
-                                    bringIntoViewRequester.bringIntoView()
+                uiState.petProfileData?.let {
+                    it.pet_bio?.let { it1 ->
+                        CustomOutlinedTextField(
+                            value = it1,
+                            onValueChange = viewModel::onPetBioChange,
+                            placeholder = "Enter Bio",
+                            label = "Pet Bio",
+                            modifier = Modifier
+                                .bringIntoViewRequester(bringIntoViewRequester)
+                                .onFocusEvent { focusState ->
+                                    if (focusState.isFocused) {
+                                        coroutineScope.launch {
+                                            bringIntoViewRequester.bringIntoView()
+                                        }
+                                    }
                                 }
-                            }
-                        }
-                )
+                        )
+                    }
+                }
 
-            }
-
-            item { Spacer(modifier = Modifier.height(16.dp)) }
-
-            item { FormHeadingText("Managed by") }
-
-            item { Spacer(Modifier.height(5.dp)) }
-
-            item {
-                CustomDropdownBox(
-                    label = managedBy.ifEmpty { "Pet Mom" },
-                    items = listOf("Pet Mom", "Pet Dad"),
-                    selectedItem = managedBy,
-                    onItemSelected = { managedBy = it }
-                )
             }
 
             item { Spacer(modifier = Modifier.height(32.dp)) }
@@ -330,7 +328,7 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
 fun EditPetProfileScreenPreview() {
     val navController = NavHostController(LocalContext.current)
     MaterialTheme {
-        EditPetProfileScreen(navController)
+        EditPetProfileScreen(navController,petId = "")
     }
 }
 

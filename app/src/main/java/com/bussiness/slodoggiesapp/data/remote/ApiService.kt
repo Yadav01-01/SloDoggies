@@ -13,6 +13,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsRes
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
@@ -308,9 +309,21 @@ interface ApiService {
     ) : Response<CommonResponse>
 
     @FormUrlEncoded
-    @POST(ApiEndPoint.GET_OWNER_GALLERY)
+    @POST(ApiEndPoint.GET_OWNER_PROFILE)
     suspend fun getOwnerProfile(
         @Field("user_id") userId: String,
     ) : Response<PetOwnerDetailsResponse>
 
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_OWNER_GALLERY)
+    suspend fun getOwnerGallery(
+        @Field("user_id") userId: String,
+        @Field("page") page : String
+    ) : Response<OwnerGalleryResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_PET_DETAIL)
+    suspend fun getPetDetail(
+        @Field("pet_id") petId: String,
+    ) : Response<UpdatePetModel>
 }

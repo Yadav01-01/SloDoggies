@@ -5,6 +5,5 @@ data class PetInfo(
     val breed: String,
     val age: String,
     val bio: String,
-    val managedBy: String
 )
 

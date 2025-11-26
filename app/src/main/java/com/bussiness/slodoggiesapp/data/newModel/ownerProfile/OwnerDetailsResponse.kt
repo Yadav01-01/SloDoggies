@@ -35,33 +35,35 @@ data class OwnerData(
 )
 
 data class Pet(
+
     @SerializedName("id")
-    val id: Int = 0,
+    val id: Int? = null,
 
     @SerializedName("owner_user_id")
-    val ownerUserId: Int = 0,
+    val ownerUserId: Int? = null,
 
     @SerializedName("pet_name")
-    val petName: String = "",
+    val petName: String? = null,
 
     @SerializedName("pet_breed")
-    val petBreed: String = "",
+    val petBreed: String? = null,
 
     @SerializedName("pet_age")
-    val petAge: String = "",
+    val petAge: String? = null,
 
     @SerializedName("pet_image")
-    val petImage: String = "",
+    val petImage: String? = null,
 
     @SerializedName("pet_bio")
-    val petBio: String = "",
+    val petBio: String? = null,
 
     @SerializedName("created_at")
-    val createdAt: String = "",
+    val createdAt: String? = null,
 
     @SerializedName("updated_at")
-    val updatedAt: String = ""
+    val updatedAt: String? = null
 )
+
 
 data class Owner(
     @SerializedName("id")

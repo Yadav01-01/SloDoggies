@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,15 +21,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -36,6 +37,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,9 +48,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,30 +68,22 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerPostItem
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.Pet
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialog
-import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.pets
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.ownerProfile.PetOwnerProfileViewModel
-import com.bussiness.slodoggiesapp.viewModel.petOwner.petlist.PetListViewModel
-
-// Sample photo URLs - replace with your actual image URLs
-private val photos = listOf(
-    R.drawable.dummy_person_image3, // Woman with dog on beach
-    R.drawable.dummy_person_image3, // Man feeding dog on beach
-)
 
 @Composable
 fun PetProfileScreen(navController: NavHostController) {
-    val viewModel: PetOwnerProfileViewModel = hiltViewModel()
 
+    val viewModel: PetOwnerProfileViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val selectedPet by viewModel.selectedPet.collectAsState()
+    val selectedPet = uiState.data.pets.getOrNull(uiState.selectedPet)
     val context = LocalContext.current
 
     LaunchedEffect(uiState.errorMessage) {
@@ -101,71 +92,61 @@ fun PetProfileScreen(navController: NavHostController) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    BackHandler {
+        if (!navController.popBackStack(Routes.HOME_SCREEN,
+                false)) {
+            navController.navigate(Routes.HOME_SCREEN) {
+                launchSingleTop = true
+            }
+        }
+    }
 
-        BackHandler {
-            if (!navController.popBackStack(Routes.HOME_SCREEN,
-                    false)) {
-                navController.navigate(Routes.HOME_SCREEN) {
-                    launchSingleTop = true
-                }
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentPadding = PaddingValues(bottom = 30.dp)
+    ) {
+        item {
+            ScreenHeadingText(
+                textHeading = "My Profile",
+                onBackClick = {
+                    if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
+                        navController.navigate(Routes.HOME_SCREEN) { launchSingleTop = true }
+                    }
+                },
+                onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN) }
+            )
+            HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
+        }
+
+        item {
+            Column(Modifier.padding(horizontal = 10.dp)) {
+
+                Text(
+                    text = stringResource(R.string.My_Pets),
+                    fontSize = 16.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+                Divider(color = Color(0xFF949494), thickness = 1.dp)
+
+                Spacer(Modifier.height(15.dp))
+
+                CircularProfileRow(
+                    profiles = uiState.data.pets,
+                    onProfileClick = { _, index -> viewModel.onPetSelected(index) },
+                    onAddClick = { viewModel.petInfoDialog(true) }
+                )
+
+                Spacer(Modifier.height(24.dp))
             }
         }
 
-        ScreenHeadingText(textHeading = "My Profile",
-            onBackClick = {    if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
-                navController.navigate(Routes.HOME_SCREEN) {
-                    launchSingleTop = true
-                }
-            } },
-            onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
-
-        HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp)
-        ) {
-            // Header
-            Text(
-                text = stringResource(R.string.My_Pets),
-                fontSize = 16.sp,
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                fontWeight = FontWeight.Medium,
-                color = Color.Black,
-                modifier = Modifier.padding(bottom = 10.dp)
-            )
-
-            Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp),
-                color = Color(0xFF949494),
-                thickness = 1.dp
-            )
-
-            // Add Pet Button
-            Spacer(Modifier.height(15.dp))
-
-            CircularProfileRow(
-                profiles = uiState.data.pets,
-                onProfileClick = { pet ->
-                    viewModel.onPetSelected(pet)
-                },
-                onAddClick = {
-                    viewModel.petInfoDialog(true)
-                }
-            )
-
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Pet Profile Card
+        item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 shape = RoundedCornerShape(12.dp)
@@ -179,18 +160,12 @@ fun PetProfileScreen(navController: NavHostController) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
 
-
-//                        AsyncImage(
-//                            model = R.drawable.ic_pet_face_iconss,
-//                            contentDescription = "Pet Avatar",
-//                            placeholder = painterResource(R.drawable.ic_pet_face_iconss),
-//                            error = painterResource(R.drawable.ic_pet_face_iconss) ,
-//                            modifier = Modifier.size(90.dp)
-//                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.dog_ic),
+                        AsyncImage(
+                            model = selectedPet?.petImage ?: "",
                             contentDescription = "Pet Avatar",
-                            modifier = Modifier.size(90.dp)
+                            placeholder = painterResource(R.drawable.ic_pet_face_iconss),
+                            error = painterResource(R.drawable.ic_pet_face_iconss) ,
+                            modifier = Modifier.size(90.dp).clip(CircleShape)
                         )
 
                         Spacer(modifier = Modifier.width(16.dp))
@@ -204,7 +179,7 @@ fun PetProfileScreen(navController: NavHostController) {
                                 modifier = Modifier.padding(bottom = 4.dp)
                             ) {
                                 Text(
-                                    text = "Jimmi",
+                                    text = selectedPet?.petName ?: "Pet Name",
                                     fontSize = 16.sp,
                                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                     fontWeight = FontWeight.Medium,
@@ -218,9 +193,11 @@ fun PetProfileScreen(navController: NavHostController) {
                                     modifier = Modifier
                                         .size(18.dp)
                                         .clickable {
-                                            navController.navigate(Routes.EDIT_PET_PROFILE_SCREEN)
+                                            val petId = selectedPet?.id ?: return@clickable
+                                            navController.navigate("${Routes.EDIT_PET_PROFILE_SCREEN}/$petId")
                                         }
                                 )
+
                             }
 
                             Row(
@@ -238,10 +215,11 @@ fun PetProfileScreen(navController: NavHostController) {
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "Brown Breed",
+                                        text = selectedPet?.petBreed ?: "Breed",
                                         fontSize = 12.sp,
                                         color = PrimaryColor,
-                                        fontFamily = FontFamily(Font(R.font.outfit_medium))
+                                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                        lineHeight = 20.sp
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(14.dp))
@@ -256,10 +234,11 @@ fun PetProfileScreen(navController: NavHostController) {
                                     contentAlignment = Alignment.Center // This works in Box
                                 ) {
                                     Text(
-                                        text = "3 Years Olds",
+                                        text = "${ selectedPet?.petAge ?: "0" } Years Olds ",
                                         fontSize = 12.sp,
                                         color = Color(0xFFFF771C),
-                                        fontFamily = FontFamily(Font(R.font.outfit_medium))
+                                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                        lineHeight = 20.sp
                                     )
                                 }
                             }
@@ -267,12 +246,13 @@ fun PetProfileScreen(navController: NavHostController) {
                             Spacer(modifier = Modifier.height(4.dp))
 
                             Text(
-                                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ",
+                                text = selectedPet?.petBio ?: "No Bio Available",
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                 fontWeight = FontWeight.Normal,
                                 lineHeight = 15.sp,
-                                color = Color.Black
+                                color = Color.Black,
+                                maxLines = 3
                             )
                         }
                     }
@@ -280,7 +260,9 @@ fun PetProfileScreen(navController: NavHostController) {
             }
 
             Spacer(modifier = Modifier.height(14.dp))
+        }
 
+        item {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -327,8 +309,11 @@ fun PetProfileScreen(navController: NavHostController) {
 
 
             Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                 shape = RoundedCornerShape(12.dp)
@@ -344,9 +329,9 @@ fun PetProfileScreen(navController: NavHostController) {
                     AsyncImage(
                         model = uiState.data.owner.image,
                         contentDescription = "Owner Avatar",
-                        placeholder = painterResource(R.drawable.dummy_person_image1),
-                        error = painterResource(R.drawable.ic_person_icon1),
-                        modifier = Modifier.size(55.dp)
+                        placeholder = painterResource(R.drawable.ic_person_icon),
+                        error = painterResource(R.drawable.ic_person_icon),
+                        modifier = Modifier.size(55.dp).clip(CircleShape)
                     )
 
                     Spacer(modifier = Modifier.width(12.dp))
@@ -391,61 +376,117 @@ fun PetProfileScreen(navController: NavHostController) {
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
+        }
 
             // Gallery Section
+        item {
             Text(
                 text = "Gallery",
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                modifier = Modifier.padding(bottom = 10.dp)
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = Color.Black
             )
             Divider(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 10.dp),
-                color = Color(0xFF949494),
-                thickness = 1.dp
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                color = Color(0xFF949494)
             )
-
+        }
             // No Posts State
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Paw Print Icon
+            if (uiState.posts.isEmpty()){
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_pet_post_icon),
+                            contentDescription = "Pet Avatar",
+                            modifier = Modifier
+                                .width(80.dp)
+                                .height(90.dp)
+                        )
 
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                Image(
-                    painter = painterResource(id = R.drawable.ic_pet_post_icon),
-                    contentDescription = "Pet Avatar",
-                    modifier = Modifier
-                        .width(80.dp)
-                        .height(90.dp)
-                )
+                        Text(
+                            text = "No Post Yet",
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            color = Color.Black
+                        )
 
+                        Spacer(modifier = Modifier.height(2.dp))
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "No Post Yet",
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    color = Color.Black
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                TextButton(
-                    onClick = { navController.navigate(Routes.PET_NEW_POST_SCREEN) }
-                ) {
-                    Text(
-                        text = "Create Post",
-                        color = Color(0xFF258694),
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontSize = 16.sp
-                    )
+                        TextButton(
+                            onClick = { navController.navigate(Routes.PET_NEW_POST_SCREEN) }
+                        ) {
+                            Text(
+                                text = "Create Post",
+                                color = Color(0xFF258694),
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 16.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+
+            }else{
+                items(uiState.posts.chunked(3)) { rowItems ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp, vertical = 6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+
+                        rowItems.forEach { post ->
+                            AsyncImage(
+                                model = post.mediaPath?.firstOrNull(),
+                                placeholder = painterResource(R.drawable.no_image_placeholder),
+                                error = painterResource(R.drawable.no_image_placeholder),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .clickable {
+                                        navController.navigate(Routes.USER_POST_SCREEN)
+                                    },
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+
+                        // Fill empty spaces in last row
+                        repeat(3 - rowItems.size) {
+                            Spacer(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                            )
+                        }
+                    }
+                }
+
+            }
+        item {
+            // Trigger load more when reached bottom
+            LaunchedEffect(Unit) {
+                viewModel.loadNextPage()
+            }
+
+            if (uiState.isLoadingMore) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(color = PrimaryColor, modifier = Modifier.size(20.dp))
+                }
             }
         }
     }
@@ -471,54 +512,30 @@ fun PetProfileScreen(navController: NavHostController) {
 }
 
 @Composable
-fun BeachPhotoGrid() {
+fun BeachPhotoGrid(posts: List<OwnerPostItem>, modifier: Modifier = Modifier) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
+        modifier = modifier,
         contentPadding = PaddingValues(16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier.fillMaxSize()
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(photos) { photo ->
+        items(
+            items = posts,
+            key = { it.id ?: it.hashCode() }
+        ) { data ->
+            val firstImage = data.mediaPath?.firstOrNull()
             AsyncImage(
-                model = photo,
-                contentDescription = "Beach photo",
+                model = data.mediaPath?.firstOrNull() ?: "",
+                contentDescription = null,
+                placeholder = painterResource(R.drawable.no_image_placeholder),
+                error = painterResource(R.drawable.no_image_placeholder),
                 modifier = Modifier
-                    .height(130.dp)
-                    .width(80.dp)
-                    .clip(RoundedCornerShape(12.dp)),
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(10.dp)),
                 contentScale = ContentScale.Crop
             )
-
         }
-    }
-}
-
-
-@Composable
-fun StatItem(number: String, label: String, navController: NavController) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.clickable {
-            if (label == "Followers") {
-                navController.navigate(Routes.FOLLOWER_SCREEN)
-            } else if (label == "Followers") {
-                navController.navigate(Routes.FOLLOWER_SCREEN)
-            }
-        }
-    ) {
-        Text(
-            text = number,
-            fontSize = 16.sp,
-            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            color = Color(0xFF258694)
-        )
-        Text(
-            text = label,
-            fontSize = 15.sp,
-            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-            color = Color.Black
-        )
     }
 }
 
@@ -526,7 +543,7 @@ fun StatItem(number: String, label: String, navController: NavController) {
 fun CircularProfileRow(
     profiles: List<Pet>,
     modifier: Modifier = Modifier,
-    onProfileClick: (Pet) -> Unit = {},
+    onProfileClick: (Pet, Int) -> Unit = { _, _ -> },
     onAddClick: () -> Unit = {}
 ) {
     LazyRow(
@@ -535,7 +552,6 @@ fun CircularProfileRow(
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
 
-        // CASE 1: If list empty → show only add button
         if (profiles.isEmpty()) {
             item {
                 Box(
@@ -543,14 +559,12 @@ fun CircularProfileRow(
                     contentAlignment = Alignment.Center
                 ) {
                     Button(
-                        onClick = { /*showPetInfoDialog = true*/ },
+                        onClick = onAddClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp)
                             .padding(horizontal = 60.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF2D8B8B)
-                        ),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2D8B8B)),
                         shape = RoundedCornerShape(8.dp)
                     ) {
                         Icon(
@@ -570,19 +584,19 @@ fun CircularProfileRow(
             return@LazyRow
         }
 
-        // CASE 2: Show all pet items
-        items(
+
+        itemsIndexed(
             items = profiles,
-            key = { it.id }
-        ) { profile ->
+            key = { _, pet -> pet.id.toString() }
+        ) { index, profile ->
             CircularProfileImage(
                 profile = profile,
-                onClick = { onProfileClick(profile) },
+                onClick = { onProfileClick(profile, index) },
                 modifier = Modifier.size(60.dp)
             )
         }
 
-        // CASE 3: Add button after last item
+
         item {
             AddButton(
                 onClick = onAddClick,
@@ -604,6 +618,7 @@ fun CircularProfileImage(
             .clip(CircleShape)
             .clickable { onClick() }
             .background(Color.Gray.copy(alpha = 0.2f))
+//            .border(width = 3.dp, color = PrimaryColor, shape = CircleShape)
     ) {
         AsyncImage(
             model = profile.petImage,

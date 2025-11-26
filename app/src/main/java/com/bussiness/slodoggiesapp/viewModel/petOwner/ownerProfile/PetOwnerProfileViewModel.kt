@@ -2,7 +2,6 @@ package com.bussiness.slodoggiesapp.viewModel.petOwner.ownerProfile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.Pet
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.OwnerProfileUiState
 import com.bussiness.slodoggiesapp.network.Resource
@@ -24,26 +23,32 @@ class PetOwnerProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(OwnerProfileUiState())
     val uiState: StateFlow<OwnerProfileUiState> = _uiState
 
-    // Selected Pet state
-    private val _selectedPet = MutableStateFlow<Pet?>(null)
-    val selectedPet: StateFlow<Pet?> = _selectedPet
-
     init {
         profileDetail()
+        galleryPostDetail()
     }
 
-    fun onPetSelected(pet: Pet) {
-        _selectedPet.value = pet
+    /** -----------------------------
+     *   SELECT PET (INDEX BASED)
+     * ----------------------------- */
+    fun onPetSelected(index: Int) {
+        _uiState.update { it.copy(selectedPet = index) }
     }
 
-    fun petInfoDialog(toggle : Boolean){
-        _uiState.update { it.copy(showPetInfoDialog = toggle) }
+    /** -----------------------------
+     *   PET INFO DIALOG ON/OFF
+     * ----------------------------- */
+    fun petInfoDialog(show: Boolean) {
+        _uiState.update { it.copy(showPetInfoDialog = show) }
     }
 
-    fun petAddedSuccessDialog(toggle: Boolean){
-        _uiState.update { it.copy(petAddedSuccessDialog = toggle) }
+    fun petAddedSuccessDialog(show: Boolean) {
+        _uiState.update { it.copy(petAddedSuccessDialog = show) }
     }
 
+    /** -----------------------------
+     *   LOAD OWNER PROFILE
+     * ----------------------------- */
     private fun profileDetail() {
         viewModelScope.launch {
             repository.getOwnerProfileDetails(sessionManager.getUserId())
@@ -61,20 +66,12 @@ class PetOwnerProfileViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             val response = result.data
-                            if (response.success) {
-                                _uiState.update {
-                                    it.copy(
-                                        isLoading = false,
-                                        data = response.data
-                                    )
-                                }
-                            } else {
-                                _uiState.update {
-                                    it.copy(
-                                        isLoading = false,
-                                        errorMessage = response.message
-                                    )
-                                }
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    data = response.data,
+                                    errorMessage = if (response.success) null else response.message
+                                )
                             }
                         }
 
@@ -92,4 +89,63 @@ class PetOwnerProfileViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun galleryPostDetail(page: Int = 1) {
+        viewModelScope.launch {
+            if (page == 1) {
+                _uiState.update { it.copy(isLoading = true) }
+            } else {
+                _uiState.update { it.copy(isLoadingMore = true) }
+            }
+
+            repository.getOwnerGalleryPost(sessionManager.getUserId(), page.toString())
+                .collectLatest { result ->
+                    when (result) {
+
+                        is Resource.Success -> {
+                            val response = result.data
+                            val galleryData = response.data
+
+                            val newPosts = galleryData?.posts ?: emptyList()
+
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isLoadingMore = false,
+                                    posts = if (page == 1) {
+                                        newPosts
+                                    } else {
+                                        it.posts + newPosts
+                                    },
+                                    currentPage = page,
+                                    canLoadMore = newPosts.isNotEmpty(),
+                                    errorMessage = null
+                                )
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isLoadingMore = false,
+                                    errorMessage = result.message
+                                )
+                            }
+                        }
+
+                        else -> Unit
+                    }
+                }
+        }
+    }
+
+    fun loadNextPage() {
+        val state = uiState.value
+        if (!state.isLoading && !state.isLoadingMore && state.canLoadMore) {
+            galleryPostDetail(state.currentPage + 1)
+        }
+    }
+
+
 }
