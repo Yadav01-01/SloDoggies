@@ -131,12 +131,22 @@ fun AudienceListItem(
             contentPadding = PaddingValues(horizontal = 18.dp, vertical = 0.dp)
         ) {
             Text(
-                text = if (isFollower) "Follow Back" else "Message",
+                text =
+                    if (isFollower) {
+                        if (data.isFollowing) {
+                            "Message"
+                        } else {
+                            "Follow Back"
+                        }
+                    } else {
+                        "Message"
+                    },
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
                 color = PrimaryColor
             )
+
         }
 
         Spacer(modifier = Modifier.width(12.dp))

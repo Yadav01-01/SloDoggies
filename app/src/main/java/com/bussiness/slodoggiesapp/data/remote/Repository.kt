@@ -9,6 +9,7 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
@@ -191,13 +192,15 @@ interface Repository {
     suspend fun getFollowerList(
         userId: String,
         page : String,
-        limit : String
+        limit : String,
+        search : String
     ) : Flow<Resource<FollowersResponse>>
 
     suspend fun getFollowingList(
         userId: String,
         page : String,
-        limit : String
+        limit : String,
+        search : String
     ) : Flow<Resource<FollowingResponse>>
 
     suspend fun getBusinessProfileDetail(
@@ -208,5 +211,13 @@ interface Repository {
         userId: String,
     ) : Flow<Resource<MyPostsResponse>>
 
+    suspend fun addAndRemoveFollowers(
+        userId: String,
+        followerId: String,
+    ) : Flow<Resource<CommonResponse>>
+
+    suspend fun getOwnerProfileDetails(
+        userId: String
+    ) : Flow<Resource<PetOwnerDetailsResponse>>
 
 }

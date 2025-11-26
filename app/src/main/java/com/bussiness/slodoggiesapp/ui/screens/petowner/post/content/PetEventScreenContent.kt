@@ -37,7 +37,7 @@ import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.ui.dialog.DateTimePickerDialog
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.getAddressFromLatLng
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
-import com.bussiness.slodoggiesapp.viewModel.createeventowner.EventCreateOwnerViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.createeventowner.EventCreateOwnerViewModel
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.Autocomplete
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode

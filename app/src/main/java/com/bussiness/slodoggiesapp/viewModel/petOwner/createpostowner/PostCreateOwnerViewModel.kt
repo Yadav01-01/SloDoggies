@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.viewModel.createpostowner
+package com.bussiness.slodoggiesapp.viewModel.petOwner.createpostowner
 
 import android.content.Context
 import android.net.Uri

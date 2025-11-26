@@ -15,6 +15,8 @@ import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -62,13 +64,25 @@ class VerifyOTPViewModel @Inject constructor(
         navigateToNextScreen(navController)
     }
 
+    private var timerJob: Job? = null
+
+    private fun startTimer() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            delay(30000)   // 30 seconds
+            onTimerFinish()
+        }
+    }
+
     fun onTimerFinish() {
         _uiState.update { it.copy(isTimerFinished = true) }
     }
 
     fun resetTimer() {
         _uiState.update { it.copy(isTimerFinished = false) }
+        startTimer()
     }
+
 
     private fun navigateToNextScreen(navController: NavHostController) {
         val route = if (sessionManager.getUserType() == UserType.Professional) {

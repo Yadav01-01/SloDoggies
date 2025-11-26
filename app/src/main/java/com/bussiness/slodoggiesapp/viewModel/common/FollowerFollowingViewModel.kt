@@ -10,9 +10,13 @@ import com.bussiness.slodoggiesapp.data.uiState.FollowerFollowingUiState
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,9 +28,12 @@ class FollowerFollowingViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(FollowerFollowingUiState())
-    val uiState: StateFlow<FollowerFollowingUiState> = _uiState
+    val uiState: StateFlow<FollowerFollowingUiState> = _uiState.asStateFlow()
 
-    // Independent pagination states for each list
+    // Query entered by the user (debounced)
+    private val searchQuery = MutableStateFlow("")
+
+    // Pagination states
     private var followerPage = 1
     private var followerTotalPages = 1
     private var followerLoadingMore = false
@@ -36,18 +43,44 @@ class FollowerFollowingViewModel @Inject constructor(
     private var followingLoadingMore = false
 
     init {
+        observeSearchInput()
+
+        // Auto load first time
         loadFollowers(reset = true)
     }
 
     /**
-     * When user switches tabs
+     * Called when user types in search bar
      */
+    fun onSearchQueryChange(query: String) {
+        searchQuery.value = query
+        _uiState.update { it.copy(query = query) }
+    }
+
+    /**
+     * Debounce search and auto trigger API
+     */
+    @OptIn(FlowPreview::class)
+    private fun observeSearchInput() {
+        viewModelScope.launch {
+            searchQuery
+                .debounce(500)
+                .distinctUntilChanged()
+                .collectLatest { newQuery ->
+                    if (uiState.value.selectedOption == "Follower") {
+                        loadFollowers(reset = true)
+                    } else {
+                        loadFollowing(reset = true)
+                    }
+                }
+        }
+    }
+
+
+    // When user switches tab
     fun updateSelectedOption(type: String) {
         _uiState.update {
-            it.copy(
-                selectedOption = type,
-                // UI will show previous data until new is loaded
-            )
+            it.copy(selectedOption = type)
         }
 
         if (type == "Follower") {
@@ -59,10 +92,8 @@ class FollowerFollowingViewModel @Inject constructor(
         }
     }
 
-    // ---------------------------
-    //  Mappers
-    // ---------------------------
 
+    //  Mappers
     private fun FollowerItem.toAudienceItem() = AudienceItem(
         id = id,
         name = name.orEmpty(),
@@ -79,36 +110,28 @@ class FollowerFollowingViewModel @Inject constructor(
         isFollowingMe = isFollowingMe ?: false
     )
 
-    // ---------------------------
-    //  FOLLOWERS API
-    // ---------------------------
+    //  Followers API
     fun loadFollowers(reset: Boolean = false) {
+
         val userId = sessionManager.getUserId()
 
         if (reset) {
             followerPage = 1
             followerTotalPages = 1
+            _uiState.update { it.copy(followers = emptyList()) }   // CLEAR LIST
         }
 
-        // prevent double load
         if (!reset && (followerLoadingMore || followerPage > followerTotalPages)) return
 
         viewModelScope.launch {
             repository.getFollowerList(
                 userId = userId,
                 page = followerPage.toString(),
-                limit = "20"
+                limit = "20",
+                search = searchQuery.value
             ).collectLatest { result ->
 
                 when (result) {
-
-                    is Resource.Loading -> {
-                        if (reset) {
-                            _uiState.update { it.copy(isRefreshing = false) }
-                        } else {
-                            followerLoadingMore = true
-                        }
-                    }
 
                     is Resource.Success -> {
                         val response = result.data.data
@@ -118,9 +141,10 @@ class FollowerFollowingViewModel @Inject constructor(
 
                         _uiState.update {
                             it.copy(
-                                isRefreshing = false,
                                 followers = if (reset) newData else it.followers + newData,
-                                isEmptyData = newData.isEmpty() && reset,
+                                isEmptyData = reset && newData.isEmpty(),
+                                totalFollower = response?.totalFollowers.toString(),
+                                totalFollowing = response?.totalFollowing.toString(),
                                 error = null
                             )
                         }
@@ -132,23 +156,23 @@ class FollowerFollowingViewModel @Inject constructor(
                     is Resource.Error -> {
                         _uiState.update {
                             it.copy(
-                                isRefreshing = false,
                                 error = result.message ?: "Something went wrong",
-                                isEmptyData = true
+                                isEmptyData = reset
                             )
                         }
                         followerLoadingMore = false
                     }
 
-                    Resource.Idle -> Unit
+                    else -> Unit
                 }
             }
         }
     }
 
-    // ---------------------------
-    //  FOLLOWING API
-    // ---------------------------
+
+
+
+    //  Following API
     private fun loadFollowing(reset: Boolean = false) {
 
         val userId = sessionManager.getUserId()
@@ -164,21 +188,17 @@ class FollowerFollowingViewModel @Inject constructor(
             repository.getFollowingList(
                 userId = userId,
                 page = followingPage.toString(),
-                limit = "20"
+                limit = "20",
+                search = searchQuery.value
             ).collectLatest { result ->
 
                 when (result) {
 
                     is Resource.Loading -> {
-                        if (reset) {
-                            _uiState.update { it.copy(isRefreshing = false) }
-                        } else {
-                            followingLoadingMore = true
-                        }
+                        if (!reset) followingLoadingMore = true
                     }
 
                     is Resource.Success -> {
-
                         val response = result.data.data
                         val newData = response?.data?.map { it.toAudienceItem() }.orEmpty()
 
@@ -186,9 +206,10 @@ class FollowerFollowingViewModel @Inject constructor(
 
                         _uiState.update {
                             it.copy(
-                                isRefreshing = false,
                                 following = if (reset) newData else it.following + newData,
                                 isEmptyData = newData.isEmpty() && reset,
+                                totalFollower = response?.totalFollower.toString(),
+                                totalFollowing = response?.totalFollowing.toString(),
                                 error = null
                             )
                         }
@@ -200,7 +221,6 @@ class FollowerFollowingViewModel @Inject constructor(
                     is Resource.Error -> {
                         _uiState.update {
                             it.copy(
-                                isRefreshing = false,
                                 error = result.message ?: "Something went wrong",
                                 isEmptyData = true
                             )
@@ -214,7 +234,45 @@ class FollowerFollowingViewModel @Inject constructor(
         }
     }
 
-    // Called when list scroll reaches bottom
+    // Toggle Follow / Unfollow
+    fun addAndRemoveFollowers(followedId: String) {
+        viewModelScope.launch {
+            repository.addAndRemoveFollowers(
+                sessionManager.getUserId(),
+                followedId
+            ).collectLatest { result ->
+
+                when (result) {
+                    is Resource.Success -> {
+
+                        _uiState.update { state ->
+                            val updatedList = state.followers.map { item ->
+                                if (item.id.toString() == followedId) {
+                                    item.copy(isFollowing = !item.isFollowing)
+                                } else item
+                            }
+                            state.copy(followers = updatedList)
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update {
+                            it.copy(error = result.message ?: "Something went wrong")
+                        }
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+    }
+
+
+    fun consumeError() {
+        _uiState.update { it.copy(error = null) }
+    }
+
+    // Pagination Scrolling
     fun loadNextPage() {
         if (uiState.value.selectedOption == "Follower") {
             loadFollowers(reset = false)

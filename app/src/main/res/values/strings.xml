@@ -193,6 +193,7 @@
     <string name="subscription_desc">To add services, you need to purchase a subscription plan. Without a subscription, you won’t be able to access this feature. You may choose to subscribe now or skip and continue.</string>
     <string name="enter_name_parent">Enter Name</string>
     <string name="Email_Phone">Email/ Phone</string>
+    <string name="My_Pets">My Pets</string>
 
 
 </resources>

@@ -2,6 +2,7 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow
 
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -89,13 +90,12 @@ fun SignUpScreen(
 
             is Resource.Error -> {
                 // Example: handle errors properly here (optional)
-                // Toast.makeText(context, otpState.message ?: "Something went wrong", Toast.LENGTH_SHORT).show()
+                 Toast.makeText(context, (otpState as Resource.Error).message, Toast.LENGTH_SHORT).show()
             }
 
             else -> Unit
         }
     }
-
 
     BackHandler {
         if (!isNavigating) {

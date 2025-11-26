@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,6 +44,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,58 +54,51 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.Pet
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialog
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.pets
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.petOwner.ownerProfile.PetOwnerProfileViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.petlist.PetListViewModel
 
 // Sample photo URLs - replace with your actual image URLs
 private val photos = listOf(
     R.drawable.dummy_person_image3, // Woman with dog on beach
     R.drawable.dummy_person_image3, // Man feeding dog on beach
-    R.drawable.dummy_person_image3, // Person petting dog on beach
-    R.drawable.dummy_person_image3, // Boy with dog in water
-    R.drawable.dummy_person_image3, // Dog jumping on beach
-    R.drawable.dummy_person_image3, // Black dog with people in background
-    R.drawable.dummy_person_image3, // Boy with dog in water (duplicate)
-    R.drawable.dummy_person_image3,
-    R.drawable.dummy_person_image3, // Dog jumping on beach
-    R.drawable.dummy_person_image3, // Black dog with people in background
-    R.drawable.dummy_person_image3, // Boy with dog in water (duplicate)
-    R.drawable.dummy_person_image3,
-    R.drawable.dummy_person_image3, // Dog jumping on beach
-    R.drawable.dummy_person_image3, // Black dog with people in background
-    R.drawable.dummy_person_image3, // Boy with dog in water (duplicate)
-    R.drawable.dummy_person_image3,
-    R.drawable.dummy_person_image3, // Dog jumping on beach
-    R.drawable.dummy_person_image3, // Black dog with people in background
-    R.drawable.dummy_person_image3, // Boy with dog in water (duplicate)
-    R.drawable.dummy_person_image3  // Black dog with people (duplicate)
 )
 
 @Composable
 fun PetProfileScreen(navController: NavHostController) {
-    var showPetInfoDialog by remember { mutableStateOf(false) }
-    var petAddedSuccessDialog by remember { mutableStateOf(false) }
-    var showAddButton by remember { mutableStateOf(true) }
+    val viewModel: PetOwnerProfileViewModel = hiltViewModel()
 
-    LaunchedEffect(Unit) {
-        showAddButton = false
+    val uiState by viewModel.uiState.collectAsState()
+    val selectedPet by viewModel.selectedPet.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.errorMessage) {
+        uiState.errorMessage?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
@@ -136,10 +131,11 @@ fun PetProfileScreen(navController: NavHostController) {
         ) {
             // Header
             Text(
-                text = "My Pets",
+                text = stringResource(R.string.My_Pets),
                 fontSize = 16.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                 fontWeight = FontWeight.Medium,
+                color = Color.Black,
                 modifier = Modifier.padding(bottom = 10.dp)
             )
 
@@ -154,56 +150,16 @@ fun PetProfileScreen(navController: NavHostController) {
             // Add Pet Button
             Spacer(Modifier.height(15.dp))
 
-            if (showAddButton) {
-                Button(
-                    onClick = { showPetInfoDialog = true },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .padding(horizontal = 60.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2D8B8B)
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add",
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Add Pet",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+            CircularProfileRow(
+                profiles = uiState.data.pets,
+                onProfileClick = { pet ->
+                    viewModel.onPetSelected(pet)
+                },
+                onAddClick = {
+                    viewModel.petInfoDialog(true)
                 }
-            } else {
-                val sampleProfiles = listOf(
-                    com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem(
-                        1,
-                        R.drawable.dog_ic
-                    ),
-                    com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem(2, R.drawable.dog1),
-                    com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem(3, R.drawable.dog3),
-                    com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem(
-                        6,
-                        isAddButton = true
-                    )
-                )
+            )
 
-                CircularProfileRow(
-                    profiles = sampleProfiles,
-                    onProfileClick = { profile ->
-                        // Handle profile click
-                        println("Clicked profile ${profile.id}")
-                    },
-                    onAddClick = {
-                        // Handle add button click
-                        showPetInfoDialog = true
-                    }
-                )
-            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -332,7 +288,7 @@ fun PetProfileScreen(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ProfileDetail(
-                    label = "20",
+                    label = uiState.data.postCount.toString(),
                     value = "Posts",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {}
@@ -345,7 +301,7 @@ fun PetProfileScreen(navController: NavHostController) {
                 )
 
                 ProfileDetail(
-                    label = "27k",
+                    label = uiState.data.followerCount.toString(),
                     value = "Followers",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {
@@ -360,7 +316,7 @@ fun PetProfileScreen(navController: NavHostController) {
                 )
 
                 ProfileDetail(
-                    label = "219",
+                    label = uiState.data.followingCount.toString(),
                     value = "Following",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {
@@ -385,16 +341,11 @@ fun PetProfileScreen(navController: NavHostController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-//                    AsyncImage(
-//                        model = R.drawable.ic_person_icon1,
-//                        contentDescription = "Owner Avatar",
-//                        placeholder = painterResource(R.drawable.dummy_person_image1),
-//                        error = painterResource(R.drawable.ic_person_icon1),
-//                        modifier = Modifier.size(55.dp)
-//                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.dummy_person_image1),
-                        contentDescription = "Pet Avatar",
+                    AsyncImage(
+                        model = uiState.data.owner.image,
+                        contentDescription = "Owner Avatar",
+                        placeholder = painterResource(R.drawable.dummy_person_image1),
+                        error = painterResource(R.drawable.ic_person_icon1),
                         modifier = Modifier.size(55.dp)
                     )
 
@@ -407,7 +358,7 @@ fun PetProfileScreen(navController: NavHostController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Lydia Vaccaro",
+                                text = uiState.data.owner.name,
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 fontWeight = FontWeight.Medium,
@@ -426,29 +377,10 @@ fun PetProfileScreen(navController: NavHostController) {
                             )
                         }
 
-                        Box(
-                            modifier = Modifier
-                                .width(70.dp)
-                                .background(
-                                    color = Color(0xFFE5EFF2),
-                                    shape = RoundedCornerShape(50)
-                                )
-                                .padding(horizontal = 0.dp, vertical = 1.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "Pet Mom",
-                                fontSize = 10.sp,
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                fontWeight = FontWeight.Medium,
-                                lineHeight = 15.sp,
-                                color = PrimaryColor
-                            )
-                        }
                         Spacer(Modifier.height(3.dp))
 
                         Text(
-                            text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed ",
+                            text = uiState.data.owner.bio,
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontWeight = FontWeight.Normal,
@@ -517,22 +449,22 @@ fun PetProfileScreen(navController: NavHostController) {
             }
         }
     }
-    if (showPetInfoDialog) {
+    if (uiState.showPetInfoDialog) {
         FillPetInfoDialog(
             data = null,
             "Add Your Pet",
-            onDismiss = { showPetInfoDialog = false },
+            onDismiss = { viewModel.petInfoDialog(false) },
             onAddPet = {
                 // Handle pet info saving
-                showPetInfoDialog = false
-                petAddedSuccessDialog = true
+                viewModel.petInfoDialog(false)
+              viewModel.petAddedSuccessDialog(true)
             },
-            onCancel = { showPetInfoDialog = false },
+            onCancel = { viewModel.petInfoDialog(false) },
             onProfile = true
         )
     }
-    if (petAddedSuccessDialog){
-        UpdatedDialogWithExternalClose(onDismiss = { petAddedSuccessDialog = false }, iconResId = R.drawable.ic_sucess_p, text = "Pet Added Successfully!",
+    if (uiState.petAddedSuccessDialog){
+        UpdatedDialogWithExternalClose(onDismiss = { viewModel.petAddedSuccessDialog(false) }, iconResId = R.drawable.ic_sucess_p, text = "Pet Added Successfully!",
             description = "Thanks for keeping things up to date!")
     }
 
@@ -590,39 +522,80 @@ fun StatItem(number: String, label: String, navController: NavController) {
     }
 }
 
-
 @Composable
 fun CircularProfileRow(
-    profiles: List<com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem>,
+    profiles: List<Pet>,
     modifier: Modifier = Modifier,
-    onProfileClick: (com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem) -> Unit = {},
+    onProfileClick: (Pet) -> Unit = {},
     onAddClick: () -> Unit = {}
 ) {
     LazyRow(
-        modifier = modifier,
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(profiles) { profile ->
-            if (profile.isAddButton) {
-                AddButton(
-                    onClick = onAddClick,
-                    modifier = Modifier.size(60.dp)
-                )
-            } else {
-                CircularProfileImage(
-                    profile = profile,
-                    onClick = { onProfileClick(profile) },
-                    modifier = Modifier.size(60.dp)
-                )
+
+        // CASE 1: If list empty → show only add button
+        if (profiles.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier.fillParentMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Button(
+                        onClick = { /*showPetInfoDialog = true*/ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(horizontal = 60.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF2D8B8B)
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Add Pet",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
+            return@LazyRow
+        }
+
+        // CASE 2: Show all pet items
+        items(
+            items = profiles,
+            key = { it.id }
+        ) { profile ->
+            CircularProfileImage(
+                profile = profile,
+                onClick = { onProfileClick(profile) },
+                modifier = Modifier.size(60.dp)
+            )
+        }
+
+        // CASE 3: Add button after last item
+        item {
+            AddButton(
+                onClick = onAddClick,
+                modifier = Modifier.size(60.dp)
+            )
         }
     }
 }
 
+
 @Composable
 fun CircularProfileImage(
-    profile: com.bussiness.slodoggiesapp.data.model.petOwner.ProfileItem,
+    profile: Pet,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -632,14 +605,14 @@ fun CircularProfileImage(
             .clickable { onClick() }
             .background(Color.Gray.copy(alpha = 0.2f))
     ) {
-        profile.imageRes?.let { imageRes ->
-            Image(
-                painter = painterResource(id = imageRes),
-                contentDescription = "Profile picture",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        }
+        AsyncImage(
+            model = profile.petImage,
+            placeholder = painterResource(R.drawable.ic_dog_face_icon),
+            error = painterResource(R.drawable.ic_dog_face_icon),
+            contentDescription = "Profile picture",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
     }
 }
 

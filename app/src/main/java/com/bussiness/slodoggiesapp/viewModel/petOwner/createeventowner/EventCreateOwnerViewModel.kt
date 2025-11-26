@@ -1,4 +1,4 @@
-package com.bussiness.slodoggiesapp.viewModel.createeventowner
+package com.bussiness.slodoggiesapp.viewModel.petOwner.createeventowner
 
 import android.content.Context
 import android.net.Uri

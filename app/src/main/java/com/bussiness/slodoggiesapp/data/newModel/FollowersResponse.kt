@@ -34,6 +34,9 @@ data class FollowersData(
     @SerializedName("total_followers")
     val totalFollowers: Int? = null,
 
+    @SerializedName("total_following")
+    val totalFollowing: Int? = null,
+
     @SerializedName("total_page")
     val totalPage: Int? = null,
 

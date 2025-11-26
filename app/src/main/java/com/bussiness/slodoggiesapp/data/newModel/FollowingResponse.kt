@@ -23,6 +23,9 @@ data class FollowingData(
     @SerializedName("limit")
     val limit: Int?,
 
+    @SerializedName("total_followers")
+    val totalFollower: Int?,
+
     @SerializedName("total_following")
     val totalFollowing: Int?,
 
