@@ -292,11 +292,11 @@ fun ImageGalleryScreen() {
 
         // Full-screen image viewer
         selectedImageIndex?.let { index ->
-            FullScreenImageViewerScreen(
+            /*FullScreenImageViewerScreen(
                 images = images,
                 initialIndex = index,
                 onDismiss = { selectedImageIndex = null }
-            )
+            )*/
         }
     }
 }

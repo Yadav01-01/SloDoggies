@@ -11,9 +11,8 @@ import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfile
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.Data
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.network.Resource
-import com.bussiness.slodoggiesapp.ui.component.common.createMultipartList
 import com.bussiness.slodoggiesapp.ui.component.common.createMultipartListUriUrl
-import com.bussiness.slodoggiesapp.ui.component.common.createSingleMultipart
+
 import com.bussiness.slodoggiesapp.ui.component.common.createSingleMultipartUrlUri
 import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -36,6 +35,8 @@ class BusinessProfileViewModel @Inject constructor(
     val uiState: StateFlow<BusinessProfileModel> = _uiState.asStateFlow()
 
     private val _selectedPhotos = MutableStateFlow<List<String>>(emptyList())
+    val selectedPhotos: StateFlow<List<String>> = _selectedPhotos
+
 
     // List of business logos
     private val _businessLogo = MutableStateFlow<List<String>>(emptyList())
@@ -296,6 +297,7 @@ class BusinessProfileViewModel @Inject constructor(
     }
 
     fun addPhoto(uri: String) {
+        _selectedPhotos
         val updatedPhotos = _selectedPhotos.value + uri
         _selectedPhotos.value = updatedPhotos
         _uiState.update { state ->
@@ -353,6 +355,12 @@ class BusinessProfileViewModel @Inject constructor(
                             }?: kotlin.run {
                                 setInitialPhone("", verified =  false)
                             }
+
+                            data.verification_docs.let {
+                                if (it != null) {
+                                    _selectedPhotos.value = it
+                                }
+                            }
                         } else {
                             onError(response.message ?: "Failed to fetch owner details")
                         }
@@ -385,59 +393,78 @@ class BusinessProfileViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun upDateRegistration(context: Context, onSuccess: () -> Unit = { }, onError: (String) -> Unit){
+    fun upDateRegistration(
+        context: Context,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit
+    ) {
         val state = _uiState.value
         if (!validateEvent(state, onError)) return
-         viewModelScope.launch {
-             val businessLogo = state.data?.business_logo?.let { createSingleMultipartUrlUri(context,uriOrUrl = it, keyName = "business_logo") }
-             val imageParts = state.data?.verification_docs?.let {
-                createMultipartListUriUrl(context = context, items = it, keyName = "verification_docs[]")
-            }
-            val stateData = _uiState.value.data
-            repository.updateRegistrationRequest(
-                userId = sessionManager.getUserId(),
-                businessName = stateData?.business_name?:"",
-                providerName = stateData?.provider_name?:"",
-                email =stateData?.email?:"",
-                businessLogo = businessLogo,
-                businessCategory = stateData?.category?.joinToString(separator = ",") ?: "",
-                businessAddress =stateData?.address?:"",
-                latitude = stateData?.latitude?:"",
-                longitude = stateData?.longitude?:"",
-                city = stateData?.city?:"",
-                state = stateData?.state?:"",
-                zipCode = stateData?.zip_code?:"",
-                websiteUrl = stateData?.website_url?:"",
-                contactNumber = stateData?.phone?:"",
-                availableDays = stateData?.available_days?.joinToString(separator = ",") ?: "",
-                availableTime =stateData?.available_time?:"",
-                bio =stateData?.bio?:"",
-                imageDoc = imageParts,
-            ).collectLatest { result ->
-                when (result) {
-                    is Resource.Loading -> {
-                        _uiState.value = _uiState.value.copy(isLoading = true)
-                    }
-                    is Resource.Success -> {
-                        _uiState.value = _uiState.value.copy(isLoading = false)
-                        result.data.let { response ->
-                            if (response.success) {
-                                clearPhotos()
-                                onSuccess()
-                            } else {
-                                onError(response.message ?: "Login failed")
+
+        viewModelScope.launch {
+            try {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                val businessLogo = state.data?.business_logo?.let { createSingleMultipartUrlUri(context,uriOrUrl = it, keyName = "business_logo") }
+                // 1️⃣ first prepare all multipart parts
+                val imageDocsPart = state.data?.verification_docs?.let {
+                    createMultipartListUriUrl(
+                        context,
+                        items = it,
+                        keyName = "verification_docs[]"
+                    )
+                }
+                // 2️⃣ then call the API
+                repository.updateRegistrationRequest(
+                    userId = sessionManager.getUserId(),
+                    businessName = state.data?.business_name ?: "",
+                    providerName = state.data?.provider_name ?: "",
+                    email = state.data?.email ?: "",
+                    businessLogo = businessLogo,
+                    businessCategory = state.data?.category?.joinToString(",") ?: "",
+                    businessAddress = state.data?.address ?: "",
+                    latitude = state.data?.latitude ?: "",
+                    longitude = state.data?.longitude ?: "",
+                    city = state.data?.city ?: "",
+                    state = state.data?.state ?: "",
+                    zipCode = state.data?.zip_code ?: "",
+                    websiteUrl = state.data?.website_url ?: "",
+                    contactNumber = state.data?.phone ?: "",
+                    availableDays = state.data?.available_days?.joinToString(",") ?: "",
+                    availableTime = state.data?.available_time ?: "",
+                    bio = state.data?.bio ?: "",
+                    imageDoc = imageDocsPart
+                ).collectLatest { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            _uiState.value = _uiState.value.copy(isLoading = true)
+                        }
+                        is Resource.Success -> {
+                            _uiState.value = _uiState.value.copy(isLoading = false)
+                            result.data.let { response ->
+                                if (response.success) {
+                                    clearPhotos()
+                                    onSuccess()
+                                } else {
+                                    onError(response.message ?: "Login failed")
+                                }
                             }
                         }
+                        is Resource.Error -> {
+                            _uiState.value = _uiState.value.copy(isLoading = false)
+                            onError(result.message)
+                        }
+                        Resource.Idle -> TODO()
                     }
-                    is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(isLoading = false)
-                        onError(result.message)
-                    }
-                    Resource.Idle -> TODO()
                 }
+
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                onError(e.localizedMessage ?: "Something went wrong")
             }
         }
     }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun validateEvent(stateData: BusinessProfileModel, onError: (String) -> Unit): Boolean {

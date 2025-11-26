@@ -1,8 +1,9 @@
-package com.bussiness.slodoggiesapp.viewModel.servicebusiness
+package com.bussiness.slodoggiesapp.viewModel.serviceslist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
+import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -16,19 +17,19 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BusinessServicesViewModel @Inject constructor(
+class ServicesListViewModel @Inject constructor(
     private val repository: Repository,
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(BusinessDetailsModel())
-    val uiState: StateFlow<BusinessDetailsModel> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(ServicesListModel())
+    val uiState: StateFlow<ServicesListModel> = _uiState.asStateFlow()
 
 
 
-    fun getBusinessDetail(){
+    fun servicesList(){
         viewModelScope.launch {
-            repository.getBusinessDashboard(sessionManager.getUserId()).collectLatest { result ->
+            repository.servicesListRequest(sessionManager.getUserId()).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
                     is Resource.Success -> {
@@ -57,5 +58,7 @@ class BusinessServicesViewModel @Inject constructor(
     private fun onError(message: String?) {
         _uiState.update { it.copy(error = message ?: "Something went wrong") }
     }
+
+
 
 }

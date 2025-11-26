@@ -146,6 +146,7 @@ fun EditAddServiceScreen(
             SubmitButton(modifier = Modifier, buttonText = if (type ==  "add") "Add Service" else "Save Changes",
                 onClickButton = { viewModel.addOrUpdateService(serviceId = "",type = "updateService",images) }, buttonTextSize = 15)
         }
+
         if (state.addedServiceDialog) {
             if (type == "add") {
                 ServiceAdEditDialog(
@@ -170,6 +171,9 @@ fun EditAddServiceScreen(
             }
         }
     }
+
+
+
 }
 
 
@@ -177,6 +181,5 @@ fun EditAddServiceScreen(
 @Composable
 fun AddServiceScreenPreview() {
     val navController = rememberNavController()
-
     EditAddServiceScreen(navController = navController, type = "")
 }

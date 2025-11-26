@@ -4,6 +4,7 @@
     <style name="Theme.SlodoggiesApp" parent="android:Theme.Material.Light.NoActionBar" />
 
 
+
     <style name="TransparentEdgeToEdgeEnabledBottomSheetTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="bottomSheetDialogTheme">@style/TransparentEdgeToEdgeEnabledBottomSheetDialog</item>
     </style>

@@ -43,4 +43,5 @@ object Messages {
     const val EVENT_LOCATION_SMS = "Street can't be empty"
     const val ADDRESS_SMS = "Address can't be empty"
     const val DATE_TIME_COMPARE_SMS = "End date & time must be greater than start date & time"
+    const val EVENT_NO = "No event found"
 }
