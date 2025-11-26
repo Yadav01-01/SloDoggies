@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -27,6 +28,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -66,6 +68,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 @Composable
 fun PetSitterCard(
     name: String,
+    image: String,
     rating: Float,
     ratingCount: Int,
     providerName: String,
@@ -97,18 +100,17 @@ fun PetSitterCard(
                     contentAlignment = Alignment.Center
                 ) {
                     AsyncImage(
-                        model = "imageUrl", // replace with your Uri/String
-                        contentDescription = "Preview",
+                        model = image,
+                        contentDescription = "image",
                         placeholder = painterResource(R.drawable.fluent_color_paw),
                         error = painterResource(R.drawable.fluent_color_paw),
-                        fallback = painterResource(R.drawable.fluent_color_paw),
-                        contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(10.dp))
+                            .size(90.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
                     )
-                }
 
+                }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
@@ -463,14 +465,15 @@ fun AddServiceButton(modifier: Modifier,onClickButton : () -> Unit){
 @Composable
 fun CardPreview(){
     PetSitterCard(
-        name = "Pet Sitter Name",
+        name = "",
+        image = "",
         rating = 4.5f,
         ratingCount = 100,
-        providerName = "Provider Name",
-        about = "About the sitter",
-        phone = "123-456-7890",
-        website = "www.example.com",
-        address = "123 Main St, City, Country",
+        providerName = "",
+        about = "",
+        phone = "",
+        website = "",
+        address = "",
         onEditClick = {}
     )
 

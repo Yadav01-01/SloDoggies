@@ -21,6 +21,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.LoginScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.NewPasswordScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.SignUpScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.authFlow.VerifyOTPScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.VerifyAccount
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.JoinThePackScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.main.MainScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.LocationPermissionScreen
@@ -71,6 +72,20 @@ fun NavGraph(navController: NavHostController) {
                 val emailOrPhone = backStackEntry.arguments?.getString("emailOrPhone") ?: " "
                 NewPasswordScreen(navController, emailOrPhone)
             }
+
+
+            composable(
+                route = "${Routes.VERIFY_ACCOUNT_SCREEN}?type={type}&data={data}",
+                arguments = listOf(
+                    navArgument("type") { type = NavType.StringType; defaultValue = "default" },
+                    navArgument("data") { type = NavType.StringType; defaultValue = "" }
+                )
+            ) { backStackEntry ->
+                val type = backStackEntry.arguments?.getString("type") ?: "default"
+                val data = backStackEntry.arguments?.getString("data") ?: ""
+                VerifyAccount(navController, type = type, data = data)
+            }
+
 
             composable(
                 route = "${Routes.FORGOT_PASSWORD_SCREEN}/{type}",

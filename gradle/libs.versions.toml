@@ -39,6 +39,7 @@ placesVersion = "3.2.0"
 playServicesLocation = "21.3.0"
 retrofit = "2.11.0"
 securityCrypto = "1.1.0"
+roomRuntimeAndroid = "2.8.4"
 
 
 [libraries]
@@ -92,6 +93,7 @@ places = { module = "com.google.android.libraries.places:places", version.ref = 
 places-v320 = { module = "com.google.android.libraries.places:places", version.ref = "placesVersion" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

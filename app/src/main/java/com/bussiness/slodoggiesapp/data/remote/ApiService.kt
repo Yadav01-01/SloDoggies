@@ -10,6 +10,9 @@ import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
+import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
+import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
@@ -32,6 +35,22 @@ interface ApiService {
         @Field("emailOrPhone") emailOrPhone: String,
         @Field("apiType") apiType: String
     ): Response<OtpResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.SEND_EMAIL_PHONE_OTP)
+    suspend fun sendOtpRequest(
+        @Field("emailOrPhone") emailOrPhone: String,
+        @Field("user_id") userId: String
+    ): Response<OtpVerifyModel>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.VERIFY_EMAIL_PHONE_OTP)
+    suspend fun verifyOtpEmailPhoneRequest(
+        @Field("emailOrPhone") emailOrPhone: String,
+        @Field("user_id") userId: String,
+        @Field("otp") otp: String
+    ): Response<OtpVerifyModel>
+
 
     @FormUrlEncoded
     @POST(ApiEndPoint.USER_REGISTER)
@@ -122,6 +141,31 @@ interface ApiService {
         @Part("userType") userType: RequestBody,
         @Part petImage:List<MultipartBody.Part>?
     ) : Response<CommonResponse>
+
+
+    @Multipart
+    @POST(ApiEndPoint.BUSINESS_REGISTRATION)
+    suspend fun updateRegistrationRequest(
+        @Part("user_id") userId: RequestBody,
+        @Part("business_name") businessName: RequestBody,
+        @Part("provider_name") providerName: RequestBody,
+        @Part("email") email: RequestBody,
+        @Part businessLogo:MultipartBody.Part?,
+        @Part("business_category") businessCategory: RequestBody,
+        @Part("business_address") businessAddress: RequestBody,
+        @Part("latitude") latitude: RequestBody,
+        @Part("longitude") longitude: RequestBody,
+        @Part("city") city: RequestBody,
+        @Part("state") state: RequestBody,
+        @Part("zip_code") zipCode: RequestBody,
+        @Part("website_url") websiteUrl: RequestBody,
+        @Part("contact_number") contactNumber: RequestBody,
+        @Part("available_days") availableDays: RequestBody,
+        @Part("available_time") availableTime: RequestBody,
+        @Part("bio") bioUser: RequestBody,
+        @Part petImage:List<MultipartBody.Part>?
+    ) : Response<CommonResponse>
+
 
 
     @FormUrlEncoded
@@ -236,6 +280,19 @@ interface ApiService {
     suspend fun getBusinessProfileDetail(
         @Field("user_id") userId: String,
     ) : Response<BusinessDetailsResponse>
+
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_BUSINESS_PROFILE)
+    suspend fun getBusinessProfile(
+        @Field("user_id") userId: String,
+    ) : Response<BusinessProfileModel>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_BUSINESS_PROFILE_DASHBOARD)
+    suspend fun getBusinessDashboard(
+        @Field("user_id") userId: String,
+    ) : Response<BusinessDetailsModel>
 
     @FormUrlEncoded
     @POST(ApiEndPoint.GET_MY_POST)

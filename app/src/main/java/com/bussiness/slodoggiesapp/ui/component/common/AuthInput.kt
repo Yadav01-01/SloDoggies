@@ -60,9 +60,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.getImageModel
 
 @Composable
 fun AuthBackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -417,7 +419,6 @@ fun MediaUploadSection(
                 .fillMaxWidth()
                 .heightIn(max = 450.dp),
         ) {
-
             items(imageUris, key = { it.hashCode() }) { uri ->
 
                 Box(
@@ -455,6 +456,419 @@ fun MediaUploadSection(
     }
 }
 
+
+/*fun MediaUploadSectionUrlUri(
+    maxImages: Int = 6,
+    type : String = "video",
+    imageList: MutableList<String> = mutableListOf(),
+    onMediaSelected: (String) -> Unit = { },
+    onMediaUnSelected: (String) -> Unit = { }
+) {
+    val context = LocalContext.current
+
+    val imageUris = remember {
+        if (imageList.isNotEmpty()) {
+            mutableStateListOf(*imageList.toTypedArray())
+        } else {
+            mutableStateListOf()
+        }
+    }
+    var showDialog by remember { mutableStateOf(false) }
+    val cameraImageUri = remember { mutableStateOf<Uri?>(null) }
+
+    // ------------------ CAMERA (only used when maxImages > 1) ------------------
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            cameraImageUri.value?.let { uri ->
+                if (uri !in imageUris && imageUris.size < maxImages) {
+                    imageUris.add(uri.toString())
+                    onMediaSelected(uri.toString())
+                }
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val uri = createImageUri(context)
+            cameraImageUri.value = uri
+            if (uri != null) cameraLauncher.launch(uri)
+        } else {
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun launchCameraWithPermissionCheck() {
+        val permission = Manifest.permission.CAMERA
+        if (ContextCompat.checkSelfPermission(context, permission) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            val uri = createImageUri(context)
+            if (uri != null) {
+                cameraImageUri.value = uri
+                cameraLauncher.launch(uri)
+            }
+        } else {
+            permissionLauncher.launch(permission)
+        }
+    }
+
+    // ------------------ SINGLE PICKER (for maxImages == 1 only VIDEO) ------------------
+    val singlePickerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            imageUris.clear()
+            imageUris.add(it.toString())
+            onMediaSelected(it.toString())
+        }
+    }
+
+    // ------------------ MULTI PICKER (only when maxImages > 1) ------------------
+    val galleryLauncher =
+        if (maxImages > 1) {
+            rememberLauncherForActivityResult(
+                ActivityResultContracts.PickMultipleVisualMedia(maxImages)
+            ) { uris ->
+                val newUris = uris.to.filter { it !in imageUris }
+                if (imageUris.size + newUris.size <= maxImages) {
+                    imageUris.addAll(newUris)
+                    newUris.forEach { onMediaSelected(it) }
+                } else {
+                    Toast.makeText(
+                        context,
+                        "You can only upload up to $maxImages images",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else null  // IMPORTANT: avoid crash
+
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+
+        UploadPlaceholder {
+            if (imageUris.size >= maxImages) {
+                Toast.makeText(context, "Maximum $maxImages allowed", Toast.LENGTH_SHORT).show()
+            } else {
+                showDialog = true
+            }
+        }
+
+
+        // ------------------ DIALOG ------------------
+        if (showDialog) {
+            androidx.compose.material.AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Select Option") },
+                buttons = {
+
+                    Column(
+                        Modifier.fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            "Camera",
+                            Modifier
+                                .clickable {
+                                    launchCameraWithPermissionCheck()
+                                    showDialog = false
+                                }
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
+                        Text(
+                            "Gallery",
+                            Modifier
+                                .clickable {
+
+                                    if (maxImages == 1) {
+                                        // Only video
+                                        singlePickerLauncher.launch(
+                                            PickVisualMediaRequest(
+                                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                                            )
+                                        )
+                                    } else {
+                                        galleryLauncher?.launch(
+                                            PickVisualMediaRequest(
+                                                if (type.equals("video", true))
+                                                    ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                                                else
+                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                            )
+                                        )
+                                    }
+
+                                    showDialog = false
+                                }
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
+
+                    }
+                }
+            )
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // ------------------ SELECTED GRID ------------------
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 450.dp),
+        ) {
+            items(imageUris, key = { it.hashCode() }) { uri ->
+
+                Box(
+                    modifier = Modifier
+                        .size(105.dp)
+                        .padding(5.dp)
+                ) {
+
+                    Image(
+                        painter = rememberAsyncImagePainter(uri),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.LightGray),
+                        contentScale = ContentScale.Crop
+                    )
+
+                    Icon(
+                        painter = painterResource(R.drawable.ic_cross_icon),
+                        contentDescription = "Remove",
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(6.dp, (-6).dp)
+                            .size(20.dp)
+                            .clickable {
+                                imageUris.remove(uri)
+                                onMediaUnSelected(uri)
+                            }
+                    )
+                }
+            }
+        }
+    }
+}*/
+@Composable
+fun MediaUploadSectionUrlUri(
+    maxImages: Int = 6,
+    type: String = "video",
+    imageList: List<String> = emptyList(), // API images as strings
+    onMediaSelected: (String) -> Unit = { },
+    onMediaUnSelected: (String) -> Unit = { }
+) {
+    val context = LocalContext.current
+
+    // Combine API images + local selected images in a state list
+    val imageUris = remember {
+        mutableStateListOf(*imageList.toTypedArray())
+    }
+
+    var showDialog by remember { mutableStateOf(false) }
+    val cameraImageUri = remember { mutableStateOf<Uri?>(null) }
+
+    // ---------------- CAMERA LAUNCHER ----------------
+    val cameraLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) {
+            cameraImageUri.value?.let { uri ->
+                val uriString = uri.toString()
+                if (uriString !in imageUris && imageUris.size < maxImages) {
+                    imageUris.add(uriString)
+                    onMediaSelected(uriString)
+                }
+            }
+        }
+    }
+
+    // CAMERA PERMISSION LAUNCHER
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            val uri = createImageUri(context)
+            cameraImageUri.value = uri
+            if (uri != null) cameraLauncher.launch(uri)
+        } else {
+            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun launchCameraWithPermissionCheck() {
+        val permission = Manifest.permission.CAMERA
+        if (ContextCompat.checkSelfPermission(context, permission) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            val uri = createImageUri(context)
+            if (uri != null) {
+                cameraImageUri.value = uri
+                cameraLauncher.launch(uri)
+            }
+        } else {
+            permissionLauncher.launch(permission)
+        }
+    }
+
+    // ---------------- SINGLE PICKER (for maxImages == 1) ----------------
+    val singlePickerLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            imageUris.clear()
+            val uriString = it.toString()
+            imageUris.add(uriString)
+            onMediaSelected(uriString)
+        }
+    }
+
+    // ---------------- MULTI PICKER (maxImages > 1) ----------------
+    val galleryLauncher =
+        if (maxImages > 1) {
+            rememberLauncherForActivityResult(
+                ActivityResultContracts.PickMultipleVisualMedia(maxImages)
+            ) { uris ->
+                val newUris = uris.map { it.toString() }.filter { it !in imageUris }
+                if (imageUris.size + newUris.size <= maxImages) {
+                    imageUris.addAll(newUris)
+                    newUris.forEach { onMediaSelected(it) }
+                } else {
+                    Toast.makeText(
+                        context,
+                        "You can only upload up to $maxImages images",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else null
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+
+        UploadPlaceholder {
+            if (imageUris.size >= maxImages) {
+                Toast.makeText(context, "Maximum $maxImages allowed", Toast.LENGTH_SHORT).show()
+            } else {
+                showDialog = true
+            }
+        }
+
+        // ---------------- DIALOG ----------------
+        if (showDialog) {
+            androidx.compose.material.AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text("Select Option") },
+                buttons = {
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            "Camera",
+                            Modifier
+                                .clickable {
+                                    launchCameraWithPermissionCheck()
+                                    showDialog = false
+                                }
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
+                        Text(
+                            "Gallery",
+                            Modifier
+                                .clickable {
+                                    if (maxImages == 1) {
+                                        // Only video
+                                        singlePickerLauncher.launch(
+                                            PickVisualMediaRequest(
+                                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                                            )
+                                        )
+                                    } else {
+                                        galleryLauncher?.launch(
+                                            PickVisualMediaRequest(
+                                                if (type.equals("video", true))
+                                                    ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                                                else
+                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                            )
+                                        )
+                                    }
+                                    showDialog = false
+                                }
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
+                    }
+                }
+            )
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // ---------------- SELECTED GRID ----------------
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 450.dp),
+        ) {
+            items(imageUris, key = { it.hashCode() }) { uriString ->
+
+                Box(
+                    modifier = Modifier
+                        .size(105.dp)
+                        .padding(5.dp)
+                ) {
+
+                    // Use Coil to load both URLs and local URIs
+                    AsyncImage(
+                        model = getImageModel(uriString),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.LightGray),
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(id = R.drawable.fluent_color_paw),
+                        error = painterResource(id = R.drawable.fluent_color_paw)
+                    )
+
+                    Icon(
+                        painter = painterResource(R.drawable.ic_cross_icon),
+                        contentDescription = "Remove",
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(6.dp, (-6).dp)
+                            .size(20.dp)
+                            .clickable {
+                                imageUris.remove(uriString)
+                                onMediaUnSelected(uriString)
+                            }
+                    )
+                }
+            }
+        }
+    }
+}
 
 
 

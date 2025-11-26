@@ -379,7 +379,7 @@ fun CheckInputField(
 
 @Composable
 fun CategoryInputField(
-    categories: List<String>,
+    categories: MutableList<String>? = null,
     onCategoryAdded: (String) -> Unit,
     onCategoryRemoved: (String) -> Unit
 ) {
@@ -451,7 +451,7 @@ fun CategoryInputField(
             mainAxisSpacing = 8.dp,
             crossAxisSpacing = 8.dp
         ) {
-            categories.forEach { category ->
+            categories?.forEach { category ->
                 Box(
                     modifier = Modifier
                         .background(Color(0xFFE5EFF2), RoundedCornerShape(6.dp))
@@ -476,6 +476,11 @@ fun CategoryInputField(
                 }
             }
         }
+
+
+
+
+
     }
 }
 
@@ -525,8 +530,9 @@ fun ScreenHeadingText(
 }
 
 @Composable
-fun DayTimeSelector(
-    onDone: (selectedDays: List<String>, from: String, to: String) -> Unit
+fun DayTimeSelector(selectTime:String?= null,
+                    selectList:MutableList<String>? = null,
+                    onDone: (selectedDays: List<String>, from: String, to: String) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -534,12 +540,18 @@ fun DayTimeSelector(
         "All", "Monday", "Tuesday", "Wednesday",
         "Thursday", "Friday", "Saturday", "Sunday"
     )
-    val selectedDays = remember { mutableStateListOf<String>() }
 
-    var fromTime by remember { mutableStateOf("--:--") }
-    var toTime by remember { mutableStateOf("--:--") }
+    // Initialize selectedDays properly
+    val selectedDays = remember {
+        mutableStateListOf<String>().apply {
+            if (!selectList.isNullOrEmpty()) addAll(selectList)
+        }
+    }
+
+    val times = selectTime?.split("\\s*-\\s*".toRegex()) ?: listOf("--:--", "--:--")
+    var fromTime by remember { mutableStateOf(times.getOrNull(0) ?: "--:--") }
+    var toTime by remember { mutableStateOf(times.getOrNull(1) ?: "--:--") }
     var expanded by remember { mutableStateOf(false) }
-
     var showTimePicker by remember { mutableStateOf(false) }
     var isSelectingFrom by remember { mutableStateOf(true) }
 
@@ -557,6 +569,7 @@ fun DayTimeSelector(
             contentAlignment = Alignment.CenterStart
         ) {
             if (selectedDays.isNotEmpty() && fromTime != "--:--" && toTime != "--:--") {
+                onDone(selectedDays.toList(), fromTime, toTime)
                 Text(
                     text = "${selectedDays.joinToString(", ")} | $fromTime - $toTime",
                     fontSize = 14.sp,
@@ -703,6 +716,7 @@ fun DayTimeSelector(
             }
         )
     }
+
 }
 
 

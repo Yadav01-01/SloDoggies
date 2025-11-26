@@ -119,7 +119,6 @@ class EditBusinessViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             val profile = result.data.data
-
                             _uiState.update {
                                 it.copy(
                                     isLoading = false,

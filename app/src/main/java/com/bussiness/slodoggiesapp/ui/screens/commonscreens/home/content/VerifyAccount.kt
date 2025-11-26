@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -56,6 +57,8 @@ import kotlinx.coroutines.android.awaitFrame
 
 @Composable
 fun VerifyAccount(navController: NavHostController,data:String,type:String,viewModel: VerifyAccountViewModel = hiltViewModel()) {
+
+    val stateOtp by viewModel.uiState.collectAsState()
 
     val otp by viewModel.otp.collectAsState()
     val context = LocalContext.current
@@ -154,29 +157,41 @@ fun VerifyAccount(navController: NavHostController,data:String,type:String,viewM
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     color = TextGrey
                 )
-
                 Text(
                     text = stringResource(R.string.resend),
                     modifier = Modifier
-                        .clickable {  },
+                        .clickable {
+                            viewModel.sendOtpRequest(type=type,
+                                onError = { },
+                                onSuccess = {
+
+                                })
+                        },
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     color = PrimaryColor
                 )
             }
-
             Spacer(Modifier.height(22.dp))
-
             ContinueButton(
                 onClick = {
-                    viewModel.onVerifyClick(type, navController, context)
+                    viewModel.onVerifyClick(context,
+                        email=data,
+                        onError = {
+                            Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                        },
+                        onSuccess = {
+                            navController.previousBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("verification_result", type)
+                            navController.popBackStack()
+                        })
                 },
                 text = stringResource(R.string.verify_otp),
                 backgroundColor = if (viewModel.isOtpValid()) PrimaryColor else Color(0xFFD9D9D9),
                 textColor = if (viewModel.isOtpValid()) Color.White else Color(0xFF686868),
                 iconColor = if (viewModel.isOtpValid()) Color.White else Color(0xFF686868)
             )
-
         }
 
         // Paw icon positioned bottom-end

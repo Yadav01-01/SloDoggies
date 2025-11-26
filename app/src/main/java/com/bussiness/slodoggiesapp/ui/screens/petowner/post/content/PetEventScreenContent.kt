@@ -207,6 +207,7 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
             )
             Spacer(Modifier.height(30.dp))
         }
+
     }
     if (showDialog){
         DateTimePickerDialog(
@@ -219,4 +220,5 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
             }
         )
     }
+
 }

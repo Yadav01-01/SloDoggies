@@ -10,6 +10,9 @@ import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
+import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
+import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
@@ -22,6 +25,15 @@ interface Repository {
     suspend fun sendOtp(emailOrPhone: String,
                         apiType: String
     ): Flow<Resource<OtpResponse>>
+
+    suspend fun sendOtpRequest(emailOrPhone: String,
+                        userId: String
+    ): Flow<Resource<OtpVerifyModel>>
+
+    suspend fun otpVerifyEmailPhoneRequest(emailOrPhone: String,
+                               userId: String,
+                               otp: String
+    ): Flow<Resource<OtpVerifyModel>>
 
     suspend fun registerUser(fullName: String,
                              emailOrPhone: String,
@@ -76,6 +88,27 @@ interface Repository {
                                         image: List<MultipartBody.Part>?): Flow<Resource<CommonResponse>>
 
 
+    suspend fun updateRegistrationRequest(userId: String,
+                                          businessName: String,
+                                          providerName: String,
+                                          email: String,
+                                          businessLogo: MultipartBody.Part?,
+                                          businessCategory: String,
+                                          businessAddress: String,
+                                          latitude: String,
+                                          longitude: String,
+                                          city: String,
+                                          state: String,
+                                          zipCode: String,
+                                          websiteUrl: String,
+                                          contactNumber: String,
+                                          availableDays: String,
+                                          availableTime: String,
+                                          bio: String,
+                                          imageDoc: List<MultipartBody.Part>?): Flow<Resource<CommonResponse>>
+
+
+
 
     suspend fun petListRequest(userId: String
     ): Flow<Resource<PetListModel>>
@@ -118,6 +151,15 @@ interface Repository {
     suspend fun getBusinessDetail(
         userId: String,
     ) : Flow<Resource<OwnerDetailsResponse>>
+
+
+    suspend fun getBusinessProfile(
+        userId: String,
+    ) : Flow<Resource<BusinessProfileModel>>
+
+    suspend fun getBusinessDashboard(
+        userId: String,
+    ) : Flow<Resource<BusinessDetailsModel>>
 
     suspend fun registerAndUpdateBusiness(
         userId: String,
