@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -62,9 +63,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.getImageModel
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.getVideoThumbnail
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.isVideo
 
 @Composable
 fun AuthBackButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -421,21 +425,37 @@ fun MediaUploadSection(
         ) {
             items(imageUris, key = { it.hashCode() }) { uri ->
 
-                Box(
-                    modifier = Modifier
-                        .size(105.dp)
-                        .padding(5.dp)
-                ) {
+                // Check video
+                val isVideoFile = remember(uri) { isVideo(context, uri) }
 
-                    Image(
-                        painter = rememberAsyncImagePainter(uri),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(Color.LightGray),
-                        contentScale = ContentScale.Crop
-                    )
+                val bitmapThumb = remember(uri) {
+                    if (isVideoFile) getVideoThumbnail(context, uri) else null
+                }
+
+                Box(modifier = Modifier
+                        .size(105.dp)
+                        .padding(5.dp)) {
+                    if (bitmapThumb != null) {
+                        // Video thumbnail
+                        Image(
+                            bitmap = bitmapThumb.asImageBitmap(),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        // Image load via Coil
+                        Image(
+                            painter = rememberAsyncImagePainter(uri),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
 
                     Icon(
                         painter = painterResource(R.drawable.ic_cross_icon),
@@ -453,6 +473,11 @@ fun MediaUploadSection(
                 }
             }
         }
+
+
+
+
+
     }
 }
 

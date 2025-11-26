@@ -34,6 +34,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,9 +59,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.ServicePackage
+import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FullScreenImageViewerScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.EnhancedExpandableInfoSpinner
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -215,7 +218,7 @@ fun TypeButton(
 
 @Composable
 fun ServicePackageCard(
-    data: com.bussiness.slodoggiesapp.data.model.businessProvider.ServicePackage,
+    data: Data,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
@@ -243,7 +246,7 @@ fun ServicePackageCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = data.title,
+                    text = data.service_title?:"",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -284,7 +287,7 @@ fun ServicePackageCard(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
-                    text = data.description,
+                    text = data.description?:"",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Normal,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -296,7 +299,7 @@ fun ServicePackageCard(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                KeyValueRow(label = "Amount", value = data.amount)
+                KeyValueRow(label = "Amount", value = data.price?:"")
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -316,7 +319,7 @@ fun ServicePackageCard(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                PhotosGrid(data.photos)
+                data.service_image?.let { PhotosGrid(it) }
 
             }
         }
@@ -352,7 +355,7 @@ private fun KeyValueRow(label: String, value: String) {
 }
 
 @Composable
-private fun PhotosGrid(photos: List<Int>) {
+private fun PhotosGrid(photos: MutableList<String>) {
     val maxDisplay = 5
     val remaining = photos.size - maxDisplay
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
@@ -372,16 +375,35 @@ private fun PhotosGrid(photos: List<Int>) {
     ) {
         // Normal images
         itemsIndexed(photosToShow) { index, photo ->
-            Image(
-                painter = rememberAsyncImagePainter(photo),
+            SubcomposeAsyncImage(
+                model =photo,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
                     .clip(RoundedCornerShape(10.dp))
-                    .clickable { selectedImageIndex = index }
+                    .clickable { selectedImageIndex = index },
+                loading = {
+                    // Show loader
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                },
+                error = {
+                    Image(
+                        painterResource(R.drawable.no_image),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             )
+
         }
 
         // Last item -> either "+N" box or just the last photo

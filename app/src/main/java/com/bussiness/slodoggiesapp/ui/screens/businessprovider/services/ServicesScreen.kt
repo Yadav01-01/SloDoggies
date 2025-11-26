@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +31,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.Review
-import com.bussiness.slodoggiesapp.data.model.businessProvider.ReviewReply
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AddServiceButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
@@ -41,8 +41,8 @@ import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ReviewContent
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ServicePackageSection
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-import com.bussiness.slodoggiesapp.viewModel.businessprofile.BusinessProfileViewModel
 import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesViewModel
+import com.bussiness.slodoggiesapp.viewModel.serviceslist.ServicesListViewModel
 
 @Composable
 fun ServiceScreen(navController: NavHostController) {
@@ -50,6 +50,9 @@ fun ServiceScreen(navController: NavHostController) {
 
     val viewModel: BusinessServicesViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+    val viewModelService: ServicesListViewModel = hiltViewModel()
+    val uiStateService by viewModelService.uiState.collectAsState()
+
     var selected by remember { mutableStateOf("Services") }
     var commentReply by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
@@ -86,6 +89,15 @@ fun ServiceScreen(navController: NavHostController) {
         viewModel.getBusinessDetail()
     }
 
+    // Inside your Composable
+    // when this effect work then selected change to services
+    LaunchedEffect(selected) {
+        if (selected == "Services") {
+            viewModelService.servicesList()
+        } else if (selected == "Rating & Reviews") {
+             Log.d("Api call pending","******")
+        }
+    }
 
     BackHandler {
         navController.navigate(Routes.HOME_SCREEN) {
@@ -96,7 +108,9 @@ fun ServiceScreen(navController: NavHostController) {
         }
     }
 
-    Column ( modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column ( modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White)) {
 
         HeadingTextWithIcon(textHeading = stringResource(R.string.services),
             onBackClick = { navController.navigate(Routes.HOME_SCREEN){
@@ -150,7 +164,14 @@ fun ServiceScreen(navController: NavHostController) {
             }
 
             when (selected) {
-                "Services" -> ServicePackageSection(navController, onClickDelete = { deleteDialog = true })
+                "Services" -> {
+                    uiStateService.data?.let {
+                        ServicePackageSection(
+                            uiStateService = uiStateService.data,
+                            navController,
+                            onClickDelete = { deleteDialog = true })
+                    }
+                }
                 "Rating & Reviews" -> ReviewContent(reviewListData, onClickReply = { commentReply = true })
             }
 

@@ -101,6 +101,7 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose.v260)
+    implementation(libs.coil.video)
 
     // Hilt
     implementation(libs.hilt.android)

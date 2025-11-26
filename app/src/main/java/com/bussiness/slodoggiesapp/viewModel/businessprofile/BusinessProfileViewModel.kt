@@ -11,9 +11,8 @@ import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfile
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.Data
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.network.Resource
-import com.bussiness.slodoggiesapp.ui.component.common.createMultipartList
 import com.bussiness.slodoggiesapp.ui.component.common.createMultipartListUriUrl
-import com.bussiness.slodoggiesapp.ui.component.common.createSingleMultipart
+
 import com.bussiness.slodoggiesapp.ui.component.common.createSingleMultipartUrlUri
 import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -36,6 +35,8 @@ class BusinessProfileViewModel @Inject constructor(
     val uiState: StateFlow<BusinessProfileModel> = _uiState.asStateFlow()
 
     private val _selectedPhotos = MutableStateFlow<List<String>>(emptyList())
+    val selectedPhotos: StateFlow<List<String>> = _selectedPhotos
+
 
     // List of business logos
     private val _businessLogo = MutableStateFlow<List<String>>(emptyList())
@@ -296,6 +297,7 @@ class BusinessProfileViewModel @Inject constructor(
     }
 
     fun addPhoto(uri: String) {
+        _selectedPhotos
         val updatedPhotos = _selectedPhotos.value + uri
         _selectedPhotos.value = updatedPhotos
         _uiState.update { state ->
@@ -353,6 +355,12 @@ class BusinessProfileViewModel @Inject constructor(
                             }?: kotlin.run {
                                 setInitialPhone("", verified =  false)
                             }
+
+                            data.verification_docs.let {
+                                if (it != null) {
+                                    _selectedPhotos.value = it
+                                }
+                            }
                         } else {
                             onError(response.message ?: "Failed to fetch owner details")
                         }
@@ -395,18 +403,9 @@ class BusinessProfileViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-
                 _uiState.value = _uiState.value.copy(isLoading = true)
-
+                val businessLogo = state.data?.business_logo?.let { createSingleMultipartUrlUri(context,uriOrUrl = it, keyName = "business_logo") }
                 // 1️⃣ first prepare all multipart parts
-                val businessLogoPart = state.data?.business_logo?.let {
-                    createSingleMultipartUrlUri(
-                        context,
-                        uriOrUrl = it,
-                        keyName = "business_logo"
-                    )
-                }
-
                 val imageDocsPart = state.data?.verification_docs?.let {
                     createMultipartListUriUrl(
                         context,
@@ -414,14 +413,13 @@ class BusinessProfileViewModel @Inject constructor(
                         keyName = "verification_docs[]"
                     )
                 }
-
                 // 2️⃣ then call the API
                 repository.updateRegistrationRequest(
                     userId = sessionManager.getUserId(),
                     businessName = state.data?.business_name ?: "",
                     providerName = state.data?.provider_name ?: "",
                     email = state.data?.email ?: "",
-                    businessLogo = businessLogoPart,
+                    businessLogo = businessLogo,
                     businessCategory = state.data?.category?.joinToString(",") ?: "",
                     businessAddress = state.data?.address ?: "",
                     latitude = state.data?.latitude ?: "",

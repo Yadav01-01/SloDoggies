@@ -1,34 +1,73 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
-
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.data.model.businessProvider.Event
+import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.common.EventCard
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.Messages
+import com.bussiness.slodoggiesapp.viewModel.event.EventListViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
+
+@OptIn(ExperimentalMaterialApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MyEventScreen(navController: NavHostController) {
+
+    val viewModel: EventListViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
+    val isRefreshing = uiState.isRefreshing
+
+    val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = {
+        viewModel.refreshList()
+    })
+
+    val listState = rememberLazyListState()
+
+    // Pagination: Load next page when scroll to bottom
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val totalItems = listState.layoutInfo.totalItemsCount
+            lastVisibleItem to totalItems
+        }
+            .distinctUntilChanged()
+            .filter { (lastVisible, total) -> lastVisible >= total - 1 }
+            .collect {
+                viewModel.loadNextPage()
+            }
+    }
 
     BackHandler {
         if (!isNavigating) {
@@ -36,60 +75,74 @@ fun MyEventScreen(navController: NavHostController) {
             navController.popBackStack()
         }
     }
+
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-
-        val sampleEvents = listOf(
-            com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
-                id = "1",
-                imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+1",
-                title = "Puppy Party",
-                description = "Bring your puppy to play",
-                dateTime = "05- 25-2025 4:00 PM",
-                duration = "45 Mins.",
-                location = "Los Angeles County",
-                buttonText = "Join Chat"
-            ),
-            com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
-                id = "2",
-                imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+2",
-                title = "Adoption Drive",
-                description = "Meet adoptable dogs",
-                dateTime = "05- 25-2025 4:00 PM",
-                duration = "60 Mins.",
-                location = "San Diego County",
-                buttonText = "Community Chat"
-            ), com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
-                id = "2",
-                imageUrl = "https://via.placeholder.com/600x400.png?text=Dog+Event+2",
-                title = "Adoption Drive",
-                description = "Meet adoptable dogs",
-                dateTime = "05- 25-2025 4:00 PM",
-                duration = "60 Mins.",
-                location = "San Diego County",
-                buttonText = "Community Chat"
-            )
-        )
-
-        HeadingTextWithIcon(textHeading = "My Events", onBackClick = {  if (!isNavigating) {
-            isNavigating = true
-            navController.popBackStack()
-        } })
-
+        HeadingTextWithIcon(textHeading = "My Events", onBackClick = {
+            if (!isNavigating) {
+                isNavigating = true
+                navController.popBackStack()
+            }
+        })
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            items(sampleEvents) { event ->
-                EventCard(event = event, selectedOption = "") { clickedEvent ->
-                     navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+        Spacer(Modifier.height(5.dp))
+
+        Box(modifier = Modifier.fillMaxSize().pullRefresh(pullRefreshState)) {
+            val events = uiState.data?.data.orEmpty()
+            if (events.isEmpty() && !isRefreshing) {
+                // Centered "No event found" message when list is empty
+                // Make it scrollable so pull-to-refresh works
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = Messages.EVENT_NO,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 20.sp
+                        ),
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        color = Color(0xFF221B22)
+                    )
+                }
+            } else {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                        .padding(horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    items(events, key = { it.id }) { event ->
+                        EventCard(event = event, selectedOption = "") {
+                            navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+                        }
+                    }
+                    // Show bottom loader while next page is loading
+                    if (viewModel.isLoadingPage) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        }
+                    }
                 }
             }
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
-
 }

@@ -1,9 +1,14 @@
 package com.bussiness.slodoggiesapp.ui.component.common
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,16 +39,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.Event
+import com.bussiness.slodoggiesapp.data.newModel.eventmodel.DataX
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.convertDateMMDDYYYY
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EventCard(
-    event: com.bussiness.slodoggiesapp.data.model.businessProvider.Event,
+    event: DataX,
     selectedOption: String,
-    onButtonClick: (com.bussiness.slodoggiesapp.data.model.businessProvider.Event) -> Unit
+    onButtonClick: (DataX) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -56,19 +66,34 @@ fun EventCard(
     ) {
         Column {
             // Network image
-            AsyncImage(
-                model = event.imageUrl,
+            SubcomposeAsyncImage(
+                model = event.get_event_image?.get(0)?.media_path ?: "",
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                placeholder = painterResource(R.drawable.dog3),
-                error = painterResource(R.drawable.dog3),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp)
+                    .height(180.dp)
                     .padding(10.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp)),
+                loading = {
+                    // Show loader
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                },
+                error = {
+                    Image(
+                        painterResource(R.drawable.no_image),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             )
-
             // Text Content
             Column(modifier = Modifier.padding(12.dp)) {
 
@@ -78,11 +103,11 @@ fun EventCard(
                     modifier = Modifier.fillMaxWidth()
                 ){
                     Text(
-                        text = event.title,
+                        text = event.event_title?:"",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         color = Color.Black
                     )
 
@@ -94,10 +119,10 @@ fun EventCard(
                             modifier = Modifier.wrapContentSize()
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = event.dateTime,
+                        Text(text = (convertDateMMDDYYYY(event.event_start_date ?: "") +" "+ event.event_start_time) ?: "",
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            fontSize = 14.sp,
+                            fontSize = 12.sp,
                             color = Color.Black
                         )
                     }
@@ -112,16 +137,14 @@ fun EventCard(
                 ) {
 
                     Text(
-                        text = event.description,
+                        text = event.event_description?:"",
                         style = MaterialTheme.typography.bodySmall,
                         fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         color = TextGrey,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.widthIn(max = 150.dp)
                     )
-
-
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(id = R.drawable.cal_ic),
@@ -130,10 +153,10 @@ fun EventCard(
                             modifier = Modifier.wrapContentSize()
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = event.dateTime,
+                        Text(text = (convertDateMMDDYYYY(event.event_end_date ?: "") +" " + event.event_end_time) ?: "",
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            fontSize = 14.sp,
+                            fontSize = 12.sp,
                             color = Color.Black
                         )
                     }
@@ -150,11 +173,11 @@ fun EventCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = event.location,
+                        text = event.address?:"",
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
                         color = Color.Black
                     )
                 }
@@ -180,7 +203,7 @@ fun EventCard(
 @Preview
 @Composable
 fun PreviewEventCard() {
-    val sampleEvent = com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
+   /* val sampleEvent = com.bussiness.slodoggiesapp.data.model.businessProvider.Event(
         id = "1",
         imageUrl = "https://via.placeholder.com/600x400.png?text=Event+Image",
         title = "Event Title",
@@ -189,5 +212,5 @@ fun PreviewEventCard() {
         duration = "30 Mins.",
         location = "San Luis Obispo County",
     )
-    EventCard(event = sampleEvent, selectedOption = "My Events", onButtonClick = {})
+    EventCard(event = sampleEvent, selectedOption = "My Events", onButtonClick = {})*/
 }

@@ -14,8 +14,10 @@ import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
+import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
@@ -348,6 +350,20 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getBusinessDashboard(userId: String): Flow<Resource<BusinessDetailsModel>> = flow{
         emit(Resource.Loading)
         emit(safeApiCall { api.getBusinessDashboard(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun servicesListRequest(userId: String): Flow<Resource<ServicesListModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.servicesListRequest(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun eventListRequest(
+        userId: String,
+        page: String,
+        type: String
+    ): Flow<Resource<EventModel>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.eventListRequest(userId,page,type) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun registerAndUpdateBusiness(

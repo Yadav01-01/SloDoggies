@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,16 +38,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.bussiness.slodoggiesapp.R
 import kotlinx.coroutines.launch
 
 @Composable
 fun FullScreenImageViewerScreen(
-    images: List<Int>,
+    images: MutableList<String>,
     initialIndex: Int,
     onDismiss: () -> Unit
 ) {
-    var currentIndex by remember { mutableStateOf(initialIndex) }
+    var currentIndex by remember { androidx.compose.runtime.mutableIntStateOf(initialIndex) }
     val pagerState = rememberPagerState(
         initialPage = initialIndex,
         pageCount = { images.size }
@@ -83,7 +86,7 @@ fun FullScreenImageViewerScreen(
                     modifier = Modifier
                         .fillMaxSize()
                 ) { page ->
-                    AsyncImage(
+                   /* AsyncImage(
                         model = images[page],
                         contentDescription = "Full Screen Image",
                         modifier = Modifier
@@ -91,7 +94,35 @@ fun FullScreenImageViewerScreen(
                             .padding(horizontal = 10.dp)
                             .clip(RoundedCornerShape(10.dp)),
                         contentScale = ContentScale.Crop
+                    )*/
+                    SubcomposeAsyncImage(
+                        model =images[page],
+                        contentDescription = "Full Screen Image",
+                        modifier = Modifier
+                            .height(287.dp)
+                            .padding(horizontal = 10.dp)
+                            .clip(RoundedCornerShape(10.dp)),
+                        contentScale = ContentScale.Crop,
+                        loading = {
+                            // Show loader
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator()
+                            }
+                        },
+                        error = {
+                            Image(
+                                painterResource(R.drawable.no_image),
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     )
+
                 }
 
                 // Cross icon aligned to top-end of pager box
@@ -173,7 +204,7 @@ fun FullScreenImageViewerScreen(
 @Preview(showBackground = true)
 @Composable
 fun FullScreenImageViewerScreenPreview() {
-    val sampleImages = listOf(
+   /* val sampleImages = listOf(
         R.drawable.ic_cross_icon,
         R.drawable.ic_cross_icon,
         R.drawable.ic_cross_icon
@@ -183,5 +214,5 @@ fun FullScreenImageViewerScreenPreview() {
         images = sampleImages,
         initialIndex = 0,
         onDismiss = {}
-    )
+    )*/
 }

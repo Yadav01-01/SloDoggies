@@ -2,9 +2,15 @@ package com.bussiness.slodoggiesapp.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
 import android.location.Geocoder
+import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.AddressResult
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 class LocationUtils {
@@ -56,6 +62,42 @@ class LocationUtils {
                 value >= 1_000 -> String.format("%.2fk", value / 1_000.0)
                 else -> value.toString()
             }
+        }
+
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun convertDateMMDDYYYY(input: String?): String {
+            if (input.isNullOrBlank()) return ""
+            return try {
+                val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                val outputFormatter = DateTimeFormatter.ofPattern("MM-dd-yyyy")
+                val date = LocalDate.parse(input, inputFormatter)
+                date.format(outputFormatter)
+            } catch (e: Exception) {
+                ""
+            }
+        }
+
+        fun isVideo(context: Context, uri: Uri): Boolean {
+            val mimeType = context.contentResolver.getType(uri)
+            return mimeType?.startsWith("video") == true
+        }
+
+        fun getVideoThumbnail(context: Context, uri: Uri): Bitmap? {
+            return try {
+                val retriever = MediaMetadataRetriever()
+                retriever.setDataSource(context, uri)
+                val bitmap = retriever.getFrameAtTime(1_000_000) // 1 sec frame
+                retriever.release()
+                bitmap
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+
+        fun removeBaseUrl(url: String): String {
+            return url.replace("https://slodoggies.tgastaging.com/", "")
         }
 
     }

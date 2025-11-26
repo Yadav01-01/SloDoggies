@@ -12,8 +12,10 @@ import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
+import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import okhttp3.MultipartBody
@@ -293,6 +295,20 @@ interface ApiService {
     suspend fun getBusinessDashboard(
         @Field("user_id") userId: String,
     ) : Response<BusinessDetailsModel>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.SERVICE_LIST)
+    suspend fun servicesListRequest(
+        @Field("user_id") userId: String,
+    ) : Response<ServicesListModel>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.EVENT_LIST)
+    suspend fun eventListRequest(
+        @Field("user_id") userId: String,
+        @Field("page") page: String,
+        @Field("type") type: String
+    ) : Response<EventModel>
 
     @FormUrlEncoded
     @POST(ApiEndPoint.GET_MY_POST)

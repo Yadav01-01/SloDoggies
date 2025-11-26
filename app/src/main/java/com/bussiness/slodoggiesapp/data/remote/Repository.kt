@@ -12,8 +12,10 @@ import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
+import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
@@ -160,6 +162,18 @@ interface Repository {
     suspend fun getBusinessDashboard(
         userId: String,
     ) : Flow<Resource<BusinessDetailsModel>>
+
+    suspend fun servicesListRequest(
+        userId: String,
+    ) : Flow<Resource<ServicesListModel>>
+
+
+    suspend fun eventListRequest(
+        userId: String,
+        page: String,
+        type: String
+    ) : Flow<Resource<EventModel>>
+
 
     suspend fun registerAndUpdateBusiness(
         userId: String,
