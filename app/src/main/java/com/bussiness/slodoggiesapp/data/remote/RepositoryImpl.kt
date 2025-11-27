@@ -432,20 +432,17 @@ class RepositoryImpl @Inject constructor(
         userId: String,
         serviceTitle: String,
         description: String,
-        images: List<MultipartBody.Part>,
+        images: List<MultipartBody.Part>?,
         price: String,
         serviceId: String
     ): Flow<Resource<CommonResponse>> = flow {
-
         emit(Resource.Loading)
-
         // Convert text params to RequestBody
-        val id          = userId.toRequestBody()
-        val title       = serviceTitle.toRequestBody()
-        val desc        = description.toRequestBody()
-        val servicePrice= price.toRequestBody()
-        val sId         = serviceId.toRequestBody()
-
+        val id   = userId.toRequestBody("text/plain".toMediaTypeOrNull())
+        val title = serviceTitle.toRequestBody("text/plain".toMediaTypeOrNull())
+        val desc  = description.toRequestBody("text/plain".toMediaTypeOrNull())
+        val servicePrice= price.toRequestBody("text/plain".toMediaTypeOrNull())
+        val sId  = serviceId.toRequestBody("text/plain".toMediaTypeOrNull())
         // Perform safe API call
         val result = safeApiCall {
             api.addAndUpdateService(

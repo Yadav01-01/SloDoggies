@@ -219,7 +219,7 @@ fun TypeButton(
 @Composable
 fun ServicePackageCard(
     data: Data,
-    onEdit: () -> Unit,
+    onEdit: (Data) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -262,7 +262,7 @@ fun ServicePackageCard(
                     contentDescription = "Edit",
                     tint = Color.Unspecified,
                     modifier = Modifier
-                        .clickable { onEdit() }
+                        .clickable { onEdit(data) }
                         .padding(4.dp)
                 )
                 Spacer(modifier = Modifier.width(15.dp))

@@ -692,16 +692,19 @@ fun MediaUploadSection(
 fun MediaUploadSectionUrlUri(
     maxImages: Int = 6,
     type: String = "video",
-    imageList: List<String> = emptyList(), // API images as strings
+    imageList: MutableList<String> = mutableListOf(), // API images as strings
     onMediaSelected: (String) -> Unit = { },
     onMediaUnSelected: (String) -> Unit = { }
 ) {
     val context = LocalContext.current
 
     // Combine API images + local selected images in a state list
-    val imageUris = remember {
+ /*   val imageUris = remember {
         mutableStateListOf(*imageList.toTypedArray())
-    }
+    }*/
+
+    val imageUris = imageList
+
 
     var showDialog by remember { mutableStateOf(false) }
     val cameraImageUri = remember { mutableStateOf<Uri?>(null) }

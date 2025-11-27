@@ -198,7 +198,7 @@ interface Repository {
     suspend fun addAndUpdateServices(userId: String,
                                      serviceTitle : String,
                                      description :  String,
-                                     images :List<MultipartBody.Part>,
+                                     images :List<MultipartBody.Part>?,
                                      price : String,
                                      serviceId : String
     ) : Flow<Resource<CommonResponse>>

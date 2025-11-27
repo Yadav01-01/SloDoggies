@@ -131,9 +131,9 @@ fun MainNavGraph(
 
         composable(
             route = "${Routes.EDIT_ADD_SERVICE_SCREEN}/{type}",
-            arguments = listOf(navArgument("type") { type = NavType.StringType; defaultValue = "add" })
+            arguments = listOf(navArgument("type") { type = NavType.StringType; defaultValue = "" })
         ) { backStackEntry ->
-            val type = backStackEntry.arguments?.getString("type") ?: "add"
+            val type = backStackEntry.arguments?.getString("type") ?: ""
             EditAddServiceScreen(navController, type)
         }
 
