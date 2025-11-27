@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -18,6 +19,8 @@ import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AddServiceButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ServicePackageCard
+import com.google.gson.Gson
+
 
 @Composable
 fun ServicePackageSection(
@@ -34,7 +37,11 @@ fun ServicePackageSection(
                 items(it) { servicePackage ->
                     ServicePackageCard(
                         data = servicePackage,
-                        onEdit = { navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/${"edit"}") },
+                        onEdit = { data->
+                            val jsonString = Gson().toJson(data)
+                            val encodedJson = Uri.encode(jsonString)
+                            navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/$encodedJson")
+                                 },
                         onDelete = { onClickDelete() }
                     )
                 }
@@ -43,11 +50,10 @@ fun ServicePackageSection(
                 Spacer(modifier = Modifier.height(12.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     AddServiceButton(modifier = Modifier, onClickButton = {
-                        navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/${"add"}") }
+                        navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/${""}") }
                     )
                 }
             }
-
         }
 }
 

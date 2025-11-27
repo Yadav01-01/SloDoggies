@@ -1,6 +1,9 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.registration
 
+import android.os.Build
+import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,39 +35,23 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopHeadingTextWithSkip
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.TopStepProgressBar
-import com.bussiness.slodoggiesapp.ui.component.common.AppLoader
-import com.bussiness.slodoggiesapp.ui.component.common.AppLottieLoader
-import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
-import com.bussiness.slodoggiesapp.ui.component.common.createMultipartList
+import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSectionUrlUri
 import com.bussiness.slodoggiesapp.ui.dialog.AddedServiceDialog
 import com.bussiness.slodoggiesapp.ui.dialog.SubscriptionWarningDialog
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.AddServiceViewModel
-import com.bussiness.slodoggiesapp.viewModel.businessProvider.ServiceEvent
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AddServiceScreen(
-    navController: NavHostController,
-    viewModel: AddServiceViewModel = hiltViewModel()
-) {
+fun AddServiceScreen(navController: NavHostController) {
 
-    val state by viewModel.uiState.collectAsState()
-    val selectedPhoto by viewModel.selectedPhoto.collectAsState()
+    val viewModel: AddServiceViewModel = hiltViewModel()
+    val state by viewModel.uiStateServices.collectAsState()
+    var addedServiceDialog by remember { mutableStateOf(false) }
+    var subscribeDisclaimer by remember { mutableStateOf(true) }
     val context = LocalContext.current
     var isNavigating by remember { mutableStateOf(false) }
 
-    // Listen to ViewModel events
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is ServiceEvent.ShowToast ->
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
-
-                ServiceEvent.Success -> {
-                    viewModel.openAddedServiceDialog()
-                }
-            }
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -104,7 +90,7 @@ fun AddServiceScreen(
             item { FormHeadingText("Service Title") }
             item {
                 InputField(
-                    input = state.title,
+                    input = state.service_title?:"",
                     onValueChange = viewModel::updateTitle,
                     placeholder = "Enter title"
                 )
@@ -114,7 +100,7 @@ fun AddServiceScreen(
             item { FormHeadingText("Description") }
             item {
                 InputField(
-                    input = state.description,
+                    input = state.description?:"",
                     onValueChange = viewModel::updateDescription,
                     placeholder = "Type here"
                 )
@@ -124,7 +110,7 @@ fun AddServiceScreen(
             item { FormHeadingText("Price (\$)") }
             item {
                 InputField(
-                    input = state.amount,
+                    input = state.price?:"",
                     onValueChange = viewModel::updateAmount,
                     placeholder = "Enter amount"
                 )
@@ -133,11 +119,16 @@ fun AddServiceScreen(
             // Media Upload
             item { FormHeadingText("Additional Media") }
             item {
-                MediaUploadSection(
-                    maxImages = 6
-                ) { uri ->
-                    viewModel.setSelectedPhoto(uri)
-                }
+                Log.d("EditService", "Images: ${state.service_image?.size}")
+                val images = state.service_image ?: emptyList()
+
+                MediaUploadSectionUrlUri(
+                    maxImages = 6,
+                    imageList = images.toMutableList(), // valid
+                    onMediaSelected = { viewModel.addPhoto(it) },
+                    onMediaUnSelected = { viewModel.removePhoto(it) },
+                    type = "image"
+                )
             }
 
             item { Spacer(modifier = Modifier.height(25.dp)) }
@@ -149,18 +140,11 @@ fun AddServiceScreen(
                     buttonText = "Add Service",
                     buttonTextSize = 15,
                     onClickButton = {
-
-                        val images = createMultipartList(
-                            context = context,
-                            uris = listOfNotNull(selectedPhoto),
-                            keyName = "images[]"
-                        )
-
-                        viewModel.addOrUpdateService(
-                            serviceId = "",
-                            type = "addService",
-                            images = images
-                        )
+                        viewModel.addOrUpdateService(context=context, onError = {
+                            Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                        }, onSuccess = {
+                            addedServiceDialog = true
+                        })
                     }
                 )
             }
@@ -168,14 +152,12 @@ fun AddServiceScreen(
     }
 
     // Added Service Dialog
-    if (state.addedServiceDialog) {
+    if (addedServiceDialog) {
         AddedServiceDialog(
-            onDismiss = { viewModel.closeAddedServiceDialog() },
+            onDismiss = { addedServiceDialog = false },
             onAddAnotherClick = {
-                viewModel.updateTitle("")
-                viewModel.updateDescription("")
-                viewModel.updateAmount("")
-                viewModel.closeAddedServiceDialog()
+                viewModel.refresh()
+                addedServiceDialog = false
             },
             onGoToHomeClick = {
                 navController.navigate(Routes.NOTIFICATION_PERMISSION_SCREEN)
@@ -184,20 +166,22 @@ fun AddServiceScreen(
     }
 
     // Subscription Dialog
-    if (state.subscribeDisclaimer) {
+    if (subscribeDisclaimer) {
         SubscriptionWarningDialog(
             icon = R.drawable.caution_ic,
             heading = "Subscription Alert!",
             desc1 = stringResource(R.string.subscription_desc),
             buttonText = "Proceed",
-            onDismiss = { viewModel.closeSubscriptionDisclaimer() },
-            onClick = { viewModel.closeSubscriptionDisclaimer() }
+            onDismiss = { subscribeDisclaimer=false },
+            onClick = { subscribeDisclaimer=false }
         )
     }
+
 }
 
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun AddServiceScreenPreview() {

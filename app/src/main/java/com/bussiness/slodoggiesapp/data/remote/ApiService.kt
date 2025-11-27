@@ -253,7 +253,7 @@ interface ApiService {
         @Part("user_id") userId: RequestBody,
         @Part("service_title") serviceTitle: RequestBody,
         @Part("description") description: RequestBody,
-        @Part images: List<MultipartBody.Part>,
+        @Part images: List<MultipartBody.Part>?,
         @Part("price") price : RequestBody,
         @Part("service_id") serviceId : RequestBody,
     ) : Response<CommonResponse>

@@ -1,8 +1,11 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEdit
 
 
-import android.widget.Toast
+import android.net.Uri
+import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,42 +35,44 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
-import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
-import com.bussiness.slodoggiesapp.ui.component.common.createMultipartList
+import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSectionUrlUri
 import com.bussiness.slodoggiesapp.ui.dialog.ServiceAdEditDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.AddServiceViewModel
-import com.bussiness.slodoggiesapp.viewModel.businessProvider.ServiceEvent
+import com.google.gson.Gson
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditAddServiceScreen(
     navController: NavHostController,
-    type: String,
-    viewModel: AddServiceViewModel = hiltViewModel()
+    type: String
 ) {
+    val viewModel: AddServiceViewModel = hiltViewModel()
 
-    val state by viewModel.uiState.collectAsState()
-    val selectedPhoto by viewModel.selectedPhoto.collectAsState()
+    var addedServiceDialog by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
 
-    // Listen to ViewModel events
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is ServiceEvent.ShowToast ->
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+    val model: Data? = if (type.isNotBlank()) {
+        val jsonString = Uri.decode(type)
+        Gson().fromJson(jsonString, Data::class.java)
+    } else null
 
-                ServiceEvent.Success -> {
-                    viewModel.openAddedServiceDialog()
-                }
-            }
-        }
+
+    LaunchedEffect(model) {
+        viewModel.updateData(model)
     }
+
+
+    val uiStateServices by viewModel.uiStateServices.collectAsState()
+    val selectedPhotos by viewModel.selectedPhotos.collectAsState()
+
 
     BackHandler {
         navController.navigate(Routes.SERVICES_SCREEN) {
@@ -78,9 +83,11 @@ fun EditAddServiceScreen(
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(Color.White)) {
 
-        HeadingTextWithIcon(textHeading = if (type == "add") "Add Services" else " Edit Service",
+        HeadingTextWithIcon(textHeading = if (model==null) "Add Services" else " Edit Service",
             onBackClick = {navController.navigate(Routes.SERVICES_SCREEN) {
                 launchSingleTop = true
                 popUpTo(Routes.SERVICES_SCREEN) {
@@ -88,14 +95,17 @@ fun EditAddServiceScreen(
                 }
             }})
 
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))
+        HorizontalDivider(modifier = Modifier
+            .fillMaxWidth()
+            .height(2.dp)
+            .background(PrimaryColor))
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp).
-            background(Color.White)
+                .padding(16.dp)
+                .background(Color.White)
         ) {
 
             Spacer(Modifier.height(10.dp))
@@ -104,7 +114,7 @@ fun EditAddServiceScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = state.title, onValueChange = { viewModel.updateTitle(it) }, placeholder = "Enter title")
+            InputField(input = uiStateServices.service_title ?:"", onValueChange = { viewModel.updateTitle(it) }, placeholder = "Enter title")
 
             Spacer(Modifier.height(15.dp))
 
@@ -112,7 +122,7 @@ fun EditAddServiceScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = state.description, onValueChange = { viewModel.updateDescription(it) }, placeholder = "Type here")
+            InputField(input = uiStateServices.description ?:"", onValueChange = { viewModel.updateDescription(it) }, placeholder = "Type here")
 
             Spacer(Modifier.height(15.dp))
 
@@ -120,7 +130,7 @@ fun EditAddServiceScreen(
 
             Spacer(Modifier.height(10.dp))
 
-            InputField(input = state.amount, onValueChange = { viewModel.updateAmount(it) }, placeholder = "Enter amount",keyboardOptions = KeyboardOptions(
+            InputField(input = uiStateServices.price ?:"", onValueChange = { viewModel.updateAmount(it) }, placeholder = "Enter amount",keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done)
             )
@@ -130,28 +140,36 @@ fun EditAddServiceScreen(
             FormHeadingText("Upload Media")
 
             Spacer(Modifier.height(10.dp))
+            Log.d("EditService", "Images: ${uiStateServices.service_image?.size}")
+            val images = uiStateServices.service_image ?: emptyList()
 
-            MediaUploadSection(maxImages = 6) { uri ->
-                viewModel.setSelectedPhoto(uri)
-            }
+            MediaUploadSectionUrlUri(
+                maxImages = 6,
+                imageList = images.toMutableList(), // valid
+                onMediaSelected = { viewModel.addPhoto(it) },
+                onMediaUnSelected = { viewModel.removePhoto(it) },
+                type = "image"
+            )
+
 
             Spacer(Modifier.height(25.dp))
 
-            val images = createMultipartList(
-                context = context,
-                uris = listOfNotNull(selectedPhoto),
-                keyName = "images[]"
-            )
-
-            SubmitButton(modifier = Modifier, buttonText = if (type ==  "add") "Add Service" else "Save Changes",
-                onClickButton = { viewModel.addOrUpdateService(serviceId = "",type = "updateService",images) }, buttonTextSize = 15)
+            SubmitButton(modifier = Modifier, buttonText = if (model==null) "Add Service" else "Save Changes",
+                onClickButton = {
+                    viewModel.addOrUpdateService(context=context,
+                        onError = {},
+                        onSuccess = {
+                            addedServiceDialog = true
+                        })
+                                },
+                buttonTextSize = 15)
         }
 
-        if (state.addedServiceDialog) {
-            if (type == "add") {
+        if (addedServiceDialog) {
+            if (model==null) {
                 ServiceAdEditDialog(
                     onDismiss = {
-                        viewModel.closeAddedServiceDialog()
+                        addedServiceDialog = false
                         navController.navigate(Routes.SERVICES_SCREEN)
                                 },
                     iconResId = R.drawable.ic_sucess_p,
@@ -161,7 +179,7 @@ fun EditAddServiceScreen(
             }else{
                 ServiceAdEditDialog(
                     onDismiss = {
-                        viewModel.closeAddedServiceDialog()
+                        addedServiceDialog = false
                         navController.navigate(Routes.SERVICES_SCREEN)
                     },
                     iconResId = R.drawable.ic_sucess_p,
@@ -177,6 +195,7 @@ fun EditAddServiceScreen(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun AddServiceScreenPreview() {
