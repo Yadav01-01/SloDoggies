@@ -197,13 +197,13 @@ class EditProfileViewModel @Inject constructor(
 
             // Convert image URIs → Multipart
             val imageParts = getImagePartsFromUris(context, photos)
+
             val imagePart = prepareFilePart(uiState.value.profileImageUri.toString())
+
             if (imageParts.isEmpty()) {
                 Toast.makeText(context, "Unable to process images", Toast.LENGTH_SHORT).show()
                 return@launch
             }
-
-
             // API CALL
             repository.updateOwnerDetail(
                 userId = sessionManager.getUserId(),
@@ -211,7 +211,7 @@ class EditProfileViewModel @Inject constructor(
                 email = state.email,
                 phone = state.mobileNumber,
                 bio = state.bio,
-                profile_image = imagePart
+                profile_image = imageParts
             ).collectLatest { result ->
 
                 when (result) {
