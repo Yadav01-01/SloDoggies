@@ -4,6 +4,7 @@ package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.addOrEd
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -157,7 +158,9 @@ fun EditAddServiceScreen(
             SubmitButton(modifier = Modifier, buttonText = if (model==null) "Add Service" else "Save Changes",
                 onClickButton = {
                     viewModel.addOrUpdateService(context=context,
-                        onError = {},
+                        onError = {
+                            Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                        },
                         onSuccess = {
                             addedServiceDialog = true
                         })

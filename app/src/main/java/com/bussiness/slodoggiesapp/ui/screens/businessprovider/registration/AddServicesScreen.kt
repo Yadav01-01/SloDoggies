@@ -140,7 +140,8 @@ fun AddServiceScreen(navController: NavHostController) {
                     buttonText = "Add Service",
                     buttonTextSize = 15,
                     onClickButton = {
-                        viewModel.addOrUpdateService(context=context, onError = {
+                        viewModel.addOrUpdateService(context=context,
+                            onError = {
                             Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
                         }, onSuccess = {
                             addedServiceDialog = true
