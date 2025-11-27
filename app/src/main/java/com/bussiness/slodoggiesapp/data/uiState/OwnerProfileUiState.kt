@@ -13,6 +13,7 @@ data class OwnerProfileUiState(
     val selectedPet: Int = 0,
     val isLoadingMore: Boolean = false,
     val canLoadMore: Boolean = true,
-    val currentPage: Int = 1
+    val currentPage: Int = 1,
+    val isRefreshing: Boolean = false
 )
 

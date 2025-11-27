@@ -77,6 +77,8 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialo
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.ownerProfile.PetOwnerProfileViewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
 @Composable
 fun PetProfileScreen(navController: NavHostController) {
@@ -121,27 +123,33 @@ fun PetProfileScreen(navController: NavHostController) {
         }
 
         item {
-            Column(Modifier.padding(horizontal = 10.dp)) {
+            SwipeRefresh(
+                state = rememberSwipeRefreshState(isRefreshing = uiState.isRefreshing),
+                onRefresh = { }
+            ) {
+                Column(Modifier.padding(horizontal = 10.dp)) {
 
-                Text(
-                    text = stringResource(R.string.My_Pets),
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = Color.Black,
-                    modifier = Modifier.padding(bottom = 10.dp)
-                )
-                Divider(color = Color(0xFF949494), thickness = 1.dp)
+                    Text(
+                        text = stringResource(R.string.My_Pets),
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        color = Color.Black,
+                        modifier = Modifier.padding(bottom = 10.dp)
+                    )
+                    Divider(color = Color(0xFF949494), thickness = 1.dp)
 
-                Spacer(Modifier.height(15.dp))
+                    Spacer(Modifier.height(15.dp))
 
-                CircularProfileRow(
-                    profiles = uiState.data.pets,
-                    onProfileClick = { _, index -> viewModel.onPetSelected(index) },
-                    onAddClick = { viewModel.petInfoDialog(true) }
-                )
+                    CircularProfileRow(
+                        profiles = uiState.data.pets,
+                        onProfileClick = { _, index -> viewModel.onPetSelected(index) },
+                        onAddClick = { viewModel.petInfoDialog(true) }
+                    )
 
-                Spacer(Modifier.height(24.dp))
+                    Spacer(Modifier.height(24.dp))
+                }
             }
+
         }
 
         item {

@@ -24,20 +24,19 @@ class PetOwnerProfileViewModel @Inject constructor(
     val uiState: StateFlow<OwnerProfileUiState> = _uiState
 
     init {
+        onRefresh()
+    }
+
+    fun onRefresh(){
         profileDetail()
         galleryPostDetail()
     }
 
-    /** -----------------------------
-     *   SELECT PET (INDEX BASED)
-     * ----------------------------- */
     fun onPetSelected(index: Int) {
         _uiState.update { it.copy(selectedPet = index) }
     }
 
-    /** -----------------------------
-     *   PET INFO DIALOG ON/OFF
-     * ----------------------------- */
+
     fun petInfoDialog(show: Boolean) {
         _uiState.update { it.copy(showPetInfoDialog = show) }
     }
@@ -46,9 +45,7 @@ class PetOwnerProfileViewModel @Inject constructor(
         _uiState.update { it.copy(petAddedSuccessDialog = show) }
     }
 
-    /** -----------------------------
-     *   LOAD OWNER PROFILE
-     * ----------------------------- */
+
     private fun profileDetail() {
         viewModelScope.launch {
             repository.getOwnerProfileDetails(sessionManager.getUserId())
