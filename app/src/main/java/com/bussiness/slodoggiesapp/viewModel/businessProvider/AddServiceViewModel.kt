@@ -70,8 +70,7 @@ class AddServiceViewModel @Inject constructor(
 
     private val _selectedPhoto = MutableStateFlow<Uri?>(null)
     val selectedPhoto: StateFlow<Uri?> = _selectedPhoto
-
-
+    
     fun updateTitle(data: String) {
         _uiStateServices.update { current ->
             current.copy(service_title = data)
