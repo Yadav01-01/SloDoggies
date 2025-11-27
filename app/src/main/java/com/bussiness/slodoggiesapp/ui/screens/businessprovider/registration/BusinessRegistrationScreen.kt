@@ -308,6 +308,5 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 fun PreviewBusinessRegistrationScreen() {
     // Use a dummy NavController for preview purposes
     val navController = rememberNavController()
-
     BusinessRegistrationScreen(navController = navController)
 }

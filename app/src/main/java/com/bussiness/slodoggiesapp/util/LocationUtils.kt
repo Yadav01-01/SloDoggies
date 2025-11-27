@@ -100,5 +100,15 @@ class LocationUtils {
             return url.replace("https://slodoggies.tgastaging.com/", "")
         }
 
+
+
+        fun String.isVideoFile(): Boolean {
+            return endsWith(".mp4", true) ||
+                    endsWith(".mov", true) ||
+                    endsWith(".mkv", true) ||
+                    contains("video")
+        }
+
+
     }
 }
