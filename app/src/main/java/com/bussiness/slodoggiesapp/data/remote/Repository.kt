@@ -14,6 +14,7 @@ import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetails
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
@@ -233,5 +234,14 @@ interface Repository {
     suspend fun getOwnerProfileDetails(
         userId: String
     ) : Flow<Resource<PetOwnerDetailsResponse>>
+
+    suspend fun getOwnerGalleryPost(
+        userId: String,
+        page : String
+    ) : Flow<Resource<OwnerGalleryResponse>>
+
+    suspend fun getPetDetail(
+        petId: String
+    ) : Flow<Resource<UpdatePetModel>>
 
 }

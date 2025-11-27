@@ -53,6 +53,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.updatepet.Data
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
@@ -68,12 +69,22 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfileViewModel = hiltViewModel()) {
+fun EditPetProfileScreen(navController: NavHostController,petId:String, viewModel: PetProfileViewModel = hiltViewModel()) {
 
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
-    var selectedAge by remember { mutableStateOf("") }
-    var managedBy by remember { mutableStateOf("") }
+
+    LaunchedEffect (Unit) {
+        viewModel.getPetProfile(petId)
+    }
+    LaunchedEffect(uiState.error) {
+        uiState.error?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val data = uiState.petProfileData ?: Data()
+
 
     // Gallery launcher
     val launcherGallery = rememberLauncherForActivityResult(
@@ -156,11 +167,11 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
                                 .clip(CircleShape)
                         ) {
                             AsyncImage(
-                                model = uiState.profileImageUri,
+                                model = uiState.petProfileData?.pet_image,
                                 contentDescription = "Pet Photo",
                                 contentScale = ContentScale.Crop,
-                                placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
-                                error = painterResource(id = R.drawable.ic_black_profile_icon),
+                                placeholder = painterResource(id = R.drawable.ic_pet_face_iconss),
+                                error = painterResource(id = R.drawable.ic_pet_face_iconss),
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .clip(CircleShape)
@@ -184,23 +195,27 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
 
             // Fields
             item {
-                CustomOutlinedTextField(
-                    value = uiState.petName,
-                    onValueChange = viewModel::onPetNameChange,
-                    placeholder = "Enter pet name",
-                    label = "Pet Name"
-                )
+                data.pet_name?.let {
+                    CustomOutlinedTextField(
+                        value = it,
+                        onValueChange = viewModel::onPetNameChange,
+                        placeholder = "Enter pet name",
+                        label = "Pet Name"
+                    )
+                }
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
             item {
-                CustomOutlinedTextField(
-                    value = uiState.petBreed,
-                    onValueChange = viewModel::onPetBreedChange,
-                    placeholder = "Enter Breed",
-                    label = "Pet Breed"
-                )
+                data.pet_breed?.let {
+                    CustomOutlinedTextField(
+                        value = it,
+                        onValueChange = viewModel::onPetBreedChange,
+                        placeholder = "Enter Breed",
+                        label = "Pet Breed"
+                    )
+                }
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -212,48 +227,51 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
             item { Spacer(Modifier.height(5.dp)) }
 
             item {
+                val apiAge = uiState.petProfileData?.pet_age ?: ""
+
+                // Update initial age only once
+                LaunchedEffect(apiAge) {
+                    viewModel.setInitialAge(apiAge)
+                }
+
                 ScrollableDropdownBox(
-                    label = selectedAge.ifEmpty { "Enter pet age" },
+                    label = if (viewModel.selectedAge.isEmpty())
+                        "Enter pet age"
+                    else
+                        "${viewModel.selectedAge} Years Old",
+
                     items = viewModel.ageOptions,
-                    selectedItem = selectedAge,
-                    onItemSelected = { selectedAge = it }
+
+                    selectedItem = viewModel.selectedAge,
+
+                    onItemSelected = { selected ->
+                        viewModel.onAgeSelected(selected)
+                    }
                 )
             }
+
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
             item {
-                CustomOutlinedTextField(
-                    value = uiState.petBio,
-                    onValueChange = viewModel::onPetBioChange,
-                    placeholder = "Enter Bio",
-                    label = "Pet Bio",
-                    modifier = Modifier
-                        .bringIntoViewRequester(bringIntoViewRequester)
-                        .onFocusEvent { focusState ->
-                            if (focusState.isFocused) {
-                                coroutineScope.launch {
-                                    bringIntoViewRequester.bringIntoView()
+                data.pet_bio?.let {
+                    CustomOutlinedTextField(
+                        value = it,
+                        onValueChange = viewModel::onPetBioChange,
+                        placeholder = "Enter Bio",
+                        label = "Pet Bio",
+                        modifier = Modifier
+                            .bringIntoViewRequester(bringIntoViewRequester)
+                            .onFocusEvent { focusState ->
+                                if (focusState.isFocused) {
+                                    coroutineScope.launch {
+                                        bringIntoViewRequester.bringIntoView()
+                                    }
                                 }
                             }
-                        }
-                )
+                    )
+                }
 
-            }
-
-            item { Spacer(modifier = Modifier.height(16.dp)) }
-
-            item { FormHeadingText("Managed by") }
-
-            item { Spacer(Modifier.height(5.dp)) }
-
-            item {
-                CustomDropdownBox(
-                    label = managedBy.ifEmpty { "Pet Mom" },
-                    items = listOf("Pet Mom", "Pet Dad"),
-                    selectedItem = managedBy,
-                    onItemSelected = { managedBy = it }
-                )
             }
 
             item { Spacer(modifier = Modifier.height(32.dp)) }
@@ -264,7 +282,9 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
                     CommonBlueButton(
                         text = "Save Changes",
                         fontSize = 15.sp,
-                        onClick = { viewModel.showConfirmationDialog(true) },
+                        onClick = {
+                            viewModel.updatePetProfile()
+                            viewModel.showConfirmationDialog(true) },
                         modifier = Modifier.padding(horizontal = 45.dp)
                     )
                 }
@@ -295,19 +315,23 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
             onDismissRequest = { viewModel.toggleImagePicker(false) },
             title = { Text("Select Option") },
             buttons = {
-                Column(Modifier.padding(16.dp).fillMaxWidth()) {
+                Column(Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()) {
                     Text("Camera", Modifier
                         .clickable {
                             viewModel.toggleImagePicker(false)
                             launchCameraWithPermissionCheck()
-                        }.fillMaxWidth()
+                        }
+                        .fillMaxWidth()
                         .padding(8.dp)
                     )
                     Text("Gallery", Modifier
                         .clickable {
                             viewModel.toggleImagePicker(false)
                             launcherGallery.launch("image/*")
-                        }.fillMaxWidth()
+                        }
+                        .fillMaxWidth()
                         .padding(8.dp)
                     )
                 }
@@ -330,7 +354,7 @@ fun EditPetProfileScreen(navController: NavHostController, viewModel: PetProfile
 fun EditPetProfileScreenPreview() {
     val navController = NavHostController(LocalContext.current)
     MaterialTheme {
-        EditPetProfileScreen(navController)
+        EditPetProfileScreen(navController,petId = "")
     }
 }
 

@@ -7,7 +7,6 @@ data class PetInfoUiState(
     val petBreed: String = "",
     val petAge: String = "",
     val petBio: String = "",
-    val managedBy: String = "Pet Mom",
     val showAgeDropdown: Boolean = false,
     val showManagedByDropdown: Boolean = false
 ) {
@@ -16,6 +15,5 @@ data class PetInfoUiState(
         breed = petBreed,
         age = petAge,
         bio = petBio,
-        managedBy = managedBy
     )
 }

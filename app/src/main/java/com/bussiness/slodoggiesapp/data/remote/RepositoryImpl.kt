@@ -16,6 +16,7 @@ import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetails
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
@@ -490,6 +491,17 @@ class RepositoryImpl @Inject constructor(
         emit(Resource.Loading)
         emit(safeApiCall { api.getOwnerProfile(userId) })
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun getOwnerGalleryPost(userId: String,page: String): Flow<Resource<OwnerGalleryResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getOwnerGallery(userId,page) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getPetDetail(petId: String): Flow<Resource<UpdatePetModel>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getPetDetail(petId) })
+    }.flowOn(Dispatchers.IO)
+
 
 
     /**

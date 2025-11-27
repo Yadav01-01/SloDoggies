@@ -102,7 +102,7 @@ fun MainNavGraph(
         composable(Routes.PET_SERVICES_SCREEN) { PetServicesScreen(navController) }
         composable(Routes.PET_PROFILE_SCREEN) { PetProfileScreen(navController) }
         composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
-        composable(Routes.EDIT_PET_PROFILE_SCREEN) { EditPetProfileScreen(navController) }
+//        composable(Routes.EDIT_PET_PROFILE_SCREEN) { EditPetProfileScreen(navController) }
         composable(Routes.PET_ADD_PARTICIPANTS_SCREEN) { AddParticipantsScreen(navController) }
         composable(Routes.EDIT_PROFILE_SCREEN_PET) { EditProfileScreenPet(navController) }
         composable(Routes.PET_NOTIFICATION_SCREEN) { PetNotificationsScreen(navController) }
@@ -143,6 +143,14 @@ fun MainNavGraph(
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "Follower"
             FollowerScreen(navController, type)
+        }
+
+        composable(
+            route = "${Routes.EDIT_PET_PROFILE_SCREEN}/{petId}",
+            arguments = listOf(navArgument("petId") { type = NavType.StringType; defaultValue = " " })
+        ) { backStackEntry ->
+            val petId = backStackEntry.arguments?.getString("petId") ?: "Follower"
+            EditPetProfileScreen(navController, petId)
         }
     }
 }

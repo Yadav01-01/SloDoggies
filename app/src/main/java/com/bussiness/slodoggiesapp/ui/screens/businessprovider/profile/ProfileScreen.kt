@@ -72,12 +72,12 @@ fun ProfileScreen(navController: NavHostController) {
     var isNavigating by remember { mutableStateOf(false) }
 
     val sampleImages = listOf(
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2)
+        GalleryItem(R.drawable.dog1),
+        GalleryItem(R.drawable.dog2),
+        GalleryItem(R.drawable.dog1),
+        GalleryItem(R.drawable.dog2),
+        GalleryItem(R.drawable.dog1),
+        GalleryItem(R.drawable.dog2)
     )
 
 
