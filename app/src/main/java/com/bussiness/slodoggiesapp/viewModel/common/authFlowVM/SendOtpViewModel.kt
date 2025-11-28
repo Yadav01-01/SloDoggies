@@ -1,9 +1,12 @@
 package com.bussiness.slodoggiesapp.viewModel.common.authFlowVM
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
+import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.SignUpUiState
 import com.bussiness.slodoggiesapp.navigation.Routes
@@ -88,18 +91,17 @@ class SendOtpViewModel @Inject constructor(
     // --- API Call: Send OTP ---
     fun sendOtp(onSuccess: () -> Unit = {}, onError: (String) -> Unit = {}) {
         val state = _uiState.value
-
-        when {
-            state.contactInput.isBlank() -> {
-                onError(ErrorMessage.EMAIL_PHONE_NOT_EMPTY)
-                return
-            }
-            !state.isValid -> {
-                onError(state.errorMessage ?: ErrorMessage.INVALID_CONTACT)
-                return
-            }
-        }
-
+//        when {
+//            state.contactInput.isBlank() -> {
+//                onError(ErrorMessage.EMAIL_PHONE_NOT_EMPTY)
+//                return
+//            }
+//            !state.isValid -> {
+//                onError(state.errorMessage ?: ErrorMessage.INVALID_CONTACT)
+//                return
+//            }
+//        }
+        if (!validateEvent(state, onError)) return
         viewModelScope.launch {
             repository.sendOtp(state.contactInput, "signup").collectLatest { result ->
                 when (result) {
@@ -121,6 +123,37 @@ class SendOtpViewModel @Inject constructor(
             }
         }
     }
+
+    private fun validateEvent(state: SignUpUiState, onError: (String) -> Unit): Boolean {
+        if (state.userName.isEmpty()) {
+            onError(Messages.FULL_NAME)
+            return false
+        }
+        if (state.contactInput.isEmpty()) {
+            onError(Messages.PHONE_EMAIL)
+            return false
+        }
+        if ( !state.isValid){
+            onError(state.errorMessage ?: ErrorMessage.INVALID_CONTACT)
+            return false
+        }
+        if (state.password.isEmpty()) {
+            onError(Messages.PASSWORD_VALIDATION_OF_6_CHAR)
+            return false
+        }
+        if (state.confirmPassword.isEmpty()) {
+            onError(Messages.PASSWORD_VALIDATION_OF_6_CHAR)
+            return false
+        }
+        if (state.confirmPassword!=state.password) {
+            onError(Messages.PASSWORD_MISMATCH)
+            return false
+        }
+
+        return true
+
+    }
+
 
     /** Reset state if needed */
     fun resetOtpState() {

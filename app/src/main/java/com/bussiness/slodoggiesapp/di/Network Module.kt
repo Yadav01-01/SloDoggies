@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.di
 
 import android.content.Context
+import com.bussiness.slodoggiesapp.BuildConfig
 import com.bussiness.slodoggiesapp.data.remote.ApiService
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.remote.RepositoryImpl
@@ -33,9 +34,15 @@ object NetworkModule {
         val cache = Cache(context.cacheDir, cacheSize)
 
         val logging = HttpLoggingInterceptor { message ->
-            android.util.Log.d("API_LOGS", message)
+            if (BuildConfig.DEBUG) {
+                android.util.Log.d("API_LOGS", message)
+            }
         }.apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
 
         return OkHttpClient.Builder()
@@ -43,7 +50,11 @@ object NetworkModule {
             .addInterceptor(networkInterceptor)
             .addInterceptor(logging)
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
+                level = if (BuildConfig.DEBUG) {
+                    HttpLoggingInterceptor.Level.BODY
+                } else {
+                    HttpLoggingInterceptor.Level.NONE
+                }
             })
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
@@ -55,7 +66,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl("https://slodoggies.tgastaging.com/api/")
+            .baseUrl(BuildConfig.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

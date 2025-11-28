@@ -72,6 +72,8 @@ fun UserDetailsDialog(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+
+
     //  One-time effect to trigger API only once when dialog opens
     LaunchedEffect(Unit) {
         viewModel.fetchOwnerDetails()
@@ -178,7 +180,11 @@ fun UserDetailsDialog(
                             phone = state.phoneNumber,
                             onPhoneChange = viewModel::onPhoneChanged,
                             onVerify = { onVerify( "dialogPhone",state.phoneNumber) },
-                            isVerified = state.isPhoneVerified
+                            isVerified = if (state.email.isNullOrEmpty()) {
+                                false   // email empty → not verified
+                            } else {
+                                true
+                            }
                         )
 
 
@@ -191,7 +197,11 @@ fun UserDetailsDialog(
                         // Email Field with Verify
                         EmailField(
                             email = state.email,
-                            isVerified = state.isEmailVerified,
+                            isVerified = if (state.email.isNullOrEmpty()) {
+                                false   // email empty → not verified
+                            } else {
+                              true
+                            },
                             onEmailChange = viewModel::onEmailChanged,
                             onVerify = { onVerify("dialogEmail",state.email) }
                         )

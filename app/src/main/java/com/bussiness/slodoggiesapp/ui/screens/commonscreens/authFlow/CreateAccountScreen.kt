@@ -180,7 +180,10 @@ fun SignUpScreen(
             Spacer(Modifier.height(20.dp))
 
             ContinueButton(
-                onClick = { viewModel.sendOtp() },
+                onClick = { viewModel.sendOtp(
+                    onError = {
+                        Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                    })},
                 text = stringResource(R.string.create_account)
             )
 

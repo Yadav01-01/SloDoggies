@@ -22,12 +22,24 @@ android {
     }
 
     buildTypes {
+        debug {
+            val BASE_URL = project.property("BASE_URL")
+            buildConfigField("String", "BASE_URL", "${BASE_URL}")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            val BASE_URL = project.property("BASE_URL")
+            buildConfigField("String", "BASE_URL", "${BASE_URL}")
         }
     }
     compileOptions {

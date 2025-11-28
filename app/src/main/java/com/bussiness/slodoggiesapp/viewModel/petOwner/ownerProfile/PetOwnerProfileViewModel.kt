@@ -24,7 +24,7 @@ class PetOwnerProfileViewModel @Inject constructor(
     val uiState: StateFlow<OwnerProfileUiState> = _uiState
 
     init {
-        onRefresh()
+     //   onRefresh()
     }
 
     fun onRefresh(){

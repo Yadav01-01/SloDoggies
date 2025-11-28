@@ -31,6 +31,8 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.VerifyA
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.NewMessageScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.LocationPermissionScreen
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.NotificationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost.EditPostScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost.UserPost
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AboutUsScreen
