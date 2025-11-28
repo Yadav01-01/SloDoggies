@@ -7,11 +7,11 @@ sealed class PostItem {
                           val caption: String,
 //                             val hashtag: String,
                           val description: String,
-                          val mediaList: List<com.bussiness.slodoggiesapp.data.model.common.MediaItem>,
+                          val mediaList: List<MediaItem>,
                           val postType: String,
                           val likes: Int,
                           val comments: Int,
-                          val shares: Int) : com.bussiness.slodoggiesapp.data.model.common.PostItem()
+                          val shares: Int) : PostItem()
 
     data class CommunityPost(val userName: String,
                              val userImage: Int,
@@ -28,17 +28,17 @@ sealed class PostItem {
                              val onClickMore: () -> Unit,
                              val likes: Int,
                              val comments: Int,
-                             val shares: Int) : com.bussiness.slodoggiesapp.data.model.common.PostItem()
+                             val shares: Int) : PostItem()
 
     data class SponsoredPost(val user: String,
                              val role: String = "",
                              val time: String,
                              val caption: String,
                              val description: String,
-                             val mediaList: List<com.bussiness.slodoggiesapp.data.model.common.MediaItem>,
+                             val mediaList: List<MediaItem>,
                              val likes: Int,
                              val comments: Int,
-                             val shares: Int) : com.bussiness.slodoggiesapp.data.model.common.PostItem()
+                             val shares: Int) : PostItem()
 }
 
 data class Comment(

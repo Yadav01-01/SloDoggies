@@ -36,5 +36,6 @@ object ApiEndPoint {
     const val GET_OWNER_GALLERY = "get_owner_gallery"
     const val GET_OWNER_PROFILE = "get_owner_profile"
     const val GET_PET_DETAIL = "get_pet_detail"
+    const val HOME_FEED = "home_feed"
 
 }

@@ -342,4 +342,10 @@ interface ApiService {
     suspend fun getPetDetail(
         @Field("pet_id") petId: String,
     ) : Response<UpdatePetModel>
+
+//    @FormUrlEncoded
+//    @POST(ApiEndPoint.HOME_FEED)
+//    suspend fun homeFeed(
+//        @Field("user_id") userId: String,
+//    ) : Response<>
 }

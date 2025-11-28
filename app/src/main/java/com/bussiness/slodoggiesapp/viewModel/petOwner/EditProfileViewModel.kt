@@ -162,9 +162,9 @@ class EditProfileViewModel @Inject constructor(
             requestFile
         )
     }
-    // -----------------------------------------------------
-    //  MAIN SAVE CHANGES API CALL
-    // -----------------------------------------------------
+
+
+
     fun saveChanges(context: Context, onSuccess: () -> Unit) {
         viewModelScope.launch {
 
@@ -211,7 +211,7 @@ class EditProfileViewModel @Inject constructor(
                 email = state.email,
                 phone = state.mobileNumber,
                 bio = state.bio,
-                profile_image = imagePart
+                profile_image = imageParts
             ).collectLatest { result ->
 
                 when (result) {
