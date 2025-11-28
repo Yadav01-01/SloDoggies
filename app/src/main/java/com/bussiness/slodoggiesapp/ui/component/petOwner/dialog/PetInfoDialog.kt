@@ -94,6 +94,10 @@ fun PetInfoDialog(
     val viewModel: PetInfoViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val context =  LocalContext.current
+
+
+    val selectedPhoto = viewModel.selectedPhoto.collectAsState().value
+
     LaunchedEffect(Unit) {
         viewModel.uiEvent.collect { event ->
             when (event) {
@@ -210,7 +214,8 @@ fun PetInfoDialog(
 
                         item {
                             AddPhotoSection(
-                                uriImage =null,
+                                //uriImage =null,
+                                uriImage = selectedPhoto,
                                 onPhotoSelected = { uri ->
                                     viewModel.setSelectedPhoto(uri)
                                 }
@@ -296,56 +301,57 @@ val samplePeople = Person("1", "Jimmy", "https://example.com/jimmy.jpg")
 @Composable
 fun AddPhotoSection(
     modifier: Modifier = Modifier,
-    onPhotoSelected: (Uri?) -> Unit,
-    uriImage:Uri?=null
+    uriImage: Uri? = null,
+    onPhotoSelected: (Uri?) -> Unit
 ) {
-    var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    selectedImageUri =uriImage
     val context = LocalContext.current
 
-    // Camera launcher
+    // Proper state (only one source of truth)
+   // var selectedImageUri by remember { mutableStateOf(uriImage) }
+    var selectedImageUri = uriImage
+
+    // --- Camera Launcher ---
     val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
+        ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         bitmap?.let {
             val uri = saveBitmapToCache(context, it)
-            selectedImageUri=uri
+            selectedImageUri = uri
             onPhotoSelected(uri)
         }
     }
 
-    // Permission launcher
+    // --- Camera Permission ---
     val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            cameraLauncher.launch(null)
-        } else {
-            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
-        }
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) cameraLauncher.launch(null)
+        else Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
     }
 
-    // Gallery launcher
+    // --- Gallery Picker ---
     val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        ActivityResultContracts.GetContent()
     ) { uri ->
-        selectedImageUri=uri
+        selectedImageUri = uri
         onPhotoSelected(uri)
     }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Box(
             modifier = Modifier
-                .size(80.dp)
+                .size(90.dp)
                 .clickable {
                     showPhotoPickerDialog(
                         context,
                         onCameraClick = {
                             if (ContextCompat.checkSelfPermission(
-                                    context, Manifest.permission.CAMERA
+                                    context,
+                                    Manifest.permission.CAMERA
                                 ) == PackageManager.PERMISSION_GRANTED
                             ) {
                                 cameraLauncher.launch(null)
@@ -353,58 +359,40 @@ fun AddPhotoSection(
                                 permissionLauncher.launch(Manifest.permission.CAMERA)
                             }
                         },
-                        onGalleryClick = { galleryLauncher.launch("image/*") }
+                        onGalleryClick = {
+                            galleryLauncher.launch("image/*")
+                        }
                     )
                 },
             contentAlignment = Alignment.Center
         ) {
-            /*AsyncImage(
-                model = selectedImageUri,
-                contentDescription = stringResource(R.string.cd_pet_photo),
-                placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
-                error = painterResource(id = R.drawable.ic_black_profile_icon),
-                modifier = Modifier
-                    .size(70.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )*/
-
-            var loadedBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
             AsyncImage(
                 model = selectedImageUri,
-                contentDescription = stringResource(R.string.cd_pet_photo),
-                placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
-                error = painterResource(id = R.drawable.ic_black_profile_icon),
+                contentDescription = "Selected Image",
+                placeholder = painterResource(R.drawable.ic_black_profile_icon),
+                error = painterResource(R.drawable.ic_black_profile_icon),
                 modifier = Modifier
-                    .size(70.dp)
+                    .size(80.dp)
                     .clip(CircleShape),
-                contentScale = ContentScale.Crop,
-
-                onSuccess = { success ->
-                    val drawable = success.result.drawable
-                    loadedBitmap = (drawable as BitmapDrawable).bitmap
-
-                }
+                contentScale = ContentScale.Crop
             )
-
 
             Image(
                 painter = painterResource(id = R.drawable.ic_post_icon),
                 contentDescription = stringResource(R.string.cd_add_photo),
                 modifier = Modifier
-                    .size(25.dp)
+                    .size(28.dp)
                     .align(Alignment.BottomEnd)
             )
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
 
         Text(
             text = stringResource(R.string.add_photo),
-            style = MaterialTheme.typography.bodyMedium,
+            fontSize = 15.sp,
             color = Color.Black,
-            fontSize = 14.sp,
             fontFamily = FontFamily(Font(R.font.outfit_medium))
         )
     }

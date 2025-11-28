@@ -76,7 +76,6 @@ class EditProfileViewModel @Inject constructor(
         _selectedPhotos.value = listOf(uri)   // only 1 profile image
     }
 
-
     // ------------ DROPDOWNS & DIALOGS ------------
     fun toggleRelationDropdown() =
         _uiState.update { it.copy(showRelationDropdown = !it.showRelationDropdown) }
@@ -197,13 +196,13 @@ class EditProfileViewModel @Inject constructor(
 
             // Convert image URIs → Multipart
             val imageParts = getImagePartsFromUris(context, photos)
+
             val imagePart = prepareFilePart(uiState.value.profileImageUri.toString())
+
             if (imageParts.isEmpty()) {
                 Toast.makeText(context, "Unable to process images", Toast.LENGTH_SHORT).show()
                 return@launch
             }
-
-
             // API CALL
             repository.updateOwnerDetail(
                 userId = sessionManager.getUserId(),

@@ -636,7 +636,7 @@ private fun PostCaption(caption: String, description: String) {
 @OptIn(UnstableApi::class)
 @Composable
 fun PostImage(
-    mediaList: List<com.bussiness.slodoggiesapp.data.model.common.MediaItem>,
+    mediaList: List<MediaItem>,
     modifier: Modifier = Modifier,
     onVideoPlay: (() -> Unit)? = null,
 ) {

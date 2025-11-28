@@ -9,7 +9,8 @@ object ApiEndPoint {
     const val VERIFY_FORGOT_OTP = "verify_forgot_otp"
     const val RESET_PASSWORD = "reset_password"
     const val RESEND_PASSWORD = "resend_otp"
-    const val ADD_PETS = "add_pets"
+    //const val ADD_PETS = "add_pets"  Change By Shrawan
+    const val ADD_PETS = "add_update_pet"
     const val GET_OWNER_DETAIL = "get_owner_details"
     const val UPDATE_OWNER_DETAIL = "update_owner_details"
     const val GET_BUSINESS_DETAIL = "get_business_details"

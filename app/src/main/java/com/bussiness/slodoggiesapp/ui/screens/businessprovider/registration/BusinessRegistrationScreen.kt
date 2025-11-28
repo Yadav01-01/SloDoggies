@@ -278,7 +278,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
                         viewModel.addPhoto(it.toString())
                     },
                     onMediaUnSelected = {
-                        viewModel.removePhoto(it.toString())
+                        viewModel.removePhoto(it)
                     },
                     type="image")
             }
@@ -308,6 +308,5 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
 fun PreviewBusinessRegistrationScreen() {
     // Use a dummy NavController for preview purposes
     val navController = rememberNavController()
-
     BusinessRegistrationScreen(navController = navController)
 }

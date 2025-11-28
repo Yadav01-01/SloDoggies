@@ -1,5 +1,9 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen
 
+import android.Manifest
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -25,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -42,6 +47,26 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 
 @Composable
 fun LocationPermissionScreen(navController: NavHostController) {
+
+    val context = LocalContext.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        if (fineGranted || coarseGranted) {
+            navController.navigate(Routes.MAIN_SCREEN) {
+                popUpTo(Routes.LOGIN_SCREEN) { inclusive = true }
+                launchSingleTop = true
+            }
+        } else {
+            Toast.makeText(context, "Location Permission Denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -82,21 +107,27 @@ fun LocationPermissionScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(32.dp))
 
             CommonBlueButton(text = "Turn On", fontSize = 18.sp, onClick = {
-                navController.navigate(Routes.MAIN_SCREEN){
-                    popUpTo(Routes.LOGIN_SCREEN) { inclusive = true }
-                    launchSingleTop = true
-                }
+
+                permissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+
             })
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CommonWhiteButton(text = "NOT NOW", onClick = { navController.navigate(Routes.MAIN_SCREEN) })
+            CommonWhiteButton(text = "NOT NOW", onClick = {
+                navController.navigate(Routes.MAIN_SCREEN)
+            })
         }
 
         Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 56.dp, end = 10.dp) // This creates the space below the paw
+                .padding(bottom = 56.dp, end = 10.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_paws),
@@ -108,6 +139,7 @@ fun LocationPermissionScreen(navController: NavHostController) {
         }
     }
 }
+
 
 @Composable
 fun RippleAnimation(@DrawableRes icon : Int) {

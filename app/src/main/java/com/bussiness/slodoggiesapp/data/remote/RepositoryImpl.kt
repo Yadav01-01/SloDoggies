@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.data.remote
 
 import android.util.Log
+import com.bussiness.slodoggiesapp.data.model.common.ErrorResponse
 import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
 import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
@@ -23,6 +24,8 @@ import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionMo
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.LoaderManager
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -514,7 +517,15 @@ class RepositoryImpl @Inject constructor(
             LoaderManager.hide()
             when {
                 !response.isSuccessful -> {
-                    Resource.Error("Server error: ${response.code()} - ${response.message()}")
+                   // Resource.Error("Server error: ${response.code()} - ${response.message()}")
+                    val errorJson = response.errorBody()?.string()
+                    val gson = Gson()
+                    val errorResponse = try {
+                        gson.fromJson(errorJson, ErrorResponse::class.java)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    Resource.Error(errorResponse?.message ?: "Server Error")
                 }
                 response.body() == null -> {
                     Resource.Error("Empty response body")

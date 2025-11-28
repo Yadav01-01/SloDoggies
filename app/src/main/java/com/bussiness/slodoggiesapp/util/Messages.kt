@@ -47,4 +47,10 @@ object Messages {
     const val ADDRESS_SMS = "Address can't be empty"
     const val DATE_TIME_COMPARE_SMS = "End date & time must be greater than start date & time"
     const val EVENT_NO = "No event found"
+
+    // Create Account Validatin
+    const val FULL_NAME = "Full name can't be empty"
+    const val PHONE_EMAIL = "Email or Phone can't be empty"
+    const val INVALID_CONTACT = "Invalid contact input"
+
 }

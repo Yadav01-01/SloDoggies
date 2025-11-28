@@ -52,12 +52,9 @@ fun AddServiceScreen(navController: NavHostController) {
     val context = LocalContext.current
     var isNavigating by remember { mutableStateOf(false) }
 
-
-    Column(
-        modifier = Modifier
+    Column(modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-    ) {
+            .background(Color.White)) {
 
         TopHeadingTextWithSkip(
             textHeading = "Add Services",
@@ -181,12 +178,10 @@ fun AddServiceScreen(navController: NavHostController) {
 }
 
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun AddServiceScreenPreview() {
     val navController = rememberNavController()
-
     AddServiceScreen(navController = navController)
 }

@@ -29,7 +29,8 @@ class PetInfoViewModel @Inject constructor(
 
     /** Selected Image */
     private val _selectedPhoto = MutableStateFlow<Uri?>(null)
-    private val selectedPhoto: StateFlow<Uri?> = _selectedPhoto.asStateFlow()
+     val selectedPhoto: StateFlow<Uri?> = _selectedPhoto.asStateFlow()
+
 
     /** UI Events - One-time events */
     private val _uiEvent = Channel<UiEvent>()
