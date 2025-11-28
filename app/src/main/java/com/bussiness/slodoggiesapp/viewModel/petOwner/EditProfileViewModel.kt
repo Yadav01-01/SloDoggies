@@ -76,7 +76,6 @@ class EditProfileViewModel @Inject constructor(
         _selectedPhotos.value = listOf(uri)   // only 1 profile image
     }
 
-
     // ------------ DROPDOWNS & DIALOGS ------------
     fun toggleRelationDropdown() =
         _uiState.update { it.copy(showRelationDropdown = !it.showRelationDropdown) }

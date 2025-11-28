@@ -48,7 +48,11 @@ class EventListViewModel @Inject constructor(
     private fun getEventList(page: Int) {
         if (isLoadingPage) return
         isLoadingPage = true
-        val type = _selectedOption.value // "My Events" or "Saved"
+        val type=  if (_selectedOption.value.equals("My Events",true)){
+            "my_event"
+        }else{
+            "saved_event"
+        }
         viewModelScope.launch {
             repository.eventListRequest(sessionManager.getUserId(), page.toString(),type)
                 .collectLatest { result ->
