@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.component.petOwner.dialog
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScrollableDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.common.BioField
@@ -56,6 +58,7 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.viewModel.petOwner.UserDetailsViewModel
 
 @Composable
@@ -179,12 +182,24 @@ fun UserDetailsDialog(
                         PhoneNumber(
                             phone = state.phoneNumber,
                             onPhoneChange = viewModel::onPhoneChanged,
-                            onVerify = { onVerify( "dialogPhone",state.phoneNumber) },
-                            isVerified = if (state.email.isNullOrEmpty()) {
-                                false   // email empty → not verified
-                            } else {
-                                true
-                            }
+                            onVerify = {
+                                val phone = state.email.trim()
+                                if (phone.isEmpty()) {
+                                    Toast.makeText(context, Messages.PHONE_NAME, Toast.LENGTH_SHORT).show()
+                                    return@PhoneNumber
+                                }
+                                    viewModel.sendOtpRequest(
+                                        type ="dialogPhone" ,
+                                        onError = {
+                                            Toast.makeText(context,it, Toast.LENGTH_SHORT).show()
+                                        },
+                                        onSuccess = {
+                                            onVerify( "dialogPhone",state.phoneNumber)
+                                        })
+
+
+                                       },
+                            isVerified = state.isPhoneVerified
                         )
 
 
@@ -197,13 +212,25 @@ fun UserDetailsDialog(
                         // Email Field with Verify
                         EmailField(
                             email = state.email,
-                            isVerified = if (state.email.isNullOrEmpty()) {
-                                false   // email empty → not verified
-                            } else {
-                              true
-                            },
+                            isVerified = state.isEmailVerified,
                             onEmailChange = viewModel::onEmailChanged,
-                            onVerify = { onVerify("dialogEmail",state.email) }
+                            onVerify = {
+                                val email = state.email.trim()
+                                if (email.isEmpty()) {
+                                    Toast.makeText(context, Messages.EMAIL_NAME, Toast.LENGTH_SHORT).show()
+                                    return@EmailField
+                                }
+                                    viewModel.sendOtpRequest(
+                                        type ="dialogEmail" ,
+                                        onError = {
+                                            Toast.makeText(context,it, Toast.LENGTH_SHORT).show()
+                                        },
+                                        onSuccess = {
+                                            onVerify("dialogEmail",state.email)
+                                        })
+
+
+                            }
                         )
 
                         Spacer(modifier = Modifier.height(16.dp))

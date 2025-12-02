@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.viewModel.petOwner.ownerProfile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.remote.Repository
@@ -24,7 +25,7 @@ class PetOwnerProfileViewModel @Inject constructor(
     val uiState: StateFlow<OwnerProfileUiState> = _uiState
 
     init {
-     //   onRefresh()
+        onRefresh()
     }
 
     fun onRefresh(){
@@ -98,11 +99,11 @@ class PetOwnerProfileViewModel @Inject constructor(
             repository.getOwnerGalleryPost(sessionManager.getUserId(), page.toString())
                 .collectLatest { result ->
                     when (result) {
-
                         is Resource.Success -> {
                             val response = result.data
-                            val galleryData = response.data
 
+                            val galleryData = response.data
+                            Log.d("******",response.toString())
                             val newPosts = galleryData?.posts ?: emptyList()
 
                             _uiState.update {

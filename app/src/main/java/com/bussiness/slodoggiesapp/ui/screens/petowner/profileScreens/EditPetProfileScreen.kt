@@ -3,6 +3,7 @@ package com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -32,10 +33,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,7 +54,6 @@ import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.Data
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScrollableDropdownBox
@@ -69,14 +67,19 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun EditPetProfileScreen(navController: NavHostController,petId:String, viewModel: PetProfileViewModel = hiltViewModel()) {
+fun EditPetProfileScreen(navController: NavHostController,petId:String,
+                         viewModel: PetProfileViewModel = hiltViewModel()) {
 
+    LaunchedEffect (Unit) {
+        Log.d("888888",petId)
+        if (petId.isNotEmpty()) {
+            viewModel.getPetProfile(petId)
+        }
+    }
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect (Unit) {
-        viewModel.getPetProfile(petId)
-    }
+
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -315,9 +318,10 @@ fun EditPetProfileScreen(navController: NavHostController,petId:String, viewMode
             onDismissRequest = { viewModel.toggleImagePicker(false) },
             title = { Text("Select Option") },
             buttons = {
-                Column(Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()) {
+                Column(
+                    Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth()) {
                     Text("Camera", Modifier
                         .clickable {
                             viewModel.toggleImagePicker(false)

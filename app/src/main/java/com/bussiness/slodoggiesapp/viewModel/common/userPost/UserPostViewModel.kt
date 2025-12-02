@@ -44,7 +44,7 @@ class UserPostViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            val data = result.data.data ?: emptyList()
+                            val data = result.data.data?.data ?: emptyList()
 
                             _uiState.update {
                                 it.copy(

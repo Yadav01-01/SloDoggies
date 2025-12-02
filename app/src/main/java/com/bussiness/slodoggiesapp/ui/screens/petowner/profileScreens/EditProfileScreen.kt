@@ -58,6 +58,7 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.CustomOutlinedTextField
 import com.bussiness.slodoggiesapp.ui.component.saveBitmapToCache
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.viewModel.petOwner.EditProfileViewModel
 
 @Composable
@@ -66,6 +67,12 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+
+
+    //  One-time effect to trigger API only once when dialog opens
+    LaunchedEffect(Unit) {
+        viewModel.fetchOwnerDetails()
+    }
 
     LaunchedEffect(navController.currentBackStackEntry) {
         navController.currentBackStackEntry
@@ -82,7 +89,11 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
     val launcherGallery = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uiState.profileImageUri = uri
+      //  uiState.image = uri.toString()
+        uri?.let {
+            viewModel.updateSelectedPhoto(uri)
+        }
+
     }
 
     val launcherCamera = rememberLauncherForActivityResult(
@@ -90,7 +101,10 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
     ) { bitmap: Bitmap? ->
         bitmap?.let {
             val uri = saveBitmapToCache(context, it)
-            uiState.profileImageUri = uri
+          //  uiState.image = uri.toString()
+            uri?.let {
+                viewModel.updateSelectedPhoto(uri)
+            }
         }
     }
 
@@ -161,7 +175,7 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
                                 .clip(CircleShape)
                         ) {
                             AsyncImage(
-                                model = uiState.profileImageUri,
+                                model = uiState.image ?: "",
                                 contentDescription = "Parent Photo",
                                 contentScale = ContentScale.Crop,
                                 placeholder = painterResource(id = R.drawable.ic_black_profile_icon),
@@ -206,8 +220,28 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
             item {
                 PhoneNumber(
                     phone = uiState.mobileNumber,
-                    onPhoneChange = { viewModel.updateMobileNumber(it) },
-                    onVerify = { viewModel.onVerify(navController, "dialogPhone", uiState.mobileNumber) },
+                    onPhoneChange = {
+                        viewModel.updateMobileNumber(it)
+                                    },
+
+                    onVerify = {
+                      //  viewModel.onVerify(navController, "dialogPhone", uiState.mobileNumber)
+                        val phone = uiState.mobileNumber
+                        if (phone.isEmpty()) {
+                            Toast.makeText(context, Messages.PHONE_NAME, Toast.LENGTH_SHORT).show()
+                            return@PhoneNumber
+                        }
+                        viewModel.sendOtpRequest(
+                            type ="dialogPhone" ,
+                            onError = {
+                                Toast.makeText(context,it, Toast.LENGTH_SHORT).show()
+                            },
+                            onSuccess = {
+                              //  onVerify( "dialogPhone",uiState.mobileNumber)
+                                viewModel.onVerify(navController, "dialogPhone", uiState.mobileNumber)
+                            })
+
+                    },
                     isVerified = uiState.isMobileVerified
                 )
             }
@@ -222,7 +256,21 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
                 EmailTextField(
                     email = uiState.email,
                     onEmailChange = { viewModel.updateEmail(it) },
-                    onVerify = { viewModel.onVerify(navController, "dialogEmail", uiState.email) },
+                    onVerify = {
+                        val email = uiState.email.trim()
+                        if (email.isEmpty()) {
+                            Toast.makeText(context, Messages.EMAIL_NAME, Toast.LENGTH_SHORT).show()
+                            return@EmailTextField
+                        }
+                        viewModel.sendOtpRequest(
+                            type ="dialogEmail" ,
+                            onError = {
+                                Toast.makeText(context,it, Toast.LENGTH_SHORT).show()
+                            },
+                            onSuccess = {
+                                viewModel.onVerify(navController, "dialogEmail", uiState.email)
+                            })
+                               },
                     isVerified = uiState.isEmailVerified,
                     placeholder = "merry@Slodoggies.com"
                 )
@@ -236,9 +284,9 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
 
             item {
                 CustomDropdownBox(
-                    label = uiState.relation.ifEmpty { "Select" },
+                    label = uiState.parent_type.ifEmpty { "Select" },
                     items = uiState.relationOptions,
-                    selectedItem = uiState.relation,
+                    selectedItem = uiState.parent_type,
                     onItemSelected = { selected -> viewModel.updateRelation(selected) }
                 )
             }
@@ -262,7 +310,10 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
                 CommonBlueButton(
                     text = stringResource(R.string.save_changes),
                     fontSize = 15.sp,
-                    onClick = { viewModel.toggleUpdateProfileDialog() },
+                    onClick = { viewModel.saveChanges(context, onSuccess = {
+                        viewModel.toggleUpdateProfileDialog()
+                    })
+                              },
                     modifier = Modifier.padding(horizontal = 45.dp)
                 )
             }
@@ -278,6 +329,9 @@ fun EditProfileScreenPet(navController: NavHostController, viewModel: EditProfil
         )
     }
     if (uiState.showImagePickerDialog) {
+//        LaunchedEffect(Unit) {
+//            viewModel.resetImage()
+//        }
         androidx.compose.material.AlertDialog(
             onDismissRequest = { viewModel.hideImagePickerDialog() },
             title = { Text("Select Option") },

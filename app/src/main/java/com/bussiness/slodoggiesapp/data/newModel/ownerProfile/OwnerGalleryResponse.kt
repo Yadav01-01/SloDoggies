@@ -102,6 +102,13 @@ data class OwnerPostItem(
     @SerializedName("updated_at")
     val updatedAt: String? = "",
 
-    @SerializedName("media_path")
-    val mediaPath: List<String>? = emptyList()
+//    @SerializedName("media_path")
+//    val mediaPath: List<String>? = emptyList()
+    @SerializedName("media")
+    val mediaPath: List<MediaItem>? = emptyList()
+)
+
+data class MediaItem(
+    val url: String?,
+    val type: String?
 )

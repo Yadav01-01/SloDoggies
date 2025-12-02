@@ -149,6 +149,7 @@ interface Repository {
         email: String,
         phone: String,
         bio: String,
+        parent_type: String,
         profile_image: List<MultipartBody.Part>
     ): Flow<Resource<CommonResponse>>
 

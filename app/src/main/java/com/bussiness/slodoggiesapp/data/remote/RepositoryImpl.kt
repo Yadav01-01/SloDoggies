@@ -316,6 +316,7 @@ class RepositoryImpl @Inject constructor(
         email: String,
         phone: String,
         bio: String,
+        parent_type: String,
         profile_image:  List<MultipartBody.Part>
     ): Flow<Resource<CommonResponse>> = flow{
 
@@ -327,6 +328,7 @@ class RepositoryImpl @Inject constructor(
         val userEmail = email.toRequestBody("text/plain".toMediaTypeOrNull())
         val userPhone = phone.toRequestBody("text/plain".toMediaTypeOrNull())
         val userBio = bio.toRequestBody("text/plain".toMediaTypeOrNull())
+        val userParentType = parent_type.toRequestBody("text/plain".toMediaTypeOrNull())
 
         // Call safeApiCall wrapper
         val result = safeApiCall {
@@ -336,6 +338,7 @@ class RepositoryImpl @Inject constructor(
                 email = userEmail,
                 phone = userPhone,
                 bio = userBio,
+                userParentType,
                 profile_image = profile_image
             )
         }

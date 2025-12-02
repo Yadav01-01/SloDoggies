@@ -3,6 +3,7 @@ package com.bussiness.slodoggiesapp.ui.component.common
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.webkit.MimeTypeMap
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.removeBaseUrl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -18,13 +19,18 @@ fun createMultipartList(
 ): List<MultipartBody.Part> {
 
     val parts = mutableListOf<MultipartBody.Part>()
-
     uris.forEachIndexed { index, uri ->
         context.contentResolver.openInputStream(uri)?.use { input ->
             val bytes = input.readBytes()
-            val fileName = "pet_image_${System.currentTimeMillis()}_$index.jpg"
 
-            val body = bytes.toRequestBody("image/*".toMediaType())
+            // Get MIME type dynamically
+            val mimeType = context.contentResolver.getType(uri) ?: "application/octet-stream"
+
+            // Generate file name with proper extension
+            val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType) ?: "bin"
+            val fileName = "file_${System.currentTimeMillis()}_$index.$extension"
+
+            val body = bytes.toRequestBody(mimeType.toMediaType())
             parts.add(
                 MultipartBody.Part.createFormData(
                     keyName,
@@ -34,9 +40,35 @@ fun createMultipartList(
             )
         }
     }
-
     return parts
 }
+
+//fun createMultipartList(
+//    context: Context,
+//    uris: List<Uri>,
+//    keyName: String
+//): List<MultipartBody.Part> {
+//
+//    val parts = mutableListOf<MultipartBody.Part>()
+//
+//    uris.forEachIndexed { index, uri ->
+//        context.contentResolver.openInputStream(uri)?.use { input ->
+//            val bytes = input.readBytes()
+//            val fileName = "pet_image_${System.currentTimeMillis()}_$index.jpg"
+//
+//            val body = bytes.toRequestBody("image/*".toMediaType())
+//            parts.add(
+//                MultipartBody.Part.createFormData(
+//                    keyName,
+//                    fileName,
+//                    body
+//                )
+//            )
+//        }
+//    }
+//
+//    return parts
+//}
 
 suspend fun createMultipartListUriUrl(
     context: Context,
