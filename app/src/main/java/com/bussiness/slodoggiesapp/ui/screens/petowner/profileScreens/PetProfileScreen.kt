@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -40,6 +41,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,10 +50,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -63,7 +68,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
@@ -73,9 +77,11 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.Pet
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
+import com.bussiness.slodoggiesapp.ui.component.common.getVideoThumbnail
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialog
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.isVideoFile
 import com.bussiness.slodoggiesapp.viewModel.petOwner.ownerProfile.PetOwnerProfileViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -87,6 +93,10 @@ fun PetProfileScreen(navController: NavHostController) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedPet = uiState.data.pets.getOrNull(uiState.selectedPet)
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.onRefresh()
+    }
 
     LaunchedEffect(uiState.errorMessage) {
         uiState.errorMessage?.let {
@@ -452,21 +462,93 @@ fun PetProfileScreen(navController: NavHostController) {
                     ) {
 
                         rowItems.forEach { post ->
-                            AsyncImage(
-                                model = post.mediaPath?.firstOrNull(),
-                                placeholder = painterResource(R.drawable.no_image_placeholder),
-                                error = painterResource(R.drawable.no_image_placeholder),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .aspectRatio(1f)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .clickable {
-                                        navController.navigate(Routes.USER_POST_SCREEN)
-                                    },
-                                contentScale = ContentScale.Crop
-                            )
+                            val imageUrl = post.mediaPath?.firstOrNull()?.url ?: ""
+
+                            if (imageUrl.isVideoFile()) {
+
+                                val thumbnailBitmap by remember(imageUrl) {
+                                    mutableStateOf(getVideoThumbnail(imageUrl))
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .aspectRatio(1f)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .clickable { navController.navigate(Routes.USER_POST_SCREEN) }
+                                ) {
+
+                                    // ---- VIDEO THUMBNAIL ----
+                                    if (thumbnailBitmap != null) {
+                                        Image(
+                                            bitmap = thumbnailBitmap!!.asImageBitmap(),
+                                            contentDescription = "",
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    } else {
+                                        Image(
+                                            painter = painterResource(R.drawable.no_image),
+                                            contentDescription = "",
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+
+                                    // ---- PLAY ICON (TOP-RIGHT) ----
+//                                    Icon(
+//                                        imageVector = Icons.Filled.PlayArrow,
+//                                        contentDescription = "Play",
+//                                        tint = Color.White,
+//                                        modifier = Modifier
+//                                            .size(28.dp)
+//                                            .align(Alignment.TopEnd)
+//                                            .padding(6.dp)
+//                                    )
+                                    Box(
+                                        Modifier
+                                            .fillMaxSize()
+                                            .background(Color.Black.copy(.35f)),
+                                        Alignment.Center
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                navController.navigate(Routes.USER_POST_SCREEN)
+                                            },
+                                            modifier = Modifier
+                                                .size(60.dp)
+                                                .background(Color.White.copy(.9f), CircleShape)
+                                        ) {
+                                            Icon(
+                                                Icons.Default.PlayArrow,
+                                                contentDescription = "Play Video",
+                                                tint = Color(0xFF0A3D62),
+                                                modifier = Modifier.size(36.dp)
+                                            )
+                                        }
+                                    }
+                                }
+
+                            } else {
+
+                                // ---- NORMAL IMAGE ----
+                                AsyncImage(
+                                    model = imageUrl,
+                                    placeholder = painterResource(R.drawable.no_image),
+                                    error = painterResource(R.drawable.no_image),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .aspectRatio(1f)
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .clickable {
+                                            navController.navigate(Routes.USER_POST_SCREEN)
+                                        },
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
                         }
+
 
                         // Fill empty spaces in last row
                         repeat(3 - rowItems.size) {
@@ -664,6 +746,7 @@ fun AddButton(
         )
     }
 }
+
 
 
 @Preview(showBackground = true)

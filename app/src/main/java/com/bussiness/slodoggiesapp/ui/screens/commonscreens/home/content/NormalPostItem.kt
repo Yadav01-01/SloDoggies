@@ -85,7 +85,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
-fun NormalPostItem(modifier: Modifier, postItem: com.bussiness.slodoggiesapp.data.model.common.PostItem.NormalPost, onReportClick: () -> Unit, onShareClick: () -> Unit, normalPost : Boolean, onEditClick: () -> Unit, onDeleteClick: () -> Unit, onProfileClick: () -> Unit, onSelfPostEdit: () -> Unit, onSelfPostDelete: () -> Unit) {
+fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportClick: () -> Unit, onShareClick: () -> Unit, normalPost : Boolean, onEditClick: () -> Unit, onDeleteClick: () -> Unit, onProfileClick: () -> Unit, onSelfPostEdit: () -> Unit, onSelfPostDelete: () -> Unit) {
     Card(
         modifier = modifier
             .fillMaxWidth(),

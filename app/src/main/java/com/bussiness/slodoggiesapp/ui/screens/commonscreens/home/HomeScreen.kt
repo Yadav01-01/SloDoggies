@@ -112,7 +112,7 @@ fun HomeScreen(
     }
 
     // --- Dialogs ---
-    //if (sessionManager.isSignupFlowActive()){
+    if (sessionManager.isSignupFlowActive()){
         if (welcomeUiState.showDialog) {
             WelcomeDialog(
                 onDismiss = { viewModel.dismissWelcomeDialog() },
@@ -172,7 +172,7 @@ fun HomeScreen(
                 }
             }
         }
-  //  }
+    }
 
     if (showReportDialog) {
         ReportDialog(

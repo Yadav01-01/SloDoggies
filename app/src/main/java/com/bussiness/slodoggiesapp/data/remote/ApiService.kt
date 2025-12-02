@@ -218,6 +218,7 @@ interface ApiService {
         @Part("email") email: RequestBody,
         @Part("phone") phone: RequestBody,
         @Part("bio") bio: RequestBody,
+        @Part("parent_type") parent_type: RequestBody,
         @Part profile_image: List<MultipartBody.Part>
     ): Response<CommonResponse>
 

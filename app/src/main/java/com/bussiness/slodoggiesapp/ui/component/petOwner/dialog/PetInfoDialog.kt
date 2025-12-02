@@ -307,8 +307,8 @@ fun AddPhotoSection(
     val context = LocalContext.current
 
     // Proper state (only one source of truth)
-   // var selectedImageUri by remember { mutableStateOf(uriImage) }
-    var selectedImageUri = uriImage
+    var selectedImageUri by remember { mutableStateOf(uriImage) }
+   // var selectedImageUri = uriImage
 
     // --- Camera Launcher ---
     val cameraLauncher = rememberLauncherForActivityResult(

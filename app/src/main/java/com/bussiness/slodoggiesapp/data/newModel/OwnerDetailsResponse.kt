@@ -54,5 +54,14 @@ data class OwnerData(
     val updatedAt: String? = null,
 
     @SerializedName("deleted_at")
-    val deletedAt: String? = null
+    val deletedAt: String? = null,
+
+    @SerializedName("bio")
+    val bio: String? = null,
+
+    @SerializedName("image")
+    val image: String? = null,
+
+    @SerializedName("parent_type")
+    val parent_type: String? = null
 )

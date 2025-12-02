@@ -8,6 +8,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.net.Uri
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -195,7 +196,9 @@ fun PetPostScreenContent(onClickPost: () -> Unit) {
             MediaUploadSection(maxImages = 6,
                 imageList=uiStatePostCreateOwner.image?: mutableListOf(),
                 onMediaSelected = {
-                    viewModelPostCreateOwner.addPhoto(it) } ,
+                    Log.v("&&&&&&&",it.toString())
+                    viewModelPostCreateOwner.addPhoto(it)
+                                  } ,
                 onMediaUnSelected = {  viewModelPostCreateOwner.removePhoto(it) })
 
         }

@@ -13,8 +13,16 @@ data class MyPostsResponse(
     override val message: String? = null,
 
     @SerializedName("data")
-    val data: List<PostItem>? = null
+    val data: PostsData? = null
 ) : BaseResponse
+
+data class PostsData(
+    val page: String,
+    val limit: String,
+    val total_posts: Int,
+    val total_page: Int,
+    val data: List<PostItem>
+)
 
 data class PostItem(
 

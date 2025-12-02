@@ -78,8 +78,8 @@ class UserDetailsViewModel @Inject constructor(
                                     name = owner.name.orEmpty(),
                                     email = owner.email.orEmpty(),
                                     phoneNumber = owner.phone.orEmpty(),
-                                    isEmailVerified = owner.emailVerifiedAt != null,
-                                    isPhoneVerified = !owner.phone.isNullOrEmpty(),
+                                    isEmailVerified = !owner.email.isNullOrBlank(),
+                                    isPhoneVerified = !owner.phone.isNullOrBlank(),
                                     isLoading = false
                                 )
                             }
@@ -142,6 +142,7 @@ class UserDetailsViewModel @Inject constructor(
                 state.email,
                 state.phoneNumber,
                 state.bio,
+                "",
                 imageParts
             ).collectLatest { result ->
                 when (result) {
@@ -163,6 +164,51 @@ class UserDetailsViewModel @Inject constructor(
                         Toast.makeText(context, result.message ?: "An error occurred", Toast.LENGTH_SHORT).show()
                     }
 
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+    fun sendOtpRequest(type:String?="",
+                       onSuccess: () -> Unit = { },
+                       onError: (String) -> Unit){
+        viewModelScope.launch {
+            val state = _uiState.value
+            val email= state.email
+            val phone = state.phoneNumber
+            var phoneEmail = ""
+
+            if (type.equals("dialogPhone")){
+                phoneEmail = phone
+                if (phone.isEmpty()){
+                    onError("Phone cant be empty")
+                    return@launch
+                }
+            }else{
+                phoneEmail =  email
+                if (phoneEmail.isEmpty()){
+                    onError("Email cant be empty")
+                    return@launch
+                }
+            }
+            repository.sendOtpRequest(phoneEmail,sessionManager.getUserId()).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        val response = result.data
+                        if (response.success == true && response.data != null) {
+                            val data = response.data
+                            onSuccess()
+                        } else {
+                            onError(response.message ?: "Failed to fetch owner details")
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiState.update { it.copy(isLoading = false) }
+                        onError(result.message)
+                    }
                     Resource.Idle -> Unit
                 }
             }
