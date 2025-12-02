@@ -10,13 +10,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.bussiness.slodoggiesapp.data.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.NormalPostItem
 
 
 @Composable
 fun ActivitiesPostsList(
-    posts: List<com.bussiness.slodoggiesapp.data.model.common.PostItem>,
+    posts: List<PostItem>,
     onReportClick: () -> Unit,
     onShareClick: () -> Unit,
     onProfileClick: () -> Unit
@@ -27,7 +27,7 @@ fun ActivitiesPostsList(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(posts) { post ->
-            if (post is com.bussiness.slodoggiesapp.data.model.common.PostItem.NormalPost) {
+            if (post is PostItem.NormalPost) {
                 NormalPostItem(
                     postItem = post,
                     modifier = Modifier.padding(0.dp),
