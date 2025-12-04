@@ -16,6 +16,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsRes
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
+import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
@@ -506,6 +507,11 @@ class RepositoryImpl @Inject constructor(
     override suspend fun getPetDetail(petId: String): Flow<Resource<UpdatePetModel>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.getPetDetail(petId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getHomeFeed(userId: String,page: String): Flow<Resource<HomeFeedResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.homeFeed(userId,page) })
     }.flowOn(Dispatchers.IO)
 
 

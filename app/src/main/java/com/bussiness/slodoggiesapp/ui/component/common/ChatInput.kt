@@ -219,7 +219,7 @@ fun BottomMessageBar(
 }
 
 @Composable
-fun FeedbackBubble(message: com.bussiness.slodoggiesapp.data.model.common.ChatWindow.Feedback) {
+fun FeedbackBubble(message: ChatWindow.Feedback) {
     var feedbackText by remember { mutableStateOf(message.feedbackText) }
     var ratings by remember { mutableStateOf(message.userRatings.toMutableList()) }
 

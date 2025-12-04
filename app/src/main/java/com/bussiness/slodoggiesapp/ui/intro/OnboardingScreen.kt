@@ -46,17 +46,17 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import kotlinx.coroutines.launch
 
 val onboardingPages = listOf(
-    com.bussiness.slodoggiesapp.data.model.common.OnboardingPage(
+    OnboardingPage(
         imageRes = R.drawable.onboard1,
         title = "Welcome to SloDoggies",
         description = "Discover a tail-wagging world where dog lovers and local services connect. SLO county's dog community just got its own home!"
     ),
-    com.bussiness.slodoggiesapp.data.model.common.OnboardingPage(
+    OnboardingPage(
         imageRes = R.drawable.onboard1,
         title = "Sniff Out Local Pet Pros",
         description = "Search for groomers, walkers, trainers, and more -powered by real reviews, geolocation, and a love for all things furry."
     ),
-    com.bussiness.slodoggiesapp.data.model.common.OnboardingPage(
+    OnboardingPage(
         imageRes = R.drawable.onboard3,
         title = "Paws, Play & Participate",
         description = "Join dog friendly events, follow favorite providers, explore pet places and make lifelong friends - both two-and four-legged. "
@@ -148,7 +148,7 @@ fun OnboardingScreen(navController: NavHostController) {
 
 @Composable
 fun OnboardingPageContent(
-    page: com.bussiness.slodoggiesapp.data.model.common.OnboardingPage,
+    page: OnboardingPage,
     currentPage: Int,
     totalPages: Int
 ) {

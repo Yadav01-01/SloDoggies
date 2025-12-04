@@ -11,19 +11,19 @@ data class PostData(
     val likes: Int,
     val comments: Int,
     val shares: Int,
-    val mediaList: List<com.bussiness.slodoggiesapp.data.model.common.MediaItem>,
+    val mediaList: List<MediaItem>,
 
     )
 
 
-data class MediaItem(
-    val type: com.bussiness.slodoggiesapp.data.model.common.MediaType,
-    val imageRes: Int? = null,
-    val videoRes: Int? = null,
-    val thumbnailRes: Int? = null,
-    val imageUrl: String? = null,
-    val videoUrl: String? = null,
-)
+//data class MediaItem(
+//    val type: com.bussiness.slodoggiesapp.data.model.common.MediaType,
+//    val imageRes: Int? = null,
+//    val videoRes: Int? = null,
+//    val thumbnailRes: Int? = null,
+//    val imageUrl: String? = null,
+//    val videoUrl: String? = null,
+//)
 
 enum class MediaType {
     IMAGE, VIDEO

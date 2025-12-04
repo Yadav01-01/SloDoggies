@@ -2,6 +2,10 @@ package com.bussiness.slodoggiesapp.context
 
 import android.app.Application
 import android.util.Log
+import coil.Coil
+import coil.ImageLoader
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.google.android.gms.tasks.Task
 import com.google.android.libraries.places.api.Places
 import com.google.firebase.FirebaseApp
@@ -29,5 +33,23 @@ class MyApp : Application() {
                 Log.d("FIS", "Installation ID: " + task.result)
             }
 
+
+
+        Coil.setImageLoader(
+            ImageLoader.Builder(this)
+                .memoryCache {
+                    MemoryCache.Builder(this)
+                        .maxSizePercent(0.25) // 25% RAM
+                        .build()
+                }
+                .diskCache {
+                    DiskCache.Builder()
+                        .directory(cacheDir.resolve("image_cache"))
+                        .maxSizePercent(0.10)
+                        .build()
+                }
+                .crossfade(true)
+                .build()
+        )
     }
 }

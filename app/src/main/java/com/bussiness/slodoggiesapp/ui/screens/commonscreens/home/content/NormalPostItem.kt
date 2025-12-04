@@ -1,5 +1,8 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.media.MediaMetadataRetriever
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.OptIn
@@ -15,7 +18,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -57,31 +59,35 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.net.toUri
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.datasource.DefaultDataSource
-import androidx.media3.datasource.RawResourceDataSource
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.PlayerView
-import coil.compose.rememberAsyncImagePainter
+import coil.ImageLoader
+import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import coil.size.Size
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.common.MediaItem
-import com.bussiness.slodoggiesapp.data.model.common.MediaType
-import com.bussiness.slodoggiesapp.data.model.common.PostItem
 import com.bussiness.slodoggiesapp.data.model.main.UserType
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
+import com.bussiness.slodoggiesapp.data.newModel.home.PostMediaResponse
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
@@ -93,9 +99,10 @@ fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportCl
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
+
         Column(modifier = Modifier.fillMaxWidth()) {
-            PostHeader(user = postItem.user, role = postItem.role, time = postItem.time, postType = postItem.postType, onReportClick = { onReportClick()},normalPost,onEditClick = { onEditClick() },onDeleteClick = { onDeleteClick() },onProfileClick = { onProfileClick() }, onSelfPostDelete = { onSelfPostDelete() }, onSelfPostEdit = { onSelfPostEdit() } )
-            PostCaption(caption = postItem.caption, description = postItem.description)
+            PostHeader(userId = postItem.userId,user = postItem.userName,petName = postItem.petName, personImage =postItem.media?.parentImageUrl ?: "", dogImage = postItem.media?.petImageUrl ?: "", time = postItem.time, postType = postItem.type, onReportClick = { onReportClick()},normalPost,onEditClick = { onEditClick() },onDeleteClick = { onDeleteClick() },onProfileClick = { onProfileClick() }, onSelfPostDelete = { onSelfPostDelete() }, onSelfPostEdit = { onSelfPostEdit() } )
+            PostCaption(caption = postItem.caption, description = postItem.description,hashTags = postItem.hashtags.orEmpty()  )
             PostImage(mediaList = postItem.mediaList)
             PostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares, onShareClick = {onShareClick()}, onSaveClick = { })
         }
@@ -103,7 +110,7 @@ fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportCl
 }
 
 @Composable
-fun PostHeader(user: String, role: String, time: String,postType : String, onReportClick: () -> Unit,normalPost: Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit,onProfileClick: () -> Unit,onSelfPostEdit: () -> Unit,onSelfPostDelete: () -> Unit) {
+fun PostHeader(userId : String ,user: String,petName : String, personImage : String ,dogImage: String , time: String,postType : String, onReportClick: () -> Unit,normalPost: Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit,onProfileClick: () -> Unit,onSelfPostEdit: () -> Unit,onSelfPostDelete: () -> Unit) {
     var isFollowed by remember { mutableStateOf(false) }
     val sessionManager = SessionManager.getInstance(LocalContext.current)
     Row(
@@ -122,22 +129,30 @@ fun PostHeader(user: String, role: String, time: String,postType : String, onRep
                     indication = null
                 ) { onProfileClick() }) {
 
-                    Image(
-                        painter = painterResource(id = R.drawable.dummy_person_image2),
+                    AsyncImage(
+                        model = personImage ,
+                        placeholder = painterResource(R.drawable.ic_person_icon),
+                        error = painterResource(R.drawable.ic_person_icon),
                         contentDescription = "Person",
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(30.dp)
                             .clip(CircleShape)
+                            .background(TextGrey)
                             .align(Alignment.TopStart)
                     )
 
                     // Front image (dog in FULL COLOR with white border)
-                    Image(
-                        painter = painterResource(id = R.drawable.dummy_person_image1),
+                    AsyncImage(
+                        model = dogImage,
+                        placeholder = painterResource(R.drawable.ic_dog_face_icon),
+                        error = painterResource(R.drawable.ic_dog_face_icon),
+                        contentScale = ContentScale.Crop,
                         contentDescription = "Dog",
                         modifier = Modifier
                             .size(30.dp)
                             .clip(CircleShape)
+                            .background(TextGrey)
                             .border(2.dp, Color.White, CircleShape)
                             .align(Alignment.BottomEnd)
                     )
@@ -159,21 +174,31 @@ fun PostHeader(user: String, role: String, time: String,postType : String, onRep
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = user,
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle( fontFamily = FontFamily(Font(R.font.outfit_medium)),fontWeight = FontWeight.Medium)) {
+                                append(user)
+                            }
+                            withStyle(style = SpanStyle( fontFamily = FontFamily(Font(R.font.outfit_regular)),fontWeight = FontWeight.Normal)) {
+                                append(" with ")
+                            }
+                            withStyle(style = SpanStyle( fontFamily = FontFamily(Font(R.font.outfit_medium)),fontWeight = FontWeight.Medium)) {
+                                append(petName)
+                            }
+                        },
                         fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         color = Color.Black,
                         lineHeight = 16.sp,
                         modifier = Modifier.widthIn(max = 150.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+
                     Spacer(modifier = Modifier.width(8.dp))
 
                     val interactionSource = remember { MutableInteractionSource() }
 
                     if (normalPost){
-                      if (postType == "other"){
+                      if (sessionManager.getUserId() != userId){
                           OutlinedButton(
                               onClick = { isFollowed = !isFollowed },
                               modifier = Modifier
@@ -199,71 +224,19 @@ fun PostHeader(user: String, role: String, time: String,postType : String, onRep
                     }
 
                 }
-                if (normalPost){
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-
-                        Text(
-                            text = role,
-                            fontSize = 8.sp,
-                            color = Color(0xFF258694),
-                            lineHeight = 20.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            modifier = Modifier
-                                .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
-                                .padding(horizontal = 8.dp, vertical = 0.dp)
-                        )
-
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = time,
-                            fontSize = 12.sp,
-                            color = Color(0xFF949494),
-                            modifier = Modifier
-                                .padding(vertical = 2.dp),
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        )
-                    }
-                }else{
-                    if (sessionManager.getUserType() == UserType.Professional){
-                        Text(
-                            text = " $time",
-                            fontSize = 12.sp,
-                            color = Color(0xFF949494),
-                            modifier = Modifier
-                                .padding(vertical = 2.dp),
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        )
-                    }else{
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-
-                            Text(
-                                text = role,
-                                fontSize = 8.sp,
-                                color = Color(0xFF258694),
-                                lineHeight = 20.sp,
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                modifier = Modifier
-                                    .background(color = Color(0xFFE5EFF2), shape = RoundedCornerShape(50))
-                                    .padding(horizontal = 8.dp, vertical = 0.dp)
-                            )
-
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                text = time,
-                                fontSize = 12.sp,
-                                color = Color(0xFF949494),
-                                modifier = Modifier
-                                    .padding(vertical = 2.dp),
-                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            )
-                        }
-                    }
-                }
+                Text(
+                    text = time,
+                    fontSize = 12.sp,
+                    color = Color(0xFF949494),
+                    modifier = Modifier
+                        .padding(vertical = 2.dp),
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                )
             }
         }
 
         if (normalPost){
-            if (postType == "other"){
+            if (sessionManager.getUserId() != userId){
                 PostOptionsMenu (modifier = Modifier, onReportClick = onReportClick)
             }else{
                 PostContentMenu(modifier = Modifier, onEditClick = { onSelfPostEdit() }, onDeleteClick = { onSelfPostDelete() })
@@ -400,66 +373,73 @@ fun PostContentMenu(
 
 
 @Composable
-private fun PostCaption(caption: String, description: String) {
-    // Add state to track if the full text should be shown
+private fun PostCaption(caption: String, description: String, hashTags: String) {
+
     var showFullText by remember { mutableStateOf(false) }
+    var isTextOverflowing by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.padding(horizontal = 12.dp, vertical = 0.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp)
     ) {
 
+        // Caption
         Text(
             text = caption,
             fontSize = 12.5.sp,
             color = Color.Black,
             fontFamily = FontFamily(Font(R.font.inter_regular)),
             lineHeight = 17.sp,
-            maxLines = 1,
+            maxLines = 1
         )
+
+        // Description with measuring overflow
         Text(
             text = description,
             fontSize = 12.5.sp,
             color = Color.Black,
             fontFamily = FontFamily(Font(R.font.inter_regular)),
             lineHeight = 17.sp,
+            modifier = Modifier.fillMaxWidth(),
             maxLines = if (showFullText) Int.MAX_VALUE else 2,
-            overflow = if (showFullText) TextOverflow.Visible else TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            onTextLayout = { textLayoutResult ->
+                isTextOverflowing = textLayoutResult.lineCount > 2
+            }
         )
 
-//        Text(
-//            text = hashtags,
-//            fontSize = 12.5.sp,
-//            color = PrimaryColor,
-//            fontFamily = FontFamily(Font(R.font.inter_regular)),
-//            lineHeight = 17.sp,
-//            overflow = TextOverflow.Ellipsis
-//        )
+        // Hashtags
+        Text(
+            text = hashTags,
+            fontSize = 12.5.sp,
+            color = PrimaryColor,
+            fontFamily = FontFamily(Font(R.font.inter_regular)),
+            lineHeight = 17.sp
+        )
+        Spacer(Modifier.height(5.dp))
 
-        // Only show "Read More" if text is truncated
-        if (!showFullText) {
+        // Show "Read More" only if overflowing
+        if (isTextOverflowing && !showFullText) {
             Text(
                 text = "Read More",
                 fontSize = 12.sp,
                 color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable {
-                    showFullText = true
-                }
+                modifier = Modifier.clickable { showFullText = true }
             )
-        } else {
-            // Optional: Add "Show Less" functionality
+        }
+
+        if (showFullText) {
             Text(
-                text = "Read Less",
+                text = "Show Less",
                 fontSize = 12.sp,
                 color = PrimaryColor,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable {
-                    showFullText = false
-                }
+                modifier = Modifier.clickable { showFullText = false }
             )
         }
     }
 }
+
 
 
 @Composable
@@ -636,167 +616,171 @@ private fun PostCaption(caption: String, description: String) {
 @OptIn(UnstableApi::class)
 @Composable
 fun PostImage(
-    mediaList: List<MediaItem>,
+    mediaList: List<PostMediaResponse>,
     modifier: Modifier = Modifier,
     onVideoPlay: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val pagerState = rememberPagerState { mediaList.size }
-    var currentPage by rememberSaveable{ mutableIntStateOf(0) }
+    var currentPage by rememberSaveable { mutableIntStateOf(0) }
 
-    // Create and remember ExoPlayers for each video
-    val players = remember {
-        mediaList.map { item ->
-            if (item.type == com.bussiness.slodoggiesapp.data.model.common.MediaType.VIDEO) {
-                ExoPlayer.Builder(context).build().apply {
-                    val uri = when {
-                        item.videoUrl != null -> item.videoUrl.toUri()
-                        item.videoRes != null -> RawResourceDataSource.buildRawResourceUri(item.videoRes)
-                        else -> null
-                    }
-                    uri?.let {
-                        val dataSourceFactory = DefaultDataSource.Factory(context)
-                        val mediaItem = androidx.media3.common.MediaItem.fromUri(it)
-                        val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                            .createMediaSource(mediaItem)
-                        setMediaSource(mediaSource)
-                        prepare()
-                    }
-                    playWhenReady = false
-                    repeatMode = Player.REPEAT_MODE_ONE
-                }
-            } else null
+    // ---------- Light ImageLoader (No full size) ----------
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .crossfade(true)
+            .bitmapConfig(Bitmap.Config.RGB_565)
+            .build()
+    }
+
+    fun isVideo(url: String) = url.endsWith(".mp4") || url.endsWith(".mov") || url.endsWith(".webm")
+
+    // ---------- Prefetch ONLY next/previous ----------
+    LaunchedEffect(pagerState.currentPage) {
+        val next = (pagerState.currentPage + 1).coerceAtMost(mediaList.lastIndex)
+        val prev = (pagerState.currentPage - 1).coerceAtLeast(0)
+
+        listOf(prev, next).forEach { index ->
+            val url = mediaList[index].mediaUrl ?: return@forEach
+            if (!isVideo(url)) {
+                imageLoader.enqueue(
+                    ImageRequest.Builder(context).data(url).build()
+                )
+            }
         }
     }
 
-    // Pause other videos when changing pages
-    LaunchedEffect(pagerState.currentPage) {
-        currentPage = pagerState.currentPage
-        players.forEach { it?.pause() }
-    }
-
-    // Release players when composable leaves composition
-    DisposableEffect(Unit) {
-        onDispose { players.forEach { it?.release() } }
-    }
+    // ---------- Lazy Video Player (Create ONLY on use) ----------
+    val players = remember { mutableMapOf<Int, ExoPlayer>() }
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .aspectRatio(4 / 3f)
-            .background(Color.LightGray)
+            .height(350.dp)
     ) {
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            val item = mediaList[page]
-            val player = players.getOrNull(page)
 
-            when (item.type) {
-                com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE -> {
-                    val painter = when {
-                        item.imageUrl != null -> rememberAsyncImagePainter(item.imageUrl)
-                        item.imageRes != null -> painterResource(item.imageRes)
-                        else -> painterResource(R.drawable.dog_ic)
-                    }
-                    Image(
-                        painter = painter,
-                        contentDescription = "Post Image ${page + 1}",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
+            val media = mediaList[page]
+            val url = media.mediaUrl.orEmpty()
+
+            if (!isVideo(url)) {
+
+                // ---------- FAST SMOOTH IMAGE ----------
+                AsyncImage(
+                    model = ImageRequest.Builder(context)
+                        .data(url)
+                        .crossfade(true)
+                        .build(),
+                    imageLoader = imageLoader,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+
+            } else {
+
+                // ---------- Create player only WHEN NEEDED ----------
+                val player = remember(url) {
+                    players[page] ?: ExoPlayer.Builder(context).build().apply {
+                        setMediaItem(MediaItem.fromUri(url))
+                        prepare()
+                        playWhenReady = false
+                        repeatMode = Player.REPEAT_MODE_ONE
+                    }.also { players[page] = it }
                 }
 
-                com.bussiness.slodoggiesapp.data.model.common.MediaType.VIDEO -> {
-                    // Show thumbnail if video is paused
-                    if (player != null && !player.isPlaying) {
-                        val thumbnail = when {
-                            item.thumbnailRes != null -> painterResource(item.thumbnailRes)
-                            item.imageUrl != null -> rememberAsyncImagePainter(item.imageUrl)
-                            else -> painterResource(R.drawable.dog2)
+                // Thumbnail
+                val thumbnail = remember(media.mediaUrl) {
+                    getVideoThumbnail(context, url)
+                }
+
+                // ---------- Background Thumbnail ----------
+                AsyncImage(
+                    model = thumbnail,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+
+                // ---------- Video Layer ----------
+                AndroidView(
+                    modifier = Modifier.fillMaxSize(),
+                    factory = {
+                        PlayerView(it).apply {
+                            this.player = player
+                            useController = false
                         }
-                        Image(
-                            painter = thumbnail,
-                            contentDescription = "Video Thumbnail",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
                     }
+                )
 
-                    // Player view
-                    if (player != null) {
-                        AndroidView(
-                            factory = {
-                                PlayerView(it).apply {
-                                    this.player = player
-                                    useController = false
-                                    layoutParams = FrameLayout.LayoutParams(
-                                        ViewGroup.LayoutParams.MATCH_PARENT,
-                                        ViewGroup.LayoutParams.MATCH_PARENT
-                                    )
-                                }
+                // ---------- Play Button ----------
+                if (!player.isPlaying) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.25f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        IconButton(
+                            onClick = {
+                                player.play()
+                                onVideoPlay?.invoke()
                             },
-                            modifier = Modifier.fillMaxSize()
-                        )
-
-                        // Overlay play button
-                        if (!player.isPlaying) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Black.copy(alpha = 0.3f)),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                IconButton(
-                                    onClick = {
-                                        player.play()
-                                        onVideoPlay?.invoke()
-                                    },
-                                    modifier = Modifier
-                                        .size(60.dp)
-                                        .background(
-                                            Color.White.copy(alpha = 0.9f),
-                                            CircleShape
-                                        )
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.PlayArrow,
-                                        contentDescription = "Play Video",
-                                        tint = Color(0xFF0A3D62),
-                                        modifier = Modifier.size(36.dp)
-                                    )
-                                }
-                            }
+                            modifier = Modifier
+                                .size(58.dp)
+                                .background(Color.White, CircleShape)
+                        ) {
+                            Icon(
+                                Icons.Default.PlayArrow,
+                                contentDescription = null,
+                                tint = Color.Black,
+                                modifier = Modifier.size(38.dp)
+                            )
                         }
                     }
                 }
             }
         }
 
-        // Page Indicator
+        // ---------- Page Indicator ----------
         if (mediaList.size > 1) {
             Row(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 10.dp),
-                horizontalArrangement = Arrangement.Center
+                    .padding(bottom = 10.dp)
             ) {
                 repeat(mediaList.size) { index ->
-                    val active = index == currentPage
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 3.dp)
                             .height(4.dp)
-                            .width(if (active) 18.dp else 6.dp)
-                            .clip(RoundedCornerShape(2.dp))
+                            .width(if (index == currentPage) 18.dp else 6.dp)
+                            .clip(RoundedCornerShape(50))
                             .background(
-                                if (active) Color(0xFF258694)
-                                else Color.White.copy(alpha = 0.6f)
+                                if (index == currentPage) Color(0xFF258694)
+                                else Color.White.copy(alpha = 0.45f)
                             )
                     )
                 }
             }
+        }
+    }
+
+    // Pause videos when changing page
+    LaunchedEffect(pagerState.currentPage) {
+        currentPage = pagerState.currentPage
+        players.forEach { (index, player) ->
+            if (index != currentPage) player.pause()
+        }
+    }
+
+    // Release on dispose
+    DisposableEffect(Unit) {
+        onDispose {
+            players.values.forEach { it.release() }
         }
     }
 }
@@ -804,6 +788,16 @@ fun PostImage(
 
 
 
-// Extension to check if ExoPlayer is playing
-val ExoPlayer.isPlaying: Boolean
-    get() = this.isPlaying
+
+
+fun getVideoThumbnail(context: Context, url: String): Bitmap? {
+    return try {
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(url)
+        val bitmap = retriever.getFrameAtTime(0)
+        retriever.release()
+        bitmap
+    } catch (e: Exception) {
+        null
+    }
+}

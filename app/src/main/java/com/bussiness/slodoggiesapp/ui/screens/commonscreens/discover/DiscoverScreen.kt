@@ -26,11 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost
-import com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult
-import com.bussiness.slodoggiesapp.data.model.common.MediaItem
-import com.bussiness.slodoggiesapp.data.model.common.MediaType
-import com.bussiness.slodoggiesapp.data.model.common.PostItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategorySection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HashtagSection
@@ -93,7 +88,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
         when (selectedCategory) {
             "Pets Near You" -> ShowPetsNearYou(searchResults, navController)
             "Pet Places"    -> PetPlacesResults( onItemClick = { viewModel.showPetPlaceDialog()})
-            "Activities"    -> { ActivitiesPostsList(posts = getSamplePosts(), onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)}) }
+            "Activities"    -> { }/*{ ActivitiesPostsList(posts = getSamplePosts(), onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)}) }*/
             "Events"        -> EventsResult(onClickMore = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onSavedClick = { viewModel.showSavedDialog() }, onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)})
             else            -> ShowGeneralResults(searchResults, navController)
         }
@@ -259,58 +254,83 @@ fun ShowGeneralResults(results: List<com.bussiness.slodoggiesapp.data.model.busi
     }
 }
 
-fun getSamplePosts(): List<com.bussiness.slodoggiesapp.data.model.common.PostItem> {
+/*fun getSamplePosts(): List<PostItem> {
     return listOf(
-        com.bussiness.slodoggiesapp.data.model.common.PostItem.NormalPost(
-            user = "Lydia Vaccaro with Wixx",
-            role = "Pet Mom",
+        PostItem.NormalPost(
+            postId = 1.toString(),
+            userId = 10.toString(),
+            postTitle = "🐾 Meet Wixx - our brown bundle of joy!",
+            address = "Mumbai",
+            postType = "other",
             time = "5 Min.",
-            caption = "🐾 Meet Wixx - our brown bundle of joy!",
-            description = "From tail wags to beach days, life with this 3-year-old",
-            likes = 120,
-            comments = 20,
-            shares = 10,
-            postType = "other",
-            mediaList = listOf(
-                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
-                    com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
-                    imageRes = R.drawable.dog1
+            likeCount = 120,
+            commentCount = 20,
+            shareCount = 10,
+            hashtags = listOf("#dog", "#petlover"),
+            userDetail = UserDetail(
+                name = "Lydia Vaccaro",
+                image = "lydia_vaccaro",
+                id = 1
+            ),
+            petDetail = PetDetail(
+                petName = "Wixx",
+                petImage = "Mixed",
+                id = 1
+            ),
+            postMedia = listOf(
+                MediaItem(
+                    id = 1,
+                    mediaPath = "R.drawable.dog1"
                 ),
-                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
-                    com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
-                    imageUrl = "https://picsum.photos/400"
+                MediaItem(
+                    id = 2,
+                    mediaPath = "https://picsum.photos/400"
                 ),
-                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
-                    com.bussiness.slodoggiesapp.data.model.common.MediaType.VIDEO,
-//                    videoRes = R.raw.reel,
-                    thumbnailRes = R.drawable.dummy_social_media_post
+                MediaItem(
+                    id = 3,
+                    mediaPath = "R.drawable.dummy_social_media_post"
                 )
-            ),
+            )
         ),
-        com.bussiness.slodoggiesapp.data.model.common.PostItem.NormalPost(
-            user = "John Doe with Max",
-            role = "Pet Dad",
-            time = "15 Min.",
-            caption = "Enjoying the sunny day!",
-            description = "Max loves playing in the park with his friends",
-            likes = 85,
-            comments = 12,
-            shares = 5,
+
+        PostItem.NormalPost(
+            id = 2,
+            userId = 11,
+            postTitle = "Enjoying the sunny day!",
+            address = "Delhi",
             postType = "other",
-            mediaList = listOf(
-                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
-                    com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
-                    imageRes = R.drawable.dog1
-                ),
-                com.bussiness.slodoggiesapp.data.model.common.MediaItem(
-                    com.bussiness.slodoggiesapp.data.model.common.MediaType.IMAGE,
-                    imageUrl = "https://picsum.photos/400"
-                ),
+            time = "15 Min.",
+            likeCount = 85,
+            commentCount = 12,
+            shareCount = 5,
+            hashtags = listOf("#sunnyday", "#doglife"),
+            userDetail = UserDetail(
+                name = "Lydia Vaccaro",
+                image = "lydia_vaccaro",
+                id = 1
             ),
+            petDetail = PetDetail(
+                petName = "Wixx",
+                petImage = "Mixed",
+                id = 1
+            ),
+            postMedia = listOf(
+                MediaItem(
+                    id = 1,
+                    mediaPath = "R.drawable.dog1"
+                ),
+                MediaItem(
+                    id = 2,
+                    mediaPath = "https://picsum.photos/400"
+                ),
+                MediaItem(
+                    id = 3,
+                    mediaPath = "R.drawable.dummy_social_media_post"
+                )
+            )
         )
     )
-}
-
+}*/
 
 @Preview(showBackground = true)
 @Composable

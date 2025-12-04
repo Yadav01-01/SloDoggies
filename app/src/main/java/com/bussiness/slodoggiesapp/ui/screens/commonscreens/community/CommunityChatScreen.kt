@@ -122,7 +122,7 @@ fun CommunityChatScreen(
 
 @Composable
 fun CommunityChatSection(
-    messages: List<com.bussiness.slodoggiesapp.data.model.common.ChatMessage>,
+    messages: List<ChatMessage>,
     listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
@@ -151,7 +151,7 @@ fun CommunityChatSection(
 
 
 @Composable
-fun ChatBubble(message: com.bussiness.slodoggiesapp.data.model.common.ChatMessage) {
+fun ChatBubble(message: ChatMessage) {
     val bubbleColor = if (message.isUser) PrimaryColor else Color(0xFFE5EFF2)
     val alignment = if (message.isUser) Arrangement.End else Arrangement.Start
 

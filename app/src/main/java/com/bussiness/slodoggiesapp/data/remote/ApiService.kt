@@ -13,6 +13,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsRes
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
+import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
@@ -344,6 +345,7 @@ interface ApiService {
         @Field("pet_id") petId: String,
     ) : Response<UpdatePetModel>
 
+
     @Multipart
     @POST(ApiEndPoint.CREATE_AD)
     suspend fun createAd(
@@ -363,4 +365,12 @@ interface ApiService {
         @Part("mobile_visual") mobile_visual: RequestBody,
         @Part petImage:List<MultipartBody.Part>?
     ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.HOME_FEED)
+    suspend fun homeFeed(
+        @Field("user_id") userId: String,
+        @Field("page") page: String
+    ) : Response<HomeFeedResponse>
+
 }

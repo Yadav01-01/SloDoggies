@@ -3,19 +3,23 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -24,10 +28,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.common.MediaItem
-import com.bussiness.slodoggiesapp.data.model.common.MediaType
-import com.bussiness.slodoggiesapp.data.model.common.PostItem
 import com.bussiness.slodoggiesapp.data.model.main.UserType
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.common.HomeTopBar
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.PetInfoDialog
@@ -40,6 +42,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.Communi
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.NormalPostItem
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.ShareContentDialog
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.SponsoredPostItem
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 
@@ -48,37 +51,29 @@ fun HomeScreen(
     navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val posts = getSamplePosts()
-//    val posts by viewModel.posts.collectAsState()
-    val welcomeUiState by viewModel.welcomeUiState.collectAsState()
-    val showPetInfoDialog by viewModel.showPetInfoDialog.collectAsState()
-    val showUserDetailsDialog by viewModel.showUserDetailsDialog.collectAsState()
-    val profileCreatedUiState by viewModel.profileCreatedUiState.collectAsState()
-    val continueAddPet by viewModel.showContinueAddPetDialog.collectAsState()
-    val showReportDialog by viewModel.showReportDialog.collectAsState()
-    val showReportToast by viewModel.showReportToast.collectAsState()
+
+    val uiState by viewModel.uiState.collectAsState()
     val dialogCount by viewModel.petInfoDialogCount.collectAsState()
-    val shareContentDialog by viewModel.showShareContent.collectAsState()
-    var deleteDialog by remember { mutableStateOf(false) }
-    var message by remember { mutableStateOf("") }
-    var selectedReason by remember { mutableStateOf("") }
-    val context =  LocalContext.current
+
+    val context = LocalContext.current
     val activity = context as? Activity
     val sessionManager = SessionManager.getInstance(context)
+
+    val posts = uiState.posts
 
     val onReportClick = remember { { viewModel.showReportDialog() } }
     val onShareClick = remember { { viewModel.showShareContent() } }
     val onProfileClick = remember { { navController.navigate(Routes.CLICKED_PROFILE_SCREEN) } }
 
+    val onSponsoredClick = remember {
+        {
+            val dest = if (sessionManager.getUserType() == UserType.Owner)
+                Routes.SERVICE_PROVIDER_DETAILS
+            else
+                Routes.SPONSORED_ADS_SCREEN
 
-    val onSponsoredClick = remember { {
-        val destination = if (sessionManager.getUserType() == UserType.Owner) {
-            Routes.SERVICE_PROVIDER_DETAILS
-        } else {
-            Routes.SPONSORED_ADS_SCREEN
+            navController.navigate(dest)
         }
-        navController.navigate(destination)
-    }
     }
 
     Column(
@@ -98,32 +93,86 @@ fun HomeScreen(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 3.dp)
+            contentPadding = PaddingValues(bottom = 60.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(posts) { post ->
+
+            itemsIndexed(
+                items = posts,
+                key = { _, post -> post.stableKey }
+            ) { index, post ->
+
+                if (index == posts.lastIndex - 2) {
+                    viewModel.loadNextPage()
+                }
+
                 when (post) {
-                    is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) })
-                    is PostItem.SponsoredPost -> SponsoredPostItem(post = post, onReportClick = onReportClick, onShareClick = onShareClick, onProfileClick = onProfileClick, onSponsoredClick = {  })
-                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() },normalPost = true, onEditClick = {}, onDeleteClick = {},
-                    onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) }, onSelfPostEdit = { navController.navigate(Routes.EDIT_POST_SCREEN)}, onSelfPostDelete = { deleteDialog = true })
+                    is PostItem.CommunityPost -> CommunityPostItem(
+                        post,
+                        onReportClick = onReportClick,
+                        onShareClick = onShareClick,
+                        onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
+                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) }
+                    )
+
+
+                    is PostItem.SponsoredPost -> SponsoredPostItem(
+                        post = post,
+                        onReportClick = onReportClick,
+                        onShareClick = onShareClick,
+                        onProfileClick = onProfileClick,
+                        onSponsoredClick = onSponsoredClick
+                    )
+
+                    is PostItem.NormalPost -> NormalPostItem(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        post,
+                        onReportClick = onReportClick,
+                        onShareClick = onShareClick,
+                        normalPost = true,
+                        onEditClick = {},
+                        onDeleteClick = {},
+                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
+                        onSelfPostEdit = { navController.navigate(Routes.EDIT_POST_SCREEN) },
+                        onSelfPostDelete = { viewModel.showDeleteDialog() }
+                    )
+
+                }
+            }
+
+            item {
+                if (uiState.isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(32.dp),
+                            color = PrimaryColor
+                        )
+                    }
                 }
             }
         }
+
     }
 
     // --- Dialogs ---
     if (sessionManager.isSignupFlowActive()){
-        if (welcomeUiState.showDialog) {
+        if (uiState.showWelcomeDialog) {
             WelcomeDialog(
                 onDismiss = { viewModel.dismissWelcomeDialog() },
                 onSubmitClick = { viewModel.onWelcomeSubmit() },
                 icon = R.drawable.ic_party_popper_icon,
-                title = welcomeUiState.title,
-                description = welcomeUiState.description,
-                button = welcomeUiState.button
+                title = uiState.welcomeTitle,
+                description = uiState.welcomeDescription,
+                button = uiState.welcomeButton
             )
+
         }
-        if (showUserDetailsDialog) {
+        if (uiState.showUserDetailsDialog) {
             UserDetailsDialog(
                 navController = navController,
                 onDismiss = { viewModel.dismissUserDetailsDialog() },
@@ -133,7 +182,7 @@ fun HomeScreen(
                 }
             )
         }
-        if (profileCreatedUiState) {
+        if (uiState.showProfileCreatedDialog) {
             WelcomeDialog(
                 onDismiss = { viewModel.dismissProfileCreatedDialog() },
                 onSubmitClick = { viewModel.dismissProfileCreatedDialog() },
@@ -143,7 +192,7 @@ fun HomeScreen(
                 button = stringResource(R.string.explore_now),
             )
         }
-        if (continueAddPet) {
+        if (uiState.showContinueAddPetDialog) {
             WelcomeDialog(
                 onDismiss = { viewModel.dismissContinueAddPetDialog() },
                 onSubmitClick = { viewModel.dismissContinueAddPetDialog() },
@@ -153,7 +202,7 @@ fun HomeScreen(
                 button = stringResource(R.string.paw_button),
             )
         }
-        if (showPetInfoDialog) {
+        if (uiState.showPetInfoDialog) {
             if (dialogCount < 2) {
                 PetInfoDialog(
                     title = stringResource(R.string.tell_us_about_your_pet),
@@ -174,7 +223,7 @@ fun HomeScreen(
         }
     }
 
-    if (showReportDialog) {
+    if (uiState.showReportDialog) {
         ReportDialog(
             onDismiss = { viewModel.dismissReportDialog() },
             onCancel = { viewModel.dismissReportDialog() },
@@ -183,127 +232,130 @@ fun HomeScreen(
                              "Violence, hate or exploitation",
                              "False Information",
                              "Scam, fraud or spam"),
-            selectedReason = selectedReason,
-            message = message,
-            onReasonSelected = {  reason -> selectedReason = reason },
-            onMessageChange = { message = it },
+            selectedReason = uiState.selectedReason,
+            message = uiState.message,
+            onReasonSelected = { reason -> viewModel.onReasonSelected(reason) },
+            onMessageChange = { msg -> viewModel.onMessageChange(msg) },
             title = "Report Post"
         )
     }
 
-    if (deleteDialog) {
+    if (uiState.deleteDialog) {
         DeleteChatDialog(
-            onDismiss = { deleteDialog = false },
-            onClickRemove = { deleteDialog = false  },
+            onDismiss = { viewModel.dismissDeleteDialog() },
+            onClickRemove = { viewModel.dismissDeleteDialog()  },
             iconResId = R.drawable.delete_mi,
             text = stringResource(R.string.Delete_Post),
             description = stringResource(R.string.Delete_desc)
         )
     }
 
-    if (showReportToast){
+    if (uiState.showReportToast){
         ReportBottomToast(
             onDismiss = {viewModel.dismissReportToast()}
         )
     }
 
-    if (shareContentDialog) {
-        ShareContentDialog(onDismiss = { viewModel.dismissShareContent() }, onSendClick = { viewModel.dismissShareContent() })
+    if (uiState.showShareContent) {
+        ShareContentDialog(
+            onDismiss = { viewModel.dismissShareContent() },
+            onSendClick = { viewModel.dismissShareContent() }
+        )
     }
 
 }
 
 
-@Composable
-fun getSamplePosts(): List<PostItem> {
-    return listOf(
-        PostItem.NormalPost(
-            user = "Lydia Vaccaro with Wixx",
-            role = "Pet Mom",
-            time = "5 Min.",
-            caption = "🐾 Meet Wixx - our brown bundle of joy!",
-            description = "From tail wags to beach days, life with this 3-year-old",
-            likes = 120,
-            comments = 20,
-            shares = 10,
-            postType = "self",
-            mediaList = listOf(
-                MediaItem(
-                    MediaType.IMAGE,
-                    imageRes = R.drawable.dog1
-                ),
-                MediaItem(
-                    MediaType.IMAGE,
-                    imageUrl = "https://picsum.photos/400"
-                ),
-                MediaItem(
-                    MediaType.VIDEO,
-                    videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                    thumbnailRes = null
-                )
-            )
-        ),
-        PostItem.CommunityPost(
-            userName = "Lydia Vaccaro with Wixx",
-            userImage = R.drawable.user_ic,
-            postImage = R.drawable.post_img,
-            label = "Pet Mom",
-            time = "5 Min.",
-            eventTitle = "Event Title",
-            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-            eventDuration = "30 Mins.",
-            location = "San Luis Obispo County",
-            onClickFollow = {},
-            onClickMore = {},
-            eventStartDate = "May 25, 4:00 PM",
-            eventEndDate = "June 16, 7:00 PM",
-            likes = 200,
-            comments = 100,
-            shares = 10
-        ),
-        PostItem.SponsoredPost(
-            user = "Aisuke",
-            role = "Pet Lover",
-            time = "2 Days",
-            caption = "Summer Special: 20% Off Grooming!",
-            description = "Limited Time Offer",
-            mediaList = listOf(
-                MediaItem(
-                    MediaType.IMAGE,
-                    imageRes = R.drawable.dog1
-                ),
-            ),
-            likes = 200,
-            comments = 100,
-            shares = 10
-        ),
-        PostItem.NormalPost(
-            user = "John Doe with Max",
-            role = "Pet Dad",
-            time = "15 Min.",
-            caption = "Enjoying the sunny day!",
-            description = "Max loves playing in the park with his friends Lorem ipsum dolor sit amet," +
-                    " consectetur adipiscing Lorem ipsum dolor sit amet, " +
-                    " consectetur adipiscing Lorem ipsum dolor sit amet, consectetur adipiscing",
-            likes = 85,
-            comments = 12,
-            shares = 5,
-            postType = "other",
-            mediaList = listOf(
-                MediaItem(
-                    MediaType.IMAGE,
-                    imageRes = R.drawable.dog1
-                ),
-                MediaItem(
-                    MediaType.IMAGE,
-                    imageUrl = "https://picsum.photos/400"
-                ),
-                MediaItem(
-                    MediaType.VIDEO,
-//                    videoRes = R.raw.reel,
-                    thumbnailRes = R.drawable.dummy_social_media_post
-                )
-            ),
-        )
-    )
-}
+//@Composable
+//fun getSamplePosts(): List<PostItem> {
+//    return listOf(
+//        PostItem.NormalPost(
+//            user = "Lydia Vaccaro with Wixx",
+//            role = "Pet Mom",
+//            time = "5 Min.",
+//            caption = "🐾 Meet Wixx - our brown bundle of joy!",
+//            description = "From tail wags to beach days, life with this 3-year-old",
+//            likes = 120,
+//            comments = 20,
+//            shares = 10,
+//            postType = "self",
+//            mediaList = listOf(
+//                MediaItem(
+//                    MediaType.IMAGE,
+//                    imageRes = R.drawable.dog1
+//                ),
+//                MediaItem(
+//                    MediaType.IMAGE,
+//                    imageUrl = "https://picsum.photos/400"
+//                ),
+//                MediaItem(
+//                    MediaType.VIDEO,
+//                    videoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+//                    thumbnailRes = null
+//                )
+//            )
+//        ),
+//        PostItem.CommunityPost(
+//            userName = "Lydia Vaccaro with Wixx",
+//            userImage = R.drawable.user_ic,
+//            postImage = R.drawable.post_img,
+//            label = "Pet Mom",
+//            time = "5 Min.",
+//            eventTitle = "Event Title",
+//            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
+//            eventDuration = "30 Mins.",
+//            location = "San Luis Obispo County",
+//            onClickFollow = {},
+//            onClickMore = {},
+//            eventStartDate = "May 25, 4:00 PM",
+//            eventEndDate = "June 16, 7:00 PM",
+//            likes = 200,
+//            comments = 100,
+//            shares = 10
+//        ),
+//        PostItem.SponsoredPost(
+//            user = "Aisuke",
+//            role = "Pet Lover",
+//            time = "2 Days",
+//            caption = "Summer Special: 20% Off Grooming!",
+//            description = "Limited Time Offer",
+//            mediaList = listOf(
+//                MediaItem(
+//                    MediaType.IMAGE,
+//                    imageRes = R.drawable.dog1
+//                ),
+//            ),
+//            likes = 200,
+//            comments = 100,
+//            shares = 10
+//        ),
+//        PostItem.NormalPost(
+//            user = "John Doe with Max",
+//            role = "Pet Dad",
+//            time = "15 Min.",
+//            caption = "Enjoying the sunny day!",
+//            description = "Max loves playing in the park with his friends Lorem ipsum dolor sit amet," +
+//                    " consectetur adipiscing Lorem ipsum dolor sit amet, " +
+//                    " consectetur adipiscing Lorem ipsum dolor sit amet, consectetur adipiscing",
+//            likes = 85,
+//            comments = 12,
+//            shares = 5,
+//            postType = "other",
+//            mediaList = listOf(
+//                MediaItem(
+//                    MediaType.IMAGE,
+//                    imageRes = R.drawable.dog1
+//                ),
+//                MediaItem(
+//                    MediaType.IMAGE,
+//                    imageUrl = "https://picsum.photos/400"
+//                ),
+//                MediaItem(
+//                    MediaType.VIDEO,
+////                    videoRes = R.raw.reel,
+//                    thumbnailRes = R.drawable.dummy_social_media_post
+//                )
+//            ),
+//        )
+//    )
+//}

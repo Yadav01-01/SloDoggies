@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -45,8 +44,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.common.PostItem
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
@@ -55,7 +55,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
 @Composable
-fun CommunityPostItem(postItem: com.bussiness.slodoggiesapp.data.model.common.PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onProfileClick: () -> Unit){
+fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onProfileClick: () -> Unit){
     var isFollowed by remember { mutableStateOf(false) }
 
     Card(
@@ -73,8 +73,10 @@ fun CommunityPostItem(postItem: com.bussiness.slodoggiesapp.data.model.common.Po
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = painterResource(id = postItem.userImage),
+                AsyncImage(
+                    model = postItem.media?.parentImageUrl,
+                    placeholder = painterResource(R.drawable.ic_person_icon),
+                    error = painterResource(R.drawable.ic_person_icon),
                     contentDescription = "User Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -125,31 +127,13 @@ fun CommunityPostItem(postItem: com.bussiness.slodoggiesapp.data.model.common.Po
                         }
                     }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = postItem.label,
-                            fontSize = 8.sp,
-                            lineHeight = 20.sp,
-                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            color = PrimaryColor,
-                            modifier = Modifier
-                                .padding(top = 4.dp)
-                                .background(
-                                    color = Color(0xFFE5EFF2),
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .padding(horizontal = 8.dp)
-                        )
-
-                        Spacer(Modifier.width(8.dp))
-
-                        Text(
-                            text = postItem.time,
-                            fontSize = 12.sp,
-                            color = TextGrey,
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        )
-                    }
+                    Text(
+                        text = postItem.time,
+                        fontSize = 12.sp,
+                        color = TextGrey,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        lineHeight = 15.sp
+                    )
                 }
 
                 PostOptionsMenu(modifier = Modifier, onReportClick = onReportClick )
@@ -181,12 +165,14 @@ fun CommunityPostItem(postItem: com.bussiness.slodoggiesapp.data.model.common.Po
                         tint = Color.Unspecified
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = postItem.eventStartDate,
-                        fontSize = 14.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular))
-                    )
+                    postItem.eventStartDate?.let {
+                        Text(
+                            text = it,
+                            fontSize = 14.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular))
+                        )
+                    }
                 }
             }
 
@@ -197,16 +183,18 @@ fun CommunityPostItem(postItem: com.bussiness.slodoggiesapp.data.model.common.Po
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = postItem.eventDescription,
-                    fontSize = 14.sp,
-                    color = TextGrey,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    lineHeight = 18.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    modifier = Modifier.weight(1f)
-                )
+                postItem.eventDescription?.let {
+                    Text(
+                        text = it,
+                        fontSize = 14.sp,
+                        color = TextGrey,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        lineHeight = 15.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
@@ -217,44 +205,49 @@ fun CommunityPostItem(postItem: com.bussiness.slodoggiesapp.data.model.common.Po
                         tint = Color.Unspecified
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = postItem.eventEndDate,
-                        fontSize = 14.sp,
-                        color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular))
-                    )
+                    postItem.eventEndDate?.let {
+                        Text(
+                            text = it,
+                            fontSize = 14.sp,
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular))
+                        )
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             // Location
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp)) {
+            Row(
+                verticalAlignment = Alignment.Top,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            ) {
                 Icon(
                     painter = painterResource(R.drawable.location_ic_icon),
                     contentDescription = null,
-                    tint = Color.Unspecified
+                    tint = Color.Unspecified,
+                    modifier = Modifier.align(Alignment.Top)
                 )
+
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = postItem.location,
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = Color.Black
-                )
+
+                postItem.location?.let {
+                    Text(
+                        text = it,
+                        fontSize = 14.sp,
+                        lineHeight = 18.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        color = Color.Black,
+                        modifier = Modifier.align(Alignment.Top)
+                    )
+                }
             }
+
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Image(
-                painter = painterResource(id = postItem.postImage),
-                contentDescription = "Event Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(230.dp)
-                    .clip(RoundedCornerShape(0.dp))
-            )
+            PostImage(mediaList = postItem.mediaList)
 
             // CTA Button
             Box(
