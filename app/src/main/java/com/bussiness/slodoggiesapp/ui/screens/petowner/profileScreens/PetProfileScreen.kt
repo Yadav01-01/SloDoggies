@@ -64,6 +64,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -237,7 +238,9 @@ fun PetProfileScreen(navController: NavHostController) {
                                         fontSize = 12.sp,
                                         color = PrimaryColor,
                                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                        lineHeight = 20.sp
+                                        lineHeight = 20.sp,
+                                        maxLines = 1,
+                                        textAlign = TextAlign.Center
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(14.dp))
@@ -381,6 +384,27 @@ fun PetProfileScreen(navController: NavHostController) {
                         }
 
                         Spacer(Modifier.height(3.dp))
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .background(
+                                    color = Color(0xFFE5EFF2),
+                                    shape = RoundedCornerShape(50)
+                                )
+                                .padding(horizontal = 0.dp, vertical = 1.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = uiState.data.owner.parentType ?: "",
+                                fontSize = 10.sp,
+                                color = PrimaryColor,
+                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                lineHeight = 20.sp,
+                                maxLines = 1,
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
                         Text(
                             text = uiState.data.owner.bio,

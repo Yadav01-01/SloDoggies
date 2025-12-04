@@ -127,31 +127,13 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () ->
                         }
                     }
 
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-//                        Text(
-//                            text = postItem.label,
-//                            fontSize = 8.sp,
-//                            lineHeight = 20.sp,
-//                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-//                            color = PrimaryColor,
-//                            modifier = Modifier
-//                                .padding(top = 4.dp)
-//                                .background(
-//                                    color = Color(0xFFE5EFF2),
-//                                    shape = RoundedCornerShape(16.dp)
-//                                )
-//                                .padding(horizontal = 8.dp)
-//                        )
-
-                        Spacer(Modifier.width(8.dp))
-
-                        Text(
-                            text = postItem.time,
-                            fontSize = 12.sp,
-                            color = TextGrey,
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        )
-                    }
+                    Text(
+                        text = postItem.time,
+                        fontSize = 12.sp,
+                        color = TextGrey,
+                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                        lineHeight = 15.sp
+                    )
                 }
 
                 PostOptionsMenu(modifier = Modifier, onReportClick = onReportClick )

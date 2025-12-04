@@ -1,32 +1,40 @@
 package com.bussiness.slodoggiesapp.data.newModel.home
 
-sealed class PostItem {
+import androidx.compose.runtime.Immutable
+
+@Immutable
+sealed class PostItem(open val stableKey: String) {
 
     // ------------------------------------------------------
     // Normal Feed Post
     // ------------------------------------------------------
+    @Immutable
     data class NormalPost(
+        val postId: String,
         val userId: String,
         val userName: String,
+        val petName: String,
         val userBadge: String?,
         val time: String,
         val caption: String,
         val description: String,
         val hashtags: String?,
-        val media: MediaResponse?,                     // pet/parent images
-        val mediaList: List<PostMediaResponse>,        // post images & videos
-        val type: String,                              // "normal"
+        val media: MediaResponse?,                  // pet/parent images
+        val mediaList: List<PostMediaResponse>,     // post images & videos
+        val type: String,
         val likes: Int,
         val comments: Int,
         val shares: Int,
         val isLiked: Boolean,
         val isSaved: Boolean
-    ) : PostItem()
+    ) : PostItem("normal_$postId")
 
     // ------------------------------------------------------
     // Community / Event Post
     // ------------------------------------------------------
+    @Immutable
     data class CommunityPost(
+        val postId: String,
         val userId: String,
         val userName: String,
         val userImage: String?,
@@ -39,20 +47,22 @@ sealed class PostItem {
         val eventDescription: String?,
         val location: String?,
 
-        val media: MediaResponse?,                     // pet/parent images
-        val mediaList: List<PostMediaResponse>,        // post images or videos
+        val media: MediaResponse?,
+        val mediaList: List<PostMediaResponse>,
 
         val likes: Int,
         val comments: Int,
         val shares: Int,
         val isLiked: Boolean,
         val isSaved: Boolean
-    ) : PostItem()
+    ) : PostItem("community_$postId")   // FIXED
 
     // ------------------------------------------------------
     // Sponsored Post
     // ------------------------------------------------------
+    @Immutable
     data class SponsoredPost(
+        val postId: String,
         val userId: String,
         val userName: String,
         val userBadge: String?,
@@ -66,5 +76,5 @@ sealed class PostItem {
         val shares: Int,
         val isLiked: Boolean,
         val isSaved: Boolean
-    ) : PostItem()
+    ) : PostItem("sponsored_$postId")  // FIXED
 }

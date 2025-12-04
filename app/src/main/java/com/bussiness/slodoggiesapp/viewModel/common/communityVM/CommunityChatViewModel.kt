@@ -14,24 +14,24 @@ class CommunityChatViewModel @Inject constructor() : ViewModel() {
     // Initial sample messages
     private val _messages = MutableStateFlow(
         listOf(
-            com.bussiness.slodoggiesapp.data.model.common.ChatMessage(
+            ChatMessage(
                 text = "Hi! Thank you for reaching out. How can I assist you today?",
                 isUser = false,
                 timestamp = System.currentTimeMillis() - 1000 * 60 * 60 * 2 // 2 hours ago
             ),
-            com.bussiness.slodoggiesapp.data.model.common.ChatMessage(
+            ChatMessage(
                 text = "Hello! I am interested in your grooming services.",
                 isUser = true,
                 timestamp = System.currentTimeMillis() - 1000 * 60 * 60 // 1 hour ago
             ),
-            com.bussiness.slodoggiesapp.data.model.common.ChatMessage(
+            ChatMessage(
                 text = "Sure! We have basic, premium, and deluxe packages. Would you like details?",
                 isUser = false,
                 timestamp = System.currentTimeMillis() - 1000 * 60 * 45 // 45 mins ago
             )
         )
     )
-    val messages: StateFlow<List<com.bussiness.slodoggiesapp.data.model.common.ChatMessage>> = _messages
+    val messages: StateFlow<List<ChatMessage>> = _messages
 
     private val _currentMessage = MutableStateFlow("")
     val currentMessage: StateFlow<String> = _currentMessage
@@ -55,7 +55,7 @@ class CommunityChatViewModel @Inject constructor() : ViewModel() {
 
             // Send text message (if present)
             if (text.isNotBlank()) {
-                _messages.value += com.bussiness.slodoggiesapp.data.model.common.ChatMessage(
+                _messages.value += ChatMessage(
                     text = text,
                     isUser = true,
                     timestamp = currentTime
@@ -65,7 +65,7 @@ class CommunityChatViewModel @Inject constructor() : ViewModel() {
             // Send attachments (if any)
             if (attachments.isNotEmpty()) {
                 attachments.forEach { attachment ->
-                    _messages.value += com.bussiness.slodoggiesapp.data.model.common.ChatMessage(
+                    _messages.value += ChatMessage(
                         text = if (text.isBlank()) "" else text,
                         isUser = true,
                         attachmentUri = attachment.first,

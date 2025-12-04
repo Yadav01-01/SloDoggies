@@ -3,9 +3,12 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -90,11 +93,13 @@ fun HomeScreen(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 60.dp)
+            contentPadding = PaddingValues(bottom = 60.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
             itemsIndexed(
                 items = posts,
+                key = { _, post -> post.stableKey }
             ) { index, post ->
 
                 if (index == posts.lastIndex - 2) {
@@ -102,29 +107,60 @@ fun HomeScreen(
                 }
 
                 when (post) {
-                    is PostItem.CommunityPost -> CommunityPostItem(post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent()}, onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) })
-                    is PostItem.SponsoredPost -> SponsoredPostItem(post = post, onReportClick = onReportClick, onShareClick = onShareClick, onProfileClick = onProfileClick, onSponsoredClick = {  })
-                    is PostItem.NormalPost -> NormalPostItem(modifier = Modifier.padding(12.dp),post, onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() },normalPost = true, onEditClick = {}, onDeleteClick = {},
-                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) }, onSelfPostEdit = { navController.navigate(Routes.EDIT_POST_SCREEN)}, onSelfPostDelete = { viewModel.showDeleteDialog() })
+                    is PostItem.CommunityPost -> CommunityPostItem(
+                        post,
+                        onReportClick = onReportClick,
+                        onShareClick = onShareClick,
+                        onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
+                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) }
+                    )
+
+
+                    is PostItem.SponsoredPost -> SponsoredPostItem(
+                        post = post,
+                        onReportClick = onReportClick,
+                        onShareClick = onShareClick,
+                        onProfileClick = onProfileClick,
+                        onSponsoredClick = onSponsoredClick
+                    )
+
+                    is PostItem.NormalPost -> NormalPostItem(
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                        post,
+                        onReportClick = onReportClick,
+                        onShareClick = onShareClick,
+                        normalPost = true,
+                        onEditClick = {},
+                        onDeleteClick = {},
+                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
+                        onSelfPostEdit = { navController.navigate(Routes.EDIT_POST_SCREEN) },
+                        onSelfPostDelete = { viewModel.showDeleteDialog() }
+                    )
+
                 }
             }
 
             item {
                 if (uiState.isLoading) {
-                    CircularProgressIndicator(
+                    Box(
                         modifier = Modifier
-                            .padding(16.dp)
-                            .size(32.dp)
-                            .align(Alignment.CenterHorizontally),
-                        color = PrimaryColor
-                    )
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(32.dp),
+                            color = PrimaryColor
+                        )
+                    }
                 }
             }
         }
+
     }
 
     // --- Dialogs ---
-    //if (sessionManager.isSignupFlowActive()){
+    if (sessionManager.isSignupFlowActive()){
         if (uiState.showWelcomeDialog) {
             WelcomeDialog(
                 onDismiss = { viewModel.dismissWelcomeDialog() },
@@ -185,7 +221,7 @@ fun HomeScreen(
                 }
             }
         }
-  //  }
+    }
 
     if (uiState.showReportDialog) {
         ReportDialog(

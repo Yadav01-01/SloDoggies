@@ -25,8 +25,10 @@ object HomeFeedMapper {
         return when (item.type?.lowercase()) {
 
             "normal" -> PostItem.NormalPost(
+                postId = item.postId.orEmpty(),
                 userId = author?.userId.orEmpty(),
                 userName = author?.name.orEmpty(),
+                petName = author?.petName.orEmpty(),
                 userBadge = author?.badge,
                 time = author?.time.orEmpty(),
                 caption = content?.title.orEmpty(),
@@ -43,6 +45,7 @@ object HomeFeedMapper {
             )
 
             "community" -> PostItem.CommunityPost(
+                postId = item.postId.orEmpty(),
                 userId = author?.userId.orEmpty(),
                 userName = author?.name.orEmpty(),
                 userImage = media?.parentImageUrl,
@@ -62,6 +65,7 @@ object HomeFeedMapper {
             )
 
             "sponsored" -> PostItem.SponsoredPost(
+                postId = item.postId.orEmpty(),
                 userId = author?.userId.orEmpty(),
                 userName = author?.name.orEmpty(),
                 userBadge = author?.badge,

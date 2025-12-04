@@ -70,7 +70,30 @@ fun SponsoredPostItem(
         Column(modifier = Modifier.fillMaxWidth().clickable { onSponsoredClick() }) {
             PostHeader(user = post.userName, time = post.time, onReportClick = { onReportClick()}, onProfileClick = { onProfileClick() })
             PostCaption(caption = post.caption, description = post.description)
-            PostImage(mediaList = post.mediaList)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(353.dp)
+            ) {
+
+                PostImage(mediaList = post.mediaList)
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .background(PrimaryColor)
+                ) {
+                    Text(
+                        text = "Sponsored",
+                        modifier = Modifier.padding(start = 12.dp).align(Alignment.CenterStart),
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        color = Color.White
+                    )
+                }
+            }
             PostActions(likes = post.likes, comments = post.comments, shares = post.shares,onShareClick = onShareClick)
         }
     }
