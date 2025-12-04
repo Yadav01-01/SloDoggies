@@ -40,6 +40,9 @@ data class User(
     @SerializedName("phone")
     val phone: String? = null,
 
+    @SerializedName("image")
+    val image: String? = null,
+
     @SerializedName("forgot_otp")
     val forgotOtp: String? = null,
 

@@ -11,6 +11,7 @@ import com.bussiness.slodoggiesapp.data.uiState.LoginUiState
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.util.SessionManager
+import com.google.firebase.messaging.BuildConfig
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -122,6 +123,8 @@ class LoginViewModel @Inject constructor(
                                 _uiState.value = _uiState.value.copy(loginSuccess = true)
                                 sessionManager.setUserId(response.data?.user?.id.toString())
                                 sessionManager.setToken(response.data?.token.toString())
+                                sessionManager.setUserName(response.data?.user?.name.toString())
+                                sessionManager.setUserImage(com.bussiness.slodoggiesapp.BuildConfig.BASE_URL+response.data?.user?.image.toString())
                                 sessionManager.setLogin(true)
                                 onSuccess()
                             } else {

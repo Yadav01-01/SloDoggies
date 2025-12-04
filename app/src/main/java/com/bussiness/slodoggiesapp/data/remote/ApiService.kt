@@ -343,4 +343,24 @@ interface ApiService {
     suspend fun getPetDetail(
         @Field("pet_id") petId: String,
     ) : Response<UpdatePetModel>
+
+    @Multipart
+    @POST(ApiEndPoint.CREATE_AD)
+    suspend fun createAd(
+        @Part("user_id") userId: RequestBody,
+        @Part("adTitle") adTitle: RequestBody,
+        @Part("adDescription") adDescription: RequestBody,
+        @Part("category[]") category: RequestBody,
+        @Part("service") service: RequestBody,
+        @Part("expiry_date") expiry_date: RequestBody,
+        @Part("expiry_time") expiry_time: RequestBody,
+        @Part("termAndConditions") termAndConditions: RequestBody,
+        @Part("lat") latitude: RequestBody,
+        @Part("long") longitude: RequestBody,
+        @Part("serviceLocation") serviceLocation: RequestBody,
+        @Part("contactNumber") contactNumber: RequestBody,
+        @Part("budget") budget: RequestBody,
+        @Part("mobile_visual") mobile_visual: RequestBody,
+        @Part petImage:List<MultipartBody.Part>?
+    ) : Response<CommonResponse>
 }

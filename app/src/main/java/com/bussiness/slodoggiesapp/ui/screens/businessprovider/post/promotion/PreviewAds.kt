@@ -1,5 +1,8 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.promotion
 
+import android.text.TextUtils
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,10 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
@@ -29,9 +36,21 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.Spon
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.SponsorPostHeader
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.SponsorPostMedia
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
+import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
 
 @Composable
 fun PreviewAdsScreen(navController: NavHostController) {
+
+    // Get the ViewModel scoped to the previous screen
+    val viewModel: PostContentViewModel = hiltViewModel(
+        navController.getBackStackEntry(Routes.POST_SCREEN)
+    )
+
+    val uiStateAddCreate by viewModel.uiState.collectAsState()
+    Log.d("******", uiStateAddCreate.adTitle.toString()+uiStateAddCreate.budget) // now you get the filled data
+    val context = LocalContext.current
+    val sessionManager = SessionManager.getInstance(context)
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
 
         BackHandler {
@@ -61,9 +80,9 @@ fun PreviewAdsScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                SponsorPostHeader(userImage = " ", user = "Nobisuke", time = "2 Days", onReportClick = { })
-                SponsorPostCaption(caption = "Summer Special: 20% Off Grooming!", description = "Limited Time Offer")
-                SponsorPostMedia(mediaList = "post.mediaList")
+                SponsorPostHeader(userImage = "${sessionManager.getUserImage()}", user = "${sessionManager.getUserName()}", time = "", onReportClick = { })
+                SponsorPostCaption(caption = "${uiStateAddCreate.adTitle}", description = "${uiStateAddCreate.adDescription}")
+                SponsorPostMedia(mediaList = uiStateAddCreate.image)
                 HorizontalDivider(thickness = 1.dp, color = Color(0xFFE5EFF2), modifier = Modifier.padding(vertical = 12.dp))
             }
 
@@ -72,12 +91,13 @@ fun PreviewAdsScreen(navController: NavHostController) {
                 Section(
                     title = "• Ad Details",
                     items = {
-                        PreviewSubHeading(stringResource(R.string.adtitle), "Free First Walk")
-                        PreviewSubHeading(stringResource(R.string.description__), "Get your pet's first walk for free with Happy Paws!")
-                        PreviewSubHeading(stringResource(R.string.Category_), "Grooming")
-                        PreviewSubHeading(stringResource(R.string.Service_), "Service name 1")
-                        PreviewSubHeading(stringResource(R.string.exp_date_time), "06/30/2025 - 05:00 PM")
-                        PreviewSubHeading(stringResource(R.string.terms_con), "Offer valid for new customers only.")
+                        PreviewSubHeading(stringResource(R.string.adtitle), uiStateAddCreate.adTitle?:"")
+                        PreviewSubHeading(stringResource(R.string.description__), uiStateAddCreate.adDescription?:"")
+                        PreviewSubHeading(stringResource(R.string.Category_), (uiStateAddCreate.category ?: emptyList()).joinToString(","))
+                        PreviewSubHeading(stringResource(R.string.Service_), uiStateAddCreate.service?:"")
+                        PreviewSubHeading(stringResource(R.string.exp_date_time), "${uiStateAddCreate.expiryDate} - ${uiStateAddCreate.expiryTime}")
+                        PreviewSubHeading(stringResource(R.string.terms_con), uiStateAddCreate.termAndConditions?:"")
+
                     }
                 )
             }
@@ -87,9 +107,12 @@ fun PreviewAdsScreen(navController: NavHostController) {
                 Section(
                     title = "• Engagement & Location",
                     items = {
-                        PreviewSubHeading(stringResource(R.string.location_type), "Local (San Luis Obispo)")
-                        PreviewSubHeading(stringResource(R.string.contact_info), "✅ Yes")
-                        PreviewSubHeading(stringResource(R.string.mobile_no), "805 123-4567")
+                        PreviewSubHeading(stringResource(R.string.location_type), uiStateAddCreate.serviceLocation?:"")
+                        PreviewSubHeading(
+                            stringResource(R.string.contact_info),
+                            if (uiStateAddCreate.mobile_visual == "1") "✅ Yes" else "❌ No"
+                        )
+                        PreviewSubHeading(stringResource(R.string.mobile_no), uiStateAddCreate.contactNumber?:"")
                     }
                 )
             }
@@ -99,8 +122,8 @@ fun PreviewAdsScreen(navController: NavHostController) {
                 Section(
                     title = "• Pricing & Reach Estimates",
                     items = {
-                        PreviewSubHeading(stringResource(R.string.daliy_budget), "$42")
-                        PreviewSubHeading(stringResource(R.string.ads_budget), "$42 per day")
+                        PreviewSubHeading(stringResource(R.string.daliy_budget), "$${uiStateAddCreate.budget}")
+                        PreviewSubHeading(stringResource(R.string.ads_budget), "$${uiStateAddCreate.budget} per day")
                     }
                 )
             }
@@ -108,7 +131,16 @@ fun PreviewAdsScreen(navController: NavHostController) {
             // --- Submit Button ---
             item {
                 Spacer(Modifier.height(15.dp))
-                SubmitPreviewButton(buttonText = "Submit", onClickButton = { navController.navigate(Routes.SPONSORED_ADS_SCREEN) })
+                SubmitPreviewButton(buttonText = "Submit", onClickButton = {
+
+
+                    viewModel.createAd(context=context,
+                        onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                        onSuccess = {
+                            navController.navigate(Routes.SPONSORED_ADS_SCREEN + "?fromPreview=true")
+                        }
+                    )
+                })
                 Spacer(Modifier.height(10.dp))
             }
         }

@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.sponsoredAds
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,11 +40,27 @@ fun SponsoredAdsScreen(navController: NavHostController) {
     var statusDialog by remember { mutableStateOf(true) }
     var approvedDialog by remember { mutableStateOf(false) }
     var isNavigating by remember { mutableStateOf(false) }
-
+    val fromPreview = navController.currentBackStackEntry
+        ?.arguments
+        ?.getBoolean("fromPreview")?: false
+    Log.d("******","$fromPreview")
     BackHandler {
+
         if (!isNavigating) {
             isNavigating = true
-            navController.popBackStack()
+            // check where this SponsoredAdsScreen came from
+            if (fromPreview) {
+                // Came from PreviewAdsScreen → go to home
+                navController.navigate(Routes.HOME_SCREEN) {
+                    launchSingleTop = true
+                    popUpTo(Routes.HOME_SCREEN) {
+                        inclusive = false
+                    }
+                }
+            }else{
+                // Came from anywhere else → normal back
+                navController.popBackStack()
+            }
         }
     }
 
@@ -52,7 +69,19 @@ fun SponsoredAdsScreen(navController: NavHostController) {
         HeadingTextWithIcon("Sponsored Ads Dashboard",
             onBackClick = { if (!isNavigating) {
                 isNavigating = true
-                navController.popBackStack()
+                if (fromPreview) {
+                    // Came from PreviewAdsScreen → go to home
+                    navController.navigate(Routes.HOME_SCREEN) {
+                        launchSingleTop = true
+                        popUpTo(Routes.HOME_SCREEN) {
+                            inclusive = false
+                        }
+                    }
+                }else{
+                    // Came from anywhere else → normal back
+                    navController.popBackStack()
+                }
+                Log.d("******","Back")
             }})
 
         HorizontalDivider(modifier = Modifier.fillMaxWidth().height(2.dp).background(PrimaryColor))

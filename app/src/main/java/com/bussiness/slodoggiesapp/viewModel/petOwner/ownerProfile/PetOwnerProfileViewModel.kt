@@ -52,7 +52,6 @@ class PetOwnerProfileViewModel @Inject constructor(
             repository.getOwnerProfileDetails(sessionManager.getUserId())
                 .collectLatest { result ->
                     when (result) {
-
                         is Resource.Loading -> {
                             _uiState.update {
                                 it.copy(
@@ -64,6 +63,8 @@ class PetOwnerProfileViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             val response = result.data
+                            sessionManager.setUserName(response?.data?.owner?.name?:"")
+                            sessionManager.setUserImage(response?.data?.owner?.image?:"")
                             _uiState.update {
                                 it.copy(
                                     isLoading = false,

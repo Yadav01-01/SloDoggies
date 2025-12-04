@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,6 +53,7 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCardProfile
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OutlineCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
@@ -65,24 +67,19 @@ import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesVie
 fun ProfileScreen(navController: NavHostController) {
 
     val viewModelDashboard: BusinessServicesViewModel = hiltViewModel()
+
     val uiState by viewModelDashboard.uiState.collectAsState()
-    val viewModel : ProfileViewModel = hiltViewModel()
+    val galleryState by viewModelDashboard.uiStateGallery.collectAsState()
+
+    val viewModel: ProfileViewModel = hiltViewModel()
     val email by viewModel.email.collectAsState()
     val description by viewModel.description.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
 
-    val sampleImages = listOf(
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2)
-    )
-
-
+    // First API Call
     LaunchedEffect(Unit) {
         viewModelDashboard.getBusinessDetail()
+        viewModelDashboard.galleryPostDetail(1)   // first page
     }
 
     BackHandler {
@@ -92,14 +89,22 @@ fun ProfileScreen(navController: NavHostController) {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
-        ScreenHeadingText(textHeading = "My Profile",
-            onBackClick = {   if (!isNavigating) {
-                isNavigating = true
-                navController.popBackStack()
-            }},
-            onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN)  })
+        ScreenHeadingText(
+            textHeading = "My Profile",
+            onBackClick = {
+                if (!isNavigating) {
+                    isNavigating = true
+                    navController.popBackStack()
+                }
+            },
+            onSettingClick = { navController.navigate(Routes.SETTINGS_SCREEN) }
+        )
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
@@ -111,9 +116,10 @@ fun ProfileScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
+            // ---------------- PROFILE DETAILS ----------------
             item {
                 Spacer(modifier = Modifier.height(10.dp))
-                // Profile Row
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -122,8 +128,9 @@ fun ProfileScreen(navController: NavHostController) {
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     AsyncImage(
-                        model = uiState.data?.business?.business_logo?:"",
+                        model = uiState.data?.business?.business_logo ?: "",
                         contentDescription = "image",
                         placeholder = painterResource(R.drawable.fluent_color_paw),
                         error = painterResource(R.drawable.fluent_color_paw),
@@ -136,25 +143,19 @@ fun ProfileScreen(navController: NavHostController) {
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = uiState.data?.business?.business_name?:"",
-                                color = Color.Black,
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+
+                        Text(
+                            text = uiState.data?.business?.business_name ?: "",
+                            color = Color.Black,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
 
                         Spacer(Modifier.height(5.dp))
 
                         Text(
-                            text = uiState.data?.business?.email?:"",
+                            text = uiState.data?.business?.email ?: "",
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontSize = 12.sp,
                             color = PrimaryColor,
@@ -162,7 +163,7 @@ fun ProfileScreen(navController: NavHostController) {
                         )
 
                         Text(
-                            text = uiState.data?.business?.bio?:"",
+                            text = uiState.data?.business?.bio ?: "",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color.Black,
@@ -173,27 +174,63 @@ fun ProfileScreen(navController: NavHostController) {
                 }
             }
 
+            // ---------------- POSTS / FOLLOWERS SECTION ----------------
             item {
-                // Posts/Followers/Following Row
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.post?:"0"), value = "Posts", modifier = Modifier.weight(1f), onDetailClick = { })
-                    VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
-                    ProfileDetail(label =formatStringNumberShorthand(uiState.data?.follower?:"0"), value = "Followers", modifier = Modifier.weight(1f), onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
-                    VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
-                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.following?:"0"), value = "Following",  modifier = Modifier.weight(1f),onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}")})
+                    ProfileDetail(
+                        label = formatStringNumberShorthand(uiState.data?.post ?: "0"),
+                        value = "Posts",
+                        modifier = Modifier.weight(1f),
+                        onDetailClick = {}
+                    )
+
+                    VerticalDivider(
+                        modifier = Modifier.fillMaxHeight(),
+                        thickness = 1.dp,
+                        color = PrimaryColor
+                    )
+
+                    ProfileDetail(
+                        label = formatStringNumberShorthand(uiState.data?.follower ?: "0"),
+                        value = "Followers",
+                        modifier = Modifier.weight(1f),
+                        onDetailClick = {
+                            navController.navigate("${Routes.FOLLOWER_SCREEN}/Follower")
+                        }
+                    )
+
+                    VerticalDivider(
+                        modifier = Modifier.fillMaxHeight(),
+                        thickness = 1.dp,
+                        color = PrimaryColor
+                    )
+
+                    ProfileDetail(
+                        label = formatStringNumberShorthand(uiState.data?.following ?: "0"),
+                        value = "Following",
+                        modifier = Modifier.weight(1f),
+                        onDetailClick = {
+                            navController.navigate("${Routes.FOLLOWER_SCREEN}/Following")
+                        }
+                    )
                 }
             }
 
+            // ---------------- ADS BUTTON ----------------
             item {
-                OutlineCustomButton(modifier = Modifier.fillMaxWidth().height(48.dp), text = "Sponsored Ads Dashboard",
-                    onClick = { navController.navigate(Routes.SPONSORED_ADS_SCREEN) })
+                OutlineCustomButton(
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    text = "Sponsored Ads Dashboard",
+                    onClick = { navController.navigate(Routes.SPONSORED_ADS_SCREEN) }
+                )
             }
 
+            // ---------------- GALLERY TITLE ----------------
             item {
                 Text(
                     text = "Gallery",
@@ -208,25 +245,63 @@ fun ProfileScreen(navController: NavHostController) {
                 HorizontalDivider(thickness = 1.dp, color = TextGrey)
             }
 
+            // ---------------- GALLERY GRID WITH PAGINATION ----------------
             item {
+                val posts = galleryState.posts
+
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 800.dp), // or use calculated height if needed
+                        .heightIn(max = 800.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    userScrollEnabled = false // Important to avoid nested scroll issues
+                    userScrollEnabled = false
                 ) {
-                    items(sampleImages.size) { index ->
-                        GalleryItemCard(item = sampleImages[index], onClickItem = {navController.navigate(Routes.USER_POST_SCREEN)})
+
+                    items(posts.size) { index ->
+                        val item = posts[index]
+
+
+                        GalleryItemCardProfile(
+                            item = item,
+                            onClickItem = {
+                                navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}")
+                            }
+                        )
+
+                        // ⭐ Auto load next Page
+                        if (index == posts.lastIndex &&
+                            galleryState.canLoadMore &&
+                            !galleryState.isLoadingMore
+                        ) {
+                            LaunchedEffect(Unit) {
+                                viewModelDashboard.galleryPostDetail(galleryState.currentPage + 1)
+                            }
+                        }
+                    }
+
+                    // Loading more loader
+                    item(span = { GridItemSpan(3) }) {
+                        if (galleryState.isLoadingMore) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                androidx.compose.material3.CircularProgressIndicator()
+                            }
+                        }
                     }
                 }
+
                 Spacer(Modifier.height(10.dp))
             }
         }
     }
 }
+
 
 
 @Preview(showBackground = true)

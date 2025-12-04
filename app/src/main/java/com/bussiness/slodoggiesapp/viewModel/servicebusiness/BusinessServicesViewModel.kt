@@ -1,9 +1,11 @@
 package com.bussiness.slodoggiesapp.viewModel.servicebusiness
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.remote.Repository
+import com.bussiness.slodoggiesapp.data.uiState.OwnerProfileUiState
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,13 @@ class BusinessServicesViewModel @Inject constructor(
     val uiState: StateFlow<BusinessDetailsModel> = _uiState.asStateFlow()
 
 
+    private val _uiStateGallery = MutableStateFlow(OwnerProfileUiState())
+    val uiStateGallery: StateFlow<OwnerProfileUiState> = _uiStateGallery.asStateFlow()
+
+
+
+
+
 
     fun getBusinessDetail(){
         viewModelScope.launch {
@@ -36,6 +45,8 @@ class BusinessServicesViewModel @Inject constructor(
                         val response = result.data
                         if (response.success == true && response.data != null) {
                             val data = response.data
+                            sessionManager.setUserName(data?.business?.business_name?:"")
+                            sessionManager.setUserImage(data?.business?.business_logo?:"")
                             _uiState.value = _uiState.value.copy(
                                 data = data
                             )
@@ -51,6 +62,61 @@ class BusinessServicesViewModel @Inject constructor(
                 }
 
             }
+        }
+    }
+
+    fun loadNextPage() {
+        if (!uiStateGallery.value.isLoadingMore && uiStateGallery.value.canLoadMore) {
+            galleryPostDetail(uiStateGallery.value.currentPage + 1)
+        }
+    }
+    fun galleryPostDetail(page: Int = 1) {
+        viewModelScope.launch {
+            if (page == 1) {
+                _uiStateGallery.update { it.copy(isLoading = true) }
+            } else {
+                _uiStateGallery.update { it.copy(isLoadingMore = true) }
+            }
+
+            repository.getOwnerGalleryPost(sessionManager.getUserId(), page.toString())
+                .collectLatest { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            val response = result.data
+
+                            val galleryData = response.data
+                            Log.d("******",response.toString())
+                            val newPosts = galleryData?.posts ?: emptyList()
+
+                            _uiStateGallery.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isLoadingMore = false,
+                                    posts = if (page == 1) {
+                                        newPosts
+                                    } else {
+                                        it.posts + newPosts
+                                    },
+                                    currentPage = page,
+                                    canLoadMore = newPosts.isNotEmpty(),
+                                    errorMessage = null
+                                )
+                            }
+                        }
+
+                        is Resource.Error -> {
+                            _uiStateGallery.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isLoadingMore = false,
+                                    errorMessage = result.message
+                                )
+                            }
+                        }
+
+                        else -> Unit
+                    }
+                }
         }
     }
 

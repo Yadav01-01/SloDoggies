@@ -245,4 +245,20 @@ interface Repository {
         petId: String
     ) : Flow<Resource<UpdatePetModel>>
 
+    suspend fun createAd(userId: String,
+                         adTitle: String,
+                         adDescription: String,
+                         category: String,
+                         service: String,
+                         expiry_date: String,
+                         expiry_time: String,
+                         termAndConditions: String,
+                         latitude: String,
+                         longitude: String,
+                         serviceLocation: String,
+                         contactNumber: String,
+                         budget: String,
+                         mobile_visual: String,
+                         image: List<MultipartBody.Part>?): Flow<Resource<CommonResponse>>
+
 }

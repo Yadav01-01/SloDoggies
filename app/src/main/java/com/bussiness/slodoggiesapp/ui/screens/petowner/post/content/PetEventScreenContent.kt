@@ -55,7 +55,8 @@ fun PetEventScreenContent( onClickLocation: () -> Unit,onClickSubmit: () -> Unit
     val uiStatePostCreateOwner by viewModelEventCreateOwner.uiState.collectAsState()
 
 
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+    val launcher = rememberLauncherForActivityResult(contract =
+    ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val place = Autocomplete.getPlaceFromIntent(result.data!!)
             val placeLatLong=place.latLng

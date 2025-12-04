@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -96,20 +97,35 @@ fun SponsorPostCaption(caption: String, description: String) {
         }
     }
 }
-
 @Composable
-fun SponsorPostMedia(mediaList: String) {
+fun SponsorPostMedia(mediaList: List<Uri>?) {
+    val firstImage = mediaList?.firstOrNull()
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(353.dp)
     ) {
-        AsyncImage(
-            model = R.drawable.dog1,
-            contentDescription = "Post image",
-            contentScale = ContentScale.Crop,
-            modifier =  Modifier.fillMaxWidth().height(350.dp)
-        )
+        if (firstImage != null) {
+            AsyncImage(
+                model = firstImage,
+                contentDescription = "Post image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(350.dp)
+            )
+        } else {
+            // Placeholder if no image
+            AsyncImage(
+                model = R.drawable.no_image,
+                contentDescription = "Post image",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(350.dp)
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -120,7 +136,9 @@ fun SponsorPostMedia(mediaList: String) {
         ) {
             Text(
                 text = "Sponsored",
-                modifier = Modifier.padding(start = 12.dp).align(Alignment.CenterStart),
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .align(Alignment.CenterStart),
                 fontSize = 16.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                 color = Color.White
@@ -128,6 +146,38 @@ fun SponsorPostMedia(mediaList: String) {
         }
     }
 }
+
+//@Composable
+//fun SponsorPostMedia(mediaList: String) {
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .height(353.dp)
+//    ) {
+//        AsyncImage(
+//            model = R.drawable.dog1,
+//            contentDescription = "Post image",
+//            contentScale = ContentScale.Crop,
+//            modifier =  Modifier.fillMaxWidth().height(350.dp)
+//        )
+//
+//        Box(
+//            modifier = Modifier
+//                .align(Alignment.BottomStart)
+//                .fillMaxWidth()
+//                .height(50.dp)
+//                .background(PrimaryColor)
+//        ) {
+//            Text(
+//                text = "Sponsored",
+//                modifier = Modifier.padding(start = 12.dp).align(Alignment.CenterStart),
+//                fontSize = 16.sp,
+//                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+//                color = Color.White
+//            )
+//        }
+//    }
+//}
 
 @Composable
 fun PreviewHeading(heading : String){

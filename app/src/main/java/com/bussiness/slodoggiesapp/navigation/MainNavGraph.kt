@@ -82,7 +82,10 @@ fun MainNavGraph(
         composable(Routes.SERVICES_SCREEN) { ServiceScreen(navController) }
         composable(Routes.PROFILE_SCREEN) { ProfileScreen(navController) }
         composable(Routes.PERSON_DETAIL_SCREEN) { PersonDetailScreen(navController) }
-        composable(Routes.SPONSORED_ADS_SCREEN) { SponsoredAdsScreen(navController) }
+        composable(Routes.SPONSORED_ADS_SCREEN+ "?fromPreview={fromPreview}",
+            arguments = listOf(
+                navArgument("fromPreview") { defaultValue = false }
+            )) { SponsoredAdsScreen(navController) }
         composable(Routes.POST_SCREEN) { PostScreen(navController) }
         composable(Routes.EDIT_BUSINESS_SCREEN) { EditBusinessScreen(navController) }
         composable(Routes.SETTINGS_SCREEN) { SettingsScreen(navController,authNavController) }

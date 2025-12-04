@@ -452,7 +452,8 @@ fun PetProfileScreen(navController: NavHostController) {
                     }
                 }
 
-            }else{
+            }
+            else{
                 items(uiState.posts.chunked(3)) { rowItems ->
                     Row(
                         modifier = Modifier

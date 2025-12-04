@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.component.businessProvider
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,6 +35,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +45,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -53,10 +57,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost
 import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.data.model.petOwner.PetPlaceItem
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerPostItem
+import com.bussiness.slodoggiesapp.ui.component.common.getVideoThumbnail
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostLikes
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostOptionsMenu
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -356,6 +363,77 @@ fun PetOwnerDetail(
 
     }
 }
+@Composable
+fun GalleryItemCardProfile(
+    item: OwnerPostItem,
+    height: Int = 150,
+    onClickItem: () -> Unit
+) {
+
+    val media = item.mediaPath?.firstOrNull()
+    val url = media?.url ?: ""
+    val context = LocalContext.current
+
+    // Thumbnail state
+    var thumbnail by remember { mutableStateOf<Bitmap?>(null) }
+
+    // If video → generate thumbnail using your function
+    LaunchedEffect(url) {
+        if (media?.type == "video") {
+            thumbnail = getVideoThumbnail( url)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .height(height.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(Color.LightGray)
+            .clickable { onClickItem() }
+    ) {
+
+        when {
+            // Show generated thumbnail if video
+            media?.type == "video" && thumbnail != null -> {
+                Image(
+                    bitmap = thumbnail!!.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            // Otherwise load normal image
+            else -> {
+                AsyncImage(
+                    model = url,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(R.drawable.no_image),
+                    error = painterResource(R.drawable.no_image),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+
+        // Video icon
+        if (media?.type == "video") {
+            Icon(
+                imageVector = Icons.Default.PlayArrow,
+                contentDescription = "Video",
+                tint = Color.White,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+                    .size(22.dp)
+                    .background(Color.Black.copy(alpha = 0.4f), CircleShape)
+                    .padding(3.dp)
+            )
+        }
+    }
+}
+
 
 
 @Composable

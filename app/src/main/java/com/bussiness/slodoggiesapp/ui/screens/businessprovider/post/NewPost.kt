@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.post
 
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.navigation.Routes
@@ -34,6 +36,7 @@ import com.bussiness.slodoggiesapp.ui.screens.businessprovider.post.content.Prom
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PetEventScreenContent
 import com.bussiness.slodoggiesapp.ui.screens.petowner.post.content.PetPostScreenContent
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.viewModel.businessProvider.PostContentViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -42,6 +45,8 @@ fun PostScreen(navController: NavHostController) {
     var selected by remember { mutableStateOf("Post") }
     var successDialog by remember { mutableStateOf(false) }
     var eventSuccess by remember { mutableStateOf(false) }
+
+    val viewModel: PostContentViewModel = hiltViewModel() // get shared VM
 
     BackHandler {
         navController.navigate(Routes.HOME_SCREEN) {
@@ -87,7 +92,10 @@ fun PostScreen(navController: NavHostController) {
 //            "Post" -> PostScreenContent(onClickLocation = { }, onClickPost = { successDialog = true })
             "Event" -> PetEventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
 //            "Event" -> EventScreenContent( onClickLocation = { },onClickSubmit = { eventSuccess = true })
-            "Ads." -> PromotionScreenContent(onClickLocation = { },onClickSave = { navController.navigate(Routes.BUDGET_SCREEN)})
+            "Ads." -> PromotionScreenContent(onClickLocation = { },onClickSave = {
+                navController.navigate(Routes.BUDGET_SCREEN)},
+                viewModel = viewModel // pass shared instance
+            )
         }
         if (successDialog){
             PostSuccessDialog(

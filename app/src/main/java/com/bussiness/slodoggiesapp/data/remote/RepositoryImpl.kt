@@ -510,6 +510,7 @@ class RepositoryImpl @Inject constructor(
 
 
 
+
     /**
      * A reusable helper function to handle all API calls safely.
      */
@@ -546,6 +547,45 @@ class RepositoryImpl @Inject constructor(
             Resource.Error(e.message.toString())
         }
     }
+    override suspend fun createAd(
+        userId: String,
+        adTitle: String,
+        adDescription: String,
+        category: String,
+        service: String,
+        expiry_date: String,
+        expiry_time: String,
+        termAndConditions: String,
+        latitude: String,
+        longitude: String,
+        serviceLocation: String,
+        contactNumber: String,
+        budget: String,
+        mobile_visual: String,
+        image: List<MultipartBody.Part>?
+    ): Flow<Resource<CommonResponse>>  = flow {
+        // Convert text params to RequestBody
+        val id = userId.toRequestBody("text/plain".toMediaTypeOrNull())
+        val adTitle = adTitle.toRequestBody("text/plain".toMediaTypeOrNull())
+        val adDescription = adDescription.toRequestBody("text/plain".toMediaTypeOrNull())
+        val category = category.toRequestBody("text/plain".toMediaTypeOrNull())
+        val service = service.toRequestBody("text/plain".toMediaTypeOrNull())
+        val expiry_date = expiry_date.toRequestBody("text/plain".toMediaTypeOrNull())
+        val expiry_time = expiry_time.toRequestBody("text/plain".toMediaTypeOrNull())
+        val termAndConditions = termAndConditions.toRequestBody("text/plain".toMediaTypeOrNull())
+        val lat = latitude.toRequestBody("text/plain".toMediaTypeOrNull())
+        val longi = longitude.toRequestBody("text/plain".toMediaTypeOrNull())
+        val serviceLocation = serviceLocation.toRequestBody("text/plain".toMediaTypeOrNull())
+        val contactNumber = contactNumber.toRequestBody("text/plain".toMediaTypeOrNull())
+        val budget = budget.toRequestBody("text/plain".toMediaTypeOrNull())
+        val mobile_visual = mobile_visual.toRequestBody("text/plain".toMediaTypeOrNull())
+        emit(Resource.Loading)
+        emit(safeApiCall { api.createAd(userId= id,adTitle = adTitle,adDescription = adDescription,category = category,
+            service = service,expiry_date = expiry_date,expiry_time = expiry_time,termAndConditions = termAndConditions,
+            latitude = lat, longitude = longi, serviceLocation = serviceLocation, contactNumber = contactNumber,
+            budget = budget, mobile_visual = mobile_visual,image) })
+
+    }.flowOn(Dispatchers.IO)
 
 
 

@@ -39,4 +39,6 @@ object ApiEndPoint {
     const val GET_OWNER_PROFILE = "get_owner_profile"
     const val GET_PET_DETAIL = "get_pet_detail"
 
+    const val CREATE_AD = "create_ads"
+
 }
