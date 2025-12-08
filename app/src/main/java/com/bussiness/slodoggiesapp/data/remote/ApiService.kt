@@ -13,6 +13,9 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsRes
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
+import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
+import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
+import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
@@ -372,5 +375,70 @@ interface ApiService {
         @Field("user_id") userId: String,
         @Field("page") page: String
     ) : Response<HomeFeedResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.SAVE_POST)
+    suspend fun savePost(
+        @Field("user_id") userId: String,
+        @Field("post_id") postId: String
+    ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.REPOST_POST)
+    suspend fun reportPost(
+        @Field("user_id") userId: String,
+        @Field("post_id") postId: String,
+        @Field("report_reason") report_reason: String,
+        @Field("text") message: String
+    ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.POST_LIKE_UNLIKE)
+    suspend fun postLikeUnlike(
+        @Field("user_id") userId: String,
+        @Field("post_id") postId: String
+    ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_COMMENT)
+    suspend fun getComments(
+        @Field("user_id") userId: String,
+        @Field("post_id") postId: String,
+        @Field("page") page: String,
+        @Field("limit") limit: String
+    ) : Response<CommentsResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.ADD_NEW_COMMENT)
+    suspend fun addNewComment(
+        @Field("user_id") userId: String,
+        @Field("post_id") postId: String,
+        @Field("comment_text") comment_text: String,
+    ) : Response<AddCommentResponse>
+
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.REPLY_COMMENT)
+    suspend fun replyComment(
+        @Field("user_id") userId: String,
+        @Field("post_id") postId: String,
+        @Field("comment_id") commentId: String,
+        @Field("comment_text") commentText: String,
+    ) : Response<AddCommentReplyResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.DELETE_COMMENT)
+    suspend fun deleteComment(
+        @Field("user_id") userId: String,
+        @Field("comment_id") commentId: String,
+    ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.EDIT_COMMENT)
+    suspend fun editComment(
+        @Field("user_id") userId: String,
+        @Field("comment_id") commentId: String,
+        @Field("comment_text") commentText: String,
+    ) : Response<CommonResponse>
 
 }

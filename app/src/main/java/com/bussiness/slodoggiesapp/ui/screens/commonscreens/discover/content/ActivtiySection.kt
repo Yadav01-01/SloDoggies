@@ -38,7 +38,16 @@ fun ActivitiesPostsList(
                     onDeleteClick = { /* Handle delete click */ },
                     onProfileClick = { onProfileClick() },
                     onSelfPostEdit = { /* Handle self post edit click */ },
-                    onSelfPostDelete = { /* Handle self post delete click */ }
+                    onSelfPostDelete = { /* Handle self post delete click */ },
+                    onSaveClick = {
+
+                    },
+                    onLikeClick = {
+
+                    },
+                    onCommentClick = {
+
+                    }
                 )
             }
         }

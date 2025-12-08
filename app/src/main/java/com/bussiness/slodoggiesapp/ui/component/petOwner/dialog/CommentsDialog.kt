@@ -54,6 +54,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -69,19 +70,26 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.xr.compose.testing.toDp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.uiState.CommentItem
+import com.bussiness.slodoggiesapp.data.uiState.CommentReply
 import com.bussiness.slodoggiesapp.ui.component.common.ParentLabel
 import com.bussiness.slodoggiesapp.ui.dialog.ReportBottomToast
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
 fun CommentsDialog(
     onDismiss: () -> Unit = {},
-    comments: List<Comment> = emptyList(),
-    onDeleteClick : () -> Unit
+    comments: List<CommentItem> = emptyList(),
+    onDeleteClick : (commentId:String) -> Unit,
+    onSandClick : (message:String,type:String,commentId:String) -> Unit
 ) {
-    var editingComment by remember { mutableStateOf<Comment?>(null) }
+    var editingComment by remember { mutableStateOf<CommentItem?>(null) }
     var newComment by remember { mutableStateOf("") }
     var replyingTo by remember { mutableStateOf<String?>(null) }
+    var commentId by remember { mutableStateOf("") }
+
+
 
 
     Dialog(
@@ -177,15 +185,17 @@ fun CommentsDialog(
                                         // If user taps reply, cancel edit mode immediately
                                         editingComment = null
                                         newComment = ""
-                                        replyingTo = comment.userName
+                                        replyingTo = comment.user.name
+                                        commentId = comment.id.toString()
                                     },
                                     onEditClick = {
                                         // If user taps edit, cancel reply mode immediately
                                         replyingTo = null
                                         editingComment = comment
-                                        newComment = comment.text
+                                        newComment = comment.content
+                                        commentId = comment.id.toString()
                                     },
-                                    onDeleteClick = { onDeleteClick() }
+                                    onDeleteClick = { onDeleteClick(comment.id.toString()) }
                                 )
 
 
@@ -199,7 +209,7 @@ fun CommentsDialog(
                                             ReplyItem(
                                                 reply = reply,
                                                 modifier = Modifier.padding(start = 48.dp),
-                                                onReply = { replyingTo = reply.userName })
+                                                onReply = { replyingTo = reply.user?.name })
 
                                         }
                                     }
@@ -292,15 +302,20 @@ fun CommentsDialog(
                                         // Update existing comment
                                         // viewModel.updateComment(editingComment!!.id, newComment)
                                         editingComment = null
+                                        onSandClick(newComment,"edit", commentId)
                                     } else if (replyingTo != null) {
                                         // Add reply
                                         // viewModel.addReply(replyingTo!!, newComment)
                                         replyingTo = null
+                                        onSandClick(newComment,"reply",commentId)
                                     } else {
                                         // Add new comment
                                         // viewModel.addComment(newComment)
+                                        onSandClick(newComment,"new",commentId)
                                     }
+
                                     newComment = ""
+                                    commentId = ""
                                 },
                                 onEmojiClick = {  }
                             )
@@ -378,10 +393,12 @@ fun CommentInputBox(
 }
 
 @Composable
-fun CommentItem(comment: Comment, onReply: () -> Unit, onEditClick : () -> Unit, onDeleteClick : () -> Unit,user: Boolean = false) {
+fun CommentItem(comment: CommentItem, onReply: () -> Unit, onEditClick : () -> Unit,
+                onDeleteClick : () -> Unit,user: Boolean = false) {
     var showOptions by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
+    val sessionManager = SessionManager.getInstance(context)
     Column {
         Row(
             modifier = Modifier
@@ -409,13 +426,13 @@ fun CommentItem(comment: Comment, onReply: () -> Unit, onEditClick : () -> Unit,
 
                         Row {
                             Text(
-                                text = comment.userName,
+                                text = comment.user.name,
                                 fontSize = 14.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 color = Color.Black
                             )
                             Text(
-                                text = comment.timeAgo,
+                                text = comment.createdAt,
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(start = 10.dp),
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -423,9 +440,9 @@ fun CommentItem(comment: Comment, onReply: () -> Unit, onEditClick : () -> Unit,
                             )
                         }
 
-                        ParentLabel(comment.userRole)
+                        ParentLabel("")//Please get From backEnd
                     }
-                    if (comment.user){
+                    if (comment.user.id==sessionManager.getUserId().toInt()){
                         Row(verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.End) {
 
@@ -463,7 +480,7 @@ fun CommentItem(comment: Comment, onReply: () -> Unit, onEditClick : () -> Unit,
 
         Row {
             Text(
-                text = comment.text,
+                text = comment.content,
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 color = Color.Black,
@@ -475,7 +492,7 @@ fun CommentItem(comment: Comment, onReply: () -> Unit, onEditClick : () -> Unit,
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
-                if (comment.isLiked) {
+                if (comment.isLikedByCurrentUser) {
                     IconButton(
                         onClick = { /* Handle like */ },
                         modifier = Modifier.size(15.dp)
@@ -532,7 +549,7 @@ fun CommentItem(comment: Comment, onReply: () -> Unit, onEditClick : () -> Unit,
 
 @Composable
 fun ReplyItem(
-    reply: Comment,
+    reply: CommentReply,
     modifier: Modifier = Modifier, onReply: () -> Unit
 ) {
     var showOptions by remember { mutableStateOf(false) }
@@ -569,14 +586,14 @@ fun ReplyItem(
                     Column {
                         Row {
                             Text(
-                                text = reply.userName,
+                                text = reply.user?.name?:"",
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 color = Color.Black,
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                text = reply.timeAgo,
+                                text = reply.createdAt?:"",
                                 fontSize = 12.sp,
                                 modifier = Modifier.padding(start = 10.dp),
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -585,7 +602,7 @@ fun ReplyItem(
                             )
                         }
 
-                        ParentLabel(reply.userRole)
+                        ParentLabel("")//Get From BackdEnd
                     }
                     Box {
                         IconButton(
@@ -634,7 +651,7 @@ fun ReplyItem(
         }
         Row {
             Text(
-                text = reply.text,
+                text = reply.content?:"",
                 fontSize = 12.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 color = Color.Black,
@@ -648,7 +665,7 @@ fun ReplyItem(
                 modifier = Modifier.padding(start = 15.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                if (reply.isLiked) {
+                if (reply.isLikedByCurrentUser?:false) {
                     IconButton(
                         onClick = { /* Handle like */ },
                         modifier = Modifier.size(15.dp)
@@ -671,7 +688,7 @@ fun ReplyItem(
                     }
                 }
 
-                if (reply.likeCount > 0) {
+                if (reply.likeCount?:0 > 0) {
                     Text(
                         text = reply.likeCount.toString(),
                         fontSize = 12.sp,
@@ -805,9 +822,9 @@ fun CommentsDialogPreview() {
         )
     )
 
-    CommentsDialog(
-        comments = sampleComments,
-        onDismiss = {  },
-        onDeleteClick = {  }
-    )
+//    CommentsDialog(
+//        comments = sampleComments,
+//        onDismiss = {  },
+//        onDeleteClick = {  }
+//    )
 }

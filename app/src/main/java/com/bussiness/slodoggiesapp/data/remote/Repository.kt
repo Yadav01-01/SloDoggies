@@ -13,6 +13,9 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsRes
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
+import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
+import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
+import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
@@ -268,5 +271,55 @@ interface Repository {
         page: String
     ) : Flow<Resource<HomeFeedResponse>>
 
+
+    suspend fun savePost(
+        userId: String,
+        postId: String
+    ) : Flow<Resource<CommonResponse>>
+
+    suspend fun reportPost(
+        userId: String,
+        postId: String,
+        reportReason: String,
+        message: String
+    ) : Flow<Resource<CommonResponse>>
+
+    suspend fun postLikeUnlike(
+        userId: String,
+        postId: String
+    ) : Flow<Resource<CommonResponse>>
+
+    suspend fun getComments(
+        userId: String,
+        postId: String,
+        page: String,
+        limit: String
+    ) : Flow<Resource<CommentsResponse>>
+
+    suspend fun addNewComment(
+        userId: String,
+        postId: String,
+        commentText: String
+    ) : Flow<Resource<AddCommentResponse>>
+
+
+    suspend fun replyComment(
+        userId: String,
+        postId: String,
+        commentId: String,
+        commentText: String
+    ) : Flow<Resource<AddCommentReplyResponse>>
+
+    suspend fun deleteComment(
+        userId: String,
+        commentId: String
+    ) : Flow<Resource<CommonResponse>>
+
+
+    suspend fun editComment(
+        userId: String,
+        commentId: String,
+        commenText:String
+    ) : Flow<Resource<CommonResponse>>
 
 }

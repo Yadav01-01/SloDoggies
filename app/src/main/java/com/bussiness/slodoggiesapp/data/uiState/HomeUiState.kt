@@ -19,6 +19,7 @@ data class HomeUiState(
     val deleteDialog : Boolean = false,
     val message : String = "",
     val selectedReason : String = "",
+    val postId : String = "",
     val errorMessage : String = "",
     val isLoading: Boolean = false,          // For first page loader
     val isLoadingMore: Boolean = false,

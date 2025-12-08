@@ -1,10 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
-import android.content.Context
 import android.graphics.Bitmap
-import android.media.MediaMetadataRetriever
-import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -18,6 +15,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,6 +68,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -76,11 +76,8 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.ImageLoader
 import coil.compose.AsyncImage
-import coil.request.CachePolicy
 import coil.request.ImageRequest
-import coil.size.Size
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostMediaResponse
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
@@ -89,9 +86,17 @@ import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.SessionManager
+import kotlinx.coroutines.delay
 
 @Composable
-fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportClick: () -> Unit, onShareClick: () -> Unit, normalPost : Boolean, onEditClick: () -> Unit, onDeleteClick: () -> Unit, onProfileClick: () -> Unit, onSelfPostEdit: () -> Unit, onSelfPostDelete: () -> Unit) {
+fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportClick: () -> Unit,
+                   onShareClick: () -> Unit, normalPost : Boolean,
+                   onEditClick: () -> Unit, onDeleteClick: () -> Unit,
+                   onProfileClick: () -> Unit, onSelfPostEdit: () -> Unit,
+                   onSelfPostDelete: () -> Unit,
+                   onSaveClick:()-> Unit,
+                   onLikeClick:()-> Unit,
+                   onCommentClick:()-> Unit) {
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -104,7 +109,18 @@ fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportCl
             PostHeader(userId = postItem.userId,user = postItem.userName,petName = postItem.petName, personImage =postItem.media?.parentImageUrl ?: "", dogImage = postItem.media?.petImageUrl ?: "", time = postItem.time, postType = postItem.type, onReportClick = { onReportClick()},normalPost,onEditClick = { onEditClick() },onDeleteClick = { onDeleteClick() },onProfileClick = { onProfileClick() }, onSelfPostDelete = { onSelfPostDelete() }, onSelfPostEdit = { onSelfPostEdit() } )
             PostCaption(caption = postItem.caption, description = postItem.description,hashTags = postItem.hashtags.orEmpty()  )
             PostImage(mediaList = postItem.mediaList)
-            PostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares, onShareClick = {onShareClick()}, onSaveClick = { })
+            PostLikes(likes = postItem.likes, comments = postItem.comments,
+                shares = postItem.shares,
+                onShareClick = {onShareClick()}, onSaveClick = {
+                onSaveClick()
+            }, onLikeClick = {
+                onLikeClick()
+                },
+                onCommentClick = {
+                    onCommentClick()
+                },
+                isLike = postItem.isLiked,
+                isSave = postItem.isSaved)
         }
     }
 }
@@ -443,9 +459,12 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
 
 
 @Composable
- fun PostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit,onSaveClick: () -> Unit) {
-    var isLiked by remember { mutableStateOf(false) }
-    var isBookmarked by remember { mutableStateOf(false) }
+ fun PostLikes(likes: Int, comments: Int,
+               isLike:Boolean,isSave:Boolean, shares: Int,
+               onShareClick: () -> Unit,onSaveClick: () -> Unit,onLikeClick: () -> Unit,
+               onCommentClick: () -> Unit) {
+    var isLiked by remember { mutableStateOf(isLike) }
+    var isBookmarked by remember { mutableStateOf(isSave) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
     var deleteComment by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -473,13 +492,14 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
+                        onLikeClick()
                         isLiked = !isLiked // Toggle the liked state
                     },
                 tint = Color.Unspecified
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = (if (isLiked) likes + 1 else likes).toString(),
+                text = likes.toString()/*(if (isLiked) likes + 1 else likes).toString()*/,
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontWeight = FontWeight.Normal,
@@ -498,7 +518,8 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
-                        showCommentsDialog = true
+                        onCommentClick()
+                        //showCommentsDialog = true
                     }
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -521,6 +542,7 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     ) {
+
                         onShareClick()
                     }
             )
@@ -552,9 +574,12 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
                     ) {  isBookmarked = !isBookmarked
-                        if (isBookmarked){
-                            onSaveClick()
-                        } }
+
+                        onSaveClick()
+//                        if (isBookmarked){
+//                            onSaveClick()
+//                        }
+                    }
             )
         }
 
@@ -595,11 +620,11 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
                 isLiked = false
             )
         )
-        CommentsDialog(
-            comments = sampleComments,
-            onDismiss = { showCommentsDialog = false },
-            onDeleteClick = { deleteComment = true }
-        )
+//        CommentsDialog(
+//            comments = sampleComments,
+//            onDismiss = { showCommentsDialog = false },
+//            onDeleteClick = { deleteComment = true }
+//        )
     }
     if (deleteComment){
         DeleteChatDialog(
@@ -613,7 +638,7 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
 }
 
 
-@OptIn(UnstableApi::class)
+/*@OptIn(UnstableApi::class)
 @Composable
 fun PostImage(
     mediaList: List<PostMediaResponse>,
@@ -680,56 +705,91 @@ fun PostImage(
                     contentScale = ContentScale.Crop
                 )
 
-            } else {
+            }
+            else
+            {
 
-                // ---------- Create player only WHEN NEEDED ----------
+
+                // VIDEO PLAYER
                 val player = remember(url) {
                     players[page] ?: ExoPlayer.Builder(context).build().apply {
                         setMediaItem(MediaItem.fromUri(url))
                         prepare()
                         playWhenReady = false
-                        repeatMode = Player.REPEAT_MODE_ONE
+                        repeatMode = Player.REPEAT_MODE_OFF // important: don't loop automatically
                     }.also { players[page] = it }
                 }
 
-                // Thumbnail
-                val thumbnail = remember(media.mediaUrl) {
-                    getVideoThumbnail(context, url)
-                }
+                val thumbnailUrl = media.thumbnailUrl//remember(url) { getVideoThumbnail(url) }
 
-                // ---------- Background Thumbnail ----------
-                AsyncImage(
-                    model = thumbnail,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+            // STATES
+                var showThumb by remember { mutableStateOf(true) } // show thumbnail / play button
+                var progress by remember { mutableFloatStateOf(0f) }
 
-                // ---------- Video Layer ----------
-                AndroidView(
-                    modifier = Modifier.fillMaxSize(),
-                    factory = {
-                        PlayerView(it).apply {
-                            this.player = player
-                            useController = false
+            // LISTENER for video end
+                DisposableEffect(player) {
+                    val listener = object : Player.Listener {
+                        override fun onPlaybackStateChanged(state: Int) {
+                            if (state == Player.STATE_ENDED) {
+                                showThumb = true      // show play button again
+                                player.seekTo(0)      // reset video to start
+                            }
                         }
                     }
-                )
+                    player.addListener(listener)
+                    onDispose { player.removeListener(listener) }
+                }
 
-                // ---------- Play Button ----------
-                if (!player.isPlaying) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.25f)),
-                        contentAlignment = Alignment.Center
-                    ) {
+            // ---- Update progress continuously ----
+                LaunchedEffect(player) {
+                    while (true) {
+                        if (player.isPlaying) {
+                            val current = player.currentPosition
+                            val total = player.duration.takeIf { it > 0 } ?: 1L
+                            progress = (current.toFloat() / total.toFloat()).coerceIn(0f, 1f)
+                        }
+                        delay(200)
+                    }
+                }
+                Box(modifier = Modifier.fillMaxSize()) {
+
+                    // ---- VIDEO VIEW ----
+                    AndroidView(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = {
+                            PlayerView(it).apply {
+                                this.player = player
+                                useController = false
+                                useArtwork = false
+                            }
+                        }
+                    )
+
+                    // ---- THUMBNAIL ----
+                    if (showThumb) {
+                        AsyncImage(
+                            model = thumbnailUrl,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.25f))
+                        )
+                    }
+
+                    // ---- PLAY BUTTON ----
+                    if (showThumb) {
                         IconButton(
                             onClick = {
+                                showThumb = false
                                 player.play()
-                                onVideoPlay?.invoke()
                             },
                             modifier = Modifier
+                                .align(Alignment.Center)
                                 .size(58.dp)
                                 .background(Color.White, CircleShape)
                         ) {
@@ -741,63 +801,289 @@ fun PostImage(
                             )
                         }
                     }
+
+                    // ---- VIDEO PROGRESS BAR ----
+                    if (!showThumb) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .align(Alignment.BottomCenter)
+                                .background(Color.White.copy(alpha = 0.3f))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(progress)
+                                    .background(Color(0xFF00E1FF))  // cyan progress
+                            )
+                        }
+                    }
+                }
+
+
+            }
+
+            // ---------- PAGE INDICATOR ----------
+            // ---------- PAGE INDICATOR (Always On Top) ----------
+            if (mediaList.size > 1) {
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 40.dp)   // 👈 upar laa diya
+                        .zIndex(999f)              // 👈 sabke UPAR
+                        .background(
+                            Color.Black.copy(alpha = 0.25f),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    repeat(mediaList.size) { index ->
+                        Box(
+                            modifier = Modifier
+                                .padding(horizontal = 4.dp)
+                                .height(6.dp)
+                                .width(if (index == currentPage) 20.dp else 6.dp)
+                                .clip(RoundedCornerShape(50))
+                                .background(
+                                    if (index == currentPage) Color.White
+                                    else Color.White.copy(alpha = 0.4f)
+                                )
+                        )
+                    }
+                }
+            }
+
+        }
+
+        // Pause videos when changing page
+        LaunchedEffect(pagerState.currentPage) {
+            currentPage = pagerState.currentPage
+            players.forEach { (index, player) ->
+                if (index != currentPage) player.pause()
+            }
+        }
+
+        // Release on dispose
+        DisposableEffect(Unit) {
+            onDispose {
+                players.values.forEach { it.release() }
+            }
+        }
+    }
+
+
+
+
+
+
+    fun getVideoThumbnail(context: Context, url: String): Bitmap? {
+        return try {
+            val retriever = MediaMetadataRetriever()
+            retriever.setDataSource(url)
+            val bitmap = retriever.getFrameAtTime(0)
+            retriever.release()
+            bitmap
+        } catch (e: Exception) {
+            null
+        }
+    }
+}*/
+
+@OptIn(UnstableApi::class)
+@Composable
+fun PostImage(
+    mediaList: List<PostMediaResponse>,
+    modifier: Modifier = Modifier,
+    onVideoPlay: (() -> Unit)? = null,
+) {
+    val context = LocalContext.current
+    val pagerState = rememberPagerState { mediaList.size }
+    var currentPage by rememberSaveable { mutableIntStateOf(0) }
+
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .crossfade(true)
+            .bitmapConfig(Bitmap.Config.RGB_565)
+            .build()
+    }
+
+    fun isVideo(url: String) = url.endsWith(".mp4") || url.endsWith(".mov") || url.endsWith(".webm")
+
+    val players = remember { mutableMapOf<Int, ExoPlayer>() }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(350.dp)
+    ) {
+
+        /** ---------------- PAGE VIEWER ---------------- **/
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+
+            val media = mediaList[page]
+            val url = media.mediaUrl.orEmpty()
+
+            if (!isVideo(url)) {
+
+                AsyncImage(
+                    model = ImageRequest.Builder(context).data(url).crossfade(true).build(),
+                    contentDescription = null,
+                    imageLoader = imageLoader,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+            } else {
+
+                val player = remember(url) {
+                    players[page] ?: ExoPlayer.Builder(context).build().apply {
+                        setMediaItem(MediaItem.fromUri(url))
+                        prepare()
+                        playWhenReady = false
+                        repeatMode = Player.REPEAT_MODE_OFF
+                    }.also { players[page] = it }
+                }
+
+                val thumbnailUrl = media.thumbnailUrl
+
+                var showThumb by remember { mutableStateOf(true) }
+                var progress by remember { mutableFloatStateOf(0f) }
+
+                DisposableEffect(player) {
+                    val listener = object : Player.Listener {
+                        override fun onPlaybackStateChanged(state: Int) {
+                            if (state == Player.STATE_ENDED) {
+                                showThumb = true
+                                player.seekTo(0)
+                            }
+                        }
+                    }
+                    player.addListener(listener)
+                    onDispose { player.removeListener(listener) }
+                }
+
+                LaunchedEffect(player) {
+                    while (true) {
+                        if (player.isPlaying) {
+                            val current = player.currentPosition
+                            val total = player.duration.takeIf { it > 0 } ?: 1L
+                            progress = (current.toFloat() / total.toFloat())
+                        }
+                        delay(200)
+                    }
+                }
+
+                /** ---- VIDEO UI LAYER ---- **/
+                Box(modifier = Modifier.fillMaxSize()) {
+
+                    AndroidView(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = {
+                            PlayerView(it).apply {
+                                this.player = player
+                                useController = false
+                            }
+                        }
+                    )
+
+                    if (showThumb) {
+                        AsyncImage(
+                            model = thumbnailUrl,
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                        Box(
+                            Modifier.fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.25f))
+                        )
+                    }
+
+                    if (showThumb) {
+                        IconButton(
+                            onClick = {
+                                showThumb = false
+                                player.play()
+                            },
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(58.dp)
+                                .background(Color.White, CircleShape)
+                        ) {
+                            Icon(
+                                Icons.Default.PlayArrow,
+                                contentDescription = null,
+                                tint = Color.Black,
+                                modifier = Modifier.size(38.dp)
+                            )
+                        }
+                    }
+
+                    if (!showThumb) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(4.dp)
+                                .align(Alignment.BottomCenter)
+                                .background(Color.White.copy(alpha = 0.3f))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(progress)
+                                    .background(Color(0xFF258694))
+                            )
+                        }
+                    }
                 }
             }
         }
 
-        // ---------- Page Indicator ----------
+        /** ---------- FIXED PAGE INDICATOR (Always visible) ---------- **/
+        // ---------- PAGE INDICATOR (CENTER MIDDLE) ----------
         if (mediaList.size > 1) {
             Row(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.BottomCenter)   // 👈 center of image
                     .padding(bottom = 10.dp)
+                    .zIndex(999f),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 repeat(mediaList.size) { index ->
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = 3.dp)
-                            .height(4.dp)
-                            .width(if (index == currentPage) 18.dp else 6.dp)
+                            .padding(horizontal = 4.dp)
+                            .height(5.dp)
+                            .width(if (index == currentPage) 15.dp else 5.dp)
                             .clip(RoundedCornerShape(50))
                             .background(
-                                if (index == currentPage) Color(0xFF258694)
-                                else Color.White.copy(alpha = 0.45f)
+                                if (index == currentPage) Color(0xFF258694)  // blue like sample
+                                else Color.White.copy(alpha = 0.9f)         // white dots
                             )
                     )
                 }
             }
         }
-    }
 
-    // Pause videos when changing page
-    LaunchedEffect(pagerState.currentPage) {
-        currentPage = pagerState.currentPage
-        players.forEach { (index, player) ->
-            if (index != currentPage) player.pause()
+
+        /** Pause other videos **/
+        LaunchedEffect(pagerState.currentPage) {
+            currentPage = pagerState.currentPage
+            players.forEach { (index, player) ->
+                if (index != currentPage) player.pause()
+            }
         }
-    }
 
-    // Release on dispose
-    DisposableEffect(Unit) {
-        onDispose {
-            players.values.forEach { it.release() }
+        /** Cleanup **/
+        DisposableEffect(Unit) {
+            onDispose { players.values.forEach { it.release() } }
         }
     }
 }
 
-
-
-
-
-
-fun getVideoThumbnail(context: Context, url: String): Bitmap? {
-    return try {
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(url)
-        val bitmap = retriever.getFrameAtTime(0)
-        retriever.release()
-        bitmap
-    } catch (e: Exception) {
-        null
-    }
-}

@@ -1,11 +1,18 @@
 package com.bussiness.slodoggiesapp.viewModel.common
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedMapper
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
+import com.bussiness.slodoggiesapp.data.uiState.CommentItem
+import com.bussiness.slodoggiesapp.data.uiState.CommentReply
+import com.bussiness.slodoggiesapp.data.uiState.CommentUser
+import com.bussiness.slodoggiesapp.data.uiState.CommentsUiState
 import com.bussiness.slodoggiesapp.data.uiState.HomeUiState
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.network.Resource
@@ -27,9 +34,18 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState
 
+    private val _uiStateComment = MutableStateFlow(CommentsUiState())
+    val uiStateComment: StateFlow<CommentsUiState> = _uiStateComment
+
     private var currentPage = 1
     private var isLastPage = false
     private var isRequestRunning = false
+
+    // 🔥 Added for Save Fix
+    private val localSavedState = mutableMapOf<String, Boolean>()
+
+    // 🔥 Added for Save Fix
+    private val localLikeState = mutableMapOf<String, Boolean>()
 
     init {
         loadFirstPage()
@@ -53,7 +69,6 @@ class HomeViewModel @Inject constructor(
         if (isRequestRunning) return
         isRequestRunning = true
 
-        // UI loading state
         _uiState.update { state ->
             state.copy(
                 isLoading = isFirstPage,
@@ -77,17 +92,19 @@ class HomeViewModel @Inject constructor(
                         val items = response?.items ?: emptyList()
                         val uiPosts = HomeFeedMapper.map(items)
 
+                        // 🔥 Merge Fix
+                        val mergedPosts = mergeApiWithLocal(uiPosts)
+
                         _uiState.update { state ->
                             state.copy(
-                                posts = if (isFirstPage) uiPosts
-                                else state.posts + uiPosts,
+                                posts = if (isFirstPage) mergedPosts
+                                else state.posts + mergedPosts,
                                 isLoading = false,
                                 isLoadingMore = false,
                                 errorMessage = ""
                             )
                         }
 
-                        // Safe total page check
                         val totalPages = response?.totalPage ?: 1
                         isLastPage = currentPage >= totalPages
                         if (!isLastPage) currentPage++
@@ -112,7 +129,595 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-private fun initWelcomeDialog() {
+    // 🔥 Merge function: API + Local
+    private fun mergeApiWithLocal(apiPosts: List<PostItem>): List<PostItem> {
+        return apiPosts.map { post ->
+
+            val id = when (post) {
+                is PostItem.NormalPost -> post.postId
+                is PostItem.CommunityPost -> post.postId
+                is PostItem.SponsoredPost -> post.postId
+            } ?: return@map post   // ❗ Null id → return same post safely
+
+            val localState = localSavedState[id]
+
+            when (post) {
+                is PostItem.NormalPost ->
+                    if (localState != null) post.copy(isSaved = localState) else post
+
+                is PostItem.CommunityPost ->
+                    if (localState != null) post.copy(isSaved = localState) else post
+
+                is PostItem.SponsoredPost -> post
+            }
+        }
+    }
+
+
+    fun savePost(postId:String, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            repository.savePost(
+                userId = sessionManager.getUserId(),
+                postId = postId,
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                toggleSave(postId)
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+
+    }
+
+
+    fun postLikeUnlike(postId:String, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            repository.postLikeUnlike(
+                userId = sessionManager.getUserId(),
+                postId = postId,
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                toggleLike(postId)
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+
+    }
+
+
+
+    // 🔥 Updated toggleSave to update local memory also
+    fun toggleSave(postId: String) {
+
+        val currentLocal = localSavedState[postId] ?: false
+        localSavedState[postId] = !currentLocal  // important
+
+        _uiState.update { state ->
+            val updated = state.posts.map { post ->
+
+                when (post) {
+                    is PostItem.NormalPost ->
+                        if (post.postId == postId) post.copy(isSaved = !post.isSaved) else post
+
+                    is PostItem.CommunityPost ->
+                        if (post.postId == postId) post.copy(isSaved = !post.isSaved) else post
+
+                    is PostItem.SponsoredPost -> post
+                }
+            }
+
+            state.copy(posts = updated)
+        }
+    }
+
+    fun toggleLike(postId: String) {
+        // 🔥 Local memory (same pattern as save)
+        val currentLocalLike = localLikeState[postId] ?: false
+        localLikeState[postId] = !currentLocalLike
+
+        _uiState.update { state ->
+            val updated = state.posts.map { post ->
+
+                when (post) {
+                    is PostItem.NormalPost ->
+                        if (post.postId == postId) {
+                            post.copy(
+                                isLiked = !post.isLiked,
+                                likes = if (post.isLiked) post.likes - 1 else post.likes + 1
+                            )
+                        } else post
+
+                    is PostItem.CommunityPost ->
+                        if (post.postId == postId) {
+                            post.copy(
+                                isLiked = !post.isLiked,
+                                likes = if (post.isLiked) post.likes - 1 else post.likes + 1
+                            )
+                        } else post
+
+                    is PostItem.SponsoredPost -> if (post.postId == postId) {
+                        post.copy(
+                            isLiked = !post.isLiked,
+                            likes = if (post.isLiked) post.likes - 1 else post.likes + 1
+                        )
+                    } else post
+                }
+            }
+
+            state.copy(posts = updated)
+        }
+    }
+
+
+
+    fun increaseCommentCount(postId: String) {
+
+        _uiState.update { state ->
+
+            val updatedPosts = state.posts.map { post ->
+
+                when (post) {
+
+                    is PostItem.NormalPost ->
+                        if (post.postId == postId) {
+                            post.copy(comments = post.comments + 1)
+                        } else post
+
+                    is PostItem.CommunityPost ->
+                        if (post.postId == postId) {
+                            post.copy(comments = post.comments + 1)
+                        } else post
+
+                    is PostItem.SponsoredPost ->
+                        if (post.postId == postId) {
+                            post.copy(comments = post.comments + 1)
+                        } else post
+                }
+            }
+
+            state.copy(posts = updatedPosts)
+        }
+    }
+
+
+    private fun reportPost(
+        postId:String,
+        reportReason:String,
+        message:String,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.reportPost(
+                userId = sessionManager.getUserId(),
+                postId = postId,
+                reportReason = reportReason,
+                message = message
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+
+
+     fun addNewComment(
+        postId:String,
+        commentText:String,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.addNewComment(
+                userId = sessionManager.getUserId(),
+                postId = postId,
+                commentText = commentText
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                increaseCommentCount(postId)
+                                addCommentToList(commentText,response.data?.id?:0)
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+    fun replyComment(
+        postId:String,
+        commentId:String,
+        commentText:String,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.replyComment(
+                userId = sessionManager.getUserId(),
+                postId = postId,
+                commentId = commentId,
+                commentText = commentText
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                addReplyToList(parentCommentId = response.data?.parentCommentId?.toInt()?:commentId.toInt(),
+                                    replyText = response.data?.content?:commentText, replyId = response.data?.id?:0)
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+
+    // Add comment to top of UI list instantly
+    private fun addCommentToList(commentText: String,commentId:Int) {
+        val newComment = CommentItem(
+            id = commentId, // temporary id
+            content = commentText,
+            createdAt = "Just now",
+            user = CommentUser(
+                id = sessionManager.getUserId().toInt(),
+                name = sessionManager.getUserName(),
+                image = sessionManager.getUserImage()
+            ),
+            likeCount = 0,
+            isLikedByCurrentUser = false,
+            replies = emptyList()
+        )
+
+        _uiStateComment.update { state ->
+            state.copy(
+                comments = listOf(newComment) + state.comments
+            )
+        }
+    }
+
+
+    // Add reply to a specific comment instantly
+    private fun addReplyToList(parentCommentId: Int, replyText: String, replyId: Int) {
+        val newReply = CommentReply(
+            id = replyId, // temporary id
+            content = replyText,
+            createdAt = "Just now",
+            user = CommentUser(
+                id = sessionManager.getUserId().toInt(),
+                name = sessionManager.getUserName(),
+                image = sessionManager.getUserImage()
+            ),
+            likeCount = 0,
+            isLikedByCurrentUser = false
+        )
+
+        _uiStateComment.update { state ->
+            val updatedComments = state.comments.map { comment ->
+                if (comment.id == parentCommentId) {
+                    comment.copy(
+                        replies = comment.replies + newReply
+                    )
+                } else comment
+            }
+
+            state.copy(comments = updatedComments)
+        }
+    }
+
+
+    fun clearComments() {
+        _uiStateComment.value = uiStateComment.value.copy(
+            comments = emptyList()
+        )
+    }
+
+    fun deleteComment(commentId: Int) {
+        _uiStateComment.update { state ->
+            val updatedComments = state.comments.filterNot { it.id == commentId }
+            state.copy(comments = updatedComments)
+        }
+    }
+
+    fun decreaseCommentCount(postId: String) {
+        _uiState.update { state ->
+            val updatedPosts = state.posts.map { post ->
+
+                when (post) {
+                    is PostItem.NormalPost -> if (post.postId == postId)
+                        post.copy(comments = maxOf(0, post.comments - 1))
+                    else post
+
+                    is PostItem.CommunityPost -> if (post.postId == postId)
+                        post.copy(comments = maxOf(0, post.comments - 1))
+                    else post
+
+                    is PostItem.SponsoredPost -> if (post.postId == postId)
+                        post.copy(comments = maxOf(0, post.comments - 1))
+                    else post
+                }
+            }
+
+            state.copy(posts = updatedPosts)
+        }
+    }
+
+
+
+
+    fun deleteComment(
+        commentId:String,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.deleteComment(
+                userId = sessionManager.getUserId(),
+                commentId = commentId,
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                deleteComment(commentId = commentId.toInt())
+                                decreaseCommentCount(postId = uiState.value.postId)
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+
+    private fun updateEditedCommentInUI(commentId: String, newText: String) {
+        _uiStateComment.update { state ->
+            state.copy(
+                comments = state.comments.map { comment ->
+                    if (comment.id == commentId.toInt()) {
+                        comment.copy(content = newText)
+                    } else comment
+                }
+            )
+        }
+    }
+
+
+    fun editComment(
+        commentId:String,
+        commenText:String,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.editComment(
+                userId = sessionManager.getUserId(),
+                commentId = commentId,
+                commenText = commenText
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                // ⬇️ SINGLE FUNCTION CALL FOR UI UPDATE
+                                updateEditedCommentInUI(commentId, commenText)
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+    fun getComments(
+        postId: String,
+        page: Int,
+        limit: Int,
+        onSuccess: () -> Unit = {},
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+
+            repository.getComments(
+                userId = sessionManager.getUserId(),
+                postId = postId,
+                page = page.toString(),
+                limit = limit.toString()
+            ).collectLatest { result ->
+
+                when (result) {
+
+                    is Resource.Loading -> {
+                        _uiStateComment.update { state ->
+                            state.copy(
+                                isLoading = page == 1,
+                                isLoadingMore = page > 1
+                            )
+                        }
+                    }
+
+                    is Resource.Success -> {
+                        val response = result.data
+
+                        if (!response.success) {
+                            _uiStateComment.update { it.copy(isLoading = false, isLoadingMore = false) }
+                            onError(response.message ?: "Something went wrong")
+                            return@collectLatest
+                        }
+
+                        val apiData = response.data
+
+                        val newComments = apiData?.data?.map { api ->
+                            CommentItem(
+                                id = api.id ?: 0,
+                                content = api.content ?: "",
+                                createdAt = api.createdAt ?: "",
+                                user = CommentUser(
+                                    id = api.user?.id ?: 0,
+                                    name = api.user?.name ?: "",
+                                    image = api.user?.image ?: ""
+                                ),
+                                likeCount = api.likeCount ?: 0,
+                                isLikedByCurrentUser = api.isLikedByCurrentUser ?: false,
+                                replies = api.replies
+                                    ?.map { reply ->
+                                        CommentReply(
+                                            id = reply?.id,
+                                            content = reply?.content,
+                                            createdAt = reply?.createdAt,
+                                            user = reply?.user?.let { u ->
+                                                CommentUser(
+                                                    id = u.id ?: 0,
+                                                    name = u.name ?: "",
+                                                    image = u.image ?: ""
+                                                )
+                                            },
+                                            likeCount = reply?.likeCount,
+                                            isLikedByCurrentUser = reply?.isLikedByCurrentUser
+                                        )
+                                    }
+                                    ?: emptyList()
+                            )
+                        }
+
+                        val isLastPage = apiData?.totalPage == page
+
+                        _uiStateComment.update { state ->
+                            state.copy(
+                                comments = if (page == 1) {
+                                    newComments.orEmpty()        // page 1 → reset list
+                                } else {
+                                    state.comments + newComments.orEmpty()   // append safely
+                                },
+                                currentPage = page,
+                                isLastPage = isLastPage,
+                                isLoading = false,
+                                isLoadingMore = false
+                            )
+                        }
+
+                        onSuccess()
+                    }
+
+                    is Resource.Error -> {
+                        _uiStateComment.update { it.copy(isLoading = false, isLoadingMore = false) }
+                        onError(result.message)
+                    }
+
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+
+
+    private fun initWelcomeDialog() {
         val userType = sessionManager.getUserType()
 
         val title = if (userType == UserType.Owner) {
@@ -155,12 +760,10 @@ private fun initWelcomeDialog() {
         }
     }
 
-    // Reason selected
     fun onReasonSelected(reason: String) {
         _uiState.value = _uiState.value.copy(selectedReason = reason)
     }
 
-    // Message text
     fun onMessageChange(text: String) {
         _uiState.value = _uiState.value.copy(message = text)
     }
@@ -191,8 +794,23 @@ private fun initWelcomeDialog() {
         _uiState.update { it.copy(showPetInfoDialog = true) }
     }
 
-    fun showReportDialog() {
-        _uiState.update { it.copy(showReportDialog = true) }
+    fun showReportDialog(postId: String) {
+        _uiState.update {
+            it.copy(showReportDialog = true,
+                postId = postId)
+        }
+    }
+
+    fun updatePostId(postId: String) {
+        _uiState.update {
+            it.copy(postId = postId)
+        }
+    }
+
+    fun updateCommentId(postId: String) {
+        _uiStateComment.update {
+            it.copy(commentsId = postId.toInt())
+        }
     }
 
     fun showShareContent() {
@@ -235,13 +853,18 @@ private fun initWelcomeDialog() {
         }
     }
 
-    fun showReportToast() {
-        _uiState.update {
-            it.copy(
-                showReportDialog = false,
-                showReportToast = true
-            )
-        }
+    fun showReportToast(context:Context) {
+        reportPost(uiState.value.postId, uiState.value.selectedReason,
+            uiState.value.message,
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        showReportDialog = false,
+                        showReportToast = true
+                    )
+                }
+            },  onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() }
+        )
     }
 
     fun dismissReportToast() {
@@ -262,6 +885,4 @@ private fun initWelcomeDialog() {
     fun resetPetInfoDialogCount() {
         _uiState.update { it.copy(petInfoDialogCount = 0) }
     }
-
-
 }

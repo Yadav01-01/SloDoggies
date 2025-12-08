@@ -16,6 +16,9 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsRes
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
+import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
+import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
+import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
@@ -514,45 +517,6 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.homeFeed(userId,page) })
     }.flowOn(Dispatchers.IO)
 
-
-
-
-    /**
-     * A reusable helper function to handle all API calls safely.
-     */
-    private suspend fun <T : BaseResponse> safeApiCall(apiCall: suspend () -> Response<T>): Resource<T> {
-        return try {
-            LoaderManager.show()
-            val response = apiCall()
-            LoaderManager.hide()
-            when {
-                !response.isSuccessful -> {
-                   // Resource.Error("Server error: ${response.code()} - ${response.message()}")
-                    val errorJson = response.errorBody()?.string()
-                    val gson = Gson()
-                    val errorResponse = try {
-                        gson.fromJson(errorJson, ErrorResponse::class.java)
-                    } catch (e: Exception) {
-                        null
-                    }
-                    Resource.Error(errorResponse?.message ?: "Server Error")
-                }
-                response.body() == null -> {
-                    Resource.Error("Empty response body")
-                }
-                response.body()?.success == false -> {
-                    Resource.Error(response.body()?.message ?: "Operation failed")
-                }
-                else -> {
-                    Resource.Success(response.body()!!)
-                }
-            }
-        } catch (e: Exception) {
-            LoaderManager.hide()
-            Log.d("@Error","*****"+e.message.toString())
-            Resource.Error(e.message.toString())
-        }
-    }
     override suspend fun createAd(
         userId: String,
         adTitle: String,
@@ -592,6 +556,115 @@ class RepositoryImpl @Inject constructor(
             budget = budget, mobile_visual = mobile_visual,image) })
 
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun savePost(userId: String, postId: String): Flow<Resource<CommonResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.savePost(userId,postId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun reportPost(
+        userId: String,
+        postId: String,
+        reportReason: String,
+        message: String
+    ): Flow<Resource<CommonResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.reportPost(userId,postId,reportReason,message) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun postLikeUnlike(
+        userId: String,
+        postId: String
+    ): Flow<Resource<CommonResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.postLikeUnlike(userId,postId) })
+    }.flowOn(Dispatchers.IO)
+
+
+    override suspend fun getComments(
+        userId: String,
+        postId: String,
+        page: String,
+        limit: String
+    ): Flow<Resource<CommentsResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getComments(userId,postId,page,limit) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun addNewComment(
+        userId: String,
+        postId: String,
+        commentText: String
+    ): Flow<Resource<AddCommentResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.addNewComment(userId,postId,commentText) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun replyComment(
+        userId: String,
+        postId: String,
+        commentId: String,
+        commentText: String
+    ): Flow<Resource<AddCommentReplyResponse>>  = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.replyComment(userId,postId,commentId,commentText) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun deleteComment(
+        userId: String,
+        commentId: String
+    ): Flow<Resource<CommonResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.deleteComment(userId,commentId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun editComment(
+        userId: String,
+        commentId: String,
+        commenText: String
+    ): Flow<Resource<CommonResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.editComment(userId,commentId,commenText) })
+    }.flowOn(Dispatchers.IO)
+
+
+    /**
+     * A reusable helper function to handle all API calls safely.
+     */
+    private suspend fun <T : BaseResponse> safeApiCall(apiCall: suspend () -> Response<T>): Resource<T> {
+        return try {
+            LoaderManager.show()
+            val response = apiCall()
+            LoaderManager.hide()
+            when {
+                !response.isSuccessful -> {
+                   // Resource.Error("Server error: ${response.code()} - ${response.message()}")
+                    val errorJson = response.errorBody()?.string()
+                    val gson = Gson()
+                    val errorResponse = try {
+                        gson.fromJson(errorJson, ErrorResponse::class.java)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    Resource.Error(errorResponse?.message ?: "Server Error")
+                }
+                response.body() == null -> {
+                    Resource.Error("Empty response body")
+                }
+                response.body()?.success == false -> {
+                    Resource.Error(response.body()?.message ?: "Operation failed")
+                }
+                else -> {
+                    Resource.Success(response.body()!!)
+                }
+            }
+        } catch (e: Exception) {
+            LoaderManager.hide()
+            Log.d("@Error","*****"+e.message.toString())
+            Resource.Error(e.message.toString())
+        }
+    }
+
 
 
 

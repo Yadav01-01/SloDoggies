@@ -55,7 +55,8 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 
 @Composable
-fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onProfileClick: () -> Unit){
+fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick:  () -> Unit, onShareClick: () -> Unit, onProfileClick: () -> Unit,
+                      onLikeClick:()-> Unit){
     var isFollowed by remember { mutableStateOf(false) }
 
     Card(
@@ -273,13 +274,18 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () ->
             Spacer(modifier = Modifier.height(10.dp))
 
             // Actions
-            CommunityPostLikes(likes = postItem.likes, comments = postItem.comments, shares = postItem.shares, onShareClick = { onShareClick()})
+            CommunityPostLikes(likes = postItem.likes, comments = postItem.comments,
+                shares = postItem.shares, onShareClick = { onShareClick()},
+                onLikeClick = {
+                    onLikeClick()
+                })
         }
     }
 
 }@Composable
 
-fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit) {
+fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit,
+                       onLikeClick: () -> Unit) {
     var isLiked by remember { mutableStateOf(false) }
     var isBookmarked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
@@ -303,13 +309,14 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
                     indication = null,
                     interactionSource =  remember { MutableInteractionSource() }
                 ) {
+                    onLikeClick()
                     isLiked = !isLiked // Toggle the liked state
                 },
                 tint = Color.Unspecified
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
-                text = (if (isLiked) likes + 1 else likes).toString(),
+                text = likes.toString()/*(if (isLiked) likes + 1 else likes).toString()*/,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (isLiked) Color(0xFF258694) else Color.Black
@@ -389,11 +396,11 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
                 isLiked = false
             )
         )
-        CommentsDialog(
-            comments = sampleComments,
-            onDismiss = { showCommentsDialog = false }
-            , onDeleteClick = { deleteComment = true }
-        )
+//        CommentsDialog(
+//            comments = sampleComments,
+//            onDismiss = { showCommentsDialog = false }
+//            , onDeleteClick = { deleteComment = true }
+//        )
     }
     if (deleteComment){
         DeleteChatDialog(

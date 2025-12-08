@@ -56,7 +56,9 @@ fun SponsoredPostItem(
     onProfileClick: () -> Unit,
     onReportClick: () -> Unit,
     onShareClick: () -> Unit,
-    onSponsoredClick: () -> Unit
+    onSponsoredClick: () -> Unit,
+    onLikeClick:()-> Unit,
+    onCommentClick:()-> Unit
 ) {
 
     Card(
@@ -68,7 +70,8 @@ fun SponsoredPostItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().clickable { onSponsoredClick() }) {
-            PostHeader(user = post.userName, time = post.time, onReportClick = { onReportClick()}, onProfileClick = { onProfileClick() })
+            PostHeader(user = post.userName, time = post.time,
+                onReportClick = { onReportClick()}, onProfileClick = { onProfileClick() })
             PostCaption(caption = post.caption, description = post.description)
             Box(
                 modifier = Modifier
@@ -94,7 +97,10 @@ fun SponsoredPostItem(
                     )
                 }
             }
-            PostActions(likes = post.likes, comments = post.comments, shares = post.shares,onShareClick = onShareClick)
+            PostActions(likes = post.likes, comments = post.comments,
+                shares = post.shares,onShareClick = onShareClick,onLikeClick =onLikeClick,
+                onCommentClick = onCommentClick,
+                isLike = post.isLiked)
         }
     }
 }
@@ -208,8 +214,9 @@ private fun PostMedia(mediaList: List<PostMediaResponse>) {
 
 
 @Composable
-private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit) {
-    var isLiked by remember { mutableStateOf(false) }
+private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit,
+                        onLikeClick: () -> Unit, onCommentClick: () -> Unit, isLike:Boolean,) {
+    var isLiked by remember { mutableStateOf(isLike) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
     var deleteComment by remember { mutableStateOf(false) }
 
@@ -224,9 +231,12 @@ private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () 
             // Like
             IconTextButton(
                 iconRes = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon,
-                text = (if (isLiked) likes + 1 else likes).toString(),
+                text = likes.toString()/*(if (isLiked) likes + 1 else likes).toString()*/,
                 tint = if (isLiked) Color(0xFF00A6B8) else Color.Black
-            ) { isLiked = !isLiked }
+            ) {
+                onLikeClick()
+                isLiked = !isLiked
+            }
 
             Spacer(modifier = Modifier.width(14.dp))
 
@@ -234,7 +244,10 @@ private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () 
             IconTextButton(
                 iconRes = R.drawable.ic_chat_bubble_icon,
                 text = comments.toString(),
-                onClick = { showCommentsDialog = true }
+                onClick = {
+                    onCommentClick()
+                    //showCommentsDialog = true
+                }
             )
 
             Spacer(modifier = Modifier.width(14.dp))
@@ -283,11 +296,11 @@ private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () 
                 isLiked = false
             )
         )
-        CommentsDialog(
-            comments = sampleComments,
-            onDismiss = { showCommentsDialog = false }
-            ,onDeleteClick = { deleteComment = true }
-        )
+//        CommentsDialog(
+//            comments = sampleComments,
+//            onDismiss = { showCommentsDialog = false }
+//            ,onDeleteClick = { deleteComment = true }
+//        )
     }
     if (deleteComment){
         DeleteChatDialog(

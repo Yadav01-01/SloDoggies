@@ -39,7 +39,14 @@ object ApiEndPoint {
     const val GET_OWNER_PROFILE = "get_owner_profile"
     const val GET_PET_DETAIL = "get_pet_detail"
     const val HOME_FEED = "home_feed"
-
     const val CREATE_AD = "create_ads"
 
+    const val SAVE_POST = "save_post"
+    const val REPOST_POST = "report_post"
+    const val POST_LIKE_UNLIKE = "like_unlike"
+    const val GET_COMMENT = "get_comments"
+    const val ADD_NEW_COMMENT = "add_new_comment"
+    const val REPLY_COMMENT = "reply_comment"
+    const val DELETE_COMMENT = "delete_comment"
+    const val EDIT_COMMENT = "edit_comment"
 }

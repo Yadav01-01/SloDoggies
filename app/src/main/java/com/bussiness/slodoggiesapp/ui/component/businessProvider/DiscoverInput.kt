@@ -766,7 +766,16 @@ fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvid
         }
 
         // Bottom Row: Likes, Comments, Shares, Bookmark
-        PostLikes(likes = event.likes, comments = event.comments, shares = event.shares, onShareClick = { onShareClick() }, onSaveClick = { onSaveClick() })
+        PostLikes(likes = event.likes, comments = event.comments, shares = event.shares, onShareClick = { onShareClick() }, onSaveClick = { onSaveClick() }
+            , onLikeClick = {
+
+            },
+            onCommentClick = {
+
+            },
+            isLike = false,
+            isSave = false
+        )
     }
 }
 
