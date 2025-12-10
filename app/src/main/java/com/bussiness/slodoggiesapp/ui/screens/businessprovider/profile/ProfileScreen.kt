@@ -70,10 +70,6 @@ fun ProfileScreen(navController: NavHostController) {
 
     val uiState by viewModelDashboard.uiState.collectAsState()
     val galleryState by viewModelDashboard.uiStateGallery.collectAsState()
-
-    val viewModel: ProfileViewModel = hiltViewModel()
-    val email by viewModel.email.collectAsState()
-    val description by viewModel.description.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
 
     // First API Call
@@ -266,7 +262,7 @@ fun ProfileScreen(navController: NavHostController) {
                         GalleryItemCardProfile(
                             item = item,
                             onClickItem = {
-                                navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}")
+                                navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/Profile")
                             }
                         )
 

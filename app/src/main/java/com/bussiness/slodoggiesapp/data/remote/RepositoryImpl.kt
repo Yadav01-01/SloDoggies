@@ -651,6 +651,22 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.editPost(userId,postId,postDescription) })
     }.flowOn(Dispatchers.IO)
 
+    override suspend fun getMySavedPosts(
+        userId: String,
+        page: String
+    ): Flow<Resource<HomeFeedResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getMySavedPosts(userId,page) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun deletePost(
+        userId: String,
+        postId: String
+    ): Flow<Resource<CommonResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.deletePost(userId,postId)})
+    }.flowOn(Dispatchers.IO)
+
 
     /**
      * A reusable helper function to handle all API calls safely.

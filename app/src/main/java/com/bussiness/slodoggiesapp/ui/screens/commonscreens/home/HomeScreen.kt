@@ -206,7 +206,10 @@ fun HomeScreen(
                             navController.currentBackStackEntry?.savedStateHandle?.set("Screen", "Home")
                             navController.navigate(Routes.EDIT_POST_SCREEN)
                                          },
-                        onSelfPostDelete = { viewModel.showDeleteDialog() },
+                        onSelfPostDelete = {
+                            viewModel.updatePostId(post.postId)
+                            viewModel.showDeleteDialog()
+                                           },
                         onSaveClick = {
                             viewModel.savePost(post.postId,"","",
                                 onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
@@ -446,7 +449,15 @@ fun HomeScreen(
     if (uiState.deleteDialog) {
         DeleteChatDialog(
             onDismiss = { viewModel.dismissDeleteDialog() },
-            onClickRemove = { viewModel.dismissDeleteDialog()  },
+            onClickRemove = {
+                Log.d("********","onClickRemove")
+                viewModel.deletePost(postId = uiState.postId, onSuccess = {
+                    viewModel.dismissDeleteDialog()
+                },
+                    onError = {error->
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    })
+                            },
             iconResId = R.drawable.delete_mi,
             text = stringResource(R.string.Delete_Post),
             description = stringResource(R.string.Delete_desc)

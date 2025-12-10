@@ -10,6 +10,8 @@ import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedMapper
 import com.bussiness.slodoggiesapp.data.newModel.home.MediaResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostMediaResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.MediaItem
+import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerPostItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.CommentItem
 import com.bussiness.slodoggiesapp.data.uiState.CommentReply
@@ -72,8 +74,152 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun fetchPosts(isFirstPage: Boolean) {
+    fun loadPostNextPage() {
+        if (!isLastPage && !isRequestRunning) {
+            fetchMyPosts(isFirstPage = false)
+        }
+    }
 
+    fun loadSaveNextPage() {
+        if (!isLastPage && !isRequestRunning) {
+            getMySavedPosts(isFirstPage = false)
+        }
+    }
+
+    fun loadSavePage() {
+        if (!isLastPage && !isRequestRunning) {
+            fetchSaveOnlyPosts(isFirstPage = false)
+        }
+    }
+
+    private fun fetchSaveOnlyPosts(isFirstPage: Boolean) {
+        if (isRequestRunning) return
+        isRequestRunning = true
+
+        _uiState.update { state ->
+            state.copy(
+                isLoading = isFirstPage,
+                isLoadingMore = !isFirstPage,
+                errorMessage = ""
+            )
+        }
+
+        viewModelScope.launch {
+
+            repository.getMySavedPosts(
+                userId = sessionManager.getUserId(),
+                page = currentPage.toString()
+            ).collectLatest { result ->
+
+                when (result) {
+
+                    is Resource.Success -> {
+                        val response = result.data.data
+
+                        val items = response?.items ?: emptyList()
+                        val uiPosts = HomeFeedMapper.map(items)
+
+                        // 🔥 Merge Fix
+                        val mergedPosts = mergeApiWithLocal(uiPosts)
+
+                        _uiState.update { state ->
+                            state.copy(
+                                posts = if (isFirstPage) mergedPosts
+                                else state.posts + mergedPosts,
+                                isLoading = false,
+                                isLoadingMore = false,
+                                errorMessage = ""
+                            )
+                        }
+
+                        val totalPages = response?.totalPage ?: 1
+                        isLastPage = currentPage >= totalPages
+                        if (!isLastPage) currentPage++
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                errorMessage = result.message ?: "Something went wrong",
+                                isLoading = false,
+                                isLoadingMore = false
+                            )
+                        }
+                    }
+
+                    is Resource.Loading -> Unit
+                    Resource.Idle -> Unit
+                }
+
+                isRequestRunning = false
+            }
+        }
+    }
+    private fun getMySavedPosts(isFirstPage: Boolean) {
+        if (isRequestRunning) return
+        isRequestRunning = true
+
+        _uiState.update { state ->
+            state.copy(
+                isLoading = isFirstPage,
+                isLoadingMore = !isFirstPage,
+                errorMessage = ""
+            )
+        }
+
+        viewModelScope.launch {
+
+            repository.getMySavedPosts(
+                userId = sessionManager.getUserId(),
+                page = currentPage.toString()
+            ).collectLatest { result ->
+
+                when (result) {
+
+                    is Resource.Success -> {
+                        val response = result.data.data
+
+                        val items = response?.items ?: emptyList()
+                        val uiPosts = HomeFeedMapper.map(items)
+
+                        // 🔥 Merge Fix
+                        val mergedPosts = mergeApiWithLocal(uiPosts)
+
+                        _uiState.update { state ->
+                            state.copy(
+                                posts = if (isFirstPage) mergedPosts
+                                else state.posts + mergedPosts,
+                                isLoading = false,
+                                isLoadingMore = false,
+                                errorMessage = ""
+                            )
+                        }
+
+                        val totalPages = response?.totalPage ?: 1
+                        isLastPage = currentPage >= totalPages
+                        if (!isLastPage) currentPage++
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                errorMessage = result.message ?: "Something went wrong",
+                                isLoading = false,
+                                isLoadingMore = false
+                            )
+                        }
+                    }
+
+                    is Resource.Loading -> Unit
+                    Resource.Idle -> Unit
+                }
+
+                isRequestRunning = false
+            }
+        }
+    }
+
+    private fun fetchPosts(isFirstPage: Boolean) {
         if (isRequestRunning) return
         isRequestRunning = true
 
@@ -138,7 +284,6 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun fetchMyPosts(isFirstPage: Boolean) {
-
         if (isRequestRunning) return
         isRequestRunning = true
 
@@ -721,6 +866,56 @@ class HomeViewModel @Inject constructor(
                             if (response.success) {
                                 deleteComment(commentId = commentId.toInt())
                                 decreaseCommentCount(postId = uiState.value.postId)
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+    fun deletePost(postId: Int) {
+        _uiState.update { state ->
+
+            val updatedList = state.posts.filterNot { post ->
+
+                when (post) {
+                    is PostItem.NormalPost -> post.postId.toIntOrNull() == postId
+                    else -> false
+                }
+            }
+
+            state.copy(posts = updatedList)
+        }
+    }
+
+
+    fun deletePost(
+        postId:String,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.deletePost(
+                userId = sessionManager.getUserId(),
+                postId = postId,
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                deletePost(postId = postId.toInt())
                                 onSuccess()
                             } else {
                                 onError(response.message ?: "")

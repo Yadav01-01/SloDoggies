@@ -500,7 +500,10 @@ fun PetProfileScreen(navController: NavHostController) {
                                         .weight(1f)
                                         .aspectRatio(1f)
                                         .clip(RoundedCornerShape(10.dp))
-                                        .clickable { navController.navigate(Routes.USER_POST_SCREEN) }
+                                        .clickable {
+                                          //  navController.navigate(Routes.USER_POST_SCREEN)
+                                            navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile")
+                                        }
                                 ) {
 
                                     // ---- VIDEO THUMBNAIL ----
@@ -546,7 +549,8 @@ fun PetProfileScreen(navController: NavHostController) {
                                     ) {
                                         IconButton(
                                             onClick = {
-                                                navController.navigate(Routes.USER_POST_SCREEN)
+                                              //  navController.navigate(Routes.USER_POST_SCREEN)
+                                                navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile")
                                             },
                                             modifier = Modifier
                                                 .size(60.dp)
@@ -575,7 +579,8 @@ fun PetProfileScreen(navController: NavHostController) {
                                         .aspectRatio(1f)
                                         .clip(RoundedCornerShape(10.dp))
                                         .clickable {
-                                            navController.navigate(Routes.USER_POST_SCREEN)
+                                            //navController.navigate(Routes.USER_POST_SCREEN)
+                                            navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile")
                                         },
                                     contentScale = ContentScale.Crop
                                 )

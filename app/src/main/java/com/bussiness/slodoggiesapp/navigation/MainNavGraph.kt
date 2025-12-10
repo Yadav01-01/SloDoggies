@@ -113,7 +113,18 @@ fun MainNavGraph(
         composable(Routes.PET_NOTIFICATION_SCREEN) { PetNotificationsScreen(navController) }
         composable(Routes.PET_EVENT_SCREEN) { EventScreen(navController) }
         composable(Routes.ACCOUNT_PRIVACY_SCREEN) { AccountPrivacy(navController,authNavController) }
-        composable(Routes.USER_POST_SCREEN) { UserPost(navController) }
+//        composable(Routes.USER_POST_SCREEN) { UserPost(navController) }
+        composable(
+            route = Routes.USER_POST_SCREEN + "/{postId}/{type}",
+            arguments = listOf(
+                navArgument("postId") { type = NavType.StringType },
+                        navArgument("type") { type = NavType.StringType }
+            )
+        ) {
+            val postId = it.arguments?.getString("postId")
+            val type = it.arguments?.getString("type") ?: ""
+            UserPost(navController, postId?:"",type)
+        }
         composable(Routes.EDIT_POST_SCREEN) { EditPostScreen(navController) }
         composable(Routes.BUDGET_SCREEN) { BudgetScreen(navController) }
         composable(Routes.PREVIEW_ADS_SCREEN) { PreviewAdsScreen(navController) }

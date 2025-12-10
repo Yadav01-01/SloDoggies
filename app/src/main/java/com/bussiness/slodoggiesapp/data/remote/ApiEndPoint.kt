@@ -51,4 +51,6 @@ object ApiEndPoint {
     const val EDIT_COMMENT = "edit_comment"
     const val COMMENT_LIKE = "comment_like"
     const val EDIT_POST = "edit_post"
+    const val GET_MY_SAVED_POST = "get_my_saved_posts"
+    const val DELETE_POST = "deletePost"
 }

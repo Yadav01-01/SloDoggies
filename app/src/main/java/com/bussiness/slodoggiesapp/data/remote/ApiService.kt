@@ -463,4 +463,18 @@ interface ApiService {
         @Field("post_description") postDescription: String
     ) : Response<CommonResponse>
 
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_MY_SAVED_POST)
+    suspend fun getMySavedPosts(
+        @Field("user_id") userId: String,
+        @Field("page") page: String
+    ) : Response<HomeFeedResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.DELETE_POST)
+    suspend fun deletePost(
+        @Field("user_id") userId: String,
+        @Field("post_id") postId: String
+    ) : Response<CommonResponse>
+
 }
