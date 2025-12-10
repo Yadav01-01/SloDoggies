@@ -40,11 +40,7 @@ class HomeViewModel @Inject constructor(
     private var currentPage = 1
     private var isLastPage = false
     private var isRequestRunning = false
-
-    // 🔥 Added for Save Fix
     private val localSavedState = mutableMapOf<String, Boolean>()
-
-    // 🔥 Added for Save Fix
     private val localLikeState = mutableMapOf<String, Boolean>()
 
     init {
@@ -52,7 +48,7 @@ class HomeViewModel @Inject constructor(
         initWelcomeDialog()
     }
 
-    fun loadFirstPage() {
+    private fun loadFirstPage() {
         currentPage = 1
         isLastPage = false
         fetchPosts(isFirstPage = true)
@@ -92,7 +88,6 @@ class HomeViewModel @Inject constructor(
                         val items = response?.items ?: emptyList()
                         val uiPosts = HomeFeedMapper.map(items)
 
-                        // 🔥 Merge Fix
                         val mergedPosts = mergeApiWithLocal(uiPosts)
 
                         _uiState.update { state ->
@@ -129,7 +124,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // 🔥 Merge function: API + Local
+    //  Merge function: API + Local
     private fun mergeApiWithLocal(apiPosts: List<PostItem>): List<PostItem> {
         return apiPosts.map { post ->
 
@@ -137,7 +132,7 @@ class HomeViewModel @Inject constructor(
                 is PostItem.NormalPost -> post.postId
                 is PostItem.CommunityPost -> post.postId
                 is PostItem.SponsoredPost -> post.postId
-            } ?: return@map post   // ❗ Null id → return same post safely
+            } ?: return@map post
 
             val localState = localSavedState[id]
 
@@ -221,7 +216,7 @@ class HomeViewModel @Inject constructor(
 
 
 
-    // 🔥 Updated toggleSave to update local memory also
+    //  Updated toggleSave to update local memory also
     fun toggleSave(postId: String) {
 
         val currentLocal = localSavedState[postId] ?: false
@@ -245,8 +240,8 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun toggleLike(postId: String) {
-        // 🔥 Local memory (same pattern as save)
+    private fun toggleLike(postId: String) {
+        //  Local memory (same pattern as save)
         val currentLocalLike = localLikeState[postId] ?: false
         localLikeState[postId] = !currentLocalLike
 
@@ -285,7 +280,7 @@ class HomeViewModel @Inject constructor(
 
 
 
-    fun increaseCommentCount(postId: String) {
+    private fun increaseCommentCount(postId: String) {
 
         _uiState.update { state ->
 
@@ -493,14 +488,14 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    fun deleteComment(commentId: Int) {
+    private fun deleteComment(commentId: Int) {
         _uiStateComment.update { state ->
             val updatedComments = state.comments.filterNot { it.id == commentId }
             state.copy(comments = updatedComments)
         }
     }
 
-    fun decreaseCommentCount(postId: String) {
+    private fun decreaseCommentCount(postId: String) {
         _uiState.update { state ->
             val updatedPosts = state.posts.map { post ->
 
@@ -596,7 +591,7 @@ class HomeViewModel @Inject constructor(
                         _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
                         result.data.let { response ->
                             if (response.success) {
-                                // ⬇️ SINGLE FUNCTION CALL FOR UI UPDATE
+                                // ️ SINGLE FUNCTION CALL FOR UI UPDATE
                                 updateEditedCommentInUI(commentId, commenText)
                                 onSuccess()
                             } else {

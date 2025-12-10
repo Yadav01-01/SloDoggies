@@ -4,7 +4,7 @@ import android.util.Log
 import com.bussiness.slodoggiesapp.data.model.common.ErrorResponse
 import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
 import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
-import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
+import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
@@ -12,9 +12,11 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetsResponse
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
@@ -29,7 +31,6 @@ import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.LoaderManager
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -37,9 +38,7 @@ import kotlinx.coroutines.flow.flowOn
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.HttpException
 import retrofit2.Response
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -625,6 +624,44 @@ class RepositoryImpl @Inject constructor(
     ): Flow<Resource<CommonResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.editComment(userId,commentId,commenText) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun trendingHashtags(): Flow<Resource<TrendingHashtagsResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.trendingHashTags() })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun petNearMe(
+        userId: String,
+        lat: String,
+        long: String,
+        page: String,
+        limit: String,
+        search: String
+    ): Flow<Resource<PetsResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.discoverPetNearMe(userId, lat, long, page, limit, search) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun discoverActivities(
+        id: String,
+        page: String,
+        limit: String,
+        search: String
+    ): Flow<Resource<HomeFeedResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.discoverActivities(id,page,limit,search) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun discoverEvents(
+        id: String,
+        search: String,
+        userType: String,
+        page: String,
+        limit: String
+    ): Flow<Resource<HomeFeedResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.discoverEvents(id,search,userType,page,limit) })
     }.flowOn(Dispatchers.IO)
 
 

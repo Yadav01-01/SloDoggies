@@ -1,5 +1,6 @@
-package com.bussiness.slodoggiesapp.data.newModel
+package com.bussiness.slodoggiesapp.data.newModel.commonresponse
 
+import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
 import com.google.gson.annotations.SerializedName
 
 data class CommonResponse(

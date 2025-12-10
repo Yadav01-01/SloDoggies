@@ -130,10 +130,8 @@ fun HomeScreen(
                         onLikeClick = {
                             viewModel.postLikeUnlike(post.postId,
                                 onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
-                                onSuccess = {
-
-                                })
-                        }
+                                onSuccess = {  }) },
+                        onClickInterested = {   }
                     )
 
 

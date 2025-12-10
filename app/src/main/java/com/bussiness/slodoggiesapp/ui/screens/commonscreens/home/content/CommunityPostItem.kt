@@ -1,7 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -48,7 +47,6 @@ import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
-import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
@@ -56,7 +54,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
 fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick:  () -> Unit, onShareClick: () -> Unit, onProfileClick: () -> Unit,
-                      onLikeClick:()-> Unit){
+                      onLikeClick:()-> Unit, onClickInterested: () -> Unit){
     var isFollowed by remember { mutableStateOf(false) }
 
     Card(
@@ -276,16 +274,16 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () ->
             // Actions
             CommunityPostLikes(likes = postItem.likes, comments = postItem.comments,
                 shares = postItem.shares, onShareClick = { onShareClick()},
-                onLikeClick = {
-                    onLikeClick()
-                })
+                onLikeClick = { onLikeClick() },onClickIntrested = { onClickInterested() })
+
+
         }
     }
 
 }@Composable
 
 fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit,
-                       onLikeClick: () -> Unit) {
+                       onLikeClick: () -> Unit,onClickIntrested : () -> Unit) {
     var isLiked by remember { mutableStateOf(false) }
     var isBookmarked by remember { mutableStateOf(false) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
@@ -349,7 +347,9 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
             )
             // Bookmark icon aligned to end
             IconButton(
-                onClick = { isBookmarked = !isBookmarked },
+                onClick = {
+                    isBookmarked = !isBookmarked
+                          onClickIntrested()},
                 modifier = Modifier.size(25.dp)
             ) {
                 Icon(

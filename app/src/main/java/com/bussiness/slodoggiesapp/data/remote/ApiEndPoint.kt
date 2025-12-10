@@ -49,4 +49,8 @@ object ApiEndPoint {
     const val REPLY_COMMENT = "reply_comment"
     const val DELETE_COMMENT = "delete_comment"
     const val EDIT_COMMENT = "edit_comment"
+    const val TRENDING_HASHTAGS = "trendingHashtag"
+    const val DISCOVER_PET_NEAR_ME = "discoverPetNearMe"
+    const val DISCOVER_ACTIVITIES = "discoverActivities"
+    const val DISCOVER_EVENTS = "discoverEvents"
 }

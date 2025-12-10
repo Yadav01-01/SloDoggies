@@ -8,12 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchResultItem
 
 @Composable
-fun ShowPetsNearYou(results: List<com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult>, controller: NavHostController) {
+fun ShowPetsNearYou(results: List<PetItem>, controller: NavHostController) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -21,8 +21,8 @@ fun ShowPetsNearYou(results: List<com.bussiness.slodoggiesapp.data.model.busines
         items(results) { result ->
             SearchResultItem(
                 name = result.name,
-                label = result.label,
-                imageRes = result.imageRes,
+                label = "",
+                imageRes = result.safeImage,
                 onItemClick = { controller.navigate(Routes.PERSON_DETAIL_SCREEN) },
                 onRemove = {},
                 labelVisibility = false,
