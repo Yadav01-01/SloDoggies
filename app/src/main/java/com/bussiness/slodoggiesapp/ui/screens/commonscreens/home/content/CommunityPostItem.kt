@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -48,16 +49,21 @@ import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
-import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.util.SessionManager
 
 
 @Composable
-fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick:  () -> Unit, onShareClick: () -> Unit, onProfileClick: () -> Unit,
-                      onLikeClick:()-> Unit){
-    var isFollowed by remember { mutableStateOf(false) }
+fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> Unit,
+                      onReportClick:  () -> Unit,
+                      onShareClick: () -> Unit, onProfileClick: () -> Unit,
+                      onLikeClick:()-> Unit,
+                      onSaveClick:()-> Unit,
+                      onFollowingClick:()->Unit){
+    var isFollowed by remember { mutableStateOf(postItem.iAmFollowing) }
+    val sessionManager = SessionManager.getInstance(LocalContext.current)
 
     Card(
         modifier = Modifier
@@ -104,28 +110,33 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () ->
                         Spacer(Modifier.width(8.dp))
 
                         val interactionSource = remember { MutableInteractionSource() }
-
-                        OutlinedButton(
-                            onClick = { isFollowed = !isFollowed },
-                            modifier = Modifier
-                                .height(24.dp)
-                                .padding(horizontal = 10.dp),
-                            shape = RoundedCornerShape(6.dp),
-                            border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isFollowed) Color.White else PrimaryColor,
-                                contentColor = if (isFollowed) PrimaryColor else Color.White
-                            ),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
-                            interactionSource = interactionSource
-                        ) {
-                            Text(
-                                text = if (isFollowed) "Following" else "Follow",
-                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Normal
-                            )
+                        if (sessionManager.getUserId() != postItem.userId){
+                            OutlinedButton(
+                                onClick = {
+                                    onFollowingClick()
+                                    isFollowed = !isFollowed
+                                },
+                                modifier = Modifier
+                                    .height(24.dp)
+                                    .padding(horizontal = 10.dp),
+                                shape = RoundedCornerShape(6.dp),
+                                border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isFollowed) Color.White else PrimaryColor,
+                                    contentColor = if (isFollowed) PrimaryColor else Color.White
+                                ),
+                                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                                interactionSource = interactionSource
+                            ) {
+                                Text(
+                                    text = if (isFollowed) "Following" else "Follow",
+                                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Normal
+                                )
+                            }
                         }
+
                     }
 
                     Text(
@@ -278,16 +289,20 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost, onJoinedCommunity: () ->
                 shares = postItem.shares, onShareClick = { onShareClick()},
                 onLikeClick = {
                     onLikeClick()
-                })
+                }, onSaveClick = {
+                    onSaveClick()
+                }
+                ,isLike = postItem.isLiked,
+                isSaved = postItem.isSaved)
         }
     }
 
 }@Composable
 
 fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit,
-                       onLikeClick: () -> Unit) {
-    var isLiked by remember { mutableStateOf(false) }
-    var isBookmarked by remember { mutableStateOf(false) }
+                       onLikeClick: () -> Unit,isLike:Boolean,isSaved:Boolean,onSaveClick: () -> Unit) {
+    var isLiked by remember { mutableStateOf(isLike) }
+    var isBookmarked by remember { mutableStateOf(isSaved) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
     var deleteComment by remember { mutableStateOf(false) }
 
@@ -340,7 +355,10 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
             )
         }
 
-        Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {  isBookmarked = !isBookmarked  }){
+        Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
+            isBookmarked = !isBookmarked
+            onSaveClick()
+        }){
             Text(text = stringResource(R.string.intrested),
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = 14.sp,
@@ -349,7 +367,11 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
             )
             // Bookmark icon aligned to end
             IconButton(
-                onClick = { isBookmarked = !isBookmarked },
+                onClick = {
+
+                    isBookmarked = !isBookmarked
+                    onSaveClick()
+                          },
                 modifier = Modifier.size(25.dp)
             ) {
                 Icon(

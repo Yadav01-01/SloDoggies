@@ -47,6 +47,9 @@ fun ActivitiesPostsList(
                     },
                     onCommentClick = {
 
+                    },
+                    onFollowingClick = {
+
                     }
                 )
             }

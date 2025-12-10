@@ -49,4 +49,6 @@ object ApiEndPoint {
     const val REPLY_COMMENT = "reply_comment"
     const val DELETE_COMMENT = "delete_comment"
     const val EDIT_COMMENT = "edit_comment"
+    const val COMMENT_LIKE = "comment_like"
+    const val EDIT_POST = "edit_post"
 }

@@ -320,6 +320,7 @@ interface ApiService {
     @POST(ApiEndPoint.GET_MY_POST)
     suspend fun getMyPostDetail(
         @Field("user_id") userId: String,
+        @Field("page") page: String,
     ) : Response<MyPostsResponse>
 
     @FormUrlEncoded
@@ -380,7 +381,9 @@ interface ApiService {
     @POST(ApiEndPoint.SAVE_POST)
     suspend fun savePost(
         @Field("user_id") userId: String,
-        @Field("post_id") postId: String
+        @Field("post_id") postId: String,
+        @Field("event_id") eventId: String,
+        @Field("add_id") addId: String
     ) : Response<CommonResponse>
 
     @FormUrlEncoded
@@ -396,7 +399,9 @@ interface ApiService {
     @POST(ApiEndPoint.POST_LIKE_UNLIKE)
     suspend fun postLikeUnlike(
         @Field("user_id") userId: String,
-        @Field("post_id") postId: String
+        @Field("post_id") postId: String,
+        @Field("event_id") eventId: String,
+        @Field("add_id") addId: String
     ) : Response<CommonResponse>
 
     @FormUrlEncoded
@@ -404,6 +409,7 @@ interface ApiService {
     suspend fun getComments(
         @Field("user_id") userId: String,
         @Field("post_id") postId: String,
+        @Field("add_id") addId: String,
         @Field("page") page: String,
         @Field("limit") limit: String
     ) : Response<CommentsResponse>
@@ -414,6 +420,7 @@ interface ApiService {
         @Field("user_id") userId: String,
         @Field("post_id") postId: String,
         @Field("comment_text") comment_text: String,
+        @Field("add_id") addId: String,
     ) : Response<AddCommentResponse>
 
 
@@ -439,6 +446,21 @@ interface ApiService {
         @Field("user_id") userId: String,
         @Field("comment_id") commentId: String,
         @Field("comment_text") commentText: String,
+    ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.COMMENT_LIKE)
+    suspend fun commentLike(
+        @Field("user_id") userId: String,
+        @Field("comment_id") commentId: String
+    ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.EDIT_POST)
+    suspend fun editPost(
+        @Field("user_id") userId: String,
+        @Field("post_id") postId: String,
+        @Field("post_description") postDescription: String
     ) : Response<CommonResponse>
 
 }

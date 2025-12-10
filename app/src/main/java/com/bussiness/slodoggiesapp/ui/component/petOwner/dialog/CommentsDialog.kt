@@ -3,6 +3,7 @@ package com.bussiness.slodoggiesapp.ui.component.petOwner.dialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -82,6 +83,8 @@ fun CommentsDialog(
     onDismiss: () -> Unit = {},
     comments: List<CommentItem> = emptyList(),
     onDeleteClick : (commentId:String) -> Unit,
+    onCommentLikeClick : (commentId:String) -> Unit,
+
     onSandClick : (message:String,type:String,commentId:String) -> Unit
 ) {
     var editingComment by remember { mutableStateOf<CommentItem?>(null) }
@@ -195,7 +198,10 @@ fun CommentsDialog(
                                         newComment = comment.content
                                         commentId = comment.id.toString()
                                     },
-                                    onDeleteClick = { onDeleteClick(comment.id.toString()) }
+                                    onDeleteClick = { onDeleteClick(comment.id.toString()) },
+                                    onCommentLikeClick = {
+                                        onCommentLikeClick(comment.id.toString())
+                                    }
                                 )
 
 
@@ -394,11 +400,13 @@ fun CommentInputBox(
 
 @Composable
 fun CommentItem(comment: CommentItem, onReply: () -> Unit, onEditClick : () -> Unit,
-                onDeleteClick : () -> Unit,user: Boolean = false) {
+                onDeleteClick : () -> Unit,user: Boolean = false,
+                onCommentLikeClick: () -> Unit) {
     var showOptions by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val sessionManager = SessionManager.getInstance(context)
+    var isLiked by remember { mutableStateOf(comment.isLikedByCurrentUser) }
     Column {
         Row(
             modifier = Modifier
@@ -423,7 +431,6 @@ fun CommentItem(comment: CommentItem, onReply: () -> Unit, onEditClick : () -> U
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-
                         Row {
                             Text(
                                 text = comment.user.name,
@@ -492,47 +499,74 @@ fun CommentItem(comment: CommentItem, onReply: () -> Unit, onEditClick : () -> U
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
-                if (comment.isLikedByCurrentUser) {
-                    IconButton(
-                        onClick = { /* Handle like */ },
-                        modifier = Modifier.size(15.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_paw_like_filled_icon), // Replace with heart icon
-                            contentDescription = "Like",
-                            tint = Color.Unspecified,
-                            modifier = Modifier.wrapContentSize()
-                        )
-                    }
-                } else {
-                    IconButton(
-                        onClick = { /* Handle like */ },
-                        modifier = Modifier.size(15.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_paw_like_icon), // Replace with heart icon
-                            contentDescription = "Like",
-                        )
-                    }
-                }
-
-                if (comment.likeCount > 0) {
-                    Text(
-                        text = comment.likeCount.toString(),
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        color = Color(0xFF949494),
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                } else {
-                    Text(
-                        text = " ",
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        color = Color(0xFF949494),
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
+//                if (comment.isLikedByCurrentUser) {
+//                    IconButton(
+//                        onClick = { /* Handle like */ },
+//                        modifier = Modifier.size(15.dp)
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.ic_paw_like_filled_icon), // Replace with heart icon
+//                            contentDescription = "Like",
+//                            tint = Color.Unspecified,
+//                            modifier = Modifier.wrapContentSize()
+//                        )
+//                    }
+//                }
+//                else {
+//                    IconButton(
+//                        onClick = { /* Handle like */ },
+//                        modifier = Modifier.size(15.dp)
+//                    ) {
+//                        Icon(
+//                            painter = painterResource(id = R.drawable.ic_paw_like_icon), // Replace with heart icon
+//                            contentDescription = "Like",
+//                        )
+//                    }
+//                }
+                Icon(
+                    painter = painterResource(
+                        id = if (isLiked) R.drawable.ic_paw_like_filled_icon
+                        else R.drawable.ic_paw_like_icon
+                    ),
+                    contentDescription = "Paw",
+                    modifier = Modifier
+                        .size(15.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+                            onCommentLikeClick()
+                            isLiked = !isLiked // Toggle the liked state
+                        },
+                    tint = Color.Unspecified
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = comment.likeCount.toString()/*(if (isLiked) likes + 1 else likes).toString()*/,
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontWeight = FontWeight.Normal,
+                    color = if (isLiked) PrimaryColor else Color.Black,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+//                if (comment.likeCount > 0) {
+//                    Text(
+//                        text = comment.likeCount.toString(),
+//                        fontSize = 12.sp,
+//                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                        color = Color(0xFF949494),
+//                        modifier = Modifier.padding(start = 4.dp)
+//                    )
+//                }
+//                else {
+//                    Text(
+//                        text = " ",
+//                        fontSize = 12.sp,
+//                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                        color = Color(0xFF949494),
+//                        modifier = Modifier.padding(start = 4.dp)
+//                    )
+//                }
             }
         }
 

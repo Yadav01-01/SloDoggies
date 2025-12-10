@@ -1,10 +1,10 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost
 
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -21,17 +20,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -50,7 +44,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -63,10 +57,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
+import com.bussiness.slodoggiesapp.data.newModel.home.PostMediaResponse
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ParticipantTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.common.EditPostViewModel
+import com.google.gson.Gson
 import kotlinx.coroutines.delay
 
 @Composable
@@ -74,16 +71,52 @@ fun EditPostScreen(
     navController: NavHostController,
     viewModel: EditPostViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uSitate by viewModel.uiState.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
+
+    var screen by remember { mutableStateOf("") }
+
+
+
+    val context = LocalContext.current
+    val postJson  = navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.get<String>("Post")
+    val type = navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.get<String>("PostType")
+    val screentype = navController.previousBackStackEntry
+        ?.savedStateHandle
+        ?.get<String>("Screen")
+    screen = screentype?:""
+    val gson = Gson()
+    val postData: PostItem? = when (type) {
+        "NormalPost" -> gson.fromJson(postJson, PostItem.NormalPost::class.java)
+        "CommunityPost" -> gson.fromJson(postJson, PostItem.CommunityPost::class.java)
+        "SponsoredPost" -> gson.fromJson(postJson, PostItem.SponsoredPost::class.java)
+        else -> null
+    }
+
+    postData?.let { viewModel.setPost(it, type ?: "") }
+
+    Log.d("*******","${postData.toString()} Hello")
 
     // Handle physical back button safely
     BackHandler(enabled = !isNavigating) {
         if (!isNavigating) {
             isNavigating = true
-            navController.navigate(Routes.USER_POST_SCREEN) {
+            if (screen.equals("Home")){
+//                navController.navigate(Routes.USER_POST_SCREEN) {
+//                    popUpTo(Routes.HOME_SCREEN) { inclusive = true }
+//                    launchSingleTop = true   // IMPORTANT: Prevent recreation
+//                }
+                navController.popBackStack()
+
+            }else{
+                navController.navigate(Routes.USER_POST_SCREEN) {
                 popUpTo(Routes.EDIT_POST_SCREEN) { inclusive = true }
                 launchSingleTop = true
+            }
             }
         }
     }
@@ -96,22 +129,38 @@ fun EditPostScreen(
                     onBackClick = {
                         if (!isNavigating) {
                             isNavigating = true
-                            navController.navigate(Routes.USER_POST_SCREEN) {
-                                popUpTo(Routes.EDIT_POST_SCREEN) { inclusive = true }
-                                launchSingleTop = true
+                            if (screen.equals("Home")){
+//                                navController.navigate(Routes.USER_POST_SCREEN) {
+//                                    popUpTo(Routes.HOME_SCREEN) { inclusive = true }
+//                                    launchSingleTop = true   // IMPORTANT: Prevent recreation
+//                                }
+                                navController.popBackStack()
+
+                            }else{
+                                navController.navigate(Routes.USER_POST_SCREEN) {
+                                    popUpTo(Routes.EDIT_POST_SCREEN) { inclusive = true }
+                                    launchSingleTop = true
+                                }
                             }
                         }
                     },
                     onClick = {
-                        if (!isNavigating) {
-                            isNavigating = true
-                            navController.navigate(Routes.USER_POST_SCREEN) {
-                                popUpTo(Routes.EDIT_POST_SCREEN) { inclusive = true }
-                                launchSingleTop = true
+                        viewModel.editPost(postId = uSitate.postId, postDescription =
+                        uSitate.description, onSuccess = {
+                            if (!isNavigating) {
+                                isNavigating = true
+                                navController.popBackStack()
+//                            navController.navigate(Routes.USER_POST_SCREEN) {
+//                                popUpTo(Routes.EDIT_POST_SCREEN) { inclusive = true }
+//                                launchSingleTop = true
+//                            }
                             }
-                        }
+                        },
+                            onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                            )
+
                     },
-                    selected = uiState.description.isNotEmpty()
+                     selected = true
                 )
                 HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
             }
@@ -127,25 +176,94 @@ fun EditPostScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 item {
-                    PostCard(
-                        profileImageUrl = uiState.profileImageUrl,
-                        userName = uiState.userName,
-                        timeAgo = uiState.timeAgo,
-                        role = uiState.role,
-                        postImageUrl = uiState.postImageUrl,
-                        onMenuClick = { /* Dropdown menu if needed */ }
-                    )
+                    postData?.let { post ->
+                        when (post) {
+                            is PostItem.NormalPost -> {
+                                val displayImage = post.mediaList.firstOrNull()?.getDisplayImage()
+                                PostCard(
+                                    profileImageUrl = post.media?.parentImageUrl ?: "",
+                                    userName = post.userName,
+                                    timeAgo = post.time,
+                                    role = post.type,
+                                    postImageUrl = displayImage?:"",
+                                    onMenuClick = {}
+                                )
+                            }
+
+                            is PostItem.CommunityPost -> {
+                                val displayImage = post.mediaList.firstOrNull()?.getDisplayImage()
+                                PostCard(
+                                    profileImageUrl = post.userImage?:"",
+                                    userName = post.userName,
+                                    timeAgo = post.time,
+                                    role = "Community",
+                                    postImageUrl = displayImage?:"",
+                                    onMenuClick = {}
+                                )
+                            }
+
+                            is PostItem.SponsoredPost -> {
+                                val displayImage = post.mediaList.firstOrNull()?.getDisplayImage()
+                                PostCard(
+                                    profileImageUrl = post.media?.parentImageUrl?:"",
+                                    userName = post.userName,
+                                    timeAgo = post.time,
+                                    role = "Sponsored",
+                                    postImageUrl = displayImage?:"",
+                                    onMenuClick = {}
+                                )
+                            }
+                        }
+                    }
+
+//                    PostCard(
+//                        profileImageUrl = post.media?.profileImageUrl,
+//                        userName = post.userName,
+//                        timeAgo = post.time,
+//                        role = post.type,
+//                        postImageUrl = post.mediaList.firstOrNull()?.url,
+//                        onMenuClick = {}
+//                    )
                 }
 
                 item {
-                    EditDescription(
-                        description = uiState.description,
-                        onDescriptionChange = { viewModel.updateDescription(it) }
-                    )
+                    postData?.let { post ->
+                        when (post) {
+                            is PostItem.NormalPost -> {
+                                EditDescription(
+                                    description = uSitate.description,
+                                    onDescriptionChange = { viewModel.updateDescription(it) }
+                                )
+                            }
+
+                            is PostItem.CommunityPost -> {
+                                EditDescription(
+                                    description =uSitate.description,
+                                    onDescriptionChange = { viewModel.updateDescription(it) }
+                                )
+                            }
+
+                            is PostItem.SponsoredPost -> {
+                                EditDescription(
+                                    description = uSitate.description,
+                                    onDescriptionChange = { viewModel.updateDescription(it) }
+                                )
+                            }
+                        }
+                    }
+
                 }
             }
         }
     )
+}
+
+fun PostMediaResponse.getDisplayImage(): String? {
+    return when (type?.lowercase()) {
+        "video" -> thumbnailUrl   // video → thumbnail
+        "image" -> mediaUrl    // image → mediaUrl
+        else -> mediaUrl ?: thumbnailUrl
+    }
 }
 
 
@@ -211,14 +329,24 @@ fun PostCard(
             }
 
             // Post Image
-            Image(
-                painter = painterResource(R.drawable.new_dog_ic),
+            AsyncImage(
+                model = postImageUrl,
                 contentDescription = "Post image",
+                placeholder = painterResource(R.drawable.no_image),
+                error = painterResource(R.drawable.no_image),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(350.dp),
+                    .size(350.dp),
                 contentScale = ContentScale.Crop
             )
+//            Image(
+//                painter = painterResource(R.drawable.new_dog_ic),
+//                contentDescription = "Post image",
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(350.dp),
+//                contentScale = ContentScale.Crop
+//            )
         }
     }
 }
