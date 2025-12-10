@@ -61,7 +61,10 @@ data class ContentResponse(
     @SerializedName("hashtags") val hashtags: String? = null,
     @SerializedName("location") val location: String? = null,
     @SerializedName("startTime") val startTime: String? = null,
-    @SerializedName("endTime") val endTime: String? = null
+    @SerializedName("endTime") val endTime: String? = null,
+    @SerializedName("startDate") val startDate: String? = null,
+    @SerializedName("endDate") val endDate: String? = null,
+
 )
 
 // ------------------------------------------------------

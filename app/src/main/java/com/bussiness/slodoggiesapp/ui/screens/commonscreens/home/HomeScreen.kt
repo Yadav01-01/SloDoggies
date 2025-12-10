@@ -37,7 +37,6 @@ import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.common.HomeTopBar
-import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.PetInfoDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
@@ -69,14 +68,14 @@ fun HomeScreen(
     val activity = context as? Activity
     val sessionManager = SessionManager.getInstance(context)
 
-    var showCommentsDialog  by remember { mutableStateOf(false) }
-    var showCommentsType  by remember { mutableStateOf("") }
+    var showCommentsDialog by remember { mutableStateOf(false) }
+    var showCommentsType by remember { mutableStateOf("") }
     var deleteComment by remember { mutableStateOf(false) }
     var deleteCommentId by remember { mutableStateOf("") }
 
     val posts = uiState.posts
 
-   // val onReportClick = remember { { viewModel.showReportDialog() } }
+    // val onReportClick = remember { { viewModel.showReportDialog() } }
     val onShareClick = remember { { viewModel.showShareContent() } }
     val onProfileClick = remember { { navController.navigate(Routes.CLICKED_PROFILE_SCREEN) } }
 
@@ -108,7 +107,11 @@ fun HomeScreen(
         }
 
         HomeTopBar(
-            onNotificationClick = { if (sessionManager.getUserType() == UserType.Professional)navController.navigate(Routes.NOTIFICATION_SCREEN) else navController.navigate(Routes.PET_NOTIFICATION_SCREEN) },
+            onNotificationClick = {
+                if (sessionManager.getUserType() == UserType.Professional) navController.navigate(
+                    Routes.NOTIFICATION_SCREEN
+                ) else navController.navigate(Routes.PET_NOTIFICATION_SCREEN)
+            },
             onMessageClick = { navController.navigate(Routes.MESSAGE_SCREEN) }
         )
 
@@ -128,82 +131,109 @@ fun HomeScreen(
                 }
 
                 when (post) {
+                    // ----------------------
+                    // COMMUNITY POST
+                    // ----------------------
                     is PostItem.CommunityPost -> CommunityPostItem(
-                        post,
-                        onReportClick = {
-                            viewModel.showReportDialog(post.postId)
-                        },
+                        postItem = post,
+                        onReportClick = { viewModel.showReportDialog(post.postId) },
                         onShareClick = onShareClick,
-                        onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
-                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
+                        onJoinedCommunity = {
+                            navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+                        },
+                        onProfileClick = {
+                            navController.navigate(Routes.PERSON_DETAIL_SCREEN)
+                        },
                         onLikeClick = {
-                            viewModel.postLikeUnlike("",post.postId,"",
-                                onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                            viewModel.postLikeUnlike(
+                                post.postId, "", "",
+                                onError = { msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                },
                                 onSuccess = {
                                     viewModel.toggleLike(post.postId)
-                                })
+                                }
+                            )
                         },
                         onSaveClick = {
-                            viewModel.savePost("",post.postId,"",
-                                onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                            viewModel.savePost(
+                                post.postId, "", "",
+                                onError = { msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                },
                                 onSuccess = {
                                     viewModel.toggleSave(post.postId)
-                                })
+                                }
+                            )
                         },
-                         onFollowingClick = {
-                             viewModel.addAndRemoveFollowers(post.userId, onSuccess = {
-
-                             }, onError = {
-                                     msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                             })
-                         }
+                        onClickInterested = { /*  */ },
+                        onFollowingClick = {
+                            viewModel.addAndRemoveFollowers(
+                                post.userId,
+                                onSuccess = {},
+                                onError = { msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        },
                     )
 
-
+                    // ----------------------
+                    // SPONSORED POST
+                    // ----------------------
                     is PostItem.SponsoredPost -> SponsoredPostItem(
                         post = post,
-                        onReportClick = {
-                            viewModel.showReportDialog(post.postId)
-                        },
+                        onReportClick = { viewModel.showReportDialog(post.postId) },
                         onShareClick = onShareClick,
                         onProfileClick = onProfileClick,
                         onSponsoredClick = onSponsoredClick,
                         onLikeClick = {
-                            viewModel.postLikeUnlike("","",post.postId,
-                                onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                            viewModel.postLikeUnlike(
+                                post.postId, "", "",
+                                onError = { msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                },
                                 onSuccess = {
                                     viewModel.toggleLike(post.postId)
-                                })
-
+                                }
+                            )
                         },
                         onCommentClick = {
-                            // Log.d("********","onCommentClick")
                             viewModel.updatePostId(post.postId)
                             showCommentsDialog = true
                             showCommentsType = "Ad"
                         }
                     )
 
+                    // ----------------------
+                    // NORMAL POST
+                    // ----------------------
                     is PostItem.NormalPost -> NormalPostItem(
                         modifier = Modifier.padding(horizontal = 12.dp),
-                        post,
-                        onReportClick = {
-                            viewModel.showReportDialog(post.postId)
-                        },
+                        postItem = post,
+                        onReportClick = { viewModel.showReportDialog(post.postId) },
                         onShareClick = onShareClick,
                         normalPost = true,
-                        onEditClick = {
-
-                        },
+                        onEditClick = {},
                         onDeleteClick = {},
-                        onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
+                        onProfileClick = {
+                            navController.navigate(Routes.PERSON_DETAIL_SCREEN)
+                        },
                         onSelfPostEdit = {
                             val postJson = Gson().toJson(post)
                             navController.currentBackStackEntry
                                 ?.savedStateHandle
                                 ?.set("Post", postJson)
-                            navController.currentBackStackEntry?.savedStateHandle?.set("PostType", "NormalPost")
-                            navController.currentBackStackEntry?.savedStateHandle?.set("Screen", "Home")
+
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "PostType",
+                                "NormalPost"
+                            )
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                "Screen",
+                                "Home"
+                            )
+
                             navController.navigate(Routes.EDIT_POST_SCREEN)
                                          },
                         onSelfPostDelete = {
@@ -211,40 +241,48 @@ fun HomeScreen(
                             viewModel.showDeleteDialog()
                                            },
                         onSaveClick = {
-                            viewModel.savePost(post.postId,"","",
-                                onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                            viewModel.savePost(
+                                post.postId, "", "",
+                                onError = { msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                },
                                 onSuccess = {
                                     viewModel.toggleSave(post.postId)
-                                })
-
+                                }
+                            )
                         },
                         onLikeClick = {
-                            viewModel.postLikeUnlike(post.postId,"","",
-                                onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                            viewModel.postLikeUnlike(
+                                post.postId, "", "",
+                                onError = { msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                },
                                 onSuccess = {
                                     viewModel.toggleLike(post.postId)
-                                })
-
+                                }
+                            )
                         },
                         onCommentClick = {
-                           // Log.d("********","onCommentClick")
                             viewModel.updatePostId(post.postId)
                             showCommentsDialog = true
                             showCommentsType = "Normal"
                         },
                         onFollowingClick = {
-                            viewModel.addAndRemoveFollowers(post.userId, onSuccess = {
-
-                            }, onError = {
-                                    msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                            })
+                            viewModel.addAndRemoveFollowers(
+                                post.userId,
+                                onSuccess = {},
+                                onError = { msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                }
+                            )
                         }
-
                     )
-
                 }
             }
 
+            // ----------------------
+            // LOADING ITEM
+            // ----------------------
             item {
                 if (uiState.isLoading) {
                     Box(
@@ -262,189 +300,203 @@ fun HomeScreen(
             }
         }
 
-    }
 
-    //Comment
-    if (showCommentsDialog) {
-        // Load comments from API when dialog opens
-        var  postId = ""
-        var  adId = ""
-        if (showCommentsType.equals("Ad")){
-            adId = uiState.postId
-        }else if (showCommentsType.equals("Normal")){
-            postId = uiState.postId
-        }
-        LaunchedEffect(Unit) {
-            viewModel.getComments(
-                postId = postId,
-                addId = adId,
-                page = 1,
-                limit = 20,
-                onError = {
-                    msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                /* handle error */
-                },
-                onSuccess = {
-
-                }
-            )
-        }
-        CommentsDialog(
-            comments = uiStateComment.comments/*sampleComments*/,
-            onDismiss = {
-                viewModel.clearComments()
-                showCommentsDialog = false
-                showCommentsType = ""
-                        },
-            onDeleteClick = {commentId ->
-                deleteCommentId = commentId
-                deleteComment = true
-                            },
-            onSandClick = {comment, type,commentId ->
-               if (type.equals("reply")){
-                    viewModel.replyComment(postId = uiState.postId,
-                        commentText = comment, commentId = commentId, onError = {error->
-                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                        }, onSuccess = {
-
-                        })
-                }else if (type.equals("edit")){
-                  viewModel.editComment(commentId = commentId, commenText = comment,
-                      onSuccess = {
-
-                      }, onError = {error->
-                          Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                      })
-                }  else/* (type.equals("new"))*/ {
-                    if (showCommentsType.equals("Ad")){
-                        viewModel.addNewComment(
-                            postId = "",
-                            addId = uiState.postId,
-                            commentText = comment,
-                            onSuccess = {  viewModel.increaseCommentCount(uiState.postId) },
-                            onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
-                        )
-
-                    }else if (showCommentsType.equals("Normal")){
-                        viewModel.addNewComment(
-                            postId = uiState.postId,
-                            addId = "",
-                            commentText = comment,
-                            onSuccess = {  viewModel.increaseCommentCount(uiState.postId) },
-                            onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
-                        )
-                    }
-
+        //Comment
+        if (showCommentsDialog) {
+            // Load comments from API when dialog opens
+            var postId = ""
+            var adId = ""
+            if (showCommentsType == "Ad") {
+                adId = uiState.postId
+            } else if (showCommentsType == "Normal") {
+                postId = uiState.postId
             }
-            Log.d("********","$comment $type")
-            },
-            onCommentLikeClick = {commentId ->
-                viewModel.commentLike(commentId,
-                    onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+            LaunchedEffect(Unit) {
+                viewModel.getComments(
+                    postId = postId,
+                    addId = adId,
+                    page = 1,
+                    limit = 20,
+                    onError = { msg ->
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        /* handle error */
+                    },
                     onSuccess = {
 
-                    })
-            }
-        )
-    }
-
-    if (deleteComment){
-        DeleteChatDialog(
-            onDismiss = { deleteComment = false },
-            onClickRemove = {
-                deleteComment = false
-                     viewModel.deleteComment(deleteCommentId, onSuccess = {
-
-                     }, onError = {error->
-                         Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                     })
-                            },
-            iconResId = R.drawable.delete_mi,
-            text = "Delete Comment",
-            description = stringResource(R.string.delete_Comment)
-        )
-    }
-
-    // --- Dialogs ---
-    if (sessionManager.isSignupFlowActive()){
-        if (uiState.showWelcomeDialog) {
-            WelcomeDialog(
-                onDismiss = { viewModel.dismissWelcomeDialog() },
-                onSubmitClick = { viewModel.onWelcomeSubmit() },
-                icon = R.drawable.ic_party_popper_icon,
-                title = uiState.welcomeTitle,
-                description = uiState.welcomeDescription,
-                button = uiState.welcomeButton
-            )
-
-        }
-        if (uiState.showUserDetailsDialog) {
-            UserDetailsDialog(
-                navController = navController,
-                onDismiss = { viewModel.dismissUserDetailsDialog() },
-                onSubmit = { viewModel.onUserDetailsSubmit() },
-                onVerify = { data,type ->
-                    viewModel.onVerify(navController,data,type)
-                }
-            )
-        }
-        if (uiState.showProfileCreatedDialog) {
-            WelcomeDialog(
-                onDismiss = { viewModel.dismissProfileCreatedDialog() },
-                onSubmitClick = { viewModel.dismissProfileCreatedDialog() },
-                icon = R.drawable.ic_party_popper_icon,
-                title = stringResource(R.string.profileCreateTitle),
-                description = stringResource(R.string.profileCreateDes),
-                button = stringResource(R.string.explore_now),
-            )
-        }
-        if (uiState.showContinueAddPetDialog) {
-            WelcomeDialog(
-                onDismiss = { viewModel.dismissContinueAddPetDialog() },
-                onSubmitClick = { viewModel.dismissContinueAddPetDialog() },
-                icon = R.drawable.paw_print,
-                title = stringResource(R.string.add_pet),
-                description = stringResource(R.string.paw_description),
-                button = stringResource(R.string.paw_button),
-            )
-        }
-        if (uiState.showPetInfoDialog) {
-            if (dialogCount < 2) {
-                PetInfoDialog(
-                    title = stringResource(R.string.tell_us_about_your_pet),
-                    onDismiss = { viewModel.dismissPetInfoDialog() },
-                    addPet = { petInfo ->
-                        viewModel.incrementPetInfoDialogCount()
-                        viewModel.showPetInfoDialog()
-                    },
-                    onContinueClick = {
-                        viewModel.dismissPetInfoDialog()
                     }
                 )
-            } else {
-                LaunchedEffect(Unit) {
-                    viewModel.showContinueAddPetDialog()
+            }
+            CommentsDialog(
+                comments = uiStateComment.comments/*sampleComments*/,
+                onDismiss = {
+                    viewModel.clearComments()
+                    showCommentsDialog = false
+                    showCommentsType = ""
+                },
+                onDeleteClick = { commentId ->
+                    deleteCommentId = commentId
+                    deleteComment = true
+                },
+                onSandClick = { comment, type, commentId ->
+                    if (type == "reply") {
+                        viewModel.replyComment(
+                            postId = uiState.postId,
+                            commentText = comment, commentId = commentId, onError = { error ->
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            }, onSuccess = {
+
+                            })
+                    } else if (type == "edit") {
+                        viewModel.editComment(
+                            commentId = commentId, commenText = comment,
+                            onSuccess = {
+
+                            }, onError = { error ->
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            })
+                    } else/* (type.equals("new"))*/ {
+                        if (showCommentsType == "Ad") {
+                            viewModel.addNewComment(
+                                postId = "",
+                                addId = uiState.postId,
+                                commentText = comment,
+                                onSuccess = { viewModel.increaseCommentCount(uiState.postId) },
+                                onError = { error ->
+                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+
+                        } else if (showCommentsType == "Normal") {
+                            viewModel.addNewComment(
+                                postId = uiState.postId,
+                                addId = "",
+                                commentText = comment,
+                                onSuccess = { viewModel.increaseCommentCount(uiState.postId) },
+                                onError = { error ->
+                                    Toast.makeText(
+                                        context,
+                                        error,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
+                        }
+
+                    }
+                    Log.d("********", "$comment $type")
+                },
+                onCommentLikeClick = { commentId ->
+                    viewModel.commentLike(
+                        commentId,
+                        onError = { msg ->
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        },
+                        onSuccess = {
+
+                        })
+                }
+            )
+        }
+
+        if (deleteComment) {
+            DeleteChatDialog(
+                onDismiss = { deleteComment = false },
+                onClickRemove = {
+                    deleteComment = false
+                    viewModel.deleteComment(deleteCommentId, onSuccess = {
+
+                    }, onError = { error ->
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    })
+                },
+                iconResId = R.drawable.delete_mi,
+                text = "Delete Comment",
+                description = stringResource(R.string.delete_Comment)
+            )
+        }
+
+        // --- Dialogs ---
+        if (sessionManager.isSignupFlowActive()) {
+            if (uiState.showWelcomeDialog) {
+                WelcomeDialog(
+                    onDismiss = { viewModel.dismissWelcomeDialog() },
+                    onSubmitClick = { viewModel.onWelcomeSubmit() },
+                    icon = R.drawable.ic_party_popper_icon,
+                    title = uiState.welcomeTitle,
+                    description = uiState.welcomeDescription,
+                    button = uiState.welcomeButton
+                )
+
+            }
+            if (uiState.showUserDetailsDialog) {
+                UserDetailsDialog(
+                    navController = navController,
+                    onDismiss = { viewModel.dismissUserDetailsDialog() },
+                    onSubmit = { viewModel.onUserDetailsSubmit() },
+                    onVerify = { data, type ->
+                        viewModel.onVerify(navController, data, type)
+                    }
+                )
+            }
+            if (uiState.showProfileCreatedDialog) {
+                WelcomeDialog(
+                    onDismiss = { viewModel.dismissProfileCreatedDialog() },
+                    onSubmitClick = { viewModel.dismissProfileCreatedDialog() },
+                    icon = R.drawable.ic_party_popper_icon,
+                    title = stringResource(R.string.profileCreateTitle),
+                    description = stringResource(R.string.profileCreateDes),
+                    button = stringResource(R.string.explore_now),
+                )
+            }
+            if (uiState.showContinueAddPetDialog) {
+                WelcomeDialog(
+                    onDismiss = { viewModel.dismissContinueAddPetDialog() },
+                    onSubmitClick = { viewModel.dismissContinueAddPetDialog() },
+                    icon = R.drawable.paw_print,
+                    title = stringResource(R.string.add_pet),
+                    description = stringResource(R.string.paw_description),
+                    button = stringResource(R.string.paw_button),
+                )
+            }
+            if (uiState.showPetInfoDialog) {
+                if (dialogCount < 2) {
+                    PetInfoDialog(
+                        title = stringResource(R.string.tell_us_about_your_pet),
+                        onDismiss = { viewModel.dismissPetInfoDialog() },
+                        addPet = { petInfo ->
+                            viewModel.incrementPetInfoDialogCount()
+                            viewModel.showPetInfoDialog()
+                        },
+                        onContinueClick = {
+                            viewModel.dismissPetInfoDialog()
+                        }
+                    )
+                } else {
+                    LaunchedEffect(Unit) {
+                        viewModel.showContinueAddPetDialog()
+                    }
                 }
             }
         }
-    }
 
-    if (uiState.showReportDialog) {
-        ReportDialog(
-            onDismiss = { viewModel.dismissReportDialog() },
-            onCancel = { viewModel.dismissReportDialog() },
-            onSendReport = { viewModel.showReportToast(context) },
-            reasons = listOf("Bullying or unwanted contact",
-                             "Violence, hate or exploitation",
-                             "False Information",
-                             "Scam, fraud or spam"),
-            selectedReason = uiState.selectedReason,
-            message = uiState.message,
-            onReasonSelected = { reason -> viewModel.onReasonSelected(reason) },
-            onMessageChange = { msg -> viewModel.onMessageChange(msg) },
-            title = "Report Post"
-        )
-    }
+        if (uiState.showReportDialog) {
+            ReportDialog(
+                onDismiss = { viewModel.dismissReportDialog() },
+                onCancel = { viewModel.dismissReportDialog() },
+                onSendReport = { viewModel.showReportToast(context) },
+                reasons = listOf(
+                    "Bullying or unwanted contact",
+                    "Violence, hate or exploitation",
+                    "False Information",
+                    "Scam, fraud or spam"
+                ),
+                selectedReason = uiState.selectedReason,
+                message = uiState.message,
+                onReasonSelected = { reason -> viewModel.onReasonSelected(reason) },
+                onMessageChange = { msg -> viewModel.onMessageChange(msg) },
+                title = "Report Post"
+            )
+        }
 
     if (uiState.deleteDialog) {
         DeleteChatDialog(
@@ -464,19 +516,20 @@ fun HomeScreen(
         )
     }
 
-    if (uiState.showReportToast){
-        ReportBottomToast(
-            onDismiss = {viewModel.dismissReportToast()}
-        )
-    }
+        if (uiState.showReportToast) {
+            ReportBottomToast(
+                onDismiss = { viewModel.dismissReportToast() }
+            )
+        }
 
-    if (uiState.showShareContent) {
-        ShareContentDialog(
-            onDismiss = { viewModel.dismissShareContent() },
-            onSendClick = { viewModel.dismissShareContent() }
-        )
-    }
+        if (uiState.showShareContent) {
+            ShareContentDialog(
+                onDismiss = { viewModel.dismissShareContent() },
+                onSendClick = { viewModel.dismissShareContent() }
+            )
+        }
 
+    }
 }
 
 

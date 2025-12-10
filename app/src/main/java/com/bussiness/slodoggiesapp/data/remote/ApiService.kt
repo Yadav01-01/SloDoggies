@@ -1,7 +1,7 @@
 package com.bussiness.slodoggiesapp.data.remote
 
 import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
-import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
+import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
@@ -9,9 +9,11 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetsResponse
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
@@ -19,6 +21,8 @@ import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.CategoryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
@@ -32,7 +36,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
-import retrofit2.http.PartMap
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -462,7 +466,7 @@ interface ApiService {
         @Field("post_id") postId: String,
         @Field("post_description") postDescription: String
     ) : Response<CommonResponse>
-
+    
     @FormUrlEncoded
     @POST(ApiEndPoint.GET_MY_SAVED_POST)
     suspend fun getMySavedPosts(
@@ -476,5 +480,54 @@ interface ApiService {
         @Field("user_id") userId: String,
         @Field("post_id") postId: String
     ) : Response<CommonResponse>
+
+
+    @GET(ApiEndPoint.TRENDING_HASHTAGS)
+    suspend fun trendingHashTags() : Response<TrendingHashtagsResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.DISCOVER_PET_NEAR_ME)
+    suspend fun discoverPetNearMe(
+        @Field("user_id") userId: String,
+        @Field("lat") lat: String,
+        @Field("long") long: String,
+        @Field("page") page: String,
+        @Field("limit") limit: String,
+        @Field("search") search: String,
+    ) : Response<PetsResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.DISCOVER_ACTIVITIES)
+    suspend fun discoverActivities(
+        @Field("id") id: String,
+        @Field("page") page: String,
+        @Field("limit") limit: String,
+        @Field("search") search: String,
+    ) : Response<HomeFeedResponse>
+
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.DISCOVER_EVENTS)
+    suspend fun discoverEvents(
+        @Field("id") id: String,
+        @Field("search") search: String,
+        @Field("userType") userType: String,
+        @Field("page") page: String,
+        @Field("limit") limit: String,
+    ) : Response<HomeFeedResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.OWNER_SERVICE)
+    suspend fun ownerService(
+        @Field("user_id") userId: String,
+        @Field("search") search: String,
+    ) : Response<ServicesResponse>
+
+    @GET(ApiEndPoint.OWNER_CATEGORY_SERVICE)
+    suspend fun ownerCategoryService(
+        @Query("user_id") userId: String,
+    ): Response<CategoryResponse>
+
+    
 
 }

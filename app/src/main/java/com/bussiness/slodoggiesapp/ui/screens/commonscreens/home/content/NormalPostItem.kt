@@ -121,14 +121,9 @@ fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportCl
             PostImage(mediaList = postItem.mediaList)
             PostLikes(likes = postItem.likes, comments = postItem.comments,
                 shares = postItem.shares,
-                onShareClick = {onShareClick()}, onSaveClick = {
-                onSaveClick()
-            }, onLikeClick = {
-                onLikeClick()
-                },
-                onCommentClick = {
-                    onCommentClick()
-                },
+                onShareClick = {onShareClick()}, onSaveClick = { onSaveClick() },
+                onLikeClick = { onLikeClick() },
+                onCommentClick = { onCommentClick() },
                 isLike = postItem.isLiked,
                 isSave = postItem.isSaved)
         }

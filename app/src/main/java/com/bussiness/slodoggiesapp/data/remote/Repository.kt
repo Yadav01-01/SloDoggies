@@ -1,7 +1,7 @@
 package com.bussiness.slodoggiesapp.data.remote
 
 import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
-import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
+import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
@@ -9,9 +9,11 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetsResponse
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
@@ -19,6 +21,8 @@ import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.CategoryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
@@ -349,5 +353,41 @@ interface Repository {
         userId: String,
         postId: String
     ) : Flow<Resource<CommonResponse>>
+
+    suspend fun trendingHashtags() : Flow<Resource<TrendingHashtagsResponse>>
+
+    suspend fun petNearMe(
+        userId: String,
+        lat: String,
+        long: String,
+        page: String,
+        limit: String,
+        search: String
+    ) : Flow<Resource<PetsResponse>>
+
+    suspend fun discoverActivities(
+        id: String,
+        page: String,
+        limit: String,
+        search: String,
+    ) : Flow<Resource<HomeFeedResponse>>
+
+    suspend fun discoverEvents(
+        id: String,
+        search: String,
+        userType: String,
+        page: String,
+        limit: String,
+    ) : Flow<Resource<HomeFeedResponse>>
+
+    suspend fun ownerService(
+        userId: String,
+        search: String,
+    ) : Flow<Resource<ServicesResponse>>
+
+    suspend fun ownerCategoryService(
+        userId: String,
+    ) : Flow<Resource<CategoryResponse>>
+
 
 }

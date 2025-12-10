@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.service
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -23,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -41,11 +44,18 @@ import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceContent.Pe
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceContent.ServiceTypeChip
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetServicesViewModel
+import java.util.UUID
 
 @Composable
 fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesViewModel = hiltViewModel()) {
 
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    uiState.error?.let { errorMsg ->
+        Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
+        return
+    }
 
     Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
         BackHandler {
@@ -85,14 +95,13 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
             modifier = Modifier.padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val serviceTypes = listOf("Walking", "Grooming", "Sitting / Boarding", "Veterinary")
-            items(serviceTypes) { serviceType ->
+            items(uiState.serviceCategory) { category ->
                 ServiceTypeChip(
-                    serviceType = serviceType,
-                    isSelected = uiState.selectedServiceType == serviceType,
+                    serviceType = category.categoryName ?: "",
+                    isSelected = uiState.selectedServiceType == category.categoryName,
                     onClick = {
                         viewModel.onServiceTypeSelected(
-                            if (uiState.selectedServiceType == serviceType) null else serviceType
+                            if (uiState.selectedServiceType == category.categoryName) null else category.categoryName
                         )
                     }
                 )
@@ -112,13 +121,23 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
 
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
+            state = rememberLazyStaggeredGridState(),
             verticalItemSpacing = 8.dp,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(16.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            items(uiState.filteredServices) { service ->
-                PetServiceCard(service = service, navController = navController, onInquire = { navController.navigate(Routes.CHAT_SCREEN)})
+
+            items(
+                items = uiState.services,
+                key = { it.serviceId }
+            ) { service ->
+
+                PetServiceCard(
+                    service = service,
+                    navController = navController,
+                    onInquire = { navController.navigate(Routes.CHAT_SCREEN) }
+                )
             }
         }
     }

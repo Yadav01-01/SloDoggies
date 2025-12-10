@@ -4,7 +4,7 @@ import android.util.Log
 import com.bussiness.slodoggiesapp.data.model.common.ErrorResponse
 import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
 import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
-import com.bussiness.slodoggiesapp.data.newModel.CommonResponse
+import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
 import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
 import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
@@ -12,9 +12,11 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetsResponse
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
@@ -22,6 +24,8 @@ import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.CategoryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
@@ -29,7 +33,6 @@ import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.LoaderManager
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -37,7 +40,6 @@ import kotlinx.coroutines.flow.flowOn
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.http.Field
 import java.io.IOException
@@ -651,6 +653,7 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.editPost(userId,postId,postDescription) })
     }.flowOn(Dispatchers.IO)
 
+
     override suspend fun getMySavedPosts(
         userId: String,
         page: String
@@ -662,11 +665,63 @@ class RepositoryImpl @Inject constructor(
     override suspend fun deletePost(
         userId: String,
         postId: String
-    ): Flow<Resource<CommonResponse>> = flow{
+    ): Flow<Resource<CommonResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.deletePost(userId,postId)})
-    }.flowOn(Dispatchers.IO)
+        emit(safeApiCall { api.deletePost(userId, postId) })
+    }
 
+        override suspend fun trendingHashtags(): Flow<Resource<TrendingHashtagsResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.trendingHashTags() })
+        }.flowOn(Dispatchers.IO)
+
+        override suspend fun petNearMe(
+            userId: String,
+            lat: String,
+            long: String,
+            page: String,
+            limit: String,
+            search: String
+        ): Flow<Resource<PetsResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.discoverPetNearMe(userId, lat, long, page, limit, search) })
+        }.flowOn(Dispatchers.IO)
+
+        override suspend fun discoverActivities(
+            id: String,
+            page: String,
+            limit: String,
+            search: String
+        ): Flow<Resource<HomeFeedResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.discoverActivities(id, page, limit, search) })
+        }.flowOn(Dispatchers.IO)
+
+        override suspend fun discoverEvents(
+            id: String,
+            search: String,
+            userType: String,
+            page: String,
+            limit: String
+        ): Flow<Resource<HomeFeedResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.discoverEvents(id, search, userType, page, limit) })
+        }.flowOn(Dispatchers.IO)
+
+        override suspend fun ownerService(
+            userId: String,
+            search: String
+        ): Flow<Resource<ServicesResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.ownerService(userId, search) })
+        }.flowOn(Dispatchers.IO)
+
+        override suspend fun ownerCategoryService(userId: String): Flow<Resource<CategoryResponse>> =
+            flow {
+                emit(Resource.Loading)
+                emit(safeApiCall { api.ownerCategoryService(userId) })
+            }.flowOn(Dispatchers.IO)
+    }
 
     /**
      * A reusable helper function to handle all API calls safely.
@@ -704,9 +759,3 @@ class RepositoryImpl @Inject constructor(
             Resource.Error(e.message.toString())
         }
     }
-
-
-
-
-
-}

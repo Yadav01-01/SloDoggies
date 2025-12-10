@@ -59,11 +59,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost
 import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.data.model.petOwner.PetPlaceItem
+import com.bussiness.slodoggiesapp.data.newModel.discover.HashtagItem
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerPostItem
 import com.bussiness.slodoggiesapp.ui.component.common.getVideoThumbnail
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.CommunityPostLikes
+import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostImage
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostLikes
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostOptionsMenu
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
@@ -73,7 +76,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 fun SearchResultItem(
     name: String,
     label: String,
-    imageRes: Int,
+    imageRes: String,
     onRemove: () -> Unit,
     onItemClick: () -> Unit,
     labelVisibility : Boolean,
@@ -87,15 +90,16 @@ fun SearchResultItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Profile Image
-        Image(
-            painter = painterResource(id = imageRes),
+        AsyncImage(
+            model = imageRes.orEmpty(),
+            placeholder = painterResource(R.drawable.ic_dog_face_icon),
+            error = painterResource(R.drawable.ic_dog_face_icon),
             contentDescription = "$name profile image",
             modifier = Modifier
                 .size(48.dp)
                 .clip(CircleShape),
             contentScale = ContentScale.Crop
         )
-
         Spacer(modifier = Modifier.width(12.dp))
 
         // Name and Label
@@ -199,23 +203,24 @@ fun SearchBar(
 
 
 @Composable
-fun HashtagChip(tag: String) {
+fun HashtagChip(tag: HashtagItem) {
     Box(
         modifier = Modifier
             .background(
-                color = Color(0xFFE5EFF2), // Light blue
+                color = Color(0xFFE5EFF2),
                 shape = RoundedCornerShape(4.dp)
             )
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Text(
-            text = tag,
+            text = tag.hashtag,
             color = PrimaryColor,
             fontSize = 11.sp,
             fontFamily = FontFamily(Font(R.font.outfit_regular))
         )
     }
 }
+
 
 @Composable
 fun FilterChipBox(
@@ -536,7 +541,7 @@ fun PetPlaceCard(placeItem: PetPlaceItem, onItemClick: () -> Unit) {
 }
 
 @Composable
-fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost, onJoinCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onSaveClick : () -> Unit, onProfileClick: () -> Unit) {
+fun SocialEventCard(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onLikeClick : () -> Unit, onProfileClick: () -> Unit,onInterested : () -> Unit) {
     var isFollowed by remember { mutableStateOf(false) }
     Column(modifier = Modifier
         .background(Color.White)
@@ -551,8 +556,10 @@ fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvid
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = event.userImage) ,
+            AsyncImage(
+                model = postItem.media?.parentImageUrl ,
+                placeholder = painterResource(R.drawable.ic_person_icon),
+                error = painterResource(R.drawable.ic_person_icon),
                 contentDescription = "User Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -566,7 +573,7 @@ fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvid
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically){
                     Text(
-                        text = event.userName,
+                        text = postItem.userName,
                         fontWeight = FontWeight.Medium,
                         fontSize = 12.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -599,31 +606,12 @@ fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvid
                         )
                     }
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = event.label,
-                        fontSize = 8.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        color = PrimaryColor,
-                        lineHeight = 20.sp,
-                        modifier = Modifier
-                            .padding(top = 4.dp)
-                            .background(
-                                color = Color(0xFFE5EFF2),
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(horizontal = 8.dp, vertical = 0.dp)
-                    )
-
-                    Spacer(Modifier.width(8.dp))
-
-                    Text(
-                        text = event.time,
-                        fontSize = 12.sp,
-                        color = TextGrey,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    )
-                }
+                Text(
+                    text = postItem.time,
+                    fontSize = 12.sp,
+                    color = TextGrey,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                )
             }
 
 
@@ -636,11 +624,12 @@ fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvid
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically
             ) {
+
+                // LEFT: Title
                 Text(
-                    text = event.eventTitle,
+                    text = postItem.eventTitle,
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -648,109 +637,87 @@ fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvid
                     modifier = Modifier.weight(1f)
                 )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                // RIGHT: START DATE (FIXED WIDTH)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.width(180.dp)   // FIX: same width for both top & bottom
+                ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.cal_ic), // your calendar icon
+                        painter = painterResource(id = R.drawable.cal_ic),
                         contentDescription = "Calendar",
-                        tint = Color.Unspecified,
-                        modifier = Modifier.wrapContentSize()
+                        tint = Color.Unspecified
                     )
-
                     Spacer(modifier = Modifier.width(4.dp))
-
                     Text(
-                        text = event.eventStartDate,
+                        text = postItem.eventStartDate ?: "",
                         fontSize = 14.sp,
                         color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal
+                        fontFamily = FontFamily(Font(R.font.outfit_regular))
                     )
                 }
             }
 
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
+
+                // LEFT: Description
                 Text(
-                    text = event.eventDescription,
+                    text = postItem.eventDescription ?: "No Description",
                     fontSize = 14.sp,
                     color = TextGrey,
                     maxLines = 8,
                     overflow = TextOverflow.Ellipsis,
                     lineHeight = 18.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.weight(1f) // allows flexible width
+                    modifier = Modifier.weight(1f)
                 )
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.End
-//                ) {
-//                    Icon(
-//                        painter = painterResource(id = R.drawable.time_ic), // your duration icon
-//                        contentDescription = "Duration",
-//                        tint = Color.Unspecified,
-//                        modifier = Modifier.wrapContentSize()
-//                    )
-//
-//                    Spacer(modifier = Modifier.width(4.dp))
-//
-//                    Text(
-//                        text = event.eventDuration,
-//                        fontSize = 12.sp,
-//                        color = Color.Gray,
-//                        fontFamily = FontFamily(Font(R.font.outfit_regular))
-//                    )
-//                }
-                Row(verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.End) {
+                // RIGHT: END DATE (SAME FIXED WIDTH)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.width(180.dp)   // FIXED → matches the first one
+                ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.cal_ic), // your calendar icon
+                        painter = painterResource(id = R.drawable.cal_ic),
                         contentDescription = "Calendar",
-                        tint = Color.Unspecified,
-                        modifier = Modifier.wrapContentSize()
+                        tint = Color.Unspecified
                     )
-
                     Spacer(modifier = Modifier.width(4.dp))
-
                     Text(
-                        text = event.eventEndDate,
+                        text = postItem.eventEndDate ?: "",
                         fontSize = 14.sp,
                         color = Color.Black,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal
+                        fontFamily = FontFamily(Font(R.font.outfit_regular))
                     )
                 }
             }
 
-
             Spacer(modifier = Modifier.height(4.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(painter = painterResource(R.drawable.location_ic_icon), contentDescription = null, tint = Color.Unspecified, modifier = Modifier.wrapContentSize())
+                Icon(
+                    painter = painterResource(R.drawable.location_ic_icon),
+                    contentDescription = null,
+                    tint = Color.Unspecified
+                )
                 Spacer(modifier = Modifier.width(4.dp))
-                Text(event.location, fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.outfit_medium)), color = Color.Black)
+                Text(
+                    postItem.location ?: "Undisclosed",
+                    fontSize = 14.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    color = Color.Black
+                )
             }
         }
 
+
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Post Image
-        Image(
-            painter = painterResource(id = event.postImage),
-            contentDescription = "Event Image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(230.dp)
-                .clip(RoundedCornerShape(0.dp))
-        )
+        PostImage(mediaList = postItem.mediaList)
 
         // CTA Button
         Box(
@@ -758,7 +725,7 @@ fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvid
                 .fillMaxWidth()
                 .background(Color.Black)
                 .padding(horizontal = 12.dp, vertical = 8.dp)
-                .clickable { onJoinCommunity() },
+                .clickable { onJoinedCommunity() },
             contentAlignment = Alignment.CenterEnd
         ) {
             Text("Join Community", modifier = Modifier.padding(end = 35.dp),
@@ -774,16 +741,20 @@ fun SocialEventCard(event: com.bussiness.slodoggiesapp.data.model.businessProvid
         }
 
         // Bottom Row: Likes, Comments, Shares, Bookmark
-        PostLikes(likes = event.likes, comments = event.comments, shares = event.shares, onShareClick = { onShareClick() }, onSaveClick = { onSaveClick() }
-            , onLikeClick = {
+        Spacer(modifier = Modifier.height(10.dp))
 
-            },
-            onCommentClick = {
-
-            },
-            isLike = false,
-            isSave = false
+        // Actions
+        CommunityPostLikes(
+            likes = postItem.likes, comments = postItem.comments,
+            shares = postItem.shares, onShareClick = { onShareClick() },
+            onLikeClick = { onLikeClick() },
+            isLike = postItem.isLiked,
+            isSaved = postItem.isSaved,
+            onSaveClick = { },
+            onClickInterested = { onInterested() }
         )
+
+        Spacer(modifier = Modifier.height(10.dp))
     }
 }
 
@@ -799,9 +770,7 @@ fun IconWithCount(imageRes: Int, count: String,onItemClick: () -> Unit) {
 
 
 @Composable
-fun HashtagSection() {
-    val hashtags = listOf("#DogYoga", "#PupWalk2025", "#VetPicnic", "#PetGala", "#rain")
-
+fun HashtagSection(hashtags: List<HashtagItem>) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(hashtags) { tag ->
             HashtagChip(tag)

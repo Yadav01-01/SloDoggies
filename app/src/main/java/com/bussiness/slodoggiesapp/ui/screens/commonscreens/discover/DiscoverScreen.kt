@@ -1,10 +1,10 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,11 +28,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategorySection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HashtagSection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchBar
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchResultItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SocialEventCard
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
 import com.bussiness.slodoggiesapp.ui.dialog.PetPlaceDialog
@@ -44,17 +46,19 @@ import com.bussiness.slodoggiesapp.viewModel.businessProvider.DiscoverViewModel
 
 @Composable
 fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewModel = hiltViewModel()) {
-    val query by viewModel.query.collectAsState()
-    val selectedCategory by viewModel.category.collectAsState()
-    val petPlaceDialog by viewModel.petPlaceDialog.collectAsState()
-    val searchResults by viewModel.searchResults.collectAsState()
-    val showSavedDialog by viewModel.showSavedDialog.collectAsState()
-    val shareContentDialog by viewModel.showShareContent.collectAsState()
-    val showReportDialog by viewModel.showReportDialog.collectAsState()
-    val showReportToast by viewModel.showReportToast.collectAsState()
+
+    val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
     var message by remember { mutableStateOf("") }
     var selectedReason by remember { mutableStateOf("") }
-    val categories = listOf("Pets Near You", "Events", "Pet Places", "Activities")
+
+    LaunchedEffect(uiState.error) {
+        val msg = uiState.error
+        if (!msg.isNullOrBlank()) {
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     BackHandler {
         if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
@@ -72,35 +76,51 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
     ) {
         Spacer(Modifier.height(8.dp))
         //  Search Bar
-        SearchBar(query = query, onQueryChange = { viewModel.updateQuery(it) },placeholder = "Search")
+        SearchBar(query = uiState.query, onQueryChange = { viewModel.updateQuery(it) },placeholder = "Search")
 
         Spacer(modifier = Modifier.height(12.dp))
-
         // Hashtags Row
-        HashtagSection()
+        HashtagSection(uiState.hashtags)
 
         Spacer(modifier = Modifier.height(12.dp))
         // Categories
-        CategorySection(categories = categories, selectedCategory = selectedCategory, onCategorySelected = { viewModel.selectCategory(it) })
+        CategorySection(categories = uiState.categories, selectedCategory = uiState.selectedCategory, onCategorySelected = { viewModel.selectCategory(it) })
 
         Spacer(modifier = Modifier.height(10.dp))
         
-        when (selectedCategory) {
-            "Pets Near You" -> ShowPetsNearYou(searchResults, navController)
-            "Pet Places"    -> PetPlacesResults( onItemClick = { viewModel.showPetPlaceDialog()})
-            "Activities"    -> { }/*{ ActivitiesPostsList(posts = getSamplePosts(), onReportClick = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)}) }*/
-            "Events"        -> EventsResult(onClickMore = { viewModel.showReportDialog() }, onShareClick = { viewModel.showShareContent() }, onSavedClick = { viewModel.showSavedDialog() }, onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) }, onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)})
-            else            -> ShowGeneralResults(searchResults, navController)
+        when (uiState.selectedCategory) {
+            "Pets Near You" -> ShowPetsNearYou(uiState.pets, navController)
+            "Pet Places"    -> PetPlacesResults(
+                onItemClick = { viewModel.showPetPlaceDialog(true)}
+            )
+            "Activities"    -> ActivitiesPostsList(
+                posts = uiState.posts,
+                onReportClick = { viewModel.showReportDialog(true) },
+                onShareClick = { viewModel.showShareContent(true) },
+                onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)}
+            )
+            "Events"        -> EventsResult(
+                posts = uiState.posts,
+                onClickMore = { viewModel.showReportDialog(true) },
+                onShareClick = { viewModel.showShareContent(true) },
+                onLikeClick = { postId -> viewModel.postLikeUnlike(postId) },
+                onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
+                onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
+                onInterested = { postId -> viewModel.savePost(postId,
+                    onSuccess = { viewModel.showSavedDialog(true) }
+                ) }
+            )
+                else        -> ShowPetsNearYou(uiState.pets, navController)
         }
     }
 
-    if (petPlaceDialog) {
+    if (uiState.showPetPlaceDialog) {
         PetPlaceDialog(onDismiss = { viewModel.dismissPetPlaceDialog() })
     }
-    if (shareContentDialog) {
-        ShareContentDialog( onDismiss = { viewModel.dismissShareContent() }, onSendClick = { viewModel.dismissShareContent() })
+    if (uiState.showShareContentDialog) {
+        ShareContentDialog( onDismiss = { viewModel.showShareContent(false) }, onSendClick = { viewModel.showShareContent(true) })
     }
-    if (showSavedDialog){
+    if (uiState.showSavedDialog){
         SavedDialog(
             icon = R.drawable.icon_park_outline_success,
             title = stringResource(R.string.Event_Saved),
@@ -108,10 +128,10 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
             onDismiss = { viewModel.dismissSavedDialog() }
         )
     }
-    if (showReportDialog) {
+    if (uiState.showReportDialog) {
         ReportDialog(
-            onDismiss = { viewModel.dismissReportDialog() },
-            onCancel = { viewModel.dismissReportDialog() },
+            onDismiss = { viewModel.showReportDialog(false) },
+            onCancel = { viewModel.showReportDialog(false) },
             onSendReport = { viewModel.showReportToast() },
             reasons = listOf("Bullying or unwanted contact",
                 "Violence, hate or exploitation",
@@ -124,7 +144,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
             title = "Report Post"
         )
     }
-    if (showReportToast){
+    if (uiState.showReportDialog){
         ReportBottomToast(
             onDismiss = {viewModel.dismissReportToast()}
         )
@@ -133,204 +153,39 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
 
 
 @Composable
-fun EventsResult(onClickMore: () -> Unit,onJoinClick : () -> Unit,onShareClick: () -> Unit,onSavedClick: () -> Unit,onProfileClick: () -> Unit) {
-
-    val sampleEvents = listOf(
-        com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost(
-            userName = "Lydia Vaccaro with Wixx",
-            userImage = R.drawable.user_ic,
-            postImage = R.drawable.post_img,
-            label = "Pet Mom",
-            time = "5 Min.",
-            eventTitle = "Event Title",
-            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-            eventDuration = "30 Mins.",
-            location = "San Luis Obispo County",
-            onClickFollow = {},
-            onClickMore = {},
-            eventStartDate = "May 25, 4:00 PM",
-            eventEndDate = "June 15, 5:00 PM",
-            onClickLike = {},
-            onClickComment = {},
-            onClickShare = {},
-            likes = 120,
-            comments = 20,
-            shares = 10
-        ),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost(
-            userName = "Lydia Vaccaro with Wixx",
-            userImage = R.drawable.user_ic,
-            postImage = R.drawable.post_img,
-            label = "Pet Mom",
-            time = "5 Min.",
-            eventTitle = "Event Title",
-            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-            eventDuration = "30 Mins.",
-            location = "San Luis Obispo County",
-            onClickFollow = {},
-            onClickMore = {},
-            eventStartDate = "May 25, 4:00 PM",
-            eventEndDate = "June 15, 5:00 PM",
-            onClickLike = {},
-            onClickComment = {},
-            onClickShare = {},
-            likes = 120,
-            comments = 20,
-            shares = 10
-        ),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost(
-            userName = "Lydia Vaccaro with Wixx",
-            userImage = R.drawable.user_ic,
-            postImage = R.drawable.post_img,
-            label = "Pet Mom",
-            time = "5 Min.",
-            eventTitle = "Event Title",
-            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-            eventDuration = "30 Mins.",
-            location = "San Luis Obispo County",
-            onClickFollow = {},
-            onClickMore = {},
-            eventStartDate = "May 25, 4:00 PM",
-            eventEndDate = "June 15, 5:00 PM",
-            onClickLike = {},
-            onClickComment = {},
-            onClickShare = {},
-            likes = 120,
-            comments = 20,
-            shares = 10
-        ),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.EventPost(
-            userName = "Lydia Vaccaro with Wixx",
-            userImage = R.drawable.user_ic,
-            postImage = R.drawable.post_img,
-            label = "Pet Mom",
-            time = "5 Min.",
-            eventTitle = "Event Title",
-            eventDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
-            eventDuration = "30 Mins.",
-            location = "San Luis Obispo County",
-            onClickFollow = {},
-            onClickMore = {},
-            eventStartDate = "May 25, 4:00 PM",
-            eventEndDate = "June 15, 5:00 PM",
-            onClickLike = {},
-            onClickComment = {},
-            onClickShare = {},
-            likes = 120,
-            comments = 20,
-            shares = 10
-        ),
-
-        )
+fun EventsResult(
+    posts: List<PostItem>,
+    onClickMore: () -> Unit,
+    onJoinClick: () -> Unit,
+    onShareClick: () -> Unit,
+    onLikeClick: (String) -> Unit,
+    onProfileClick: () -> Unit,
+    onInterested: (String) -> Unit
+) {
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(sampleEvents) { event ->
-            SocialEventCard( event = event , onReportClick = { onClickMore() },
-                onShareClick = { onShareClick() }, onSaveClick = { onSavedClick() },
-                onJoinCommunity = { onJoinClick()}, onProfileClick = { onProfileClick() })
+        items(posts) { event ->
+
+            // Check each item
+            if (event is PostItem.CommunityPost) {
+
+                SocialEventCard(
+                    postItem = event,
+                    onReportClick = { onClickMore() },
+                    onShareClick = { onShareClick() },
+                    onLikeClick = { onLikeClick(event.postId) },
+                    onJoinedCommunity = { onJoinClick() },
+                    onProfileClick = { onProfileClick() },
+                    onInterested = { onInterested(event.postId) }
+                )
+            }
         }
     }
 }
 
-@Composable
-fun ShowGeneralResults(results: List<com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult>, controller: NavHostController) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(vertical = 8.dp)
-    ) {
-        items(results) { result ->
-            SearchResultItem(
-                name = result.name,
-                label = result.label,
-                imageRes = result.imageRes,
-                onItemClick = { controller.navigate(Routes.PERSON_DETAIL_SCREEN)},
-                onRemove = {},
-                labelVisibility = true,
-                crossVisibility = true
-            )
-        }
-    }
-}
 
-/*fun getSamplePosts(): List<PostItem> {
-    return listOf(
-        PostItem.NormalPost(
-            postId = 1.toString(),
-            userId = 10.toString(),
-            postTitle = "🐾 Meet Wixx - our brown bundle of joy!",
-            address = "Mumbai",
-            postType = "other",
-            time = "5 Min.",
-            likeCount = 120,
-            commentCount = 20,
-            shareCount = 10,
-            hashtags = listOf("#dog", "#petlover"),
-            userDetail = UserDetail(
-                name = "Lydia Vaccaro",
-                image = "lydia_vaccaro",
-                id = 1
-            ),
-            petDetail = PetDetail(
-                petName = "Wixx",
-                petImage = "Mixed",
-                id = 1
-            ),
-            postMedia = listOf(
-                MediaItem(
-                    id = 1,
-                    mediaPath = "R.drawable.dog1"
-                ),
-                MediaItem(
-                    id = 2,
-                    mediaPath = "https://picsum.photos/400"
-                ),
-                MediaItem(
-                    id = 3,
-                    mediaPath = "R.drawable.dummy_social_media_post"
-                )
-            )
-        ),
-
-        PostItem.NormalPost(
-            id = 2,
-            userId = 11,
-            postTitle = "Enjoying the sunny day!",
-            address = "Delhi",
-            postType = "other",
-            time = "15 Min.",
-            likeCount = 85,
-            commentCount = 12,
-            shareCount = 5,
-            hashtags = listOf("#sunnyday", "#doglife"),
-            userDetail = UserDetail(
-                name = "Lydia Vaccaro",
-                image = "lydia_vaccaro",
-                id = 1
-            ),
-            petDetail = PetDetail(
-                petName = "Wixx",
-                petImage = "Mixed",
-                id = 1
-            ),
-            postMedia = listOf(
-                MediaItem(
-                    id = 1,
-                    mediaPath = "R.drawable.dog1"
-                ),
-                MediaItem(
-                    id = 2,
-                    mediaPath = "https://picsum.photos/400"
-                ),
-                MediaItem(
-                    id = 3,
-                    mediaPath = "R.drawable.dummy_social_media_post"
-                )
-            )
-        )
-    )
-}*/
 
 @Preview(showBackground = true)
 @Composable

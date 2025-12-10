@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
@@ -23,7 +24,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -32,72 +35,89 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 
 @Composable
-fun PetServiceCard(service: PetService, navController: NavHostController,onInquire: () -> Unit) {
+fun PetServiceCard(
+    service: ServiceItem,
+    navController: NavHostController,
+    onInquire: () -> Unit
+) {
+
+    val serviceName = service.serviceName
+    val providerName = service.providerName.orEmpty()
+    val location = service.location.orEmpty()
+    val rating = service.averageRating.orEmpty()
+    val imageUrl = service.image.orEmpty()
+    val category = service.categoryName.firstOrNull().orEmpty()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(4.dp).clickable { // Add clickable modifier
-                navController.navigate(Routes.SERVICE_PROVIDER_DETAILS)
-            },
+            .padding(4.dp)
+            .clickable { navController.navigate(Routes.SERVICE_PROVIDER_DETAILS) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp)
     ) {
+
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            // Paw Icon
 
-            Image(
-                painter = painterResource(id = service.iconRes),
+            AsyncImage(
+                model = imageUrl,
+                placeholder = painterResource(R.drawable.fluent_color_paw),
+                error = painterResource(R.drawable.fluent_color_paw),
                 contentDescription = null,
-                modifier = Modifier.height(45.dp).width(50.dp)
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.height(45.dp).width(50.dp).clip(RoundedCornerShape(10.dp))
             )
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Service Name
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+
                 Text(
-                    text = service.name,
+                    text = serviceName ?: "",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,
                     maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    overflow = TextOverflow.Ellipsis
+                    modifier = Modifier.widthIn(max = 100.dp)
                 )
+
                 Spacer(modifier = Modifier.width(4.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.ic_check_mark),
-                    contentDescription = "Verified",
-                    modifier = Modifier.size(14.dp)
-                )
+
+                if (service.isBusinessVerified){
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_check_mark),
+                        contentDescription = "Verified",
+                        modifier = Modifier.size(14.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(3.dp))
 
-            // Provider Name with verified icon
             Text(
-                text = service.providerName,
+                text = providerName,
                 fontSize = 10.sp,
                 color = Color.Black,
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Rating
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_round_star),
                     contentDescription = "Rating",
@@ -106,7 +126,7 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = service.rating,
+                    text = "$rating /5",
                     fontSize = 12.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     fontWeight = FontWeight.Medium,
@@ -116,61 +136,46 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     painter = painterResource(id = R.drawable.location_ic_icon),
                     contentDescription = "location",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.wrapContentSize()
+                    tint = Color.Unspecified
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "${service.miles} away",
+                    text = "${location.ifEmpty { "Unknown" }} away",
                     fontSize = 12.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     fontWeight = FontWeight.Medium,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
                     color = Color.Black
                 )
-
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Service Type Chip
             Surface(
-                color = Color.White, // White background
+                color = Color.White,
                 shape = RoundedCornerShape(6.dp),
-                border = BorderStroke(1.dp, Color(0xFFCDCDCD)), // Light gray border
-                modifier = Modifier
-                    .wrapContentSize()
-
+                border = BorderStroke(1.dp, Color(0xFFCDCDCD))
             ) {
                 Text(
-                    text = service.serviceType,
-                    fontSize = 10.sp, // Slightly larger font size to match appearance
-                    color = Color(0xFF8A8894), // Soft gray text color
+                    text = category.ifEmpty { "N/A" },
+                    fontSize = 10.sp,
+                    color = Color(0xFF8A8894),
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp) // Inner padding
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
 
-
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Inquire Now Button
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onInquire() }
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFF258694),
-                        shape = RoundedCornerShape(5.dp)
-                    )
-                    .padding( vertical = 8.dp),
+                    .border(1.dp, Color(0xFF258694), RoundedCornerShape(5.dp))
+                    .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
@@ -193,6 +198,8 @@ fun PetServiceCard(service: PetService, navController: NavHostController,onInqui
         }
     }
 }
+
+
 
 data class PetService(
     val name: String,
