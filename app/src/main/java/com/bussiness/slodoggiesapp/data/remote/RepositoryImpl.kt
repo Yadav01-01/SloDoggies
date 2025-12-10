@@ -39,6 +39,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
+import retrofit2.http.Field
+import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -483,9 +485,9 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.getBusinessProfileDetail(userId) })
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getMyPostDetails(userId: String): Flow<Resource<MyPostsResponse>> = flow {
+    override suspend fun getMyPostDetails(userId: String,page:String): Flow<Resource<MyPostsResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.getMyPostDetail(userId) })
+        emit(safeApiCall { api.getMyPostDetail(userId,page) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun addAndRemoveFollowers(
@@ -556,9 +558,11 @@ class RepositoryImpl @Inject constructor(
 
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun savePost(userId: String, postId: String): Flow<Resource<CommonResponse>> = flow{
+    override suspend fun savePost(userId: String, postId: String,
+                                  eventId: String,
+                                 addId: String): Flow<Resource<CommonResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.savePost(userId,postId) })
+        emit(safeApiCall { api.savePost(userId,postId,eventId,addId) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun reportPost(
@@ -573,30 +577,34 @@ class RepositoryImpl @Inject constructor(
 
     override suspend fun postLikeUnlike(
         userId: String,
-        postId: String
+        postId: String,
+        eventId: String,
+        addId: String
     ): Flow<Resource<CommonResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.postLikeUnlike(userId,postId) })
+        emit(safeApiCall { api.postLikeUnlike(userId,postId,eventId,addId) })
     }.flowOn(Dispatchers.IO)
 
 
     override suspend fun getComments(
         userId: String,
         postId: String,
+        addId: String,
         page: String,
         limit: String
     ): Flow<Resource<CommentsResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.getComments(userId,postId,page,limit) })
+        emit(safeApiCall { api.getComments(userId,postId,addId,page,limit) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun addNewComment(
         userId: String,
         postId: String,
-        commentText: String
+        commentText: String,
+        addId: String
     ): Flow<Resource<AddCommentResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.addNewComment(userId,postId,commentText) })
+        emit(safeApiCall { api.addNewComment(userId,postId,commentText,addId) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun replyComment(
@@ -624,6 +632,23 @@ class RepositoryImpl @Inject constructor(
     ): Flow<Resource<CommonResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.editComment(userId,commentId,commenText) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun commentLike(
+        userId: String,
+        commentId: String
+    ): Flow<Resource<CommonResponse>> =  flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.commentLike(userId,commentId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun editPost(
+        userId: String,
+        postId: String,
+        postDescription: String
+    ): Flow<Resource<CommonResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.editPost(userId,postId,postDescription) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun trendingHashtags(): Flow<Resource<TrendingHashtagsResponse>> = flow {

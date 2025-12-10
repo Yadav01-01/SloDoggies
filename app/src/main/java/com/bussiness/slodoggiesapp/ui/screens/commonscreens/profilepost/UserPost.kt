@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -7,8 +8,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,23 +31,35 @@ import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.common.NoDataView
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.NormalPostItem
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
-import com.bussiness.slodoggiesapp.viewModel.common.userPost.UserPostViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
+import com.google.gson.Gson
 
 @Composable
 fun UserPost(navController: NavHostController) {
-    val viewModel: UserPostViewModel = hiltViewModel()
+    val viewModel: HomeViewModel = hiltViewModel()
     var deleteDialog by remember { mutableStateOf(false) }
     var isNavigating by remember { mutableStateOf(false) }
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(state.message) {
-        state.message?.let {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-        }
+    var showCommentsDialog  by remember { mutableStateOf(false) }
+    var showCommentsType  by remember { mutableStateOf("") }
+    var deleteComment by remember { mutableStateOf(false) }
+    var deleteCommentId by remember { mutableStateOf("") }
+
+    val uiStateComment by viewModel.uiStateComment.collectAsState()
+
+//    LaunchedEffect(state.message) {
+//        state.message?.let {
+//            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+//        }
+//    }
+    LaunchedEffect(Unit) {
+        viewModel.loadPostFirstPage()
     }
 
 
@@ -70,36 +84,88 @@ fun UserPost(navController: NavHostController) {
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
-        /*when{
-            state.showNoData -> {
+        when {
+            state.posts.isEmpty() -> {
                 NoDataView("Oops ,No posts available at the moment.")
-            }else -> {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFCEE1E6)),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(getSamplePosts()) { post ->
-                    if (post is PostItem.NormalPost) {
-                        NormalPostItem(
-                            postItem = post,
-                            modifier = Modifier,
-                            onReportClick = { *//* TODO *//* },
-                            onShareClick = { *//* TODO *//* },
-                            normalPost = false,
-                            onEditClick = { navController.navigate(Routes.EDIT_POST_SCREEN) },
-                            onDeleteClick = { deleteDialog = true },
-                            onProfileClick = {  },
-                            onSelfPostEdit = {  },
-                            onSelfPostDelete = {  }
-                        )
+            }
+
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFCEE1E6)),
+                    contentPadding = PaddingValues(horizontal = 5.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    itemsIndexed(
+                        items = state.posts,
+                        key = { _, post -> post.stableKey }
+                    ) { index, post ->
+
+                        if (index == state.posts.lastIndex - 2) {
+                            viewModel.loadNextPage()
+                        }
+
+                        when (post) {
+                            is PostItem.NormalPost -> NormalPostItem(
+                                modifier = Modifier.padding(horizontal = 12.dp),
+                                post,
+                                onReportClick = {
+                                    viewModel.showReportDialog(post.postId)
+                                },
+                                onShareClick = {},
+                                normalPost = true,
+                                onEditClick = {},
+                                onDeleteClick = {},
+                                onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
+                                onSelfPostEdit = {
+                                    val postJson = Gson().toJson(post)
+                                    navController.currentBackStackEntry
+                                        ?.savedStateHandle
+                                        ?.set("Post", postJson)
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("PostType", "NormalPost")
+                                    navController.currentBackStackEntry?.savedStateHandle?.set("Screen", "Home")
+                                    navController.navigate(Routes.EDIT_POST_SCREEN)
+                                },
+                                onSelfPostDelete = { viewModel.showDeleteDialog() },
+                                onSaveClick = {
+                                    viewModel.savePost(post.postId, "", "",
+                                        onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                                        onSuccess = {
+                                            viewModel.toggleSave(post.postId)
+                                        })
+                                },
+                                onLikeClick = {
+                                    viewModel.postLikeUnlike(post.postId, "", "",
+                                        onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                                        onSuccess = {
+                                            viewModel.toggleLike(post.postId)
+                                        })
+                                },
+                                onCommentClick = {
+                                    viewModel.updatePostId(post.postId)
+                                    showCommentsDialog = true
+                                    showCommentsType = "Normal"
+                                },
+                                onFollowingClick = {
+                                    viewModel.addAndRemoveFollowers(post.userId, onSuccess = {}, onError = {
+                                            msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    })
+                                }
+                            )
+                            is PostItem.CommunityPost -> {
+                                // TODO: handle or skip
+                            }
+
+                            is PostItem.SponsoredPost -> {
+                                // TODO: handle or skip
+                            }
+                        }
                     }
                 }
             }
-            }
-        }*/
+        }
+
     }
     if (deleteDialog) {
         DeleteChatDialog(
@@ -110,84 +176,106 @@ fun UserPost(navController: NavHostController) {
             description = stringResource(R.string.Delete_desc)
         )
     }
-}
 
-//  Sample data (can move to Preview-only file later)
-/*fun getSamplePosts(): List<PostItem> {
-    return listOf(
-        PostItem.NormalPost(
-            id = 1,
-            userId = 10,
-            postTitle = "🐾 Meet Wixx - our brown bundle of joy!",
-            address = "Mumbai",
-            postType = "other",
-            time = "5 Min.",
-            likeCount = 120,
-            commentCount = 20,
-            shareCount = 10,
-            hashtags = listOf("#dog", "#petlover"),
-            userDetail = UserDetail(
-                name = "Lydia Vaccaro",
-                image = "lydia_vaccaro",
-                id = 1
-            ),
-            petDetail = PetDetail(
-                petName = "Wixx",
-                petImage = "Mixed",
-                id = 2
-            ),
-            postMedia = listOf(
-                MediaItem(
-                    id = 1,
-                    mediaPath = "R.drawable.dog1"
-                ),
-                MediaItem(
-                    id = 2,
-                    mediaPath = "R.drawable.dog1"
-                ),
-                MediaItem(
-                    id = 3,
-                    mediaPath = "R.drawable.dog1"
-                )
-            )
-        ),
+    //Comment
+    if (showCommentsDialog) {
+        // Load comments from API when dialog opens
+        var  postId = ""
+        var  adId = ""
+        if (showCommentsType.equals("Ad")){
+            adId = state.postId
+        }else if (showCommentsType.equals("Normal")){
+            postId = state.postId
+        }
+        LaunchedEffect(Unit) {
+            viewModel.getComments(
+                postId = postId,
+                addId = adId,
+                page = 1,
+                limit = 20,
+                onError = {
+                        msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    /* handle error */
+                },
+                onSuccess = {
 
-        PostItem.NormalPost(
-            id = 2,
-            userId = 11,
-            postTitle = "Enjoying the sunny day!",
-            address = "Delhi",
-            postType = "other",
-            time = "15 Min.",
-            likeCount = 85,
-            commentCount = 12,
-            shareCount = 5,
-            hashtags = listOf("#sunnyday", "#doglife"),
-            userDetail = UserDetail(
-                name = "Lydia Vaccaro",
-                image = "lydia_vaccaro",
-                id = 1
-            ),
-            petDetail = PetDetail(
-                petName = "Wixx",
-                petImage = "Mixed",
-                id = 2
-            ),
-            postMedia = listOf(
-                MediaItem(
-                    id = 1,
-                    mediaPath = "R.drawable.dog1"
-                ),
-                MediaItem(
-                    id = 2,
-                    mediaPath = "R.drawable.dog1"
-                ),
-                MediaItem(
-                    id = 3,
-                    mediaPath = "R.drawable.dog1"
-                )
+                }
             )
+        }
+        CommentsDialog(
+            comments = uiStateComment.comments/*sampleComments*/,
+            onDismiss = {
+                viewModel.clearComments()
+                showCommentsDialog = false
+                showCommentsType = ""
+            },
+            onDeleteClick = {commentId ->
+                deleteCommentId = commentId
+                deleteComment = true
+            },
+            onSandClick = {comment, type,commentId ->
+                if (type.equals("reply")){
+                    viewModel.replyComment(postId = state.postId,
+                        commentText = comment, commentId = commentId, onError = {error->
+                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                        }, onSuccess = {
+
+                        })
+                }else if (type.equals("edit")){
+                    viewModel.editComment(commentId = commentId, commenText = comment,
+                        onSuccess = {
+
+                        }, onError = {error->
+                            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                        })
+                }  else/* (type.equals("new"))*/ {
+                    if (showCommentsType.equals("Ad")){
+                        viewModel.addNewComment(
+                            postId = "",
+                            addId = state.postId,
+                            commentText = comment,
+                            onSuccess = {  viewModel.increaseCommentCount(state.postId) },
+                            onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
+                        )
+
+                    }else if (showCommentsType.equals("Normal")){
+                        viewModel.addNewComment(
+                            postId = state.postId,
+                            addId = "",
+                            commentText = comment,
+                            onSuccess = {  viewModel.increaseCommentCount(state.postId) },
+                            onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
+                        )
+                    }
+
+                }
+                Log.d("********","$comment $type")
+            },
+            onCommentLikeClick = {commentId ->
+                viewModel.commentLike(commentId,
+                    onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                    onSuccess = {
+
+                    })
+            }
         )
-    )
-}*/
+    }
+
+    if (deleteComment){
+        DeleteChatDialog(
+            onDismiss = { deleteComment = false },
+            onClickRemove = {
+                deleteComment = false
+                viewModel.deleteComment(deleteCommentId, onSuccess = {
+
+                }, onError = {error->
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                })
+            },
+            iconResId = R.drawable.delete_mi,
+            text = "Delete Comment",
+            description = stringResource(R.string.delete_Comment)
+        )
+    }
+}
 

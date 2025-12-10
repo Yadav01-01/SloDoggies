@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
@@ -51,6 +52,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.Sponsor
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
+import com.google.gson.Gson
 
 @Composable
 fun HomeScreen(
@@ -68,6 +70,7 @@ fun HomeScreen(
     val sessionManager = SessionManager.getInstance(context)
 
     var showCommentsDialog  by remember { mutableStateOf(false) }
+    var showCommentsType  by remember { mutableStateOf("") }
     var deleteComment by remember { mutableStateOf(false) }
     var deleteCommentId by remember { mutableStateOf("") }
 
@@ -86,6 +89,12 @@ fun HomeScreen(
 
             navController.navigate(dest)
         }
+    }
+
+    val currentBackStackEntry = navController.currentBackStackEntryAsState()
+
+    LaunchedEffect(currentBackStackEntry.value) {
+        viewModel.loadFirstPage()
     }
 
     Column(
@@ -128,10 +137,28 @@ fun HomeScreen(
                         onJoinedCommunity = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
                         onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
                         onLikeClick = {
-                            viewModel.postLikeUnlike(post.postId,
+                            viewModel.postLikeUnlike("",post.postId,"",
+                                onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                                onSuccess = {
+                                    viewModel.toggleLike(post.postId)
+                                })
+                        },
+                        onSaveClick = {
+                            viewModel.savePost("",post.postId,"",
                                 onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                                 onSuccess = {  }) },
                         onClickInterested = {   }
+                                onSuccess = {
+                                    viewModel.toggleSave(post.postId)
+                                })
+                        },
+                         onFollowingClick = {
+                             viewModel.addAndRemoveFollowers(post.userId, onSuccess = {
+
+                             }, onError = {
+                                     msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                             })
+                         }
                     )
 
 
@@ -144,10 +171,10 @@ fun HomeScreen(
                         onProfileClick = onProfileClick,
                         onSponsoredClick = onSponsoredClick,
                         onLikeClick = {
-                            viewModel.postLikeUnlike(post.postId,
+                            viewModel.postLikeUnlike("","",post.postId,
                                 onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                                 onSuccess = {
-
+                                    viewModel.toggleLike(post.postId)
                                 })
 
                         },
@@ -155,6 +182,7 @@ fun HomeScreen(
                             // Log.d("********","onCommentClick")
                             viewModel.updatePostId(post.postId)
                             showCommentsDialog = true
+                            showCommentsType = "Ad"
                         }
                     )
 
@@ -171,21 +199,29 @@ fun HomeScreen(
                         },
                         onDeleteClick = {},
                         onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
-                        onSelfPostEdit = { navController.navigate(Routes.EDIT_POST_SCREEN) },
+                        onSelfPostEdit = {
+                            val postJson = Gson().toJson(post)
+                            navController.currentBackStackEntry
+                                ?.savedStateHandle
+                                ?.set("Post", postJson)
+                            navController.currentBackStackEntry?.savedStateHandle?.set("PostType", "NormalPost")
+                            navController.currentBackStackEntry?.savedStateHandle?.set("Screen", "Home")
+                            navController.navigate(Routes.EDIT_POST_SCREEN)
+                                         },
                         onSelfPostDelete = { viewModel.showDeleteDialog() },
                         onSaveClick = {
-                            viewModel.savePost(post.postId,
+                            viewModel.savePost(post.postId,"","",
                                 onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                                 onSuccess = {
-
+                                    viewModel.toggleSave(post.postId)
                                 })
 
                         },
                         onLikeClick = {
-                            viewModel.postLikeUnlike(post.postId,
+                            viewModel.postLikeUnlike(post.postId,"","",
                                 onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                                 onSuccess = {
-
+                                    viewModel.toggleLike(post.postId)
                                 })
 
                         },
@@ -193,6 +229,14 @@ fun HomeScreen(
                            // Log.d("********","onCommentClick")
                             viewModel.updatePostId(post.postId)
                             showCommentsDialog = true
+                            showCommentsType = "Normal"
+                        },
+                        onFollowingClick = {
+                            viewModel.addAndRemoveFollowers(post.userId, onSuccess = {
+
+                            }, onError = {
+                                    msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                            })
                         }
 
                     )
@@ -222,9 +266,17 @@ fun HomeScreen(
     //Comment
     if (showCommentsDialog) {
         // Load comments from API when dialog opens
+        var  postId = ""
+        var  adId = ""
+        if (showCommentsType.equals("Ad")){
+            adId = uiState.postId
+        }else if (showCommentsType.equals("Normal")){
+            postId = uiState.postId
+        }
         LaunchedEffect(Unit) {
             viewModel.getComments(
-                postId = uiState.postId,
+                postId = postId,
+                addId = adId,
                 page = 1,
                 limit = 20,
                 onError = {
@@ -241,10 +293,12 @@ fun HomeScreen(
             onDismiss = {
                 viewModel.clearComments()
                 showCommentsDialog = false
+                showCommentsType = ""
                         },
             onDeleteClick = {commentId ->
                 deleteCommentId = commentId
-                deleteComment = true },
+                deleteComment = true
+                            },
             onSandClick = {comment, type,commentId ->
                if (type.equals("reply")){
                     viewModel.replyComment(postId = uiState.postId,
@@ -261,14 +315,34 @@ fun HomeScreen(
                           Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                       })
                 }  else/* (type.equals("new"))*/ {
-                viewModel.addNewComment(
-                    postId = uiState.postId,
-                    commentText = comment,
-                    onSuccess = { Log.d("COMMENT", "Added successfully") },
-                    onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
-                )
+                    if (showCommentsType.equals("Ad")){
+                        viewModel.addNewComment(
+                            postId = "",
+                            addId = uiState.postId,
+                            commentText = comment,
+                            onSuccess = {  viewModel.increaseCommentCount(uiState.postId) },
+                            onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
+                        )
+
+                    }else if (showCommentsType.equals("Normal")){
+                        viewModel.addNewComment(
+                            postId = uiState.postId,
+                            addId = "",
+                            commentText = comment,
+                            onSuccess = {  viewModel.increaseCommentCount(uiState.postId) },
+                            onError = { error -> Toast.makeText(context, error, Toast.LENGTH_SHORT).show() }
+                        )
+                    }
+
             }
             Log.d("********","$comment $type")
+            },
+            onCommentLikeClick = {commentId ->
+                viewModel.commentLike(commentId,
+                    onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                    onSuccess = {
+
+                    })
             }
         )
     }

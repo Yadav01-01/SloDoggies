@@ -491,10 +491,10 @@ fun PetProfileScreen(navController: NavHostController) {
 
                             if (imageUrl.isVideoFile()) {
 
-                                val thumbnailBitmap by remember(imageUrl) {
+                                /*val thumbnailBitmap by remember(imageUrl) {
                                     mutableStateOf(getVideoThumbnail(imageUrl))
-                                }
-
+                                }*/
+                                val  thumbnailBitmap = post.mediaPath?.firstOrNull()?.thumbnailUrl ?: ""
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
@@ -505,12 +505,20 @@ fun PetProfileScreen(navController: NavHostController) {
 
                                     // ---- VIDEO THUMBNAIL ----
                                     if (thumbnailBitmap != null) {
-                                        Image(
+                                        AsyncImage(
+                                            model = thumbnailBitmap,
+                                            contentDescription = null,
+                                            modifier = Modifier.fillMaxSize(),
+                                            placeholder = painterResource(R.drawable.no_image),
+                                            error = painterResource(R.drawable.no_image),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                        /*Image(
                                             bitmap = thumbnailBitmap!!.asImageBitmap(),
                                             contentDescription = "",
                                             modifier = Modifier.fillMaxSize(),
                                             contentScale = ContentScale.Crop
-                                        )
+                                        )*/
                                     } else {
                                         Image(
                                             painter = painterResource(R.drawable.no_image),

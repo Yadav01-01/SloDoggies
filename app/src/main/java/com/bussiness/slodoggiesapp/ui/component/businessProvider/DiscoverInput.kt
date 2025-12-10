@@ -380,12 +380,12 @@ fun GalleryItemCardProfile(
     val context = LocalContext.current
 
     // Thumbnail state
-    var thumbnail by remember { mutableStateOf<Bitmap?>(null) }
-
+ //   var thumbnail by remember { mutableStateOf<Bitmap?>(null) }
+    var thumbnailUrl =""
     // If video → generate thumbnail using your function
     LaunchedEffect(url) {
         if (media?.type == "video") {
-            thumbnail = getVideoThumbnail( url)
+            thumbnailUrl = media?.thumbnailUrl?:""//getVideoThumbnail( url)
         }
     }
 
@@ -400,11 +400,19 @@ fun GalleryItemCardProfile(
 
         when {
             // Show generated thumbnail if video
-            media?.type == "video" && thumbnail != null -> {
-                Image(
-                    bitmap = thumbnail!!.asImageBitmap(),
+            media?.type == "video" && thumbnailUrl != null -> {
+//                Image(
+//                    bitmap = thumbnail!!.asImageBitmap(),
+//                    contentDescription = null,
+//                    modifier = Modifier.fillMaxSize(),
+//                    contentScale = ContentScale.Crop
+//                )
+                AsyncImage(
+                    model = thumbnailUrl,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
+                    placeholder = painterResource(R.drawable.no_image),
+                    error = painterResource(R.drawable.no_image),
                     contentScale = ContentScale.Crop
                 )
             }

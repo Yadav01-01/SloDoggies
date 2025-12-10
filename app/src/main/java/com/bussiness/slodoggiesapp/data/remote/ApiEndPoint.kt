@@ -53,4 +53,6 @@ object ApiEndPoint {
     const val DISCOVER_PET_NEAR_ME = "discoverPetNearMe"
     const val DISCOVER_ACTIVITIES = "discoverActivities"
     const val DISCOVER_EVENTS = "discoverEvents"
+    const val COMMENT_LIKE = "comment_like"
+    const val EDIT_POST = "edit_post"
 }

@@ -215,7 +215,7 @@ private fun PostMedia(mediaList: List<PostMediaResponse>) {
 
 @Composable
 private fun PostActions(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit,
-                        onLikeClick: () -> Unit, onCommentClick: () -> Unit, isLike:Boolean,) {
+                        onLikeClick: () -> Unit, onCommentClick: () -> Unit, isLike:Boolean) {
     var isLiked by remember { mutableStateOf(isLike) }
     var showCommentsDialog  by remember { mutableStateOf(false) }
     var deleteComment by remember { mutableStateOf(false) }

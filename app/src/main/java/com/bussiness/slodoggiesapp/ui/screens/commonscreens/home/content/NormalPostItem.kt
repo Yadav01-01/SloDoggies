@@ -1,7 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -71,6 +70,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
@@ -81,7 +81,6 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostMediaResponse
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
-import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
@@ -96,7 +95,8 @@ fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportCl
                    onSelfPostDelete: () -> Unit,
                    onSaveClick:()-> Unit,
                    onLikeClick:()-> Unit,
-                   onCommentClick:()-> Unit) {
+                   onCommentClick:()-> Unit,
+                   onFollowingClick:()->Unit) {
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -106,7 +106,17 @@ fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportCl
     ) {
 
         Column(modifier = Modifier.fillMaxWidth()) {
-            PostHeader(userId = postItem.userId,user = postItem.userName,petName = postItem.petName, personImage =postItem.media?.parentImageUrl ?: "", dogImage = postItem.media?.petImageUrl ?: "", time = postItem.time, postType = postItem.type, onReportClick = { onReportClick()},normalPost,onEditClick = { onEditClick() },onDeleteClick = { onDeleteClick() },onProfileClick = { onProfileClick() }, onSelfPostDelete = { onSelfPostDelete() }, onSelfPostEdit = { onSelfPostEdit() } )
+            PostHeader(userId = postItem.userId,user = postItem.userName,petName = postItem.petName,
+                personImage =postItem.media?.parentImageUrl ?: "", dogImage = postItem.media?.petImageUrl ?: "",
+                time = postItem.time, postType = postItem.type, onReportClick = { onReportClick()},normalPost,
+                onEditClick = { onEditClick() },onDeleteClick = { onDeleteClick() },
+                onProfileClick = { onProfileClick() },
+                onSelfPostDelete = { onSelfPostDelete() },
+                onSelfPostEdit = { onSelfPostEdit() },
+                iAmFollowing = postItem.iAmFollowing,
+                onFollowingClick = {
+                    onFollowingClick()
+                })
             PostCaption(caption = postItem.caption, description = postItem.description,hashTags = postItem.hashtags.orEmpty()  )
             PostImage(mediaList = postItem.mediaList)
             PostLikes(likes = postItem.likes, comments = postItem.comments,
@@ -121,8 +131,14 @@ fun NormalPostItem(modifier: Modifier, postItem: PostItem.NormalPost, onReportCl
 }
 
 @Composable
-fun PostHeader(userId : String ,user: String,petName : String, personImage : String ,dogImage: String , time: String,postType : String, onReportClick: () -> Unit,normalPost: Boolean,onEditClick: () -> Unit,onDeleteClick: () -> Unit,onProfileClick: () -> Unit,onSelfPostEdit: () -> Unit,onSelfPostDelete: () -> Unit) {
-    var isFollowed by remember { mutableStateOf(false) }
+fun PostHeader(userId : String ,user: String,petName : String, personImage : String ,
+               dogImage: String , time: String,postType : String,
+               onReportClick: () -> Unit,normalPost: Boolean,onEditClick: () ->
+    Unit,onDeleteClick: () -> Unit,onProfileClick: () -> Unit,onSelfPostEdit: () ->
+    Unit,onSelfPostDelete: () -> Unit,
+               iAmFollowing:Boolean,
+               onFollowingClick: () -> Unit) {
+    var isFollowed by remember { mutableStateOf(iAmFollowing) }
     val sessionManager = SessionManager.getInstance(LocalContext.current)
     Row(
         modifier = Modifier
@@ -211,7 +227,10 @@ fun PostHeader(userId : String ,user: String,petName : String, personImage : Str
                     if (normalPost){
                       if (sessionManager.getUserId() != userId){
                           OutlinedButton(
-                              onClick = { isFollowed = !isFollowed },
+                              onClick = {
+                                  onFollowingClick()
+                                  isFollowed = !isFollowed
+                                        },
                               modifier = Modifier
                                   .height(24.dp)
                                   .padding(horizontal = 10.dp),
@@ -568,7 +587,8 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null
-                    ) {  isBookmarked = !isBookmarked
+                    ) {
+                        isBookmarked = !isBookmarked
 
                         onSaveClick()
 //                        if (isBookmarked){
@@ -633,259 +653,6 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
 }
 
 
-/*@OptIn(UnstableApi::class)
-@Composable
-fun PostImage(
-    mediaList: List<PostMediaResponse>,
-    modifier: Modifier = Modifier,
-    onVideoPlay: (() -> Unit)? = null,
-) {
-    val context = LocalContext.current
-    val pagerState = rememberPagerState { mediaList.size }
-    var currentPage by rememberSaveable { mutableIntStateOf(0) }
-
-    // ---------- Light ImageLoader (No full size) ----------
-    val imageLoader = remember {
-        ImageLoader.Builder(context)
-            .crossfade(true)
-            .bitmapConfig(Bitmap.Config.RGB_565)
-            .build()
-    }
-
-    fun isVideo(url: String) = url.endsWith(".mp4") || url.endsWith(".mov") || url.endsWith(".webm")
-
-    // ---------- Prefetch ONLY next/previous ----------
-    LaunchedEffect(pagerState.currentPage) {
-        val next = (pagerState.currentPage + 1).coerceAtMost(mediaList.lastIndex)
-        val prev = (pagerState.currentPage - 1).coerceAtLeast(0)
-
-        listOf(prev, next).forEach { index ->
-            val url = mediaList[index].mediaUrl ?: return@forEach
-            if (!isVideo(url)) {
-                imageLoader.enqueue(
-                    ImageRequest.Builder(context).data(url).build()
-                )
-            }
-        }
-    }
-
-    // ---------- Lazy Video Player (Create ONLY on use) ----------
-    val players = remember { mutableMapOf<Int, ExoPlayer>() }
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(350.dp)
-    ) {
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) { page ->
-
-            val media = mediaList[page]
-            val url = media.mediaUrl.orEmpty()
-
-            if (!isVideo(url)) {
-
-                // ---------- FAST SMOOTH IMAGE ----------
-                AsyncImage(
-                    model = ImageRequest.Builder(context)
-                        .data(url)
-                        .crossfade(true)
-                        .build(),
-                    imageLoader = imageLoader,
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-
-            }
-            else
-            {
-
-
-                // VIDEO PLAYER
-                val player = remember(url) {
-                    players[page] ?: ExoPlayer.Builder(context).build().apply {
-                        setMediaItem(MediaItem.fromUri(url))
-                        prepare()
-                        playWhenReady = false
-                        repeatMode = Player.REPEAT_MODE_OFF // important: don't loop automatically
-                    }.also { players[page] = it }
-                }
-
-                val thumbnailUrl = media.thumbnailUrl//remember(url) { getVideoThumbnail(url) }
-
-            // STATES
-                var showThumb by remember { mutableStateOf(true) } // show thumbnail / play button
-                var progress by remember { mutableFloatStateOf(0f) }
-
-            // LISTENER for video end
-                DisposableEffect(player) {
-                    val listener = object : Player.Listener {
-                        override fun onPlaybackStateChanged(state: Int) {
-                            if (state == Player.STATE_ENDED) {
-                                showThumb = true      // show play button again
-                                player.seekTo(0)      // reset video to start
-                            }
-                        }
-                    }
-                    player.addListener(listener)
-                    onDispose { player.removeListener(listener) }
-                }
-
-            // ---- Update progress continuously ----
-                LaunchedEffect(player) {
-                    while (true) {
-                        if (player.isPlaying) {
-                            val current = player.currentPosition
-                            val total = player.duration.takeIf { it > 0 } ?: 1L
-                            progress = (current.toFloat() / total.toFloat()).coerceIn(0f, 1f)
-                        }
-                        delay(200)
-                    }
-                }
-                Box(modifier = Modifier.fillMaxSize()) {
-
-                    // ---- VIDEO VIEW ----
-                    AndroidView(
-                        modifier = Modifier.fillMaxSize(),
-                        factory = {
-                            PlayerView(it).apply {
-                                this.player = player
-                                useController = false
-                                useArtwork = false
-                            }
-                        }
-                    )
-
-                    // ---- THUMBNAIL ----
-                    if (showThumb) {
-                        AsyncImage(
-                            model = thumbnailUrl,
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Black.copy(alpha = 0.25f))
-                        )
-                    }
-
-                    // ---- PLAY BUTTON ----
-                    if (showThumb) {
-                        IconButton(
-                            onClick = {
-                                showThumb = false
-                                player.play()
-                            },
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .size(58.dp)
-                                .background(Color.White, CircleShape)
-                        ) {
-                            Icon(
-                                Icons.Default.PlayArrow,
-                                contentDescription = null,
-                                tint = Color.Black,
-                                modifier = Modifier.size(38.dp)
-                            )
-                        }
-                    }
-
-                    // ---- VIDEO PROGRESS BAR ----
-                    if (!showThumb) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(4.dp)
-                                .align(Alignment.BottomCenter)
-                                .background(Color.White.copy(alpha = 0.3f))
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .fillMaxWidth(progress)
-                                    .background(Color(0xFF00E1FF))  // cyan progress
-                            )
-                        }
-                    }
-                }
-
-
-            }
-
-            // ---------- PAGE INDICATOR ----------
-            // ---------- PAGE INDICATOR (Always On Top) ----------
-            if (mediaList.size > 1) {
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 40.dp)   // 👈 upar laa diya
-                        .zIndex(999f)              // 👈 sabke UPAR
-                        .background(
-                            Color.Black.copy(alpha = 0.25f),
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                        .padding(horizontal = 10.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    repeat(mediaList.size) { index ->
-                        Box(
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp)
-                                .height(6.dp)
-                                .width(if (index == currentPage) 20.dp else 6.dp)
-                                .clip(RoundedCornerShape(50))
-                                .background(
-                                    if (index == currentPage) Color.White
-                                    else Color.White.copy(alpha = 0.4f)
-                                )
-                        )
-                    }
-                }
-            }
-
-        }
-
-        // Pause videos when changing page
-        LaunchedEffect(pagerState.currentPage) {
-            currentPage = pagerState.currentPage
-            players.forEach { (index, player) ->
-                if (index != currentPage) player.pause()
-            }
-        }
-
-        // Release on dispose
-        DisposableEffect(Unit) {
-            onDispose {
-                players.values.forEach { it.release() }
-            }
-        }
-    }
-
-
-
-
-
-
-    fun getVideoThumbnail(context: Context, url: String): Bitmap? {
-        return try {
-            val retriever = MediaMetadataRetriever()
-            retriever.setDataSource(url)
-            val bitmap = retriever.getFrameAtTime(0)
-            retriever.release()
-            bitmap
-        } catch (e: Exception) {
-            null
-        }
-    }
-}*/
-
 @OptIn(UnstableApi::class)
 @Composable
 fun PostImage(
@@ -933,7 +700,9 @@ fun PostImage(
                     modifier = Modifier.fillMaxSize()
                 )
 
-            } else {
+            }
+            else
+            {
 
                 val player = remember(url) {
                     players[page] ?: ExoPlayer.Builder(context).build().apply {
@@ -945,6 +714,7 @@ fun PostImage(
                 }
 
                 val thumbnailUrl = media.thumbnailUrl
+                Log.d("*******",thumbnailUrl.toString())
 
                 var showThumb by remember { mutableStateOf(true) }
                 var progress by remember { mutableFloatStateOf(0f) }
@@ -955,6 +725,8 @@ fun PostImage(
                             if (state == Player.STATE_ENDED) {
                                 showThumb = true
                                 player.seekTo(0)
+                                player.playWhenReady = false   // Auto play off
+                                player.pause()                 // Stop the player
                             }
                         }
                     }
@@ -990,8 +762,11 @@ fun PostImage(
                         AsyncImage(
                             model = thumbnailUrl,
                             contentDescription = null,
+                            placeholder = painterResource(R.drawable.no_image),
+                            error = painterResource(R.drawable.no_image),
                             modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Crop,
+
                         )
                         Box(
                             Modifier.fillMaxSize()

@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedMapper
+import com.bussiness.slodoggiesapp.data.newModel.home.MediaResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
+import com.bussiness.slodoggiesapp.data.newModel.home.PostMediaResponse
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.CommentItem
 import com.bussiness.slodoggiesapp.data.uiState.CommentReply
@@ -44,7 +46,7 @@ class HomeViewModel @Inject constructor(
     private val localLikeState = mutableMapOf<String, Boolean>()
 
     init {
-        loadFirstPage()
+      //  loadFirstPage()
         initWelcomeDialog()
     }
 
@@ -52,6 +54,12 @@ class HomeViewModel @Inject constructor(
         currentPage = 1
         isLastPage = false
         fetchPosts(isFirstPage = true)
+    }
+
+    fun loadPostFirstPage() {
+        currentPage = 1
+        isLastPage = false
+        fetchMyPosts(isFirstPage = true)
     }
 
     fun loadNextPage() {
@@ -125,6 +133,111 @@ class HomeViewModel @Inject constructor(
     }
 
     //  Merge function: API + Local
+    private fun fetchMyPosts(isFirstPage: Boolean) {
+
+        if (isRequestRunning) return
+        isRequestRunning = true
+
+        _uiState.update { state ->
+            state.copy(
+                isLoading = isFirstPage,
+                isLoadingMore = !isFirstPage,
+                errorMessage = ""
+            )
+        }
+
+        viewModelScope.launch {
+
+            repository.getMyPostDetails(
+                userId = sessionManager.getUserId(),
+                page = currentPage.toString()
+            ).collectLatest { result ->
+
+                when (result) {
+
+                    is Resource.Success -> {
+
+                        val response = result.data.data
+                        val apiPosts = response?.data ?: emptyList()
+
+                        // 🔥 Convert API PostItem → UI PostItem.NormalPost
+                        val normalPosts = apiPosts.map { it.toNormalPost() }
+
+                        // 🔥 Pagination Safe Merge
+                        val finalPosts =
+                            if (isFirstPage) normalPosts
+                            else _uiState.value.posts + normalPosts
+
+                        // 🔥 Update UI State
+                        _uiState.update { state ->
+                            state.copy(
+                                posts = finalPosts,
+                                isLoading = false,
+                                isLoadingMore = false,
+                                errorMessage = ""
+                            )
+                        }
+
+                        // 🔥 Pagination Handler
+                        val totalPages = response?.total_page ?: 1
+                        isLastPage = currentPage >= totalPages
+                        if (!isLastPage) currentPage++
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                errorMessage = result.message ?: "Something went wrong",
+                                isLoading = false,
+                                isLoadingMore = false
+                            )
+                        }
+                    }
+
+                    is Resource.Loading -> Unit
+                    Resource.Idle -> Unit
+                }
+
+                isRequestRunning = false
+            }
+        }
+    }
+
+
+    fun com.bussiness.slodoggiesapp.data.newModel.PostItem.toNormalPost(): PostItem.NormalPost {
+        return PostItem.NormalPost(
+            postId = id?.toString() ?: "",
+            userId = userId?.toString() ?: "",
+            userName = userDetail?.name ?: "",
+            petName = petDetail?.petName ?: "",
+            userBadge = null,
+            time = createdAt ?: "",
+            caption = postTitle ?: "",
+            description = address ?: "",
+            hashtags = hashTag ?: "",
+            media = MediaResponse(
+                parentImageUrl = petDetail?.petImage ?: userDetail?.image ?: ""
+            ),
+            mediaList = postMedia?.map {
+                PostMediaResponse(
+                    mediaUrl = it.mediaPath ?: "",
+                    type = it.mediaType ?: "",
+                    thumbnailUrl = ""
+                )
+            } ?: emptyList(),
+            type = postType ?: "OwnerPost",
+            likes = postLikeCount ?: 0,
+            comments = postCommentCount ?: 0,
+            shares = postShareCount ?: 0,
+            isLiked = itemSuccess?.isLiked ?: false,
+            isSaved = itemSuccess?.isSaved ?: false,
+            iAmFollowing = false
+        )
+    }
+
+
+
+    // 🔥 Merge function: API + Local
     private fun mergeApiWithLocal(apiPosts: List<PostItem>): List<PostItem> {
         return apiPosts.map { post ->
 
@@ -149,11 +262,14 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun savePost(postId:String, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
+    fun savePost(postId:String, eventId: String,
+                 addId: String,onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
         viewModelScope.launch {
             repository.savePost(
                 userId = sessionManager.getUserId(),
                 postId = postId,
+                eventId = eventId,
+                addId = addId
             ).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -163,7 +279,6 @@ class HomeViewModel @Inject constructor(
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         result.data.let { response ->
                             if (response.success) {
-                                toggleSave(postId)
                                 onSuccess()
                             } else {
                                 onError(response.message ?: "")
@@ -182,11 +297,14 @@ class HomeViewModel @Inject constructor(
     }
 
 
-    fun postLikeUnlike(postId:String, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
+    fun postLikeUnlike(postId:String,eventId: String,
+                       addId: String, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
         viewModelScope.launch {
             repository.postLikeUnlike(
                 userId = sessionManager.getUserId(),
                 postId = postId,
+                eventId = eventId,
+                addId = addId
             ).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -196,7 +314,40 @@ class HomeViewModel @Inject constructor(
                         _uiState.value = _uiState.value.copy(isLoading = false)
                         result.data.let { response ->
                             if (response.success) {
-                                toggleLike(postId)
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+
+    }
+
+
+
+    fun commentLike(commentId:String, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
+        viewModelScope.launch {
+            repository.commentLike(
+                userId = sessionManager.getUserId(),
+                commentId = commentId,
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                toggleCommentLike(commentId.toInt())
                                 onSuccess()
                             } else {
                                 onError(response.message ?: "")
@@ -279,6 +430,30 @@ class HomeViewModel @Inject constructor(
     }
 
 
+    fun toggleCommentLike(commentId: Int) {
+
+        _uiStateComment.update { state ->
+
+            val updatedComments = state.comments.map { comment ->
+
+                if (comment.id == commentId) {
+
+                    val newIsLiked = !comment.isLikedByCurrentUser
+
+                    comment.copy(
+                        isLikedByCurrentUser = newIsLiked,
+                        likeCount = if (newIsLiked) comment.likeCount + 1 else comment.likeCount - 1
+                    )
+
+                } else comment
+            }
+
+            state.copy(comments = updatedComments)
+        }
+    }
+
+
+
 
     private fun increaseCommentCount(postId: String) {
 
@@ -352,6 +527,7 @@ class HomeViewModel @Inject constructor(
 
      fun addNewComment(
         postId:String,
+        addId: String,
         commentText:String,
         onSuccess: () -> Unit = { },
         onError: (String) -> Unit
@@ -360,6 +536,7 @@ class HomeViewModel @Inject constructor(
             repository.addNewComment(
                 userId = sessionManager.getUserId(),
                 postId = postId,
+                addId = addId,
                 commentText = commentText
             ).collectLatest { result ->
                 when (result) {
@@ -370,7 +547,6 @@ class HomeViewModel @Inject constructor(
                         _uiStateComment.value = _uiStateComment.value.copy(isLoading = false)
                         result.data.let { response ->
                             if (response.success) {
-                                increaseCommentCount(postId)
                                 addCommentToList(commentText,response.data?.id?:0)
                                 onSuccess()
                             } else {
@@ -569,6 +745,41 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
+    // Toggle Follow / Unfollow
+    fun addAndRemoveFollowers(
+        followedId:String,
+        onSuccess: () -> Unit = { },
+        onError: (String) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.addAndRemoveFollowers(
+                userId = sessionManager.getUserId(),
+                followerId = followedId,
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+
+                                onSuccess()
+                            } else {
+                                onError(response.message ?: "")
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        onError(result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
 
 
     fun editComment(
@@ -611,6 +822,7 @@ class HomeViewModel @Inject constructor(
 
     fun getComments(
         postId: String,
+        addId: String,
         page: Int,
         limit: Int,
         onSuccess: () -> Unit = {},
@@ -621,6 +833,7 @@ class HomeViewModel @Inject constructor(
             repository.getComments(
                 userId = sessionManager.getUserId(),
                 postId = postId,
+                addId = addId,
                 page = page.toString(),
                 limit = limit.toString()
             ).collectLatest { result ->
@@ -880,4 +1093,6 @@ class HomeViewModel @Inject constructor(
     fun resetPetInfoDialogCount() {
         _uiState.update { it.copy(petInfoDialogCount = 0) }
     }
+
+
 }

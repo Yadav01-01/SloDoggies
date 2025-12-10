@@ -28,6 +28,7 @@ import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
+import retrofit2.http.Field
 
 interface Repository {
 
@@ -230,7 +231,7 @@ interface Repository {
     ) : Flow<Resource<BusinessDetailsResponse>>
 
     suspend fun getMyPostDetails(
-        userId: String,
+        userId: String,page:String
     ) : Flow<Resource<MyPostsResponse>>
 
     suspend fun addAndRemoveFollowers(
@@ -276,7 +277,9 @@ interface Repository {
 
     suspend fun savePost(
         userId: String,
-        postId: String
+        postId: String,
+        eventId: String,
+        addId: String
     ) : Flow<Resource<CommonResponse>>
 
     suspend fun reportPost(
@@ -288,12 +291,15 @@ interface Repository {
 
     suspend fun postLikeUnlike(
         userId: String,
-        postId: String
+        postId: String,
+       eventId: String,
+       addId: String
     ) : Flow<Resource<CommonResponse>>
 
     suspend fun getComments(
         userId: String,
         postId: String,
+        addId: String,
         page: String,
         limit: String
     ) : Flow<Resource<CommentsResponse>>
@@ -301,7 +307,8 @@ interface Repository {
     suspend fun addNewComment(
         userId: String,
         postId: String,
-        commentText: String
+        commentText: String,
+        addId: String
     ) : Flow<Resource<AddCommentResponse>>
 
 
@@ -322,6 +329,18 @@ interface Repository {
         userId: String,
         commentId: String,
         commenText:String
+    ) : Flow<Resource<CommonResponse>>
+
+    suspend fun commentLike(
+        userId: String,
+        commentId: String
+    ) : Flow<Resource<CommonResponse>>
+
+
+    suspend fun editPost(
+        userId: String,
+        postId: String,
+        postDescription: String
     ) : Flow<Resource<CommonResponse>>
 
     suspend fun trendingHashtags() : Flow<Resource<TrendingHashtagsResponse>>

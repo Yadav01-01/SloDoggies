@@ -110,5 +110,6 @@ data class OwnerPostItem(
 
 data class MediaItem(
     val url: String?,
-    val type: String?
+    val type: String?,
+    val thumbnailUrl: String?
 )

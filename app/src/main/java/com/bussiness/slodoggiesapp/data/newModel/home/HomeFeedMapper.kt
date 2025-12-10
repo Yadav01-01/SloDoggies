@@ -41,7 +41,8 @@ object HomeFeedMapper {
                 comments = comments,
                 shares = shares,
                 isLiked = itemSuccess?.isLiked ?: false,
-                isSaved = itemSuccess?.isSave ?: false
+                isSaved = itemSuccess?.isSave ?: false,
+                iAmFollowing = itemSuccess?.iAmFollowing ?: false
             )
 
             "community" -> PostItem.CommunityPost(
@@ -61,7 +62,8 @@ object HomeFeedMapper {
                 comments = comments,
                 shares = shares,
                 isLiked = itemSuccess?.isLiked ?: false,
-                isSaved = itemSuccess?.isSave ?: false
+                isSaved = itemSuccess?.isSave ?: false,
+                iAmFollowing = itemSuccess?.iAmFollowing ?: false
             )
 
             "sponsored" -> PostItem.SponsoredPost(

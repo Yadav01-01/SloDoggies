@@ -26,7 +26,8 @@ sealed class PostItem(open val stableKey: String) {
         val comments: Int,
         val shares: Int,
         val isLiked: Boolean,
-        val isSaved: Boolean
+        val isSaved: Boolean,
+        val iAmFollowing: Boolean
     ) : PostItem("normal_$postId")
 
     // ------------------------------------------------------
@@ -54,7 +55,8 @@ sealed class PostItem(open val stableKey: String) {
         val comments: Int,
         val shares: Int,
         val isLiked: Boolean,
-        val isSaved: Boolean
+        val isSaved: Boolean,
+        val iAmFollowing: Boolean
     ) : PostItem("community_$postId")   // FIXED
 
     // ------------------------------------------------------
