@@ -21,6 +21,8 @@ import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.CategoryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
@@ -34,6 +36,7 @@ import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -498,6 +501,20 @@ interface ApiService {
         @Field("page") page: String,
         @Field("limit") limit: String,
     ) : Response<HomeFeedResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.OWNER_SERVICE)
+    suspend fun ownerService(
+        @Field("user_id") userId: String,
+        @Field("search") search: String,
+    ) : Response<ServicesResponse>
+
+    @GET(ApiEndPoint.OWNER_CATEGORY_SERVICE)
+    suspend fun ownerCategoryService(
+        @Query("user_id") userId: String,
+    ): Response<CategoryResponse>
+
+
 
 
 }

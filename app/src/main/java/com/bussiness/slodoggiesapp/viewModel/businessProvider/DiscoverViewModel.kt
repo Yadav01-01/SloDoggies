@@ -290,6 +290,8 @@ class DiscoverViewModel @Inject constructor(
             repository.savePost(
                 userId = sessionManager.getUserId(),
                 postId = postId,
+                eventId = "",
+                addId = "",
             ).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -320,6 +322,8 @@ class DiscoverViewModel @Inject constructor(
             repository.postLikeUnlike(
                 userId = postId,
                 postId = sessionManager.getUserId(),
+                eventId = "",
+                addId = "",
             ).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> {
@@ -343,7 +347,6 @@ class DiscoverViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
 

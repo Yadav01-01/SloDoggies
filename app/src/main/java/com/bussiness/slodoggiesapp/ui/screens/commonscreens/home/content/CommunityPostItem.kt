@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
-import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
@@ -64,7 +63,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                       onClickInterested: () -> Unit,
                       onSaveClick:()-> Unit,
                       onFollowingClick:()->Unit){
-    var isFollowed by remember { mutableStateOf(false) }
+//    var isFollowed by remember { mutableStateOf(false) }
 
     var isFollowed by remember { mutableStateOf(postItem.iAmFollowing) }
     val sessionManager = SessionManager.getInstance(LocalContext.current)
@@ -81,13 +80,15 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
 
             // User Info Row
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
                     model = postItem.media?.parentImageUrl,
-                    placeholder = painterResource(R.drawable.ic_person_icon),
-                    error = painterResource(R.drawable.ic_person_icon),
+                    placeholder = painterResource(R.drawable.ic_person_icon1),
+                    error = painterResource(R.drawable.ic_person_icon1),
                     contentDescription = "User Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -159,7 +160,9 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
 
             // Event Title and Date
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -196,7 +199,9 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
 
             // Description and Duration
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 postItem.eventDescription?.let {
@@ -289,31 +294,35 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
             Spacer(modifier = Modifier.height(10.dp))
 
             // Actions
-            CommunityPostLikes(likes = postItem.likes, comments = postItem.comments,
-                shares = postItem.shares, onShareClick = { onShareClick()},
-                onLikeClick = { onLikeClick() },onClickIntrested = { onClickInterested() })
-
-
-                onLikeClick = {
-                    onLikeClick()
-                }, onSaveClick = {
-                    onSaveClick()
-                }
-                ,isLike = postItem.isLiked,
-                isSaved = postItem.isSaved)
+            CommunityPostLikes(
+                likes = postItem.likes, comments = postItem.comments,
+                shares = postItem.shares, onShareClick = { onShareClick() },
+                onLikeClick = { onLikeClick() },
+                isLike = postItem.isLiked,
+                isSaved = postItem.isSaved,
+                onSaveClick = { onSaveClick() },
+                onClickInterested = { onClickInterested() }
+            )
         }
     }
 
-}@Composable
+}
 
-fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -> Unit,
-                       onLikeClick: () -> Unit,onClickIntrested : () -> Unit) {
-    var isLiked by remember { mutableStateOf(false) }
-    var isBookmarked by remember { mutableStateOf(false) }
-                       onLikeClick: () -> Unit,isLike:Boolean,isSaved:Boolean,onSaveClick: () -> Unit) {
+@Composable
+fun CommunityPostLikes(
+    likes: Int,
+    comments: Int,
+    shares: Int,
+    isLike: Boolean,
+    isSaved: Boolean,
+    onShareClick: () -> Unit,
+    onLikeClick: () -> Unit,
+    onSaveClick: () -> Unit,
+    onClickInterested: () -> Unit
+) {
     var isLiked by remember { mutableStateOf(isLike) }
     var isBookmarked by remember { mutableStateOf(isSaved) }
-    var showCommentsDialog  by remember { mutableStateOf(false) }
+    val showCommentsDialog by remember { mutableStateOf(false) }
     var deleteComment by remember { mutableStateOf(false) }
 
     Row(
@@ -322,73 +331,96 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Like section
+
+        // ---------- LIKE, SHARE ----------
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.weight(1f)
         ) {
+            // Like
             Icon(
-                painter = painterResource(  id = if (isLiked) R.drawable.ic_paw_like_filled_icon else R.drawable.ic_paw_like_icon),
+                painter = painterResource(
+                    id = if (isLiked)
+                        R.drawable.ic_paw_like_filled_icon
+                    else
+                        R.drawable.ic_paw_like_icon
+                ),
                 contentDescription = "Paw",
-                modifier = Modifier.size(25.dp).clickable(
-                    indication = null,
-                    interactionSource =  remember { MutableInteractionSource() }
-                ) {
-                    onLikeClick()
-                    isLiked = !isLiked // Toggle the liked state
-                },
+                modifier = Modifier
+                    .size(25.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        onLikeClick()
+                        isLiked = !isLiked
+                    },
                 tint = Color.Unspecified
             )
+
             Spacer(modifier = Modifier.width(4.dp))
+
             Text(
-                text = likes.toString()/*(if (isLiked) likes + 1 else likes).toString()*/,
+                text = likes.toString(),
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (isLiked) Color(0xFF258694) else Color.Black
             )
-//
+
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Shares section
+            // Share
             Icon(
                 painter = painterResource(id = R.drawable.ic_share_icons),
                 contentDescription = "Shares",
-                modifier = Modifier.size(25.dp).clickable(
-                    indication = null,
-                    interactionSource =  remember { MutableInteractionSource() }
-                ) { onShareClick() }
+                modifier = Modifier
+                    .size(25.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        onShareClick()
+                    }
             )
+
             Spacer(modifier = Modifier.width(4.dp))
+
             Text(
                 text = shares.toString(),
-                fontSize = 16.sp
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                color = Color.Black
             )
         }
 
-        Row (verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable {
-            isBookmarked = !isBookmarked
-            onSaveClick()
-        }){
-            Text(text = stringResource(R.string.intrested),
+        // ----------- INTERESTED / SAVE -----------
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable {
+                isBookmarked = !isBookmarked
+                onSaveClick()
+            }
+        ) {
+
+            Text(
+                text = stringResource(R.string.intrested),
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 color = if (isBookmarked) PrimaryColor else Color.Black
             )
-            // Bookmark icon aligned to end
+
             IconButton(
                 onClick = {
                     isBookmarked = !isBookmarked
-                          onClickIntrested()},
-                onClick = {
-
-                    isBookmarked = !isBookmarked
-                    onSaveClick()
-                          },
+                    onClickInterested()
+                },
                 modifier = Modifier.size(25.dp)
             ) {
                 Icon(
-                    painter = if (isBookmarked) painterResource(id = R.drawable.filled_ic ) else painterResource(id = R.drawable.intrested_ic),
+                    painter = if (isBookmarked)
+                        painterResource(id = R.drawable.filled_ic)
+                    else painterResource(id = R.drawable.intrested_ic),
                     contentDescription = "Bookmark",
                     tint = Color.Unspecified,
                     modifier = Modifier.size(24.dp)
@@ -396,54 +428,16 @@ fun CommunityPostLikes(likes: Int, comments: Int, shares: Int,onShareClick: () -
             }
         }
     }
-    if (showCommentsDialog) {
-        val sampleComments = listOf(
-            Comment(
-                id = "1",
-                userName = "Dianne Russell",
-                userRole = "Pet Dad",
-                userAvatar = "https://via.placeholder.com/40x40",
-                text = "This place is amazing! My dog loved it",
-                timeAgo = "24 min",
-                likeCount = 2,
-                isLiked = true,
-                replies = listOf(
-                    Comment(
-                        id = "1-1",
-                        userName = "Alex Johnson",
-                        userRole = "Pet Owner",
-                        userAvatar = "",
-                        text = "I agree! My poodle had so much fun too!",
-                        timeAgo = "15 min",
-                        likeCount = 1,
-                        isLiked = false
-                    )
-                )
-            ),
-            Comment(
-                id = "2",
-                userName = "Jack Roger",
-                userRole = "Pet Dad",
-                userAvatar = "https://via.placeholder.com/40x40",
-                text = "Took my pup here last weekend — 10/10 would recommend! 🐕",
-                timeAgo = "1 day ago",
-                likeCount = 0,
-                isLiked = false
-            )
-        )
-//        CommentsDialog(
-//            comments = sampleComments,
-//            onDismiss = { showCommentsDialog = false }
-//            , onDeleteClick = { deleteComment = true }
-//        )
-    }
-    if (deleteComment){
+
+    // ---------- DELETE COMMENT DIALOG ----------
+    if (deleteComment) {
         DeleteChatDialog(
             onDismiss = { deleteComment = false },
-            onClickRemove = { deleteComment = false  },
+            onClickRemove = { deleteComment = false },
             iconResId = R.drawable.delete_mi,
             text = "Delete Comment",
             description = stringResource(R.string.delete_Comment)
         )
     }
 }
+

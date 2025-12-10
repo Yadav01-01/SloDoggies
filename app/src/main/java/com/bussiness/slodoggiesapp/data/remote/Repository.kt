@@ -21,6 +21,8 @@ import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.CategoryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
@@ -368,5 +370,15 @@ interface Repository {
         page: String,
         limit: String,
     ) : Flow<Resource<HomeFeedResponse>>
+
+    suspend fun ownerService(
+        userId: String,
+        search: String,
+    ) : Flow<Resource<ServicesResponse>>
+
+    suspend fun ownerCategoryService(
+        userId: String,
+    ) : Flow<Resource<CategoryResponse>>
+
 
 }

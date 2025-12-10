@@ -24,6 +24,8 @@ import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.CategoryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
@@ -687,6 +689,16 @@ class RepositoryImpl @Inject constructor(
     ): Flow<Resource<HomeFeedResponse>> = flow{
         emit(Resource.Loading)
         emit(safeApiCall { api.discoverEvents(id,search,userType,page,limit) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun ownerService(userId: String,search : String): Flow<Resource<ServicesResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.ownerService(userId,search) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun ownerCategoryService(userId: String): Flow<Resource<CategoryResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.ownerCategoryService(userId) })
     }.flowOn(Dispatchers.IO)
 
 

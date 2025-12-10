@@ -50,7 +50,7 @@ class HomeViewModel @Inject constructor(
         initWelcomeDialog()
     }
 
-    private fun loadFirstPage() {
+    fun loadFirstPage() {
         currentPage = 1
         isLastPage = false
         fetchPosts(isFirstPage = true)
@@ -391,7 +391,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun toggleLike(postId: String) {
+    fun toggleLike(postId: String) {
         //  Local memory (same pattern as save)
         val currentLocalLike = localLikeState[postId] ?: false
         localLikeState[postId] = !currentLocalLike
@@ -455,7 +455,7 @@ class HomeViewModel @Inject constructor(
 
 
 
-    private fun increaseCommentCount(postId: String) {
+    fun increaseCommentCount(postId: String) {
 
         _uiState.update { state ->
 

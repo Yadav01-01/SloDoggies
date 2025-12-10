@@ -640,7 +640,7 @@ fun SocialEventCard(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> U
                 // RIGHT: START DATE (FIXED WIDTH)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.width(155.dp)   // FIX: same width for both top & bottom
+                    modifier = Modifier.width(180.dp)   // FIX: same width for both top & bottom
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.cal_ic),
@@ -679,7 +679,7 @@ fun SocialEventCard(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> U
                 // RIGHT: END DATE (SAME FIXED WIDTH)
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.width(155.dp)   // FIXED → matches the first one
+                    modifier = Modifier.width(180.dp)   // FIXED → matches the first one
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.cal_ic),
@@ -744,11 +744,15 @@ fun SocialEventCard(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> U
         Spacer(modifier = Modifier.height(10.dp))
 
         // Actions
-        CommunityPostLikes(likes = postItem.likes, comments = postItem.comments,
-            shares = postItem.shares, onShareClick = { onShareClick()},
-            onLikeClick = {
-                onLikeClick()
-            }, onClickIntrested = { onInterested() })
+        CommunityPostLikes(
+            likes = postItem.likes, comments = postItem.comments,
+            shares = postItem.shares, onShareClick = { onShareClick() },
+            onLikeClick = { onLikeClick() },
+            isLike = postItem.isLiked,
+            isSaved = postItem.isSaved,
+            onSaveClick = { },
+            onClickInterested = { onInterested() }
+        )
 
         Spacer(modifier = Modifier.height(10.dp))
     }
