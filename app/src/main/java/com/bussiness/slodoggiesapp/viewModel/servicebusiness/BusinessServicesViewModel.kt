@@ -23,6 +23,7 @@ class BusinessServicesViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
+
     private val _uiState = MutableStateFlow(BusinessDetailsModel())
     val uiState: StateFlow<BusinessDetailsModel> = _uiState.asStateFlow()
 
@@ -31,13 +32,15 @@ class BusinessServicesViewModel @Inject constructor(
     val uiStateGallery: StateFlow<OwnerProfileUiState> = _uiStateGallery.asStateFlow()
 
 
-
-
-
-
-    fun getBusinessDetail(){
+    fun getBusinessDetail(userId:String){
+        var logicUserId= ""
+        if (userId != null  && !userId.equals("")) {
+            logicUserId = userId
+        }else{
+            logicUserId = sessionManager.getUserId()
+        }
         viewModelScope.launch {
-            repository.getBusinessDashboard(sessionManager.getUserId()).collectLatest { result ->
+            repository.getBusinessDashboard(logicUserId).collectLatest { result ->
                 when (result) {
                     is Resource.Loading -> _uiState.update { it.copy(isLoading = true) }
                     is Resource.Success -> {
@@ -65,12 +68,13 @@ class BusinessServicesViewModel @Inject constructor(
         }
     }
 
-    fun loadNextPage() {
-        if (!uiStateGallery.value.isLoadingMore && uiStateGallery.value.canLoadMore) {
-            galleryPostDetail(uiStateGallery.value.currentPage + 1)
-        }
-    }
-    fun galleryPostDetail(page: Int = 1) {
+//    fun loadNextPage() {
+//        if (!uiStateGallery.value.isLoadingMore && uiStateGallery.value.canLoadMore) {
+//            galleryPostDetail(uiStateGallery.value.currentPage + 1)
+//        }
+//    }
+    fun galleryPostDetail(userId:String,page: Int = 1) {
+        var logicUserId= ""
         viewModelScope.launch {
             if (page == 1) {
                 _uiStateGallery.update { it.copy(isLoading = true) }
@@ -78,12 +82,17 @@ class BusinessServicesViewModel @Inject constructor(
                 _uiStateGallery.update { it.copy(isLoadingMore = true) }
             }
 
-            repository.getOwnerGalleryPost(sessionManager.getUserId(), page.toString())
+            if (userId != null  && !userId.equals("")) {
+                logicUserId = userId
+            }else{
+                logicUserId = sessionManager.getUserId()
+            }
+
+            repository.getOwnerGalleryPost(logicUserId, page.toString())
                 .collectLatest { result ->
                     when (result) {
                         is Resource.Success -> {
                             val response = result.data
-
                             val galleryData = response.data
                             Log.d("******",response.toString())
                             val newPosts = galleryData?.posts ?: emptyList()

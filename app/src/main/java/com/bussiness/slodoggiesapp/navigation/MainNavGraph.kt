@@ -130,7 +130,16 @@ fun MainNavGraph(
         composable(Routes.PREVIEW_ADS_SCREEN) { PreviewAdsScreen(navController) }
         composable(Routes.NEW_MESSAGE_SCREEN) { NewMessageScreen(navController) }
         composable(Routes.TRANSACTION_SCREEN) { TransactionScreen(navController) }
-        composable(Routes.CLICKED_PROFILE_SCREEN) { ClickedProfile(navController) }
+       // composable(Routes.CLICKED_PROFILE_SCREEN) { ClickedProfile(navController) }
+        composable(
+            route = Routes.CLICKED_PROFILE_SCREEN + "/{userId}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")?:""
+            ClickedProfile(navController, userId)
+        }
 
         // ----------------- Screens with arguments -----------------
         composable(

@@ -20,6 +20,7 @@ data class HomeUiState(
     val message : String = "",
     val selectedReason : String = "",
     val postId : String = "",
+    val userId : String = "",
     val errorMessage : String = "",
     val isLoading: Boolean = false,          // For first page loader
     val isLoadingMore: Boolean = false,

@@ -1210,6 +1210,12 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun updateUostId(userId: String) {
+        _uiState.update {
+            it.copy(userId = userId)
+        }
+    }
+
     fun updateCommentId(postId: String) {
         _uiStateComment.update {
             it.copy(commentsId = postId.toInt())

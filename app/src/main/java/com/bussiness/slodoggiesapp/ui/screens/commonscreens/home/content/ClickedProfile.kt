@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,6 +26,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,34 +45,44 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.media3.common.util.Log
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCardProfile
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingText
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
-import com.bussiness.slodoggiesapp.viewModel.businessProvider.ProfileViewModel
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
+import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesViewModel
 
 @Composable
 
-fun ClickedProfile(navController: NavHostController, viewModel: ProfileViewModel = hiltViewModel()) {
+fun ClickedProfile(navController: NavHostController,
+                   userId:String,
+                   viewModel: BusinessServicesViewModel = hiltViewModel()) {
 
-    val email by viewModel.email.collectAsState()
-    val description by viewModel.description.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    val galleryState by viewModel.uiStateGallery.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
 
+    Log.d("&&&&&&&&&",userId)
+    // First API Call
+    LaunchedEffect(Unit) {
+        viewModel.getBusinessDetail(userId)
+        viewModel.galleryPostDetail(userId,1)   // first page
+    }
+
     val sampleImages = listOf(
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog1),
-        com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem(R.drawable.dog2)
+        GalleryItem(R.drawable.dog1),
+        GalleryItem(R.drawable.dog2),
+        GalleryItem(R.drawable.dog1),
+        GalleryItem(R.drawable.dog2),
+        GalleryItem(R.drawable.dog1),
+        GalleryItem(R.drawable.dog2)
     )
 
     BackHandler {
@@ -130,7 +142,7 @@ fun ClickedProfile(navController: NavHostController, viewModel: ProfileViewModel
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Rosy Morgan",
+                                text = uiState.data?.business?.business_name?:"",
                                 color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 fontSize = 16.sp,
@@ -142,7 +154,7 @@ fun ClickedProfile(navController: NavHostController, viewModel: ProfileViewModel
                         Spacer(Modifier.height(5.dp))
 
                         Text(
-                            text = email,
+                            text = uiState.data?.business?.email?:"",
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontSize = 12.sp,
                             color = PrimaryColor,
@@ -150,7 +162,7 @@ fun ClickedProfile(navController: NavHostController, viewModel: ProfileViewModel
                         )
 
                         Text(
-                            text = description,
+                            text = uiState.data?.business?.bio?:"",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color.Black,
@@ -169,11 +181,11 @@ fun ClickedProfile(navController: NavHostController, viewModel: ProfileViewModel
                         .height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    ProfileDetail(label = "120", value = "Posts", modifier = Modifier.weight(1f), onDetailClick = { })
+                    ProfileDetail(label = uiState.data?.post?:"0", value = "Posts", modifier = Modifier.weight(1f), onDetailClick = { })
                     VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
-                    ProfileDetail(label = "27.7M", value = "Followers", modifier = Modifier.weight(1f), onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
+                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.follower?:"0"), value = "Followers", modifier = Modifier.weight(1f), onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
                     VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
-                    ProfileDetail(label = "219", value = "Following",  modifier = Modifier.weight(1f),onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}")})
+                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.following?:"0"), value = "Following",  modifier = Modifier.weight(1f),onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}")})
                 }
             }
 
@@ -192,6 +204,7 @@ fun ClickedProfile(navController: NavHostController, viewModel: ProfileViewModel
             }
 
             item {
+                val posts = galleryState.posts
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier
@@ -201,9 +214,45 @@ fun ClickedProfile(navController: NavHostController, viewModel: ProfileViewModel
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     userScrollEnabled = false // Important to avoid nested scroll issues
                 ) {
-                    items(sampleImages.size) { index ->
-                        GalleryItemCard(item = sampleImages[index], onClickItem = {navController.navigate(
-                            Routes.USER_POST_SCREEN)})
+//                    items(sampleImages.size) { index ->
+//                        GalleryItemCard(item = sampleImages[index], onClickItem = {navController.navigate(
+//                            Routes.USER_POST_SCREEN)})
+//                    }
+
+                    items(posts.size) { index ->
+                        val item = posts[index]
+
+
+                        GalleryItemCardProfile(
+                            item = item,
+                            onClickItem = {
+                                navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/Profile")
+                            }
+                        )
+
+                        // ⭐ Auto load next Page
+                        if (index == posts.lastIndex &&
+                            galleryState.canLoadMore &&
+                            !galleryState.isLoadingMore
+                        ) {
+                            LaunchedEffect(Unit) {
+                                viewModel.galleryPostDetail(userId,galleryState.currentPage + 1)
+                            }
+                        }
+                    }
+
+                    // Loading more loader
+                    item(span = { GridItemSpan(3) }) {
+                        if (galleryState.isLoadingMore) {
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                androidx.compose.material3.CircularProgressIndicator()
+                            }
+                        }
                     }
                 }
                 Spacer(Modifier.height(10.dp))
