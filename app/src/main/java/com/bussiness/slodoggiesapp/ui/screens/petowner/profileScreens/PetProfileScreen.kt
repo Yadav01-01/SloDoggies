@@ -184,7 +184,8 @@ fun PetProfileScreen(navController: NavHostController) {
                             contentDescription = "Pet Avatar",
                             placeholder = painterResource(R.drawable.ic_pet_face_iconss),
                             error = painterResource(R.drawable.ic_pet_face_iconss) ,
-                            modifier = Modifier.size(90.dp).clip(CircleShape)
+                            modifier = Modifier.size(90.dp).clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
 
                         Spacer(modifier = Modifier.width(16.dp))

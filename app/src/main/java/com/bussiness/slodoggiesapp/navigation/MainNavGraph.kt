@@ -81,7 +81,7 @@ fun MainNavGraph(
         composable(Routes.DISCOVER_SCREEN) { DiscoverScreen(navController) }
         composable(Routes.SERVICES_SCREEN) { ServiceScreen(navController) }
         composable(Routes.PROFILE_SCREEN) { ProfileScreen(navController) }
-        composable(Routes.PERSON_DETAIL_SCREEN) { PersonDetailScreen(navController) }
+//        composable(Routes.PERSON_DETAIL_SCREEN) { PersonDetailScreen(navController) }
         composable(Routes.SPONSORED_ADS_SCREEN+ "?fromPreview={fromPreview}",
             arguments = listOf(
                 navArgument("fromPreview") { defaultValue = false }
@@ -106,7 +106,7 @@ fun MainNavGraph(
         composable(Routes.PET_NEW_POST_SCREEN) { PetNewPostScreen(navController) }
         composable(Routes.PET_SERVICES_SCREEN) { PetServicesScreen(navController) }
         composable(Routes.PET_PROFILE_SCREEN) { PetProfileScreen(navController) }
-        composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
+//        composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
 //        composable(Routes.EDIT_PET_PROFILE_SCREEN) { EditPetProfileScreen(navController) }
         composable(Routes.PET_ADD_PARTICIPANTS_SCREEN) { AddParticipantsScreen(navController) }
         composable(Routes.EDIT_PROFILE_SCREEN_PET) { EditProfileScreenPet(navController) }
@@ -157,5 +157,28 @@ fun MainNavGraph(
             val petId = backStackEntry.arguments?.getString("petId") ?: "Follower"
             EditPetProfileScreen(navController, petId)
         }
+
+        composable(
+            route = "${Routes.SERVICE_PROVIDER_DETAILS}/{serviceId}",
+            arguments = listOf(navArgument("serviceId") {
+                    type = NavType.StringType
+                    defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val serviceId = backStackEntry.arguments?.getString("serviceId").orEmpty()
+            ServiceProviderDetailsScreen(navController = navController, serviceId = serviceId)
+        }
+
+        composable(
+            route = "${Routes.PERSON_DETAIL_SCREEN}/{userId}",
+            arguments = listOf(navArgument("userId") {
+                type = NavType.StringType
+                defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
+            PersonDetailScreen(navController = navController, userId = userId)
+        }
+
     }
 }

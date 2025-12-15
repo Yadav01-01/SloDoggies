@@ -1,6 +1,5 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen
 
-import android.R.attr.maxWidth
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -28,6 +27,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,40 +49,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FullScreenImageViewerScreen
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceItemDetails
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceMedia
+import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 
 @Composable
-fun ServicesContent() {
-    val servicesList = listOf(
-        ServiceItem(
-            packageName = "Full Grooming Package",
-            description = "Complete grooming service with bath, haircut, and nail trimming.",
-            amount = "100"
-        ),
-        ServiceItem(
-            packageName = "Bath & Brush",
-            description = "Includes bath, drying, and brushing for your pet.",
-            amount = "50"
-        ),
-        ServiceItem(
-            packageName = "Nail Clipping",
-            description = "Professional nail trimming to keep your pet comfortable.",
-            amount = "30"
-        ),
-        ServiceItem(
-            packageName = "Bath & Brush",
-            description = "Includes bath, drying, and brushing for your pet.",
-            amount = "50"
-        ),
-        ServiceItem(
-            packageName = "Nail Clipping",
-            description = "Professional nail trimming to keep your pet comfortable.",
-            amount = "30"
-        )
-    )
+fun ServicesContent(services: List<ServiceItemDetails>?) {
 
-    LazyColumn(Modifier.fillMaxWidth()) {
+    if (services.isNullOrEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_pet_post_icon),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(100.dp)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                androidx.compose.material3.Text(
+                    text = "OOps!,No Service available",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = PrimaryColor,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    fontSize = 18.sp
+                )
+            }
+        }
+    }
+
+    LazyColumn(modifier = Modifier.fillMaxWidth()) {
+
         item {
             Text(
                 text = stringResource(R.string.available_services),
@@ -93,15 +96,13 @@ fun ServicesContent() {
             )
         }
 
-        items(servicesList) { service ->
-            EnhancedExpandableFullGroomingPackage(
-                packageName = service.packageName,
-                description = service.description,
-                amount = service.amount
-            )
+        items(services ?: emptyList()) { service ->
+
+            EnhancedExpandableFullGroomingPackage(service)
         }
     }
 }
+
 
 
 data class ServiceItem(
@@ -111,7 +112,7 @@ data class ServiceItem(
 )
 
 @Composable
-fun EnhancedExpandableFullGroomingPackage(packageName: String,description : String,amount : String) {
+fun EnhancedExpandableFullGroomingPackage(service: ServiceItemDetails) {
     var expanded by remember { mutableStateOf(false) }
     Surface(
         shape = RoundedCornerShape(6.dp),
@@ -141,7 +142,7 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
                     )
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        text = packageName,
+                        text = service.serviceTitle,
                         color = Color(0xFF000000),
                         fontSize = 15.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -160,7 +161,7 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
                 Column {
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         Text(
-                            text = description,
+                            text = service.description,
                             fontSize = 12.sp,
                             color = Color(0xFF666666),
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -181,7 +182,7 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
                             )
 
                             Text(
-                                text = "$$amount",
+                                text = "$${service.price}",
                                 fontSize = 14.sp,
                                 color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium))
@@ -204,7 +205,7 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
                         color = Color(0xFFE5EFF2),
                         thickness = 1.dp
                     )
-                    ImageGalleryScreen()
+                    ImageGalleryScreen(service.media)
                 }
             }
         }
@@ -212,19 +213,8 @@ fun EnhancedExpandableFullGroomingPackage(packageName: String,description : Stri
 }
 
 @Composable
-fun ImageGalleryScreen() {
+fun ImageGalleryScreen(media: List<ServiceMedia>) {
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
-
-    val images = listOf(
-        R.drawable.dog1,
-        R.drawable.dog3,
-        R.drawable.dog2,
-        R.drawable.dog1,
-        R.drawable.dog3,
-        R.drawable.dog3,
-        R.drawable.dog2,
-        R.drawable.dog3,
-        )
 
     val maxVisibleImages = 6
     val gridHeight = 220.dp
@@ -237,10 +227,10 @@ fun ImageGalleryScreen() {
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(8.dp)
         ) {
-            if (images.size <= maxVisibleImages) {
-                items(images.size) { index ->
+            if (media.size <= maxVisibleImages) {
+                items(media.size) { index ->
                     ImageGridItem(
-                        imageRes = images[index],
+                        imageRes = media[index],
                         index = index,
                         onClick = { selectedImageIndex = index }
                     )
@@ -249,7 +239,7 @@ fun ImageGalleryScreen() {
                 // Show first (maxVisibleImages - 1) images normally
                 items(maxVisibleImages - 1) { index ->
                     ImageGridItem(
-                        imageRes = images[index],
+                        imageRes = media[index],
                         index = index,
                         onClick = { selectedImageIndex = index }
                     )
@@ -259,7 +249,7 @@ fun ImageGalleryScreen() {
                     Box {
                         // Show the last visible image as background
                         ImageGridItem(
-                            imageRes = images[maxVisibleImages - 1],
+                            imageRes = media[maxVisibleImages - 1],
                             index = maxVisibleImages - 1,
                             onClick = { selectedImageIndex = maxVisibleImages - 1 }
                         )
@@ -278,7 +268,7 @@ fun ImageGalleryScreen() {
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = "+${images.size - maxVisibleImages + 1}",
+                                text = "+${media.size - maxVisibleImages + 1}",
                                 color = Color.White,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
@@ -303,7 +293,7 @@ fun ImageGalleryScreen() {
 
 @Composable
 fun ImageGridItem(
-    imageRes: Int,
+    imageRes: ServiceMedia,
     index: Int,
     onClick: () -> Unit,
     showOverlay: Boolean = false
@@ -323,6 +313,8 @@ fun ImageGridItem(
         ) {
             AsyncImage(
                 model = imageRes,
+                placeholder = painterResource(R.drawable.no_image),
+                error = painterResource(R.drawable.no_image),
                 contentDescription = "Gallery Image",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
@@ -335,6 +327,6 @@ fun ImageGridItem(
 @Preview(showBackground = true)
 @Composable
 fun ServicesContentPreview(){
-    ServicesContent()
+//    ServicesContent(data?.services)
 }
 

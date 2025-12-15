@@ -59,7 +59,10 @@ fun NavGraph(navController: NavHostController) {
             // --- Pet Owner Screens ---
             composable(Routes.NOTIFICATION_PERMISSION_SCREEN) { NotificationPermissionScreen(navController) }
             composable(Routes.LOCATION_PERMISSION_SCREEN) { LocationPermissionScreen(navController) }
-            composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(navController) }
+            composable(Routes.SERVICE_PROVIDER_DETAILS) { ServiceProviderDetailsScreen(
+                navController,
+                serviceId = "0",
+            ) }
 
             // --- Screens with Arguments ---
 

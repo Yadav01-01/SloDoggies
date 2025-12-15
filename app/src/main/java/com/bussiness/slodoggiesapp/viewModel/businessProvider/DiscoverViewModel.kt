@@ -48,7 +48,7 @@ class DiscoverViewModel @Inject constructor(
     private fun loadForSelectedCategory() {
         when (uiState.value.selectedCategory) {
             "Pets Near You" -> loadPetNearMe(isFirstPage = true)
-            "Pet Places" -> {}  // no API yet
+            "Pet Places" -> getPetPlaces(isFirstPage = true)
             "Activities" -> discoverActivities(isFirstPage = true)
             "Events" -> discoverEvents(isFirstPage = true)
         }
@@ -68,8 +68,9 @@ class DiscoverViewModel @Inject constructor(
 
         when (state.selectedCategory) {
             "Pets Near You" -> loadPetNearMe(isFirstPage = false)
-            "Activities" -> discoverActivities(isFirstPage = false)
-            "Events" -> discoverEvents(isFirstPage = false)
+            "Activities"    -> discoverActivities(isFirstPage = false)
+            "Events"        -> discoverEvents(isFirstPage = false)
+            "Pet Places"    -> getPetPlaces(isFirstPage = false)
         }
     }
 
@@ -409,6 +410,64 @@ class DiscoverViewModel @Inject constructor(
             }
 
             state.copy(posts = updated)
+        }
+    }
+
+    // Toggle Follow / Unfollow
+    fun addAndRemoveFollowers(
+        followedId:String,
+    ) {
+        viewModelScope.launch {
+            repository.addAndRemoveFollowers(
+                userId = sessionManager.getUserId(),
+                followerId = followedId,
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false,)
+                    }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false, error = result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+    private fun getPetPlaces(isFirstPage: Boolean = true){
+        if (isRequestRunning) return
+        isRequestRunning = true
+
+        _uiState.update {
+            it.copy(
+                isLoading = isFirstPage,
+                isLoadingMore = !isFirstPage,
+                error = null
+            )
+        }
+        viewModelScope.launch {
+            repository.discoverPetPlaces(sessionManager.getUserId(),uiState.value.query).collectLatest { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(petPlaces = result.data.data.petPlaces, isLoading = false)
+                    }
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false, error = result.message)
+                    }
+                    Resource.Idle -> {
+
+                    }
+                }
+
+                isRequestRunning = false
+            }
         }
     }
 

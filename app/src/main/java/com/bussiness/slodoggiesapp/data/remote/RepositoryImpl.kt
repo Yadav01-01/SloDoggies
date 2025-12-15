@@ -16,6 +16,7 @@ import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsRespon
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlacesResponse
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetsResponse
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
@@ -25,6 +26,7 @@ import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.CategoryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
@@ -700,6 +702,19 @@ class RepositoryImpl @Inject constructor(
         emit(Resource.Loading)
         emit(safeApiCall { api.ownerCategoryService(userId) })
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun ownerServiceDetail(businessUserId: String): Flow<Resource<ServiceDetailsResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.ownerServiceDetail(businessUserId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun discoverPetPlaces(
+        userId: String,
+        search: String
+    ): Flow<Resource<PetPlacesResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.discoverPetPlaces(userId,search) })
+    }
 
 
     /**

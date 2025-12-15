@@ -1,6 +1,5 @@
 package com.bussiness.slodoggiesapp.ui.component.businessProvider
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -60,14 +58,12 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
-import com.bussiness.slodoggiesapp.data.model.petOwner.PetPlaceItem
 import com.bussiness.slodoggiesapp.data.newModel.discover.HashtagItem
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlaceItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerPostItem
-import com.bussiness.slodoggiesapp.ui.component.common.getVideoThumbnail
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.CommunityPostLikes
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostImage
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostLikes
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostOptionsMenu
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
@@ -76,7 +72,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 fun SearchResultItem(
     name: String,
     label: String,
-    imageRes: String,
+    imageRes: String?,
     onRemove: () -> Unit,
     onItemClick: () -> Unit,
     labelVisibility : Boolean,
@@ -302,9 +298,8 @@ fun ProfileDetail(
 @Composable
 fun PetOwnerDetail(
     name: String,
-    label: String,
-    imageRes: Int,
-    description: String
+    imageRes: String?,
+    description: String?
 ) {
     Row(
         modifier = Modifier
@@ -312,9 +307,11 @@ fun PetOwnerDetail(
             .padding(horizontal = 0.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Profile Image
-        Image(
-            painter = painterResource(id = imageRes),
+
+        AsyncImage(
+            model = imageRes?:"",
+            placeholder = painterResource(R.drawable.ic_person_icon1),
+            error = painterResource(R.drawable.ic_person_icon1),
             contentDescription = "$name profile image",
             modifier = Modifier
                 .size(65.dp)
@@ -325,7 +322,6 @@ fun PetOwnerDetail(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Name and Label
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = name,
@@ -336,38 +332,22 @@ fun PetOwnerDetail(
                 lineHeight = 10.sp,
             )
 
-            Spacer(modifier = Modifier.height(0.dp))
-
-            Text(
-                text = label,
-                fontSize = 10.sp,
-                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                color = PrimaryColor,
-                lineHeight = 20.sp,
-                modifier = Modifier
-                    .padding(top = 4.dp)
-                    .background(
-                        color = Color(0xFFE5EFF2),
-                        shape = RoundedCornerShape(20.dp)
-                    )
-                    .padding(horizontal = 8.dp, vertical = 0.dp)
-            )
-
             Spacer(modifier = Modifier.height(2.dp))
 
             Text(
-                text = description,
+                text = description.orEmpty(),
                 fontWeight = FontWeight.Medium,
                 fontSize = 12.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 color = Color.Black,
                 lineHeight = 15.sp
             )
-
         }
-
     }
 }
+
+
+
 @Composable
 fun GalleryItemCardProfile(
     item: OwnerPostItem,
@@ -494,8 +474,10 @@ fun PetPlaceCard(placeItem: PetPlaceItem, onItemClick: () -> Unit) {
             .padding(10.dp)
             .clickable { onItemClick() }
     ) {
-        Image(
-            painter = painterResource(id = placeItem.image),
+        AsyncImage(
+            model  = placeItem.image,
+            placeholder = painterResource(R.drawable.no_image),
+            error = painterResource(R.drawable.no_image),
             contentDescription = "Pet Place Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
@@ -508,7 +490,7 @@ fun PetPlaceCard(placeItem: PetPlaceItem, onItemClick: () -> Unit) {
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = placeItem.name,
+            text = placeItem.title?:"Unknown",// title of the place
             fontFamily = FontFamily(Font(R.font.outfit_regular)),
             fontSize = 14.sp,
             color = Color.Black,
@@ -541,8 +523,8 @@ fun PetPlaceCard(placeItem: PetPlaceItem, onItemClick: () -> Unit) {
 }
 
 @Composable
-fun SocialEventCard(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onLikeClick : () -> Unit, onProfileClick: () -> Unit,onInterested : () -> Unit) {
-    var isFollowed by remember { mutableStateOf(false) }
+fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Unit, onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onLikeClick : () -> Unit, onProfileClick: () -> Unit,onInterested : () -> Unit,isFollowing: Boolean) {
+    var isFollowed by remember { mutableStateOf(isFollowing) }
     Column(modifier = Modifier
         .background(Color.White)
         .border(1.dp, Color(0xFFE5EFF2), RoundedCornerShape(10.dp))
@@ -585,7 +567,9 @@ fun SocialEventCard(postItem: PostItem.CommunityPost, onJoinedCommunity: () -> U
                     val interactionSource = remember { MutableInteractionSource() }
 
                     OutlinedButton(
-                        onClick = { isFollowed = !isFollowed },
+                        onClick = {
+                            isFollowed = !isFollowed
+                            onClickFollowing() },
                         modifier = Modifier
                             .height(24.dp)
                             .padding(horizontal = 10.dp),

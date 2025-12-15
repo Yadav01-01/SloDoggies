@@ -3,6 +3,7 @@ package com.bussiness.slodoggiesapp.data.uiState
 import com.bussiness.slodoggiesapp.data.model.businessProvider.SearchResult
 import com.bussiness.slodoggiesapp.data.newModel.discover.HashtagItem
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetItem
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlaceItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 
 data class DiscoverUiState(
@@ -21,6 +22,7 @@ data class DiscoverUiState(
         "Pets Near You", "Events", "Pet Places", "Activities"
     ),
     val hashtags: List<HashtagItem> = emptyList(),
+    val petPlaces: List<PetPlaceItem> = emptyList(),
     val error: String? = null,
     val page: Int = 1,
     val isLastPage: Boolean = false,

@@ -58,7 +58,7 @@ fun PetServiceCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
-            .clickable { navController.navigate(Routes.SERVICE_PROVIDER_DETAILS) },
+            .clickable {  navController.navigate("${Routes.SERVICE_PROVIDER_DETAILS}/${service.serviceId}") },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp)
@@ -198,14 +198,3 @@ fun PetServiceCard(
         }
     }
 }
-
-
-
-data class PetService(
-    val name: String,
-    val providerName: String,
-    val rating: String,
-    val serviceType: String,
-    val miles : String,
-    val iconRes: Int
-)

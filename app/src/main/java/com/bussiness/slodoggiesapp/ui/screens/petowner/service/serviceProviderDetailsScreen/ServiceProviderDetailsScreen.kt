@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
@@ -35,6 +36,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,6 +64,7 @@ import androidx.compose.ui.unit.times
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
@@ -68,10 +72,26 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.petOwner.servicesVM.ServiceDetailViewModel
 
 @Composable
-fun ServiceProviderDetailsScreen(navController: NavHostController,viewModel: ServiceDetailViewModel = hiltViewModel()) {
+fun ServiceProviderDetailsScreen(
+    navController: NavHostController,
+    serviceId: String,
+    viewModel: ServiceDetailViewModel = hiltViewModel()
+) {
+
+    // Fetch service details only once
+    LaunchedEffect(serviceId) {
+        viewModel.setServiceDetail(serviceId)
+    }
+
+    // Collect UI state
+    val data = viewModel.serviceDetail.collectAsState().value
     var selectedOption by remember { mutableStateOf("Services") }
-    val serviceDetail by viewModel.serviceDetail.collectAsState()
-    Column(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
 
         BackHandler {
             navController.navigate(Routes.PET_SERVICES_SCREEN) {
@@ -81,49 +101,57 @@ fun ServiceProviderDetailsScreen(navController: NavHostController,viewModel: Ser
             }
         }
 
-        HeadingTextWithIcon(textHeading = stringResource(R.string.services), onBackClick = {
-            navController.navigate(Routes.PET_SERVICES_SCREEN) {
-                popUpTo(Routes.PET_SERVICES_SCREEN) { inclusive = false }
-                launchSingleTop = true       // Avoid duplicates
-                restoreState = true          // Restore scroll/input state
+        HeadingTextWithIcon(
+            textHeading = stringResource(R.string.services),
+            onBackClick = {
+                navController.navigate(Routes.PET_SERVICES_SCREEN) {
+                    popUpTo(Routes.PET_SERVICES_SCREEN) { inclusive = false }
+                    launchSingleTop = true
+                    restoreState = true
+                }
             }
-        })
+        )
 
         HorizontalDivider(thickness = 2.dp, color = PrimaryColor)
 
-        Column(modifier = Modifier.weight(1f).background(Color.White).padding(horizontal = 15.dp)) {
-
+        // Main Content
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .background(Color.White)
+                .padding(horizontal = 15.dp)
+        ) {
             Spacer(modifier = Modifier.height(10.dp))
-
             ProviderDetails(
-                serviceType = "Grooming",
-                cardRating = "4",
-                personImage = " "  ,
-                providerName = "John Doe",
-                userVerified = true,
-                businessDescription = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad ",
-                phoneNumber = "(805) 123 4567",
-                website = "pawfectpets.com",
-                miles = "4",
-                address = "123 Pet Lane, San Luis Obispo, CA",
-                onClickInquire = {navController.navigate(Routes.CHAT_SCREEN)}
+                serviceType = data.serviceDetail?.category?.firstOrNull() ?: "Service",
+                cardRating = (data.serviceDetail?.rating ?: 0).toString(),
+                personImage = data.serviceDetail?.profileImage ?: "",
+                businessName = data.serviceDetail?.businessName ?: "Unknown",
+                providerName = data.serviceDetail?.providerName ?: "Unknown Provider",
+                userVerified = data.serviceDetail?.verificationStatus ?: false,
+                businessDescription = data.serviceDetail?.businessDescription ?: "No Description",
+                phoneNumber = data.serviceDetail?.phone ?: "Undisclosed",
+                website = data.serviceDetail?.website ?: "Undisclosed",
+                miles = data.serviceDetail?.milesAway ?: "Undisclosed",
+                address = data.serviceDetail?.address ?: "Undisclosed",
+                onClickInquire = { navController.navigate(Routes.CHAT_SCREEN) }
             )
 
             Spacer(Modifier.height(20.dp))
 
             SwitchButton(
-                selectedOption = selectedOption, // Pass the current state
-                onOptionSelected = { newOption ->
-                    selectedOption = newOption // Update the state when clicked
-                }
+                selectedOption = selectedOption,
+                onOptionSelected = { selectedOption = it }
             )
+
             when (selectedOption) {
-                "Services" -> { ServicesContent() }
-                "Rating & Reviews" -> { ReviewInterface() }
+                "Services" -> ServicesContent(data.serviceDetail?.services)
+                "Rating & Reviews" -> ReviewInterface(data.serviceDetail?.ratingsAndReviews)
             }
         }
     }
 }
+
 
 @Composable
 fun ProviderDetails(
@@ -133,6 +161,7 @@ fun ProviderDetails(
     providerName : String,
     userVerified : Boolean,
     miles : String,
+    businessName : String,
     businessDescription: String,
     phoneNumber: String,
     website: String,
@@ -148,16 +177,18 @@ fun ProviderDetails(
 
             // Paw Icon
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.paw_icon),
+                AsyncImage(
+                    model = personImage,
+                    placeholder = painterResource(id = R.drawable.paw_icon),
+                    error =  painterResource(id = R.drawable.paw_icon),
                     contentDescription = null,
                     modifier = Modifier
                         .height(50.dp)
                         .width(50.dp)
-                        .align(Alignment.TopStart),
+                        .align(Alignment.TopStart)
+                        .clip(RoundedCornerShape(10.dp)),
 
                     )
                 Surface(
@@ -172,7 +203,7 @@ fun ProviderDetails(
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                            .width(71.dp)
+                            .widthIn(min=50.dp, max = 150.dp)
                             .height(25.dp)
                     ) {
                         Text(
@@ -184,31 +215,32 @@ fun ProviderDetails(
                         )
                     }
                 }
-
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.align(Alignment.TopStart)) {
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(text = "Pawfect Pet Care",
+                        Text(text = businessName,
                             fontSize = 14.sp,
                             color = Color.Black,
                             maxLines = 1,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.widthIn(max = 170.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_check_mark),
-                            contentDescription = "Verified",
-                            modifier = Modifier.size(14.dp)
-                        )
+                        if (userVerified){
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_check_mark),
+                                contentDescription = "Verified",
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
                     }
 
                     // Rating
@@ -244,18 +276,15 @@ fun ProviderDetails(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "$miles miles away",
+                            text = miles,
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontWeight = FontWeight.Medium,
                             color = Color.Black
                         )
-
                     }
-
                     Spacer(modifier = Modifier.height(4.dp))
                 }
-
 
                 Row(
                     modifier = Modifier
@@ -270,7 +299,6 @@ fun ProviderDetails(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-
                     Icon(
                         painter = painterResource(id = R.drawable.ic_inform_checked),
                         contentDescription = null,
@@ -576,6 +604,6 @@ fun SwitchButton(
 @Composable
 fun ServiceProviderDetailsScreenPreview() {
     val navController = rememberNavController()
-    ServiceProviderDetailsScreen(navController = navController)
+    ServiceProviderDetailsScreen(navController = navController, serviceId = "0")
 }
 

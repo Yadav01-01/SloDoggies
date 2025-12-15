@@ -134,7 +134,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                                 interactionSource = interactionSource
                             ) {
                                 Text(
-                                    text = if (isFollowed) "Following" else "Follow",
+                                    text = if (postItem.iAmFollowing) "Following" else "Follow",
                                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                                     fontSize = 12.sp,
                                     fontWeight = FontWeight.Normal

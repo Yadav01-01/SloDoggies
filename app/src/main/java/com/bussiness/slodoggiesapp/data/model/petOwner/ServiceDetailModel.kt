@@ -7,9 +7,9 @@ data class ServiceDetailModel (
     val serviceType: String,
     val isVerified: Boolean,
     val profileImageUrl: String,
-    val additionalInfo: com.bussiness.slodoggiesapp.data.model.petOwner.AdditionalInfoItem,
-    val services: List<com.bussiness.slodoggiesapp.data.model.petOwner.ServiceItem>,
-    val ratingReviews: com.bussiness.slodoggiesapp.data.model.petOwner.RatingReviewResponse
+    val additionalInfo: AdditionalInfoItem,
+    val services: List<ServiceItem>,
+    val ratingReviews: RatingReviewResponse
 )
 
 data class AdditionalInfoItem(
@@ -29,7 +29,7 @@ data class ServiceItem(
 data class RatingReviewResponse(
     val overallRating: Float,
     val totalReviews: Int,
-    val ratingDistribution: com.bussiness.slodoggiesapp.data.model.petOwner.RatingDistribution,
+    val ratingDistribution: RatingDistribution,
     val reviews: List<com.bussiness.slodoggiesapp.data.model.petOwner.UserReview>
 )
 

@@ -44,11 +44,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.RatingsAndReviews
 
 
 @Composable
-fun ReviewInterface() {
+fun ReviewInterface(ratingsAndReviews: RatingsAndReviews?) {
     var reviewText by remember { mutableStateOf("") }
     var selectedRating by remember { mutableStateOf(0) }
     val ratings = com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData(

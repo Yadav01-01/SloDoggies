@@ -19,7 +19,8 @@ data class PetsData(
 data class PetItem(
     val petId: String = "",
     val name: String = "",
-    val image: String? = null  // nullable, some pets have no image
+    val image: String? = null,
+    val pet_owner_id: String? = ""
 ) {
     // Safe fallback for UI
     val safeImage: String

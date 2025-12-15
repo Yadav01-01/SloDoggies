@@ -160,15 +160,15 @@ class HomeViewModel @Inject constructor(
                         val response = result.data.data
                         val apiPosts = response?.data ?: emptyList()
 
-                        // 🔥 Convert API PostItem → UI PostItem.NormalPost
+                        //  Convert API PostItem → UI PostItem.NormalPost
                         val normalPosts = apiPosts.map { it.toNormalPost() }
 
-                        // 🔥 Pagination Safe Merge
+                        //  Pagination Safe Merge
                         val finalPosts =
                             if (isFirstPage) normalPosts
                             else _uiState.value.posts + normalPosts
 
-                        // 🔥 Update UI State
+                        //  Update UI State
                         _uiState.update { state ->
                             state.copy(
                                 posts = finalPosts,
@@ -178,7 +178,7 @@ class HomeViewModel @Inject constructor(
                             )
                         }
 
-                        // 🔥 Pagination Handler
+                        //  Pagination Handler
                         val totalPages = response?.total_page ?: 1
                         isLastPage = currentPage >= totalPages
                         if (!isLastPage) currentPage++
@@ -237,7 +237,7 @@ class HomeViewModel @Inject constructor(
 
 
 
-    // 🔥 Merge function: API + Local
+    //  Merge function: API + Local
     private fun mergeApiWithLocal(apiPosts: List<PostItem>): List<PostItem> {
         return apiPosts.map { post ->
 
@@ -747,7 +747,7 @@ class HomeViewModel @Inject constructor(
     }
     // Toggle Follow / Unfollow
     fun addAndRemoveFollowers(
-        followedId:String,
+        followedId: String,
         onSuccess: () -> Unit = { },
         onError: (String) -> Unit
     ) {
@@ -757,29 +757,51 @@ class HomeViewModel @Inject constructor(
                 followerId = followedId,
             ).collectLatest { result ->
                 when (result) {
-                    is Resource.Loading -> {
-                        _uiState.value = _uiState.value.copy(isLoading = true)
-                    }
-                    is Resource.Success -> {
-                        _uiState.value = _uiState.value.copy(isLoading = false)
-                        result.data.let { response ->
-                            if (response.success) {
 
-                                onSuccess()
-                            } else {
-                                onError(response.message ?: "")
-                            }
+                    is Resource.Loading -> {
+                        _uiState.update {
+                            it.copy(isLoading = true)
                         }
                     }
+
+                    is Resource.Success -> {
+                        _uiState.update {
+                            it.copy(isLoading = false)
+                        }
+
+                        val response = result.data
+                        if (response?.success == true) {
+
+                            _uiState.update { state ->
+                                val updatedPosts = state.posts.map { post ->
+                                    if (post.stableKey == followedId && post is PostItem.CommunityPost) {
+                                        post.copy(
+                                            iAmFollowing = !post.iAmFollowing
+                                        )
+                                    } else post
+                                }
+                                state.copy(posts = updatedPosts)
+                            }
+
+                            onSuccess()
+                        } else {
+                            onError(response?.message ?: "")
+                        }
+                    }
+
                     is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        _uiState.update {
+                            it.copy(isLoading = false)
+                        }
                         onError(result.message)
                     }
+
                     Resource.Idle -> Unit
                 }
             }
         }
     }
+
 
 
     fun editComment(

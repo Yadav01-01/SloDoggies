@@ -13,6 +13,7 @@ import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsRespon
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlacesResponse
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetsResponse
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
@@ -22,6 +23,7 @@ import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.CategoryResponse
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
@@ -513,6 +515,19 @@ interface ApiService {
     suspend fun ownerCategoryService(
         @Query("user_id") userId: String,
     ): Response<CategoryResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.OWNER_SERVICE_DETAIL)
+    suspend fun ownerServiceDetail(
+        @Field("business_user_id") businessUserId: String,
+    ) : Response<ServiceDetailsResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.DISCOVER_PET_PLACES)
+    suspend fun discoverPetPlaces(
+        @Field("user_id") userId: String,
+        @Field("search") search: String,
+    ) : Response<PetPlacesResponse>
 
 
 

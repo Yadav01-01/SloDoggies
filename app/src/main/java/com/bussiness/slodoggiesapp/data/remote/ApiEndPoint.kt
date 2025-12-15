@@ -57,4 +57,6 @@ object ApiEndPoint {
     const val EDIT_POST = "edit_post"
     const val OWNER_SERVICE = "getOwnerServices"
     const val OWNER_CATEGORY_SERVICE = "getOwnerCategoryService"
+    const val OWNER_SERVICE_DETAIL = "ownerServiceDetail"
+    const val DISCOVER_PET_PLACES = "discoverPetPlaces"
 }
