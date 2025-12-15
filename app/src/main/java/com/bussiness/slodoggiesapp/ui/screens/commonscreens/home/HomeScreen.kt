@@ -140,14 +140,14 @@ fun HomeScreen(
                     Icon(
                         painter = painterResource(R.drawable.ic_pet_post_icon),
                         contentDescription = null,
-                        tint = Color.Gray,
+                        tint = Color(0XFF258694),
                         modifier = Modifier.size(100.dp)
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "OOps!,Something Went Wrong",
+                        text = "OOps! Something Went Wrong",
                         style = MaterialTheme.typography.titleMedium,
-                        color = PrimaryColor,
+                        color = Color(0XFF258694),
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         fontSize = 18.sp
                     )

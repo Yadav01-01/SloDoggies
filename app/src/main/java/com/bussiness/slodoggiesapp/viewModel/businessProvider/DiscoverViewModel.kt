@@ -33,12 +33,36 @@ class DiscoverViewModel @Inject constructor(
 
     init {
         loadHashtags()
-        loadForSelectedCategory()   // Only load according to default category
+        loadForSelectedCategory()
+//        observeSearchQuery()
     }
+
 
     // ---------------------------------------------------------
     //  CATEGORY CHANGE HANDLER
     // ---------------------------------------------------------
+
+   /* private fun observeSearchQuery() {
+        viewModelScope.launch {
+            searchQuery
+                .debounce(400)
+                .distinctUntilChanged()
+                .collectLatest { query ->
+
+                    _uiState.update {
+                        it.copy(
+                            query = query,
+                            page = 1,
+                            isLastPage = false
+                        )
+                    }
+
+                    loadForSelectedCategory()
+                }
+        }
+    }*/
+
+
     fun selectCategory(category: String) {
         _uiState.update { it.copy(selectedCategory = category) }
         resetPagination()
@@ -510,6 +534,13 @@ class DiscoverViewModel @Inject constructor(
     // ---------------------------------------------------------
     //  UI Dialogs
     // ---------------------------------------------------------
+
+    fun onHashtagSelected(tag: String) {
+        _uiState.update {
+            it.copy(query = tag)
+        }
+    }
+
 
     fun updateQuery(newQuery: String) {
         _uiState.update { it.copy(query = newQuery) }

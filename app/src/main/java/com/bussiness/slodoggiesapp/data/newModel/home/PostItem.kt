@@ -47,6 +47,8 @@ sealed class PostItem(open val stableKey: String) {
         val eventEndDate: String?,
         val eventDescription: String?,
         val location: String?,
+        val alreadyJoined: Boolean?,
+
 
         val media: MediaResponse?,
         val mediaList: List<PostMediaResponse>,

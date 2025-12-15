@@ -49,7 +49,7 @@ class PetOwnerProfileViewModel @Inject constructor(
 
     private fun profileDetail() {
         viewModelScope.launch {
-            repository.getOwnerProfileDetails(sessionManager.getUserId())
+            repository.getOwnerProfileDetails(sessionManager.getUserId(),"")
                 .collectLatest { result ->
                     when (result) {
                         is Resource.Loading -> {
@@ -145,6 +145,5 @@ class PetOwnerProfileViewModel @Inject constructor(
             galleryPostDetail(state.currentPage + 1)
         }
     }
-
 
 }

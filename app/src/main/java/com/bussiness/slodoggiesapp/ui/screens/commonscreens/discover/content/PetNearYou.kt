@@ -68,7 +68,7 @@ fun ShowPetsNearYou(results: List<PetItem>, controller: NavHostController) {
                     onItemClick = { controller.navigate("${Routes.PERSON_DETAIL_SCREEN}/${result.pet_owner_id}") },
                     onRemove = {},
                     labelVisibility = false,
-                    crossVisibility = true
+                    crossVisibility = false
                 )
             }
         }

@@ -199,13 +199,17 @@ fun SearchBar(
 
 
 @Composable
-fun HashtagChip(tag: HashtagItem) {
+fun HashtagChip(
+    tag: HashtagItem,
+    onHashClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .background(
                 color = Color(0xFFE5EFF2),
                 shape = RoundedCornerShape(4.dp)
             )
+            .clickable { onHashClick() }
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Text(
@@ -216,6 +220,7 @@ fun HashtagChip(tag: HashtagItem) {
         )
     }
 }
+
 
 
 @Composable
@@ -651,7 +656,7 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Uni
                     text = postItem.eventDescription ?: "No Description",
                     fontSize = 14.sp,
                     color = TextGrey,
-                    maxLines = 8,
+                    maxLines = 5,
                     overflow = TextOverflow.Ellipsis,
                     lineHeight = 18.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -686,7 +691,8 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Uni
                 Icon(
                     painter = painterResource(R.drawable.location_ic_icon),
                     contentDescription = null,
-                    tint = Color.Unspecified
+                    tint = Color.Unspecified,
+                    modifier = Modifier.padding(top = 4.dp).align(Alignment.Top)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -754,13 +760,22 @@ fun IconWithCount(imageRes: Int, count: String,onItemClick: () -> Unit) {
 
 
 @Composable
-fun HashtagSection(hashtags: List<HashtagItem>) {
+fun HashtagSection(
+    hashtags: List<HashtagItem>,
+    onHashtagClick: (String) -> Unit
+) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         items(hashtags) { tag ->
-            HashtagChip(tag)
+            HashtagChip(
+                tag = tag,
+                onHashClick = {
+                    onHashtagClick(tag.hashtag)
+                }
+            )
         }
     }
 }
+
 
 @Composable
 fun CategorySection(

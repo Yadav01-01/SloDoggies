@@ -56,6 +56,7 @@ object HomeFeedMapper {
                 eventEndDate = content?.endTime,
                 eventDescription = content?.description,
                 location = content?.location,
+                alreadyJoined = content?.alreadyJoined,
                 media = media,
                 mediaList = mediaList,
                 likes = likes,

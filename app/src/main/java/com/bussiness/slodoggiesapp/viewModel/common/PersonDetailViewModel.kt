@@ -4,13 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
-import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerData
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerPostItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.network.Resource
+import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +34,7 @@ data class PersonDetailUiState(
 @HiltViewModel
 class PersonDetailViewModel @Inject constructor(
     private val repository: Repository,
+    private val sessionManager: SessionManager
 ): ViewModel() {
 
     private val _uiState = MutableStateFlow(PersonDetailUiState())
@@ -44,12 +44,23 @@ class PersonDetailViewModel @Inject constructor(
         _uiState.update { it.copy(selectedImageIndex = index) }
     }
 
-    fun follow() {
+    fun follow(followedId: String) {
         _uiState.update { it.copy(isFollowed = !it.isFollowed) }
-        if (_uiState.value.isFollowed) {
-            println("Unfollowed")
-        } else {
-            println("Followed")
+        viewModelScope.launch {
+            repository.addAndRemoveFollowers(sessionManager.getUserId(),followedId).collectLatest { result ->
+                when(result){
+                    is Resource.Loading -> {
+                        _uiState.update { it.copy(loading = true) }
+                    }
+                    is Resource.Success -> {
+                        _uiState.update { it.copy(loading = false,isFollowed = !it.isFollowed) }
+                    }
+                    is Resource.Error -> {
+                        _uiState.update { it.copy(loading = false, error = result.message) }
+                    }
+                    is Resource.Idle -> Unit
+                }
+            }
         }
     }
 
@@ -60,7 +71,7 @@ class PersonDetailViewModel @Inject constructor(
 
     fun profileDetail(ownerId : String){
         viewModelScope.launch {
-            repository.getOwnerProfileDetails(ownerId).collectLatest { result ->
+            repository.getOwnerProfileDetails(sessionManager.getUserId(),ownerId).collectLatest { result ->
                 when(result){
                     is Resource.Loading ->{
                         _uiState.update { it.copy(loading = true) }

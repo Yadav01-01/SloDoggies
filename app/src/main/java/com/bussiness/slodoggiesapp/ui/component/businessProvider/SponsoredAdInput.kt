@@ -59,10 +59,11 @@ fun SponsoredEngagementCard(
                         .padding(horizontal = 10.dp, vertical = 4.dp)
                 )
             }
-
         }
 
-        Text(engagementData, fontSize = 12.sp, fontFamily = FontFamily(Font(R.font.poppins)), color = Color.Black)
+        Spacer(Modifier.height(10.dp))
+
+        Text(engagementData, fontSize = 12.sp, fontFamily = FontFamily(Font(R.font.poppins)), color = Color.Black, lineHeight = 18.sp)
 
         Spacer(Modifier.height(18.dp))
 

@@ -30,6 +30,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceDetailsResp
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
+import com.bussiness.slodoggiesapp.data.newModel.sponsered.BusinessAdsResponse
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
@@ -502,9 +503,9 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.addAndRemoveFollowers(userId,followerId) })
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun getOwnerProfileDetails(userId: String): Flow<Resource<PetOwnerDetailsResponse>> = flow{
+    override suspend fun getOwnerProfileDetails(userId: String,petOwnerId : String): Flow<Resource<PetOwnerDetailsResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.getOwnerProfile(userId) })
+        emit(safeApiCall { api.getOwnerProfile(userId,petOwnerId) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getOwnerGalleryPost(userId: String,page: String): Flow<Resource<OwnerGalleryResponse>> = flow{
@@ -736,12 +737,11 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.discoverPetPlaces(userId,search) })
     }
 
-        override suspend fun ownerCategoryService(userId: String): Flow<Resource<CategoryResponse>> =
-            flow {
-                emit(Resource.Loading)
-                emit(safeApiCall { api.ownerCategoryService(userId) })
-            }.flowOn(Dispatchers.IO)
+    override suspend fun sponsoredAds(userId: String): Flow<Resource<BusinessAdsResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getSponsoredAds(userId) })
     }
+}
 
     /**
      * A reusable helper function to handle all API calls safely.

@@ -27,6 +27,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceDetailsResp
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
+import com.bussiness.slodoggiesapp.data.newModel.sponsered.BusinessAdsResponse
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
@@ -244,7 +245,8 @@ interface Repository {
     ) : Flow<Resource<CommonResponse>>
 
     suspend fun getOwnerProfileDetails(
-        userId: String
+        userId: String,
+        petOwnerId : String
     ) : Flow<Resource<PetOwnerDetailsResponse>>
 
     suspend fun getOwnerGalleryPost(
@@ -399,6 +401,10 @@ interface Repository {
         userId: String,
         search: String
     ) : Flow<Resource<PetPlacesResponse>>
+
+    suspend fun sponsoredAds(
+        userId: String
+    ) : Flow<Resource<BusinessAdsResponse>>
 
 
 }

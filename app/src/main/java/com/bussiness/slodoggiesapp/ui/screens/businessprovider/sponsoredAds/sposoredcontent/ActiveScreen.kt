@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -32,253 +34,171 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.sponsered.BusinessAdItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ExperienceRuleHeading
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
-fun ActiveScreen(clicks: Int = 1200, impressions: Int = 1300) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize().verticalScroll(rememberScrollState()),
+fun ActiveScreen(
+    ads: List<BusinessAdItem>,
+    onStopClick: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-
-        // Ad Control Section
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(width = 1.dp, color = Color(0xFFDEEBEE), shape = RoundedCornerShape(10.dp))
-                .padding(top = 20.dp, bottom = 20.dp, start = 15.dp, end = 15.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Free First Walk", fontWeight = FontWeight.Medium, fontFamily = FontFamily(
-                    Font(
-                        R.font.outfit_medium)
-                ), fontSize = 18.sp)
-                Text(
-                    text = "Live",
-                    color = Color.White,
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                    modifier = Modifier
-                        .background(Color(0xFF44ED11), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier
-            ) {
-                Text(
-                    text = "Clicks : $clicks",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black
-                    )
-                )
-                Text(
-                    text = " | ",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black
-                    )
-                )
-                Text(
-                    text = "Impression : $impressions",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row (verticalAlignment = Alignment.CenterVertically){
-                Icon(
-                    painter = painterResource(R.drawable.msg_ic),
-                    contentDescription = "message icon",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(19.dp)
-                )
-                Spacer(Modifier.width(10.dp))
-                Text("Message Leads : 25", fontSize = 12.sp, fontFamily = FontFamily(Font(R.font.outfit_regular)), color = Color.Black)
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Expiry Date : 06/30/2025",
-                    color = PrimaryColor,
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium))
-                )
-
-                Button(
-                    onClick = { },
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                    shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
-                    modifier = Modifier.height(38.dp) // height fixed, width wrap content
-                ) {
-                    Text(
-                        text = "Stop",
-                        color = Color.White,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        fontSize = 15.sp
-                    )
+        // -------- Ads List --------
+        items(
+            items = ads,
+            key = { it.id }
+        ) { ad ->
+            BusinessAdItemView(
+                data = ad,
+                onStopClick = {
+                    onStopClick()
                 }
-            }
-
+            )
         }
 
-
-        // Billing Section
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .border(width = 1.dp, color = Color(0xFFDEEBEE), shape = RoundedCornerShape(10.dp))
-                .padding(top = 20.dp, bottom = 20.dp, start = 15.dp, end = 15.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Ad Title", fontWeight = FontWeight.Medium, fontFamily = FontFamily(Font(R.font.outfit_medium)), fontSize = 18.sp)
-                Text(
-                    text = "Live",
-                    color = Color.White,
-                    fontSize = 11.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_semibold)),
-                    modifier = Modifier
-                        .background(Color(0xFF44ED11), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier
-            ) {
-                Text(
-                    text = "Clicks : $clicks",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black
-                    )
-                )
-                Text(
-                    text = " | ",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black
-                    )
-                )
-                Text(
-                    text = "Impression : $impressions",
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                        fontWeight = FontWeight.Normal,
-                        color = Color.Black
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row (verticalAlignment = Alignment.CenterVertically){
-                Icon(
-                    painter = painterResource(R.drawable.msg_ic),
-                    contentDescription = "message icon",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(19.dp)
-                )
-                Spacer(Modifier.width(10.dp))
-                Text("Message Leads : 25", fontSize = 12.sp, fontFamily = FontFamily(Font(R.font.outfit_regular)), color = Color.Black)
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Expiry Date : 06/30/2025",
-                    color = PrimaryColor,
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium))
-                )
-
-                Button(
-                    onClick = { },
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
-                    shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
-                    modifier = Modifier.height(38.dp) // height fixed, width wrap content
-                ) {
-                    Text(
-                        text = "Stop",
-                        color = Color.White,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        fontSize = 15.sp
-                    )
-                }
-            }
-
-
+        // -------- Experience Heading --------
+        item {
+            ExperienceRuleHeading()
         }
 
-        ExperienceRuleHeading()
+        // -------- Rules Section --------
+        item {
+            RulesSection()
+        }
+    }
+}
 
-        // Rules Section
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color(0xFFE5EFF2), shape = RoundedCornerShape(12.dp))
-                .padding(8.dp)
+
+@Composable
+fun RulesSection() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFE5EFF2), shape = RoundedCornerShape(12.dp))
+            .padding(12.dp)
+    ) {
+
+        val rules = listOf(
+            "Top 3 results reserved for sponsored ads (marked as \"Sponsored\").",
+            "Based on category relevance & rotation/fixed purchase order.",
+            "Ads appear only if live, approved, and within budget.",
+            "Hidden once expired or budget is exhausted.",
+            "Real-time Tap to Call and Message options."
+        )
+
+        BulletList(rules = rules)
+    }
+}
+
+
+@Composable
+fun BusinessAdItemView(
+    data: BusinessAdItem,
+    onStopClick: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = Color(0xFFDEEBEE),
+                shape = RoundedCornerShape(10.dp)
+            )
+            .padding(top = 20.dp, bottom = 20.dp, start = 15.dp, end = 15.dp)
+    ) {
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            val rules = listOf(
-                "Top 3 results reserved for sponsored ads (marked as \"Sponsored\").",
-                "Based on category relevance & rotation/fixed purchase order.",
-                "Ads appear only if live, approved, and within budget.",
-                "Hidden once expired or budget is exhausted.",
-                "Real-time Tap to Call and Message options."
+            Text(
+                text = data.title,
+                fontWeight = FontWeight.Medium,
+                fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                fontSize = 18.sp
             )
 
-            BulletList(rules = rules)
-
+            Text(
+                text = "Live",
+                color = Color.White,
+                fontSize = 11.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_semibold)),
+                modifier = Modifier
+                    .background(Color(0xFF44ED11), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
+            )
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row {
+            Text(
+                text = "Clicks : ${data.clicks}",
+                fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular))
+            )
+            Text(
+                text = " | ",
+                fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular))
+            )
+            Text(
+                text = "Impression : ${data.likesCount}",
+                fontSize = 16.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular))
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                painter = painterResource(R.drawable.msg_ic),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier.size(19.dp)
+            )
+            Spacer(Modifier.width(10.dp))
+            Text(
+                text = "Message Leads : 25",
+                fontSize = 12.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_regular))
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Expiry Date : ${data.expiryDate}",
+                color = PrimaryColor,
+                fontSize = 14.sp,
+                fontFamily = FontFamily(Font(R.font.outfit_medium))
+            )
+
+            Button(
+                onClick = onStopClick,
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryColor),
+                shape = RoundedCornerShape(10.dp),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 6.dp),
+                modifier = Modifier.height(38.dp)
+            ) {
+                Text(
+                    text = "Stop",
+                    color = Color.White,
+                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                    fontSize = 15.sp
+                )
+            }
+        }
     }
 }

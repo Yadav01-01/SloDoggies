@@ -59,6 +59,7 @@ data class ContentResponse(
     @SerializedName("title") val title: String?,
     @SerializedName("description") val description: String?,
     @SerializedName("hashtags") val hashtags: String? = null,
+    @SerializedName("alreadyJoined") val alreadyJoined: Boolean? = false,
     @SerializedName("location") val location: String? = null,
     @SerializedName("startTime") val startTime: String? = null,
     @SerializedName("endTime") val endTime: String? = null,

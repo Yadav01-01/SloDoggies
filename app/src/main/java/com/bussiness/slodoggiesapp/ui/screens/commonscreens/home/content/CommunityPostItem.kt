@@ -279,7 +279,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                     .clickable { onJoinedCommunity() },
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Text("Join Community", modifier = Modifier.padding(end = 35.dp),
+                Text(if (postItem.alreadyJoined == true)"Joined" else "Join Community", modifier = Modifier.padding(end = 35.dp),
                     color = Color.White, fontSize = 16.sp, fontFamily = FontFamily(Font(R.font.outfit_medium)))
                 Icon(
                     painter = painterResource(R.drawable.ic_chat_icon),

@@ -91,7 +91,12 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
 
         Spacer(modifier = Modifier.height(12.dp))
         // Hashtags Row
-        HashtagSection(uiState.hashtags)
+        HashtagSection(
+            hashtags = uiState.hashtags,
+            onHashtagClick = { hashtag ->
+                viewModel.onHashtagSelected(hashtag)
+            }
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
         // Categories

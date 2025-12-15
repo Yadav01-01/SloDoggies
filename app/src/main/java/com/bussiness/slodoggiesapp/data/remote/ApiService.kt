@@ -27,6 +27,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceDetailsResp
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
+import com.bussiness.slodoggiesapp.data.newModel.sponsered.BusinessAdsResponse
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import okhttp3.MultipartBody
@@ -340,6 +341,7 @@ interface ApiService {
     @POST(ApiEndPoint.GET_OWNER_PROFILE)
     suspend fun getOwnerProfile(
         @Field("user_id") userId: String,
+        @Field("pet_owner_id") petOwnerId: String,
     ) : Response<PetOwnerDetailsResponse>
 
     @FormUrlEncoded
@@ -543,7 +545,11 @@ interface ApiService {
         @Field("search") search: String,
     ) : Response<PetPlacesResponse>
 
-
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_USER_ADS)
+    suspend fun getSponsoredAds(
+        @Field("user_id") userId: String,
+    ) : Response<BusinessAdsResponse>
 
 
 }
