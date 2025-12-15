@@ -55,6 +55,8 @@ object ApiEndPoint {
     const val DISCOVER_EVENTS = "discoverEvents"
     const val COMMENT_LIKE = "comment_like"
     const val EDIT_POST = "edit_post"
+    const val GET_MY_SAVED_POST = "get_my_saved_posts"
+    const val DELETE_POST = "deletePost"
     const val OWNER_SERVICE = "getOwnerServices"
     const val OWNER_CATEGORY_SERVICE = "getOwnerCategoryService"
     const val OWNER_SERVICE_DETAIL = "ownerServiceDetail"

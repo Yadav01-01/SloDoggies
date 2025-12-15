@@ -82,11 +82,16 @@ fun HomeScreen(
     var deleteComment by remember { mutableStateOf(false) }
     var deleteCommentId by remember { mutableStateOf("") }
 
+
+    var userId by remember { mutableStateOf("") }
+
     val posts = uiState.posts
 
     // val onReportClick = remember { { viewModel.showReportDialog() } }
     val onShareClick = remember { { viewModel.showShareContent() } }
-    val onProfileClick = remember { { navController.navigate(Routes.CLICKED_PROFILE_SCREEN) } }
+    val onProfileClick = remember { {
+        navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/$userId")
+    } }
 
     val onSponsoredClick = remember {
         {
@@ -218,7 +223,11 @@ fun HomeScreen(
                         post = post,
                         onReportClick = { viewModel.showReportDialog(post.postId) },
                         onShareClick = onShareClick,
-                        onProfileClick = onProfileClick,
+                        onProfileClick = {
+                            //onProfileClick
+                          //  userId = post.userId
+                            navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/${post.userId}")
+                        },
                         onSponsoredClick = onSponsoredClick,
                         onLikeClick = {
                             viewModel.postLikeUnlike(
@@ -268,8 +277,11 @@ fun HomeScreen(
                             )
 
                             navController.navigate(Routes.EDIT_POST_SCREEN)
-                        },
-                        onSelfPostDelete = { viewModel.showDeleteDialog() },
+                                         },
+                        onSelfPostDelete = {
+                            viewModel.updatePostId(post.postId)
+                            viewModel.showDeleteDialog()
+                                           },
                         onSaveClick = {
                             viewModel.savePost(
                                 post.postId, "", "",
@@ -528,15 +540,23 @@ fun HomeScreen(
             )
         }
 
-        if (uiState.deleteDialog) {
-            DeleteChatDialog(
-                onDismiss = { viewModel.dismissDeleteDialog() },
-                onClickRemove = { viewModel.dismissDeleteDialog() },
-                iconResId = R.drawable.delete_mi,
-                text = stringResource(R.string.Delete_Post),
-                description = stringResource(R.string.Delete_desc)
-            )
-        }
+    if (uiState.deleteDialog) {
+        DeleteChatDialog(
+            onDismiss = { viewModel.dismissDeleteDialog() },
+            onClickRemove = {
+                Log.d("********","onClickRemove")
+                viewModel.deletePost(postId = uiState.postId, onSuccess = {
+                    viewModel.dismissDeleteDialog()
+                },
+                    onError = {error->
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    })
+                            },
+            iconResId = R.drawable.delete_mi,
+            text = stringResource(R.string.Delete_Post),
+            description = stringResource(R.string.Delete_desc)
+        )
+    }
 
         if (uiState.showReportToast) {
             ReportBottomToast(

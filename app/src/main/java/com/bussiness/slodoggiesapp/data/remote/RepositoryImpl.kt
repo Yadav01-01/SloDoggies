@@ -655,48 +655,68 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.editPost(userId,postId,postDescription) })
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun trendingHashtags(): Flow<Resource<TrendingHashtagsResponse>> = flow {
-        emit(Resource.Loading)
-        emit(safeApiCall { api.trendingHashTags() })
-    }.flowOn(Dispatchers.IO)
 
-    override suspend fun petNearMe(
+    override suspend fun getMySavedPosts(
         userId: String,
-        lat: String,
-        long: String,
-        page: String,
-        limit: String,
-        search: String
-    ): Flow<Resource<PetsResponse>> = flow {
+        page: String
+    ): Flow<Resource<HomeFeedResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.discoverPetNearMe(userId, lat, long, page, limit, search) })
+        emit(safeApiCall { api.getMySavedPosts(userId,page) })
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun discoverActivities(
-        id: String,
-        page: String,
-        limit: String,
-        search: String
-    ): Flow<Resource<HomeFeedResponse>> = flow{
+    override suspend fun deletePost(
+        userId: String,
+        postId: String
+    ): Flow<Resource<CommonResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.discoverActivities(id,page,limit,search) })
-    }.flowOn(Dispatchers.IO)
+        emit(safeApiCall { api.deletePost(userId, postId) })
+    }
 
-    override suspend fun discoverEvents(
-        id: String,
-        search: String,
-        userType: String,
-        page: String,
-        limit: String
-    ): Flow<Resource<HomeFeedResponse>> = flow{
-        emit(Resource.Loading)
-        emit(safeApiCall { api.discoverEvents(id,search,userType,page,limit) })
-    }.flowOn(Dispatchers.IO)
+        override suspend fun trendingHashtags(): Flow<Resource<TrendingHashtagsResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.trendingHashTags() })
+        }.flowOn(Dispatchers.IO)
 
-    override suspend fun ownerService(userId: String,search : String): Flow<Resource<ServicesResponse>> = flow {
-        emit(Resource.Loading)
-        emit(safeApiCall { api.ownerService(userId,search) })
-    }.flowOn(Dispatchers.IO)
+        override suspend fun petNearMe(
+            userId: String,
+            lat: String,
+            long: String,
+            page: String,
+            limit: String,
+            search: String
+        ): Flow<Resource<PetsResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.discoverPetNearMe(userId, lat, long, page, limit, search) })
+        }.flowOn(Dispatchers.IO)
+
+        override suspend fun discoverActivities(
+            id: String,
+            page: String,
+            limit: String,
+            search: String
+        ): Flow<Resource<HomeFeedResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.discoverActivities(id, page, limit, search) })
+        }.flowOn(Dispatchers.IO)
+
+        override suspend fun discoverEvents(
+            id: String,
+            search: String,
+            userType: String,
+            page: String,
+            limit: String
+        ): Flow<Resource<HomeFeedResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.discoverEvents(id, search, userType, page, limit) })
+        }.flowOn(Dispatchers.IO)
+
+        override suspend fun ownerService(
+            userId: String,
+            search: String
+        ): Flow<Resource<ServicesResponse>> = flow {
+            emit(Resource.Loading)
+            emit(safeApiCall { api.ownerService(userId, search) })
+        }.flowOn(Dispatchers.IO)
 
     override suspend fun ownerCategoryService(userId: String): Flow<Resource<CategoryResponse>> = flow {
         emit(Resource.Loading)
@@ -716,6 +736,12 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.discoverPetPlaces(userId,search) })
     }
 
+        override suspend fun ownerCategoryService(userId: String): Flow<Resource<CategoryResponse>> =
+            flow {
+                emit(Resource.Loading)
+                emit(safeApiCall { api.ownerCategoryService(userId) })
+            }.flowOn(Dispatchers.IO)
+    }
 
     /**
      * A reusable helper function to handle all API calls safely.
@@ -753,9 +779,3 @@ class RepositoryImpl @Inject constructor(
             Resource.Error(e.message.toString())
         }
     }
-
-
-
-
-
-}

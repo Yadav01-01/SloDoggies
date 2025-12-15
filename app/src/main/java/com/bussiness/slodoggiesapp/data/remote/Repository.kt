@@ -347,6 +347,15 @@ interface Repository {
         postDescription: String
     ) : Flow<Resource<CommonResponse>>
 
+    suspend fun getMySavedPosts(
+        userId: String,page:String
+    ) : Flow<Resource<HomeFeedResponse>>
+
+    suspend fun deletePost(
+        userId: String,
+        postId: String
+    ) : Flow<Resource<CommonResponse>>
+
     suspend fun trendingHashtags() : Flow<Resource<TrendingHashtagsResponse>>
 
     suspend fun petNearMe(

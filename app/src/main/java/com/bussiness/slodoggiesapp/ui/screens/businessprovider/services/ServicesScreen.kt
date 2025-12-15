@@ -86,7 +86,7 @@ fun ServiceScreen(navController: NavHostController) {
 
 
     LaunchedEffect(Unit) {
-        viewModel.getBusinessDetail()
+        viewModel.getBusinessDetail("")
     }
 
     // Inside your Composable

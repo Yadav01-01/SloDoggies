@@ -50,9 +50,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
 import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCard
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.GalleryItemCardProfile
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.OutlineCustomButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
@@ -60,7 +58,6 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.ScreenHeadingTe
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
-import com.bussiness.slodoggiesapp.viewModel.businessProvider.ProfileViewModel
 import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesViewModel
 
 @Composable
@@ -70,16 +67,12 @@ fun ProfileScreen(navController: NavHostController) {
 
     val uiState by viewModelDashboard.uiState.collectAsState()
     val galleryState by viewModelDashboard.uiStateGallery.collectAsState()
-
-    val viewModel: ProfileViewModel = hiltViewModel()
-    val email by viewModel.email.collectAsState()
-    val description by viewModel.description.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
 
     // First API Call
     LaunchedEffect(Unit) {
-        viewModelDashboard.getBusinessDetail()
-        viewModelDashboard.galleryPostDetail(1)   // first page
+        viewModelDashboard.getBusinessDetail("")
+        viewModelDashboard.galleryPostDetail("",1)   // first page
     }
 
     BackHandler {
@@ -248,7 +241,6 @@ fun ProfileScreen(navController: NavHostController) {
             // ---------------- GALLERY GRID WITH PAGINATION ----------------
             item {
                 val posts = galleryState.posts
-
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     modifier = Modifier
@@ -266,7 +258,7 @@ fun ProfileScreen(navController: NavHostController) {
                         GalleryItemCardProfile(
                             item = item,
                             onClickItem = {
-                                navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}")
+                                navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/Profile")
                             }
                         )
 
@@ -276,7 +268,7 @@ fun ProfileScreen(navController: NavHostController) {
                             !galleryState.isLoadingMore
                         ) {
                             LaunchedEffect(Unit) {
-                                viewModelDashboard.galleryPostDetail(galleryState.currentPage + 1)
+                                viewModelDashboard.galleryPostDetail("",galleryState.currentPage + 1)
                             }
                         }
                     }

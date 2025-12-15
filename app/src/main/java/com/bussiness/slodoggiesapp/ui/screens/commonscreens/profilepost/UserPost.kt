@@ -39,9 +39,10 @@ import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 import com.google.gson.Gson
 
 @Composable
-fun UserPost(navController: NavHostController) {
+fun UserPost(navController: NavHostController,
+             postId: String,
+             type:String) {
     val viewModel: HomeViewModel = hiltViewModel()
-    var deleteDialog by remember { mutableStateOf(false) }
     var isNavigating by remember { mutableStateOf(false) }
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -51,15 +52,15 @@ fun UserPost(navController: NavHostController) {
     var deleteComment by remember { mutableStateOf(false) }
     var deleteCommentId by remember { mutableStateOf("") }
 
-    val uiStateComment by viewModel.uiStateComment.collectAsState()
+    val posts = state.posts
 
-//    LaunchedEffect(state.message) {
-//        state.message?.let {
-//            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-//        }
-//    }
+    val uiStateComment by viewModel.uiStateComment.collectAsState()
     LaunchedEffect(Unit) {
-        viewModel.loadPostFirstPage()
+        if (type.equals("SavePost")) {
+            viewModel.loadSavePage()
+        }else{
+            viewModel.loadPostFirstPage()
+        }
     }
 
 
@@ -98,12 +99,12 @@ fun UserPost(navController: NavHostController) {
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     itemsIndexed(
-                        items = state.posts,
+                        items = posts,
                         key = { _, post -> post.stableKey }
                     ) { index, post ->
 
-                        if (index == state.posts.lastIndex - 2) {
-                            viewModel.loadNextPage()
+                        if (index == posts.lastIndex - 2) {
+                            viewModel.loadPostNextPage()
                         }
 
                         when (post) {
@@ -127,7 +128,10 @@ fun UserPost(navController: NavHostController) {
                                     navController.currentBackStackEntry?.savedStateHandle?.set("Screen", "Home")
                                     navController.navigate(Routes.EDIT_POST_SCREEN)
                                 },
-                                onSelfPostDelete = { viewModel.showDeleteDialog() },
+                                onSelfPostDelete = {
+                                    viewModel.updatePostId(post.postId)
+                                    viewModel.showDeleteDialog()
+                                                   },
                                 onSaveClick = {
                                     viewModel.savePost(post.postId, "", "",
                                         onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
@@ -167,10 +171,18 @@ fun UserPost(navController: NavHostController) {
         }
 
     }
-    if (deleteDialog) {
+    if (state.deleteDialog) {
         DeleteChatDialog(
-            onDismiss = { deleteDialog = false },
-            onClickRemove = { deleteDialog = false  },
+            onDismiss = { viewModel.dismissDeleteDialog() },
+            onClickRemove = {
+                Log.d("********","onClickRemove")
+                viewModel.deletePost(postId = state.postId, onSuccess = {
+                    viewModel.dismissDeleteDialog()
+                },
+                    onError = {error->
+                        Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    })
+            },
             iconResId = R.drawable.delete_mi,
             text = stringResource(R.string.Delete_Post),
             description = stringResource(R.string.Delete_desc)
