@@ -50,6 +50,7 @@ class HomeViewModel @Inject constructor(
     init {
       //  loadFirstPage()
         initWelcomeDialog()
+        friendList()
     }
 
     fun loadFirstPage() {
@@ -88,6 +89,31 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun friendList(){
+        viewModelScope.launch {
+            repository.friendList(sessionManager.getUserId()).collectLatest { result ->
+                when (result){
+                    is Resource.Loading -> {
+                        _uiState.update { state ->
+                            state.copy(isLoading = true)
+                        }
+                    }
+                    is Resource.Success -> {
+                        _uiState.update { state ->
+                            state.copy(isLoading = false, friendsListData = result.data.data)
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiState.update { state ->
+                            state.copy(isLoading = false, errorMessage = result.message ?: "Something went wrong")
+                        }
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
     private fun fetchSaveOnlyPosts(isFirstPage: Boolean) {
         if (isRequestRunning) return
         isRequestRunning = true
@@ -115,7 +141,7 @@ class HomeViewModel @Inject constructor(
                         val items = response?.items ?: emptyList()
                         val uiPosts = HomeFeedMapper.map(items)
 
-                        // 🔥 Merge Fix
+                        //  Merge Fix
                         val mergedPosts = mergeApiWithLocal(uiPosts)
 
                         _uiState.update { state ->

@@ -2,7 +2,7 @@ package com.bussiness.slodoggiesapp.viewModel.common.authFlowVM
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.OtpResponse
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.Messages

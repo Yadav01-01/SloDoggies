@@ -1,6 +1,6 @@
 package com.bussiness.slodoggiesapp.data.newModel.discover
 
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 
 data class TrendingHashtagsResponse(
     override val success: Boolean,

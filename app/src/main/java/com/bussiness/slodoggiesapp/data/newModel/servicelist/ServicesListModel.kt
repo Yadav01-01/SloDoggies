@@ -1,6 +1,6 @@
 package com.bussiness.slodoggiesapp.data.newModel.servicelist
 
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 
 data class ServicesListModel(
     val code: Int?=null,

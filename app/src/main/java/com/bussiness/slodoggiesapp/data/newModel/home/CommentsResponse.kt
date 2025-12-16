@@ -1,5 +1,5 @@
 package com.bussiness.slodoggiesapp.data.newModel.home
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 import com.google.gson.annotations.SerializedName
 
 data class CommentsResponse(

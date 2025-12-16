@@ -2,16 +2,16 @@ package com.bussiness.slodoggiesapp.data.remote
 
 import android.util.Log
 import com.bussiness.slodoggiesapp.data.model.common.ErrorResponse
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
-import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
-import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
-import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
-import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
+import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowersResponse
+import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowingResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.LoginResponse
 import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
-import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
-import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
-import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.OtpResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.OwnerDetailsResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.RegisterResponse
 import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
@@ -19,9 +19,11 @@ import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfile
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlacesResponse
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetsResponse
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
+import com.bussiness.slodoggiesapp.data.newModel.faq.FaqResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
+import com.bussiness.slodoggiesapp.data.newModel.home.FriendListResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
@@ -44,8 +46,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
-import retrofit2.http.Field
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -735,11 +735,21 @@ class RepositoryImpl @Inject constructor(
     ): Flow<Resource<PetPlacesResponse>> = flow{
         emit(Resource.Loading)
         emit(safeApiCall { api.discoverPetPlaces(userId,search) })
-    }
+    }.flowOn(Dispatchers.IO)
 
     override suspend fun sponsoredAds(userId: String): Flow<Resource<BusinessAdsResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.getSponsoredAds(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getFAQ(): Flow<Resource<FaqResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getFAQ() })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun friendList(userId: String): Flow<Resource<FriendListResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.friendList(userId) })
     }
 }
 

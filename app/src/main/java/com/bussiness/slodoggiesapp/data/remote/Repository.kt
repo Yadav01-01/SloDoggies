@@ -1,14 +1,14 @@
 package com.bussiness.slodoggiesapp.data.remote
 
-import com.bussiness.slodoggiesapp.data.newModel.BusinessDetailsResponse
+import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
-import com.bussiness.slodoggiesapp.data.newModel.FollowersResponse
-import com.bussiness.slodoggiesapp.data.newModel.FollowingResponse
-import com.bussiness.slodoggiesapp.data.newModel.LoginResponse
+import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowersResponse
+import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowingResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.LoginResponse
 import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
-import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
-import com.bussiness.slodoggiesapp.data.newModel.OwnerDetailsResponse
-import com.bussiness.slodoggiesapp.data.newModel.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.OtpResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.OwnerDetailsResponse
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.RegisterResponse
 import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
@@ -16,9 +16,11 @@ import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfile
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlacesResponse
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetsResponse
 import com.bussiness.slodoggiesapp.data.newModel.eventmodel.EventModel
+import com.bussiness.slodoggiesapp.data.newModel.faq.FaqResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentReplyResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.AddCommentResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.CommentsResponse
+import com.bussiness.slodoggiesapp.data.newModel.home.FriendListResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedResponse
 import com.bussiness.slodoggiesapp.data.newModel.otpsendverify.OtpVerifyModel
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerGalleryResponse
@@ -33,7 +35,6 @@ import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
-import retrofit2.http.Field
 
 interface Repository {
 
@@ -405,6 +406,12 @@ interface Repository {
     suspend fun sponsoredAds(
         userId: String
     ) : Flow<Resource<BusinessAdsResponse>>
+
+    suspend fun getFAQ() : Flow<Resource<FaqResponse>>
+
+    suspend fun friendList(
+        userId: String,
+    ) : Flow<Resource<FriendListResponse>>
 
 
 }

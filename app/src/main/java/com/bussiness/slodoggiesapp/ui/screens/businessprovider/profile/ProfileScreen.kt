@@ -1,8 +1,10 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.profile
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -22,8 +24,12 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -138,7 +144,7 @@ fun ProfileScreen(navController: NavHostController) {
                     Column(modifier = Modifier.weight(1f)) {
 
                         Text(
-                            text = uiState.data?.business?.business_name ?: "",
+                            text = uiState.data?.business?.business_name ?: "Unknown",
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             fontSize = 16.sp,
@@ -148,7 +154,7 @@ fun ProfileScreen(navController: NavHostController) {
                         Spacer(Modifier.height(5.dp))
 
                         Text(
-                            text = uiState.data?.business?.email ?: "",
+                            text = uiState.data?.business?.email ?: "No Email",
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontSize = 12.sp,
                             color = PrimaryColor,
@@ -156,7 +162,7 @@ fun ProfileScreen(navController: NavHostController) {
                         )
 
                         Text(
-                            text = uiState.data?.business?.bio ?: "",
+                            text = uiState.data?.business?.bio ?: "Bio",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color.Black,
@@ -239,61 +245,110 @@ fun ProfileScreen(navController: NavHostController) {
             }
 
             // ---------------- GALLERY GRID WITH PAGINATION ----------------
-            item {
-                val posts = galleryState.posts
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 800.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    userScrollEnabled = false
-                ) {
-
-                    items(posts.size) { index ->
-                        val item = posts[index]
-
-
-                        GalleryItemCardProfile(
-                            item = item,
-                            onClickItem = {
-                                navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/Profile")
-                            }
+            val posts = galleryState.posts
+            if (posts.isEmpty()) {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_pet_post_icon),
+                            contentDescription = "Pet Avatar",
+                            modifier = Modifier
+                                .width(80.dp)
+                                .height(90.dp)
                         )
 
-                        // ⭐ Auto load next Page
-                        if (index == posts.lastIndex &&
-                            galleryState.canLoadMore &&
-                            !galleryState.isLoadingMore
-                        ) {
-                            LaunchedEffect(Unit) {
-                                viewModelDashboard.galleryPostDetail("",galleryState.currentPage + 1)
-                            }
-                        }
-                    }
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    // Loading more loader
-                    item(span = { GridItemSpan(3) }) {
-                        if (galleryState.isLoadingMore) {
-                            Row(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp),
-                                horizontalArrangement = Arrangement.Center
-                            ) {
-                                androidx.compose.material3.CircularProgressIndicator()
-                            }
+                        Text(
+                            text = "No Post Yet",
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            color = Color.Black
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        TextButton(
+                            onClick = { navController.navigate(Routes.PET_NEW_POST_SCREEN) }
+                        ) {
+                            Text(
+                                text = "Create Post",
+                                color = Color(0xFF258694),
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 16.sp
+                            )
                         }
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
+            } else {
+                item {
 
-                Spacer(Modifier.height(10.dp))
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 800.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        userScrollEnabled = false
+                    ) {
+
+                        items(
+                            count = posts.size,
+                            key = { index -> posts[index].id!! } //  stable key
+                        ) { index ->
+                            val item = posts[index]
+
+                            GalleryItemCardProfile(
+                                item = item,
+                                onClickItem = {
+                                    navController.navigate(
+                                        Routes.USER_POST_SCREEN + "/${item.id}/Profile"
+                                    )
+                                }
+                            )
+
+                            //  Pagination trigger (safe)
+                            if (
+                                index == posts.lastIndex &&
+                                galleryState.canLoadMore &&
+                                !galleryState.isLoadingMore
+                            ) {
+                                LaunchedEffect(index) {
+                                    viewModelDashboard.galleryPostDetail(
+                                        "",
+                                        galleryState.currentPage + 1
+                                    )
+                                }
+                            }
+                        }
+
+                        //  Load more loader
+                        item(span = { GridItemSpan(3) }) {
+                            if (galleryState.isLoadingMore) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(10.dp))
+                }
             }
+
         }
     }
 }
-
 
 
 @Preview(showBackground = true)

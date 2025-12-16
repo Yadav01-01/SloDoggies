@@ -1,6 +1,6 @@
 package com.bussiness.slodoggiesapp.data.newModel.updatepet
 
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 
 data class UpdatePetModel(
     val code: Int,

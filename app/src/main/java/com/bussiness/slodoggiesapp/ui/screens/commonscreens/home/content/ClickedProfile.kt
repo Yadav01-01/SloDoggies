@@ -3,6 +3,7 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -57,33 +60,24 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
+import com.bussiness.slodoggiesapp.viewModel.common.PersonDetailViewModel
 import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesViewModel
 
 @Composable
-
 fun ClickedProfile(navController: NavHostController,
-                   userId:String,
-                   viewModel: BusinessServicesViewModel = hiltViewModel()) {
+                   ownerUserId:String,
+                   viewModel: BusinessServicesViewModel = hiltViewModel()
+) {
 
     val uiState by viewModel.uiState.collectAsState()
     val galleryState by viewModel.uiStateGallery.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
 
-    Log.d("&&&&&&&&&",userId)
     // First API Call
     LaunchedEffect(Unit) {
-        viewModel.getBusinessDetail(userId)
-        viewModel.galleryPostDetail(userId,1)   // first page
+        viewModel.getBusinessDetail(ownerUserId)
+        viewModel.galleryPostDetail(ownerUserId,1)   // first page
     }
-
-    val sampleImages = listOf(
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2),
-        GalleryItem(R.drawable.dog1),
-        GalleryItem(R.drawable.dog2)
-    )
 
     BackHandler {
         navController.navigate(Routes.HOME_SCREEN) {
@@ -123,14 +117,14 @@ fun ClickedProfile(navController: NavHostController,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     AsyncImage(
-                        model = "",
+                        model = uiState.data?.business?.business_logo,
                         contentDescription = "image",
                         placeholder = painterResource(R.drawable.fluent_color_paw),
                         error = painterResource(R.drawable.fluent_color_paw),
                         modifier = Modifier
                             .size(95.dp)
                             .clip(CircleShape),
-                        contentScale = ContentScale.Fit
+                        contentScale = ContentScale.Crop
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
@@ -142,7 +136,7 @@ fun ClickedProfile(navController: NavHostController,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = uiState.data?.business?.business_name?:"",
+                                text = uiState.data?.business?.business_name?:"Unknown",
                                 color = Color.Black,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 fontSize = 16.sp,
@@ -154,7 +148,7 @@ fun ClickedProfile(navController: NavHostController,
                         Spacer(Modifier.height(5.dp))
 
                         Text(
-                            text = uiState.data?.business?.email?:"",
+                            text = uiState.data?.business?.email?:"Email",
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontSize = 12.sp,
                             color = PrimaryColor,
@@ -162,7 +156,7 @@ fun ClickedProfile(navController: NavHostController,
                         )
 
                         Text(
-                            text = uiState.data?.business?.bio?:"",
+                            text = uiState.data?.business?.bio?:"Bio",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color.Black,
@@ -203,59 +197,81 @@ fun ClickedProfile(navController: NavHostController,
                 HorizontalDivider(thickness = 1.dp, color = TextGrey)
             }
 
-            item {
-                val posts = galleryState.posts
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
+            val posts = galleryState.posts
+            if (posts.isEmpty()){
+                item {  Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(max = 800.dp), // or use calculated height if needed
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    userScrollEnabled = false // Important to avoid nested scroll issues
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-//                    items(sampleImages.size) { index ->
-//                        GalleryItemCard(item = sampleImages[index], onClickItem = {navController.navigate(
-//                            Routes.USER_POST_SCREEN)})
-//                    }
-
-                    items(posts.size) { index ->
-                        val item = posts[index]
-
-
-                        GalleryItemCardProfile(
-                            item = item,
-                            onClickItem = {
-                                navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/Profile")
-                            }
+                    Column(horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_pet_post_icon),
+                            contentDescription = null,
+                            tint = Color(0XFF258694),
+                            modifier = Modifier.size(100.dp)
                         )
-
-                        // ⭐ Auto load next Page
-                        if (index == posts.lastIndex &&
-                            galleryState.canLoadMore &&
-                            !galleryState.isLoadingMore
-                        ) {
-                            LaunchedEffect(Unit) {
-                                viewModel.galleryPostDetail(userId,galleryState.currentPage + 1)
-                            }
-                        }
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "No Post Available",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color(0XFF258694),
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            fontSize = 18.sp
+                        )
                     }
+                } }
+            }else{
+                item {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 800.dp), // or use calculated height if needed
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        userScrollEnabled = false // Important to avoid nested scroll issues
+                    ) {
 
-                    // Loading more loader
-                    item(span = { GridItemSpan(3) }) {
-                        if (galleryState.isLoadingMore) {
-                            Row(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp),
-                                horizontalArrangement = Arrangement.Center
+                        items(posts.size) { index ->
+                            val item = posts[index]
+
+                            GalleryItemCardProfile(
+                                item = item,
+                                onClickItem = {
+                                    navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/Profile")
+                                }
+                            )
+
+                            //  Auto load next Page
+                            if (index == posts.lastIndex &&
+                                galleryState.canLoadMore &&
+                                !galleryState.isLoadingMore
                             ) {
-                                androidx.compose.material3.CircularProgressIndicator()
+                                LaunchedEffect(Unit) {
+                                    viewModel.galleryPostDetail(ownerUserId,galleryState.currentPage + 1)
+                                }
+                            }
+                        }
+
+                        // Loading more loader
+                        item(span = { GridItemSpan(3) }) {
+                            if (galleryState.isLoadingMore) {
+                                Row(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    androidx.compose.material3.CircularProgressIndicator()
+                                }
                             }
                         }
                     }
+                    Spacer(Modifier.height(10.dp))
                 }
-                Spacer(Modifier.height(10.dp))
             }
         }
     }

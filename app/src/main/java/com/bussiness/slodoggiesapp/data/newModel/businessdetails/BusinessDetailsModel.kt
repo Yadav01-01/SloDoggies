@@ -1,6 +1,6 @@
 package com.bussiness.slodoggiesapp.data.newModel.businessdetails
 
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 
 data class BusinessDetailsModel(
     val code: Int?=null,

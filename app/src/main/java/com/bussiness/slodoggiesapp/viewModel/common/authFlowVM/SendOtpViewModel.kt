@@ -1,12 +1,9 @@
 package com.bussiness.slodoggiesapp.viewModel.common.authFlowVM
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.bussiness.slodoggiesapp.data.newModel.OtpResponse
-import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
+import com.bussiness.slodoggiesapp.data.newModel.authresponse.OtpResponse
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.SignUpUiState
 import com.bussiness.slodoggiesapp.navigation.Routes

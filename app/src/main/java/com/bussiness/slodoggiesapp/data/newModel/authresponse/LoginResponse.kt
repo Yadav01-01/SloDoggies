@@ -1,5 +1,6 @@
-package com.bussiness.slodoggiesapp.data.newModel
+package com.bussiness.slodoggiesapp.data.newModel.authresponse
 
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 import com.google.gson.annotations.SerializedName
 
 data class LoginResponse(

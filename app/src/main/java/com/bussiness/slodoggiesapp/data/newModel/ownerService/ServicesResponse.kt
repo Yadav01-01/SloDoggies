@@ -1,6 +1,6 @@
 package com.bussiness.slodoggiesapp.data.newModel.ownerService
 
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 import com.google.gson.annotations.SerializedName
 
 
@@ -16,7 +16,7 @@ data class ServicesResponse(
 
     @SerializedName("data")
     val data: List<ServiceItem> = emptyList()
-) :  BaseResponse
+) : BaseResponse
 
 
 data class ServiceItem(

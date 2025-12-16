@@ -121,7 +121,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 onShareClick = { viewModel.showShareContent(true) },
                 onLikeClick = { postId -> viewModel.postLikeUnlike(postId) },
                 onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
-                onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
+                onProfileClick = { postUserId -> navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${postUserId}") },
                 onInterested = { postId -> viewModel.savePost(postId,
                     onSuccess = { viewModel.showSavedDialog(true) }
                 ) },
@@ -135,7 +135,11 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
         PetPlaceDialog(onDismiss = { viewModel.dismissPetPlaceDialog() })
     }
     if (uiState.showShareContentDialog) {
-        ShareContentDialog( onDismiss = { viewModel.showShareContent(false) }, onSendClick = { viewModel.showShareContent(true) })
+        ShareContentDialog(
+            onDismiss = { viewModel.showShareContent(false) },
+            onSendClick = { viewModel.showShareContent(true) },
+            data = ""
+        )
     }
     if (uiState.showSavedDialog){
         SavedDialog(
@@ -176,7 +180,7 @@ fun EventsResult(
     onJoinClick: () -> Unit,
     onShareClick: () -> Unit,
     onLikeClick: (String) -> Unit,
-    onProfileClick: () -> Unit,
+    onProfileClick: (String) -> Unit,
     onInterested: (String) -> Unit,
     onClickFollowing: (String) -> Unit,
 ) {
@@ -218,7 +222,7 @@ fun EventsResult(
                         onShareClick = { onShareClick() },
                         onLikeClick = { onLikeClick(event.postId) },
                         onJoinedCommunity = { onJoinClick() },
-                        onProfileClick = { onProfileClick() },
+                        onProfileClick = { onProfileClick(event.userId) },
                         onInterested = { onInterested(event.postId) },
                         onClickFollowing = { onClickFollowing(event.postId) },
                         isFollowing = event.iAmFollowing

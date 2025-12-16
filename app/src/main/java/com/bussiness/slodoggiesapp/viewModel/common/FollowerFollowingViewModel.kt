@@ -3,8 +3,8 @@ package com.bussiness.slodoggiesapp.viewModel.common
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.model.common.AudienceItem
-import com.bussiness.slodoggiesapp.data.newModel.FollowerItem
-import com.bussiness.slodoggiesapp.data.newModel.FollowingItem
+import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowerItem
+import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowingItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.FollowerFollowingUiState
 import com.bussiness.slodoggiesapp.network.Resource

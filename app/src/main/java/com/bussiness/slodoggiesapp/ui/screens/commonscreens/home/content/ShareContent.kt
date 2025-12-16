@@ -1,6 +1,5 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,14 +41,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bussiness.slodoggiesapp.R
-import com.bussiness.slodoggiesapp.navigation.Routes
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.ContinueButton
-import com.bussiness.slodoggiesapp.ui.component.businessProvider.SubmitButton
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
-    fun ShareContentDialog(onDismiss: () -> Unit,onSendClick: () -> Unit) {
+    fun ShareContentDialog(onDismiss: () -> Unit,onSendClick: () -> Unit,data:String) {
     val shareItems = listOf(
         ShareIcon(R.drawable.cir_dog, "Person 1"),
         ShareIcon(R.drawable.cir_dog, "Person 2"),

@@ -70,7 +70,6 @@ fun HomeScreen(
 
     val uiState by viewModel.uiState.collectAsState()
     val dialogCount by viewModel.petInfoDialogCount.collectAsState()
-
     val uiStateComment by viewModel.uiStateComment.collectAsState()
 
     val context = LocalContext.current
@@ -78,13 +77,10 @@ fun HomeScreen(
     val sessionManager = SessionManager.getInstance(context)
 
     var showCommentsDialog by remember { mutableStateOf(false) }
-    var showCommentsType by remember { mutableStateOf("") }
-    var deleteComment by remember { mutableStateOf(false) }
-    var deleteCommentId by remember { mutableStateOf("") }
-
-
-    var userId by remember { mutableStateOf("") }
-
+    var deleteComment      by remember { mutableStateOf(false) }
+    var showCommentsType   by remember { mutableStateOf("")    }
+    var deleteCommentId    by remember { mutableStateOf("")    }
+    val userId by remember { mutableStateOf("") }
     val posts = uiState.posts
 
     // val onReportClick = remember { { viewModel.showReportDialog() } }
@@ -169,9 +165,6 @@ fun HomeScreen(
                 }
 
                 when (post) {
-                    // ----------------------
-                    // COMMUNITY POST
-                    // ----------------------
                     is PostItem.CommunityPost -> CommunityPostItem(
                         postItem = post,
                         onReportClick = { viewModel.showReportDialog(post.postId) },
@@ -180,7 +173,7 @@ fun HomeScreen(
                             navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
                         },
                         onProfileClick = {
-                            navController.navigate(Routes.PERSON_DETAIL_SCREEN)
+                            navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
                         },
                         onLikeClick = {
                             viewModel.postLikeUnlike(
@@ -215,17 +208,11 @@ fun HomeScreen(
                             )
                         },
                     )
-
-                    // ----------------------
-                    // SPONSORED POST
-                    // ----------------------
                     is PostItem.SponsoredPost -> SponsoredPostItem(
                         post = post,
                         onReportClick = { viewModel.showReportDialog(post.postId) },
                         onShareClick = onShareClick,
                         onProfileClick = {
-                            //onProfileClick
-                          //  userId = post.userId
                             navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/${post.userId}")
                         },
                         onSponsoredClick = onSponsoredClick,
@@ -246,10 +233,6 @@ fun HomeScreen(
                             showCommentsType = "Ad"
                         }
                     )
-
-                    // ----------------------
-                    // NORMAL POST
-                    // ----------------------
                     is PostItem.NormalPost -> NormalPostItem(
                         modifier = Modifier.padding(horizontal = 12.dp),
                         postItem = post,
@@ -259,7 +242,7 @@ fun HomeScreen(
                         onEditClick = {},
                         onDeleteClick = {},
                         onProfileClick = {
-                            navController.navigate(Routes.PERSON_DETAIL_SCREEN)
+                            navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
                         },
                         onSelfPostEdit = {
                             val postJson = Gson().toJson(post)
@@ -567,7 +550,8 @@ fun HomeScreen(
         if (uiState.showShareContent) {
             ShareContentDialog(
                 onDismiss = { viewModel.dismissShareContent() },
-                onSendClick = { viewModel.dismissShareContent() }
+                onSendClick = { viewModel.dismissShareContent() },
+                data = ""
             )
         }
 

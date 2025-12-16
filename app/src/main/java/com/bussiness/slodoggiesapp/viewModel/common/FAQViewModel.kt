@@ -2,66 +2,73 @@ package com.bussiness.slodoggiesapp.viewModel.common
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.bussiness.slodoggiesapp.data.model.common.FAQItem
+import androidx.lifecycle.viewModelScope
+import com.bussiness.slodoggiesapp.data.model.common.FAQUIState
+import com.bussiness.slodoggiesapp.data.remote.Repository
+import com.bussiness.slodoggiesapp.network.Resource
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class FAQViewModel @Inject constructor() : ViewModel() {
-    private val _faqItems = mutableStateListOf<Pair<FAQItem, Boolean>>() // Boolean = isExpanded
-    val faqItems: List<Pair<FAQItem, Boolean>> get() = _faqItems
+
+@HiltViewModel
+class FAQViewModel @Inject constructor(
+    private val repository: Repository
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(FAQUIState())
+    val uiState: StateFlow<FAQUIState> = _uiState
+
+    // Expand / collapse state (UI-only)
+    private val _expandedItems = mutableStateListOf<Int>()
+    val expandedItems: List<Int> = _expandedItems
 
     init {
-        loadFAQs() // Load sample data
+        loadFAQs()
     }
 
     private fun loadFAQs() {
-        val sampleData = listOf(
-            FAQItem(
-                1,
-                "What is Slodoggies?",
-                "Slodoggies is a community-driven app for pet lovers and service providers in San Luis Obispo County."
-            ),
-            FAQItem(
-                2,
-                "Who can join Slodoggies?",
-                "Anyone who loves pets or provides pet-related services."
-            ),
-            FAQItem(
-                3,
-                "How do I create a profile?",
-                "Download the app and follow the registration steps."
-            ),
-            FAQItem(
-                4,
-                "Is there a cost to use the app?",
-                "No, it's free for all users."
-            ),
-            FAQItem(
-                5,
-                "Can I create events or meetups?",
-                "Yes, pet owners and businesses can host events."
-            ),
-            FAQItem(
-                6,
-                "How do I promote my pet business?",
-                "Create a business profile and list your services."
-            ),
-            FAQItem(
-                7,
-                "How is my information used?",
-                "Your data is kept secure and used to improve your experience."
-            ),
-            FAQItem(
-                8,
-                "How do I contact support?",
-                "Use the contact form or email us at help@slodoggies.com"
-            )
-        )
-        _faqItems.clear()
-        _faqItems.addAll(sampleData.map { it to false }) // default not expanded
+        viewModelScope.launch {
+            repository.getFAQ().collectLatest { result ->
+                when (result) {
+
+                    is Resource.Loading -> {
+                        _uiState.value = FAQUIState(isLoading = true)
+                    }
+
+                    is Resource.Success -> {
+                        _uiState.value = FAQUIState(
+                            data = result.data.data,
+                            isLoading = false
+                        )
+                        _expandedItems.clear()
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.value = FAQUIState(
+                            isLoading = false,
+                            error = result.message
+                        )
+                    }
+
+                    Resource.Idle -> {}
+                }
+            }
+        }
     }
 
     fun toggleExpanded(index: Int) {
-        _faqItems[index] = _faqItems[index].copy(second = !_faqItems[index].second)
+        if (_expandedItems.contains(index)) {
+            _expandedItems.remove(index)
+        } else {
+            _expandedItems.add(index)
+        }
     }
 
+    fun isExpanded(index: Int): Boolean {
+        return _expandedItems.contains(index)
+    }
 }

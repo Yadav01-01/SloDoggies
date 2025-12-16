@@ -187,7 +187,7 @@ fun PersonDetailScreen(
 
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = selectedPet?.petName ?: "",
+                            text = selectedPet?.petName ?: "Pet",
                             color = Color.Black,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             fontSize = 18.sp,
@@ -200,7 +200,7 @@ fun PersonDetailScreen(
                             DetailText(selectedPet?.petBreed ?: "Breed", Color(0xFFE5EFF2), PrimaryColor)
                             Spacer(Modifier.width(6.dp))
                             DetailText(
-                                selectedPet?.petAge?.let { "$it Year Old" } ?: "",
+                                selectedPet?.petAge?.let { "$it Year Old" } ?: "Age",
                                 Color(0xFFFFF1E8),
                                 Color(0xFFFF771C)
                             )

@@ -62,4 +62,6 @@ object ApiEndPoint {
     const val OWNER_SERVICE_DETAIL = "ownerServiceDetail"
     const val DISCOVER_PET_PLACES = "discoverPetPlaces"
     const val GET_USER_ADS = "getUserAds"
+    const val FAQ = "faq"
+    const val FRIEND_LIST = "friendList"
 }

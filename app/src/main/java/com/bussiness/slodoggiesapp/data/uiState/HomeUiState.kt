@@ -1,9 +1,11 @@
 package com.bussiness.slodoggiesapp.data.uiState
 
+import com.bussiness.slodoggiesapp.data.newModel.home.FriendItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 
 data class HomeUiState(
     val posts: List<PostItem> = emptyList(),
+    val friendsListData: List<FriendItem> = emptyList(),
     val showWelcomeDialog: Boolean = false,
     val welcomeTitle: String = "",
     val welcomeDescription: String = "",

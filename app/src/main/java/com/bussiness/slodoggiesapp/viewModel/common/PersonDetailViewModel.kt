@@ -25,7 +25,8 @@ data class PersonDetailUiState(
     val error: String? = null,
     val isLoading: Boolean = false,
     val data: OwnerData = OwnerData(),
-    val posts: List<OwnerPostItem> = emptyList(),   val isLoadingMore: Boolean = false,
+    val posts: List<OwnerPostItem> = emptyList(),
+    val isLoadingMore: Boolean = false,
     val canLoadMore: Boolean = true,
     val currentPage: Int = 1,
     val isRefreshing: Boolean = false

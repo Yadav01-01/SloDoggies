@@ -1,6 +1,6 @@
 package com.bussiness.slodoggiesapp.data.newModel.eventmodel
 
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 
 data class EventModel(
     val `data`: Data?=null,

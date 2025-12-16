@@ -1,6 +1,6 @@
 package com.bussiness.slodoggiesapp.data.newModel.termscondition
 
-import com.bussiness.slodoggiesapp.data.newModel.BaseResponse
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 
 data class TermsConditionModel(
     val code: Int?=null,
