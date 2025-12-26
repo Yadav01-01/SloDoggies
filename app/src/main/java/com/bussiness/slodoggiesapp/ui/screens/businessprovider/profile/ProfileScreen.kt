@@ -199,7 +199,7 @@ fun ProfileScreen(navController: NavHostController) {
                         value = "Followers",
                         modifier = Modifier.weight(1f),
                         onDetailClick = {
-                            navController.navigate("${Routes.FOLLOWER_SCREEN}/Follower")
+                            navController.navigate("${Routes.FOLLOWER_SCREEN}/Follower/")
                         }
                     )
 
@@ -214,7 +214,7 @@ fun ProfileScreen(navController: NavHostController) {
                         value = "Following",
                         modifier = Modifier.weight(1f),
                         onDetailClick = {
-                            navController.navigate("${Routes.FOLLOWER_SCREEN}/Following")
+                            navController.navigate("${Routes.FOLLOWER_SCREEN}/Following/")
                         }
                     )
                 }
@@ -306,9 +306,7 @@ fun ProfileScreen(navController: NavHostController) {
                             GalleryItemCardProfile(
                                 item = item,
                                 onClickItem = {
-                                    navController.navigate(
-                                        Routes.USER_POST_SCREEN + "/${item.id}/Profile"
-                                    )
+                                    navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/Profile/${item.userId}")
                                 }
                             )
 

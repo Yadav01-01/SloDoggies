@@ -31,8 +31,6 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.VerifyA
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.ChatScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.MessageScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.message.NewMessageScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.LocationPermissionScreen
-import com.bussiness.slodoggiesapp.ui.screens.commonscreens.permissionScreen.NotificationPermissionScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost.EditPostScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.profilepost.UserPost
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings.AboutUsScreen
@@ -115,15 +113,17 @@ fun MainNavGraph(
         composable(Routes.ACCOUNT_PRIVACY_SCREEN) { AccountPrivacy(navController,authNavController) }
 //        composable(Routes.USER_POST_SCREEN) { UserPost(navController) }
         composable(
-            route = Routes.USER_POST_SCREEN + "/{postId}/{type}",
+            route = Routes.USER_POST_SCREEN + "/{postId}/{type}/{userId}",
             arguments = listOf(
                 navArgument("postId") { type = NavType.StringType },
-                        navArgument("type") { type = NavType.StringType }
+                navArgument("type") { type = NavType.StringType },
+                navArgument("userId") { type = NavType.StringType }
             )
         ) {
             val postId = it.arguments?.getString("postId")
             val type = it.arguments?.getString("type") ?: ""
-            UserPost(navController, postId?:"",type)
+            val userId = it.arguments?.getString("userId") ?: ""
+            UserPost(navController, postId?:"",type,userId)
         }
         composable(Routes.EDIT_POST_SCREEN) { EditPostScreen(navController) }
         composable(Routes.BUDGET_SCREEN) { BudgetScreen(navController) }
@@ -163,12 +163,15 @@ fun MainNavGraph(
         }
 
         composable(
-            route = "${Routes.FOLLOWER_SCREEN}/{type}",
-            arguments = listOf(navArgument("type") { type = NavType.StringType; defaultValue = "Follower" })
+            route = "${Routes.FOLLOWER_SCREEN}/{type}/{userId}",
+            arguments = listOf(navArgument("type") { type = NavType.StringType }, navArgument("userId") { type = NavType.StringType })
         ) { backStackEntry ->
             val type = backStackEntry.arguments?.getString("type") ?: "Follower"
-            FollowerScreen(navController, type)
+            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
+            FollowerScreen(navController = navController, type = type, userId = userId)
         }
+
+
 
         composable(
             route = "${Routes.EDIT_PET_PROFILE_SCREEN}/{petId}",

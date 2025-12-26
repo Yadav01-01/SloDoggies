@@ -29,6 +29,8 @@ data class HomeFeedData(
 data class HomeFeedItemResponse(
     @SerializedName("userId") val userId: String?,
     @SerializedName("postId") val postId: String?,
+    @SerializedName("user_type") val userType: String?,
+    @SerializedName("user_post") val userPost: Boolean?,
     @SerializedName("groupId") val groupId: String? = null,
     @SerializedName("alreadyJoined") val alreadyJoined: Boolean? = null,
     @SerializedName("type") val type: String?, // normal, sponsored, event, group

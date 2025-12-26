@@ -30,6 +30,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.sponsered.BusinessAdsResponse
+import com.bussiness.slodoggiesapp.data.newModel.subscription.SubscriptionResponse
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import okhttp3.MultipartBody
@@ -538,6 +539,7 @@ interface ApiService {
     @POST(ApiEndPoint.OWNER_SERVICE_DETAIL)
     suspend fun ownerServiceDetail(
         @Field("business_user_id") businessUserId: String,
+        @Field("user_id") userId: String
     ) : Response<ServiceDetailsResponse>
 
     @FormUrlEncoded
@@ -561,5 +563,19 @@ interface ApiService {
     suspend fun friendList(
         @Field("user_id") userId: String,
     ) : Response<FriendListResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.REMOVE_FOLLOWER_FOLLOWING)
+    suspend fun removeFollowerFollowing(
+        @Field("type") type : String,
+        @Field("user_id") userId: String,
+        @Field("followed_id") followerId: String,
+    ) : Response<CommonResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_SUBSCRIPTION)
+    suspend fun getSubscription(
+        @Field("user_id") userId: String,
+    ) :  Response<SubscriptionResponse>
 
 }

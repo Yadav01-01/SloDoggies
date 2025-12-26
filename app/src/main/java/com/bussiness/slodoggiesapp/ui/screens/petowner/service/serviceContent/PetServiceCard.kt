@@ -49,6 +49,7 @@ fun PetServiceCard(
 
     val serviceName = service.serviceName
     val providerName = service.providerName.orEmpty()
+    val distance = service.distance
     val location = service.location.orEmpty()
     val rating = service.averageRating.orEmpty()
     val imageUrl = service.image.orEmpty()
@@ -144,7 +145,7 @@ fun PetServiceCard(
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "${location.ifEmpty { "Unknown" }} away",
+                    text = distance.ifEmpty { "0 miles" },
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),

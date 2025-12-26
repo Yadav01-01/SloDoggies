@@ -70,7 +70,7 @@ fun SponsoredPostItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().clickable { onSponsoredClick() }) {
-            PostHeader(user = post.userName, time = post.time,
+            PostHeader(user = post.userName, time = post.time,userPost = post.userPost,
                 onReportClick = { onReportClick()}, onProfileClick = { onProfileClick() })
             PostCaption(caption = post.caption, description = post.description)
             Box(
@@ -106,7 +106,7 @@ fun SponsoredPostItem(
 }
 
 @Composable
-private fun PostHeader(user: String, time: String, onReportClick: () -> Unit,onProfileClick: () -> Unit) {
+private fun PostHeader(user: String, time: String,userPost :Boolean, onReportClick: () -> Unit,onProfileClick: () -> Unit,) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,7 +149,9 @@ private fun PostHeader(user: String, time: String, onReportClick: () -> Unit,onP
             }
         }
 
-        PostOptionsMenu(modifier = Modifier.padding(end = 15.dp), onReportClick = onReportClick)
+        if (!userPost){
+            PostOptionsMenu(modifier = Modifier.padding(end = 15.dp), onReportClick = onReportClick)
+        }
     }
 }
 

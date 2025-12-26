@@ -26,5 +26,10 @@ data class HomeUiState(
     val errorMessage : String = "",
     val isLoading: Boolean = false,          // For first page loader
     val isLoadingMore: Boolean = false,
+    val isRefreshing: Boolean = false,
+    val isFollowed: Boolean = false,
+    val isFollowLoading: Boolean = false,
+    val showCommentsDialog : Boolean = false,
+    val deleteComment : Boolean = false
 )
 

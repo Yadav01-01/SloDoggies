@@ -134,20 +134,26 @@ fun EnhancedExpandableFullGroomingPackage(service: ServiceItemDetails) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row {
+                Row(
+                    modifier = Modifier,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_paw_like_filled_icon),
                         contentDescription = "Paw",
                         modifier = Modifier.size(17.dp)
                     )
-                    Spacer(Modifier.width(12.dp))
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
                     Text(
                         text = service.serviceTitle,
                         color = Color(0xFF000000),
                         fontSize = 15.sp,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                        fontFamily = FontFamily(Font(R.font.outfit_medium))
                     )
                 }
+
 
                 Image(
                     painter = painterResource(id = if (expanded) R.drawable.ic_dropdown_open_icon else R.drawable.ic_dropdown_close_icon),
@@ -217,7 +223,7 @@ fun ImageGalleryScreen(media: List<ServiceMedia>) {
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
 
     val maxVisibleImages = 6
-    val gridHeight = 220.dp
+    val gridHeight = 100.dp
 
     Box(modifier = Modifier.fillMaxWidth().height(gridHeight)) {
         LazyVerticalGrid(

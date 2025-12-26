@@ -1,21 +1,15 @@
 package com.bussiness.slodoggiesapp.viewModel.common.userPost
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedMapper
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.HomeUiState
 import com.bussiness.slodoggiesapp.data.uiState.UserPostUiState
-import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,13 +18,13 @@ class UserPostViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UserPostUiState())
+    val uiState: StateFlow<UserPostUiState> = _uiState.asStateFlow()
     private var currentPage = 1
     private var isLastPage = false
     private var isRequestRunning = false
 
-    // 🔥 Added for Save Fix
+    //  Added for Save Fix
     private val localSavedState = mutableMapOf<String, Boolean>()
 
 

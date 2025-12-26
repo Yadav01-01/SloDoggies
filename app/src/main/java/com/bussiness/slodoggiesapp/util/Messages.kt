@@ -54,6 +54,7 @@ object Messages {
     const val EVENT_NO = "No event found"
     const val SERVICELOCATION = "Please enter service location."
     const val CONTACTNUMBER = "Please enter contact number."
+    const val EMAIL_ALREADY_REGISTERED = "Please enter your registered email"
 
     // Create Account Validatin
     const val FULL_NAME = "Full name can't be empty"

@@ -19,5 +19,5 @@ data class FollowerFollowingUiState(
     val isRefreshing: Boolean = false,
     val selectedUserId : String = "",
     val totalFollower : String = "",
-    val totalFollowing : String = ""
+    val totalFollowing : String = "",
 )

@@ -87,7 +87,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
     ) {
         Spacer(Modifier.height(8.dp))
         //  Search Bar
-        SearchBar(query = uiState.query, onQueryChange = { viewModel.updateQuery(it) },placeholder = "Search")
+        SearchBar(query = uiState.query, onQueryChange = viewModel::updateQuery, placeholder = "Search")
 
         Spacer(modifier = Modifier.height(12.dp))
         // Hashtags Row
@@ -125,9 +125,12 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 onInterested = { postId -> viewModel.savePost(postId,
                     onSuccess = { viewModel.showSavedDialog(true) }
                 ) },
-                onClickFollowing = { postId -> viewModel.addAndRemoveFollowers(postId) }
+                onClickFollowing = { postId -> viewModel.addAndRemoveFollowers(postId,
+                    onError = { msg ->
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    }) }
             )
-            else            -> ShowPetsNearYou(uiState.pets, navController)
+            else           -> ShowPetsNearYou(uiState.pets, navController)
         }
     }
 

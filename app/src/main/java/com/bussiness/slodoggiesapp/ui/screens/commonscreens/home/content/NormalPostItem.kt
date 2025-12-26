@@ -138,7 +138,8 @@ fun PostHeader(userId : String ,user: String,petName : String, personImage : Str
     Unit,onSelfPostDelete: () -> Unit,
                iAmFollowing:Boolean,
                onFollowingClick: () -> Unit) {
-    var isFollowed by remember { mutableStateOf(iAmFollowing) }
+    val isFollowed = iAmFollowing
+
     val sessionManager = SessionManager.getInstance(LocalContext.current)
     Row(
         modifier = Modifier
@@ -228,26 +229,24 @@ fun PostHeader(userId : String ,user: String,petName : String, personImage : Str
                       if (sessionManager.getUserId() != userId){
                           OutlinedButton(
                               onClick = {
-                                  onFollowingClick()
-                                  isFollowed = !isFollowed
-                                        },
+                                  onFollowingClick() // ViewModel handles toggle + API
+                              },
                               modifier = Modifier
                                   .height(24.dp)
                                   .padding(horizontal = 10.dp),
                               shape = RoundedCornerShape(6.dp),
-                              border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
+                              border = if (iAmFollowing) BorderStroke(1.dp, PrimaryColor) else null,
                               colors = ButtonDefaults.buttonColors(
-                                  containerColor = if (isFollowed) Color.White else PrimaryColor,
-                                  contentColor = if (isFollowed) PrimaryColor else Color.White
+                                  containerColor = if (iAmFollowing) Color.White else PrimaryColor,
+                                  contentColor = if (iAmFollowing) PrimaryColor else Color.White
                               ),
                               contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
                               interactionSource = interactionSource
                           ) {
                               Text(
-                                  text = if (isFollowed) "Following" else "Follow",
+                                  text = if (iAmFollowing) "Following" else "Follow",
                                   fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                  fontSize = 12.sp,
-                                  fontWeight = FontWeight.Normal
+                                  fontSize = 12.sp
                               )
                           }
                       }
@@ -275,7 +274,6 @@ fun PostHeader(userId : String ,user: String,petName : String, personImage : Str
         }else{
             PostContentMenu(modifier = Modifier, onEditClick = { onEditClick() }, onDeleteClick = { onDeleteClick() })
         }
-
     }
 }
 

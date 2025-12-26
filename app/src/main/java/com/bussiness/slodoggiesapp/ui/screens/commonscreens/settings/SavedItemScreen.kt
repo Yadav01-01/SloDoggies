@@ -119,7 +119,7 @@ fun SavedItemScreen(navController: NavHostController) {
                         GalleryItemCardProfile(
                             item = ownerItem,
                             onClickItem = {
-                                navController.navigate(Routes.USER_POST_SCREEN + "/${ownerItem.id}/SavePost")
+                                navController.navigate(Routes.USER_POST_SCREEN + "/${ownerItem.id}/SavePost/${ownerItem.userId}")
                             }
                         )
                     }

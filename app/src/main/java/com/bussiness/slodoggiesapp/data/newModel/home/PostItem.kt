@@ -14,6 +14,8 @@ sealed class PostItem(open val stableKey: String) {
         val userId: String,
         val userName: String,
         val petName: String,
+        val userType: String,
+        val userPost: Boolean,
         val userBadge: String?,
         val time: String,
         val caption: String,
@@ -27,7 +29,8 @@ sealed class PostItem(open val stableKey: String) {
         val shares: Int,
         val isLiked: Boolean,
         val isSaved: Boolean,
-        val iAmFollowing: Boolean
+        val iAmFollowing: Boolean,
+        val isFollowLoading: Boolean = false
     ) : PostItem("normal_$postId")
 
     // ------------------------------------------------------
@@ -39,6 +42,8 @@ sealed class PostItem(open val stableKey: String) {
         val userId: String,
         val userName: String,
         val userImage: String?,
+        val userType : String,
+        val userPost: Boolean,
         val time: String,
 
         // Event / Community Data
@@ -58,7 +63,8 @@ sealed class PostItem(open val stableKey: String) {
         val shares: Int,
         val isLiked: Boolean,
         val isSaved: Boolean,
-        val iAmFollowing: Boolean
+        val iAmFollowing: Boolean,
+        val isFollowLoading: Boolean = false
     ) : PostItem("community_$postId")   // FIXED
 
     // ------------------------------------------------------
@@ -69,6 +75,7 @@ sealed class PostItem(open val stableKey: String) {
         val postId: String,
         val userId: String,
         val userName: String,
+        val userPost: Boolean,
         val userBadge: String?,
         val time: String,
         val caption: String,

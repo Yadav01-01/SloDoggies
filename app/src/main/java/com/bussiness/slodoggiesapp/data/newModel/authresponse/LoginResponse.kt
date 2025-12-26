@@ -56,6 +56,12 @@ data class User(
     @SerializedName("fcm_token")
     val fcmToken: String? = null,
 
+    @SerializedName("has_business_register")
+    val hasBusinessRegister: Boolean? = false,
+
+    @SerializedName("subscription_status")
+    val subscriptionStatus: String? = null,
+
     @SerializedName("user_status")
     val userStatus: Int? = null,
 

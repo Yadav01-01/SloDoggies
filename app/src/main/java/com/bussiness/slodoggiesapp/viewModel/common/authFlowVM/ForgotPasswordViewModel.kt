@@ -6,6 +6,7 @@ import com.bussiness.slodoggiesapp.data.newModel.authresponse.OtpResponse
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.Messages
+import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val repository: Repository
+    private val repository: Repository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     // Tracks OTP API response (loading/success/error)
@@ -38,6 +40,11 @@ class ForgotPasswordViewModel @Inject constructor(
         when {
             emailValue.isBlank() -> {
                 onError(Messages.EMAIL_PHONE_CANNOT_EMPTY)
+                return
+            }
+
+            emailValue != sessionManager.getUserEmail() -> {
+                onError(Messages.EMAIL_ALREADY_REGISTERED)
                 return
             }
 

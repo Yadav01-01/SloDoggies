@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +65,7 @@ import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 import com.google.gson.Gson
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -82,6 +86,13 @@ fun HomeScreen(
     var deleteCommentId    by remember { mutableStateOf("")    }
     val userId by remember { mutableStateOf("") }
     val posts = uiState.posts
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = uiState.isRefreshing,
+        onRefresh = {
+            viewModel.loadFirstPage()
+        }
+    )
 
     // val onReportClick = remember { { viewModel.showReportDialog() } }
     val onShareClick = remember { { viewModel.showShareContent() } }
@@ -173,7 +184,12 @@ fun HomeScreen(
                             navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
                         },
                         onProfileClick = {
-                            navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
+                            if (post.userType == "Owner"){
+                                navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
+                            }else{
+                                navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/${post.userId}")
+                            }
+
                         },
                         onLikeClick = {
                             viewModel.postLikeUnlike(
@@ -188,7 +204,7 @@ fun HomeScreen(
                         },
                         onSaveClick = {
                             viewModel.savePost(
-                                post.postId, "", "",
+                                "", post.postId, "",
                                 onError = { msg ->
                                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                 },
@@ -201,7 +217,6 @@ fun HomeScreen(
                         onFollowingClick = {
                             viewModel.addAndRemoveFollowers(
                                 post.userId,
-                                onSuccess = {},
                                 onError = { msg ->
                                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                 }
@@ -215,7 +230,17 @@ fun HomeScreen(
                         onProfileClick = {
                             navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/${post.userId}")
                         },
-                        onSponsoredClick = onSponsoredClick,
+                        onSponsoredClick = {
+                            val dest = when {
+                                sessionManager.getUserType() == UserType.Owner ->
+                                    "${Routes.SERVICE_PROVIDER_DETAILS}/${post.userId}"
+
+                                post.userPost -> Routes.SPONSORED_ADS_SCREEN
+
+                                else -> "${Routes.SERVICE_PROVIDER_DETAILS}/${post.userId}"
+                            }
+                            navController.navigate(dest)
+                        },
                         onLikeClick = {
                             viewModel.postLikeUnlike(
                                 post.postId, "", "",
@@ -242,7 +267,11 @@ fun HomeScreen(
                         onEditClick = {},
                         onDeleteClick = {},
                         onProfileClick = {
-                            navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
+                            if (post.userType == "Owner"){
+                                navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
+                            }else{
+                                navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/${post.userId}")
+                            }
                         },
                         onSelfPostEdit = {
                             val postJson = Gson().toJson(post)
@@ -295,7 +324,6 @@ fun HomeScreen(
                         onFollowingClick = {
                             viewModel.addAndRemoveFollowers(
                                 post.userId,
-                                onSuccess = {},
                                 onError = { msg ->
                                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                 }
@@ -324,6 +352,12 @@ fun HomeScreen(
                 }
             }
         }
+
+        PullRefreshIndicator(
+            refreshing = uiState.isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier
+        )
 
 
         //Comment

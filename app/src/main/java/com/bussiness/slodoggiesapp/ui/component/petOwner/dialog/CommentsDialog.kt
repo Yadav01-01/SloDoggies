@@ -393,9 +393,7 @@ fun CommentInputBox(
                     }
                 }
         )
-
     }
-
 }
 
 @Composable
@@ -446,8 +444,6 @@ fun CommentItem(comment: CommentItem, onReply: () -> Unit, onEditClick : () -> U
                                 color = Color(0xFF949494)
                             )
                         }
-
-                        ParentLabel("")//Please get From backEnd
                     }
                     if (comment.user.id==sessionManager.getUserId().toInt()){
                         Row(verticalAlignment = Alignment.CenterVertically,
@@ -468,16 +464,7 @@ fun CommentItem(comment: CommentItem, onReply: () -> Unit, onEditClick : () -> U
                             )
                         }
                     }else{
-                        IconButton(
-                            onClick = { showOptions = true  },
-                            modifier = Modifier.size(21.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More options",
-                                tint = Color.Black
-                            )
-                        }
+
                     }
 
                 }
@@ -635,10 +622,8 @@ fun ReplyItem(
                                 fontWeight = FontWeight.Normal
                             )
                         }
-
-                        ParentLabel("")//Get From BackdEnd
                     }
-                    Box {
+                   /* Box {
                         IconButton(
                             onClick = { showOptions = true  },
                             modifier = Modifier.size(21.dp)
@@ -660,7 +645,7 @@ fun ReplyItem(
                                 anchorPosition = iconButton.value?.positionInWindow()?.toDpOffset() ?: DpOffset.Zero
                             )
                         }
-                    }
+                    }*/
                     if (showReportDialog) {
                         ReportDialog(
                             onDismiss = { showReportDialog = false },

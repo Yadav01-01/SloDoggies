@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,13 +40,17 @@ import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 import com.google.gson.Gson
 
 @Composable
-fun UserPost(navController: NavHostController,
-             postId: String,
-             type:String) {
+fun UserPost(
+    navController: NavHostController,
+    postId: String,
+    type: String,
+    userId: String
+) {
     val viewModel: HomeViewModel = hiltViewModel()
     var isNavigating by remember { mutableStateOf(false) }
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val listState = rememberLazyListState()
 
     var showCommentsDialog  by remember { mutableStateOf(false) }
     var showCommentsType  by remember { mutableStateOf("") }
@@ -53,16 +58,27 @@ fun UserPost(navController: NavHostController,
     var deleteCommentId by remember { mutableStateOf("") }
 
     val posts = state.posts
+    Log.d("TAG",userId)
 
     val uiStateComment by viewModel.uiStateComment.collectAsState()
-    LaunchedEffect(Unit) {
-        if (type.equals("SavePost")) {
-            viewModel.loadSavePage()
-        }else{
-            viewModel.loadPostFirstPage()
+
+    LaunchedEffect(type, userId) {
+        when (type) {
+            "SavePost" -> { viewModel.loadSavePage() }
+            "clickedProfile" -> { viewModel.loadClickedProfile(userId) }
+            "Profile" -> {viewModel.loadClickedProfile(userId)}
+            else -> {/* viewModel.loadFirstPage()*/ }
         }
     }
 
+    LaunchedEffect(posts, postId) {
+        if (postId.isNotBlank() && posts.isNotEmpty()) {
+            val index = posts.indexOfFirst { it.stableKey == postId }
+            if (index >= 0) {
+                listState.scrollToItem(index)
+            }
+        }
+    }
 
     BackHandler {
         if (!isNavigating) {
@@ -96,7 +112,8 @@ fun UserPost(navController: NavHostController,
                         .fillMaxSize()
                         .background(Color(0xFFCEE1E6)),
                     contentPadding = PaddingValues(horizontal = 5.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    state = listState
                 ) {
                     itemsIndexed(
                         items = posts,
@@ -118,7 +135,7 @@ fun UserPost(navController: NavHostController,
                                 normalPost = true,
                                 onEditClick = {},
                                 onDeleteClick = {},
-                                onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN) },
+                                onProfileClick = { /*navController.navigate(Routes.PERSON_DETAIL_SCREEN)*/ },
                                 onSelfPostEdit = {
                                     val postJson = Gson().toJson(post)
                                     navController.currentBackStackEntry
@@ -152,7 +169,7 @@ fun UserPost(navController: NavHostController,
                                     showCommentsType = "Normal"
                                 },
                                 onFollowingClick = {
-                                    viewModel.addAndRemoveFollowers(post.userId, onSuccess = {}, onError = {
+                                    viewModel.addAndRemoveFollowers(post.userId, onError = {
                                             msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                                     })
                                 }

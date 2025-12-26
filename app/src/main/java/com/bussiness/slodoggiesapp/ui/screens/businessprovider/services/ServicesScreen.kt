@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,6 +54,7 @@ fun ServiceScreen(navController: NavHostController) {
     val uiState by viewModel.uiState.collectAsState()
     val viewModelService: ServicesListViewModel = hiltViewModel()
     val uiStateService by viewModelService.uiState.collectAsState()
+    val context = LocalContext.current
 
     var selected by remember { mutableStateOf("Services") }
     var commentReply by remember { mutableStateOf(false) }
@@ -83,8 +86,6 @@ fun ServiceScreen(navController: NavHostController) {
         )
     )
 
-
-
     LaunchedEffect(Unit) {
         viewModel.getBusinessDetail("")
     }
@@ -96,6 +97,12 @@ fun ServiceScreen(navController: NavHostController) {
             viewModelService.servicesList()
         } else if (selected == "Rating & Reviews") {
              Log.d("Api call pending","******")
+        }
+    }
+
+    LaunchedEffect(uiState.error) {
+        if (uiState.error != null) {
+            Toast.makeText(context, uiState.error, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -132,15 +139,15 @@ fun ServiceScreen(navController: NavHostController) {
 
             val data=uiState.data?.business
             PetSitterCard(
-                name = data?.business_name?:"",
+                name = data?.business_name?:"Unknown",
                 image=data?.business_logo?:"",
                 rating = 4.5f,
                 ratingCount = 100,
-                providerName = data?.provider_name?:"",
-                about = data?.bio?:"",
-                phone = data?.phone?:"",
-                website = data?.website_url?:"",
-                address = data?.address?:"",
+                providerName = data?.provider_name?:"Unknown",
+                about = data?.bio?:"Bio",
+                phone = data?.phone?:"Unknown",
+                website = data?.website_url?:"Unknown",
+                address = data?.address?:"Unknown",
                 onEditClick = { navController.navigate(Routes.EDIT_BUSINESS_SCREEN)}
             )
 

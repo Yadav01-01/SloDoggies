@@ -156,6 +156,7 @@ class VerifyOTPViewModel @Inject constructor(
                                 sessionManager.setLogin(true)
                                 sessionManager.setUserId(result.data.data?.user?.id.toString())
                                 sessionManager.setToken(result.data.data?.token.toString())
+                                sessionManager.setUserEmail(result.data.data?.user?.email.toString())
                                 showSuccessDialog()
                             }
                             is Resource.Error -> {

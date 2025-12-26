@@ -82,6 +82,7 @@ import com.bussiness.slodoggiesapp.ui.component.common.getVideoThumbnail
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialog
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.isVideoFile
 import com.bussiness.slodoggiesapp.viewModel.petOwner.ownerProfile.PetOwnerProfileViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -292,7 +293,7 @@ fun PetProfileScreen(navController: NavHostController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ProfileDetail(
-                    label = uiState.data.postCount.toString(),
+                    label = formatStringNumberShorthand(uiState.data.postCount.toString()),
                     value = "Posts",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {}
@@ -305,11 +306,11 @@ fun PetProfileScreen(navController: NavHostController) {
                 )
 
                 ProfileDetail(
-                    label = uiState.data.followerCount.toString(),
+                    label = formatStringNumberShorthand(uiState.data.followerCount.toString()),
                     value = "Followers",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {
-                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Follower")
+                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Follower/")
                     }
                 )
 
@@ -324,7 +325,7 @@ fun PetProfileScreen(navController: NavHostController) {
                     value = "Following",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {
-                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Following")
+                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Following/")
                     }
                 )
             }
@@ -502,8 +503,7 @@ fun PetProfileScreen(navController: NavHostController) {
                                         .aspectRatio(1f)
                                         .clip(RoundedCornerShape(10.dp))
                                         .clickable {
-                                          //  navController.navigate(Routes.USER_POST_SCREEN)
-                                            navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile")
+                                            navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile/${post.userId}")
                                         }
                                 ) {
 
@@ -517,12 +517,7 @@ fun PetProfileScreen(navController: NavHostController) {
                                             error = painterResource(R.drawable.no_image),
                                             contentScale = ContentScale.Crop
                                         )
-                                        /*Image(
-                                            bitmap = thumbnailBitmap!!.asImageBitmap(),
-                                            contentDescription = "",
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Crop
-                                        )*/
+
                                     } else {
                                         Image(
                                             painter = painterResource(R.drawable.no_image),
@@ -532,16 +527,6 @@ fun PetProfileScreen(navController: NavHostController) {
                                         )
                                     }
 
-                                    // ---- PLAY ICON (TOP-RIGHT) ----
-//                                    Icon(
-//                                        imageVector = Icons.Filled.PlayArrow,
-//                                        contentDescription = "Play",
-//                                        tint = Color.White,
-//                                        modifier = Modifier
-//                                            .size(28.dp)
-//                                            .align(Alignment.TopEnd)
-//                                            .padding(6.dp)
-//                                    )
                                     Box(
                                         Modifier
                                             .fillMaxSize()
@@ -550,8 +535,7 @@ fun PetProfileScreen(navController: NavHostController) {
                                     ) {
                                         IconButton(
                                             onClick = {
-                                              //  navController.navigate(Routes.USER_POST_SCREEN)
-                                                navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile")
+                                                navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile/${post.userId}")
                                             },
                                             modifier = Modifier
                                                 .size(60.dp)
@@ -580,8 +564,7 @@ fun PetProfileScreen(navController: NavHostController) {
                                         .aspectRatio(1f)
                                         .clip(RoundedCornerShape(10.dp))
                                         .clickable {
-                                            //navController.navigate(Routes.USER_POST_SCREEN)
-                                            navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile")
+                                            navController.navigate(Routes.USER_POST_SCREEN + "/${post.id}/Profile/${post.userId}")
                                         },
                                     contentScale = ContentScale.Crop
                                 )
@@ -637,7 +620,6 @@ fun PetProfileScreen(navController: NavHostController) {
         UpdatedDialogWithExternalClose(onDismiss = { viewModel.petAddedSuccessDialog(false) }, iconResId = R.drawable.ic_sucess_p, text = "Pet Added Successfully!",
             description = "Thanks for keeping things up to date!")
     }
-
 }
 
 @Composable

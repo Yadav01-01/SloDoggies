@@ -68,6 +68,7 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.OutlineCustomBu
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetOwnerDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.isVideoFile
 import com.bussiness.slodoggiesapp.viewModel.common.PersonDetailViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -105,7 +106,7 @@ fun PersonDetailScreen(
         contentPadding = PaddingValues(bottom = 30.dp)
     ) {
         item {
-            HeadingTextWithIcon(textHeading = "jimmi", onBackClick = {  if (!isNavigating) {
+            HeadingTextWithIcon(textHeading = "Profile", onBackClick = {  if (!isNavigating) {
                 isNavigating = true
                 navController.popBackStack()
             } })
@@ -232,7 +233,7 @@ fun PersonDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ProfileDetail(
-                    label = uiState.data.postCount.toString(),
+                    label = formatStringNumberShorthand(uiState.data.postCount.toString()),
                     value = "Posts",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {}
@@ -245,11 +246,11 @@ fun PersonDetailScreen(
                 )
 
                 ProfileDetail(
-                    label = uiState.data.followerCount.toString(),
+                    label = formatStringNumberShorthand(uiState.data.followerCount.toString()),
                     value = "Followers",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {
-                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Follower")
+                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Follower/$userId")
                     }
                 )
 
@@ -264,7 +265,7 @@ fun PersonDetailScreen(
                     value = "Following",
                     modifier = Modifier.weight(1f),
                     onDetailClick = {
-                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Following")
+                        navController.navigate("${Routes.FOLLOWER_SCREEN}/Following/$userId")
                     }
                 )
             }
@@ -386,27 +387,19 @@ fun PersonDetailScreen(
                                     .weight(1f)
                                     .aspectRatio(1f)
                                     .clip(RoundedCornerShape(10.dp))
-                                    .clickable { navController.navigate(Routes.USER_POST_SCREEN) }
+                                    .clickable {  navController.navigate(
+                                        Routes.USER_POST_SCREEN + "/${post.id}/clickedProfile/${post.userId}"
+                                    ) }
                             ) {
-
                                 // ---- VIDEO THUMBNAIL ----
-                                if (thumbnailBitmap != null) {
-                                    AsyncImage(
-                                        model = thumbnailBitmap,
-                                        contentDescription = null,
-                                        modifier = Modifier.fillMaxSize(),
-                                        placeholder = painterResource(R.drawable.no_image),
-                                        error = painterResource(R.drawable.no_image),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                } else {
-                                    Image(
-                                        painter = painterResource(R.drawable.no_image),
-                                        contentDescription = "",
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                }
+                                AsyncImage(
+                                    model = thumbnailBitmap,
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    placeholder = painterResource(R.drawable.no_image),
+                                    error = painterResource(R.drawable.no_image),
+                                    contentScale = ContentScale.Crop
+                                )
 
                                 Box(
                                     Modifier
@@ -421,7 +414,7 @@ fun PersonDetailScreen(
                                         modifier = Modifier
                                             .size(60.dp)
                                             .background(Color.White.copy(.9f), CircleShape)
-                                    ) {
+                                    ){
                                         Icon(
                                             Icons.Default.PlayArrow,
                                             contentDescription = "Play Video",
@@ -433,7 +426,6 @@ fun PersonDetailScreen(
                             }
 
                         } else {
-
                             // ---- NORMAL IMAGE ----
                             AsyncImage(
                                 model = imageUrl,
@@ -445,13 +437,14 @@ fun PersonDetailScreen(
                                     .aspectRatio(1f)
                                     .clip(RoundedCornerShape(10.dp))
                                     .clickable {
-                                        navController.navigate(Routes.USER_POST_SCREEN)
+                                        navController.navigate(
+                                            Routes.USER_POST_SCREEN + "/${post.id}/clickedProfile/${post.userId}"
+                                        )
                                     },
                                 contentScale = ContentScale.Crop
                             )
                         }
                     }
-
 
                     // Fill empty spaces in last row
                     repeat(3 - rowItems.size) {

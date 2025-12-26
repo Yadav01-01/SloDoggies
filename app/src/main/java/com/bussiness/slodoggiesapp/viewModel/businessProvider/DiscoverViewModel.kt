@@ -1,7 +1,9 @@
 package com.bussiness.slodoggiesapp.viewModel.businessProvider
 
+import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.util.UnstableApi
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedMapper
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
@@ -9,9 +11,12 @@ import com.bussiness.slodoggiesapp.data.uiState.DiscoverUiState
 import com.bussiness.slodoggiesapp.network.Resource
 import com.bussiness.slodoggiesapp.util.SessionManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,11 +35,13 @@ class DiscoverViewModel @Inject constructor(
     private var isLastPage = false
     private val localSavedState = mutableMapOf<String, Boolean>()
     private val localLikeState = mutableMapOf<String, Boolean>()
+    private val searchQuery = MutableStateFlow("")
+
 
     init {
         loadHashtags()
         loadForSelectedCategory()
-//        observeSearchQuery()
+        observeSearchQuery()
     }
 
 
@@ -42,25 +49,34 @@ class DiscoverViewModel @Inject constructor(
     //  CATEGORY CHANGE HANDLER
     // ---------------------------------------------------------
 
-   /* private fun observeSearchQuery() {
+
+    @kotlin.OptIn(FlowPreview::class)
+    private fun observeSearchQuery() {
         viewModelScope.launch {
             searchQuery
                 .debounce(400)
                 .distinctUntilChanged()
-                .collectLatest { query ->
+                .collectLatest {
 
                     _uiState.update {
                         it.copy(
-                            query = query,
                             page = 1,
-                            isLastPage = false
+                            isLastPage = false,
+                            posts = emptyList(),
+                            pets = emptyList()
                         )
                     }
+
+                    currentPage = 1
+                    isLastPage = false
+                    isRequestRunning = false
 
                     loadForSelectedCategory()
                 }
         }
-    }*/
+    }
+
+
 
 
     fun selectCategory(category: String) {
@@ -439,26 +455,78 @@ class DiscoverViewModel @Inject constructor(
 
     // Toggle Follow / Unfollow
     fun addAndRemoveFollowers(
-        followedId:String,
+        followedId: String,
+        onError: (String) -> Unit
     ) {
+        //  Optimistic UI update (toggle + start loader)
+        _uiState.update { state ->
+            state.copy(
+                posts = state.posts.map { post ->
+                    when (post) {
+                        is PostItem.CommunityPost ->
+                            if (post.userId == followedId) {
+                                post.copy(
+                                    iAmFollowing = !post.iAmFollowing,
+                                    isFollowLoading = true
+                                )
+                            } else post
+
+                        is PostItem.SponsoredPost -> post
+
+                        is PostItem.NormalPost -> post
+                    }
+                }
+            )
+        }
+
         viewModelScope.launch {
             repository.addAndRemoveFollowers(
                 userId = sessionManager.getUserId(),
-                followerId = followedId,
+                followerId = followedId
             ).collectLatest { result ->
                 when (result) {
-                    is Resource.Loading -> {
-                        _uiState.value = _uiState.value.copy(isLoading = true)
-                    }
+
                     is Resource.Success -> {
-                        _uiState.value = _uiState.value.copy(isLoading = false,)
+                        if (result.data.success) {
+                            //API success → stop loader ONLY
+                            _uiState.update { state ->
+                                state.copy(
+                                    posts = state.posts.map { post ->
+                                        if (post.stableKey == followedId && post is PostItem.CommunityPost) {
+                                            post.copy(isFollowLoading = false)
+                                        } else post
+                                    }
+                                )
+                            }
+                        } else {
+                            rollbackFollow(followedId)
+                            onError(result.data.message ?: "Something went wrong")
+                        }
                     }
+
                     is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(isLoading = false, error = result.message)
+                        rollbackFollow(followedId)
+                        onError(result.message)
                     }
-                    Resource.Idle -> Unit
+
+                    else -> Unit
                 }
             }
+        }
+    }
+
+    private fun rollbackFollow(followedId: String) {
+        _uiState.update { state ->
+            state.copy(
+                posts = state.posts.map { post ->
+                    if (post.stableKey == followedId && post is PostItem.CommunityPost) {
+                        post.copy(
+                            iAmFollowing = !post.iAmFollowing,
+                            isFollowLoading = false
+                        )
+                    } else post
+                }
+            )
         }
     }
 
@@ -536,15 +604,17 @@ class DiscoverViewModel @Inject constructor(
     // ---------------------------------------------------------
 
     fun onHashtagSelected(tag: String) {
-        _uiState.update {
-            it.copy(query = tag)
-        }
+        updateQuery(tag)
     }
 
 
     fun updateQuery(newQuery: String) {
-        _uiState.update { it.copy(query = newQuery) }
+        _uiState.update {
+            it.copy(query = newQuery)
+        }
+        searchQuery.value = newQuery
     }
+
 
     fun showPetPlaceDialog(show: Boolean) =
         _uiState.update { it.copy(showPetPlaceDialog = show) }

@@ -129,6 +129,7 @@ fun EventCard(
             )*/
             event.get_event_image?.let { PostMediaSlider(it,modifier = Modifier
                 .fillMaxWidth()
+                .height(126.dp)
                 .padding(10.dp)
                 .clip(RoundedCornerShape(8.dp))) }
 
@@ -140,7 +141,7 @@ fun EventCard(
                     modifier = Modifier.fillMaxWidth()
                 ){
                     Text(
-                        text = event.event_title?:"",
+                        text = event.event_title?:"Unknown",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -182,7 +183,7 @@ fun EventCard(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.widthIn(max = 150.dp)
                     )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(verticalAlignment = Alignment.Top) {
                         Icon(
                             painter = painterResource(id = R.drawable.cal_ic),
                             contentDescription = "Calendar",

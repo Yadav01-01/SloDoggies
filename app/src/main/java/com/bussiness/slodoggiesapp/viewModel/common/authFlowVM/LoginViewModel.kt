@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.LoginUiState
 import com.bussiness.slodoggiesapp.network.Resource
@@ -86,7 +87,7 @@ class LoginViewModel @Inject constructor(
             }
     }
 
-    fun login(onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
+    fun login(onSuccess: () -> Unit = { }, onError: (String) -> Unit,onNotRegister:()->Unit = {}) {
         val state = _uiState.value
         // Local validation before hitting API
         when {
@@ -126,7 +127,17 @@ class LoginViewModel @Inject constructor(
                                 sessionManager.setUserName(response.data?.user?.name.toString())
                                 sessionManager.setUserImage(com.bussiness.slodoggiesapp.BuildConfig.BASE_URL+response.data?.user?.image.toString())
                                 sessionManager.setLogin(true)
-                                onSuccess()
+                                sessionManager.setUserEmail(response.data?.user?.email.toString())
+                                if (sessionManager.getUserType() == UserType.Professional){
+                                    if (response.data?.user?.hasBusinessRegister == true){
+                                        onSuccess()
+                                    }else{
+                                        onNotRegister()
+                                    }
+                                }else{
+                                    onSuccess()
+                                }
+
                             } else {
                                 onError(response.message ?: "Login failed")
                             }

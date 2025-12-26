@@ -36,6 +36,12 @@ data class PostItem(
     @SerializedName("pet_id")
     val petId: Int? = null,
 
+    @SerializedName("user_type")
+    val userType : String? = null,
+
+    @SerializedName("user_post")
+    val userPost: Boolean? = false,
+
     @SerializedName("post_title")
     val postTitle: String? = null,
 

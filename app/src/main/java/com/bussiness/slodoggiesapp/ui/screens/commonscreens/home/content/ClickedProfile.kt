@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
 import androidx.activity.compose.BackHandler
+import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
@@ -62,6 +64,7 @@ import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
 import com.bussiness.slodoggiesapp.viewModel.common.PersonDetailViewModel
 import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesViewModel
+
 
 @Composable
 fun ClickedProfile(navController: NavHostController,
@@ -177,9 +180,9 @@ fun ClickedProfile(navController: NavHostController,
                 ) {
                     ProfileDetail(label = uiState.data?.post?:"0", value = "Posts", modifier = Modifier.weight(1f), onDetailClick = { })
                     VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
-                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.follower?:"0"), value = "Followers", modifier = Modifier.weight(1f), onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}")})
+                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.follower?:"0"), value = "Followers", modifier = Modifier.weight(1f), onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Follower"}/$ownerUserId")})
                     VerticalDivider(modifier = Modifier.fillMaxHeight(), thickness = 1.dp, color = PrimaryColor)
-                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.following?:"0"), value = "Following",  modifier = Modifier.weight(1f),onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}")})
+                    ProfileDetail(label = formatStringNumberShorthand(uiState.data?.following?:"0"), value = "Following",  modifier = Modifier.weight(1f),onDetailClick = { navController.navigate("${Routes.FOLLOWER_SCREEN}/${"Following"}/$ownerUserId")})
                 }
             }
 
@@ -241,7 +244,7 @@ fun ClickedProfile(navController: NavHostController,
                             GalleryItemCardProfile(
                                 item = item,
                                 onClickItem = {
-                                    navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/Profile")
+                                    navController.navigate(Routes.USER_POST_SCREEN + "/${item.id}/clickedProfile/${item.userId}")
                                 }
                             )
 

@@ -134,7 +134,9 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = hi
                         onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                         onSuccess = {
                             navController.navigate(Routes.MAIN_SCREEN)
-//                            navController.navigate(Routes.BUSINESS_REGISTRATION)
+                        },
+                        onNotRegister = {
+                            navController.navigate(Routes.BUSINESS_REGISTRATION)
                         }
                     )
                 },

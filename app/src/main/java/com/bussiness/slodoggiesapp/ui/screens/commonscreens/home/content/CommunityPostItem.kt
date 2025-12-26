@@ -65,7 +65,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                       onFollowingClick:()->Unit){
 //    var isFollowed by remember { mutableStateOf(false) }
 
-    var isFollowed by remember { mutableStateOf(postItem.iAmFollowing) }
+    val isFollowed = postItem.iAmFollowing
     val sessionManager = SessionManager.getInstance(LocalContext.current)
 
     Card(
@@ -118,17 +118,16 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                         if (sessionManager.getUserId() != postItem.userId){
                             OutlinedButton(
                                 onClick = {
-                                    onFollowingClick()
-                                    isFollowed = !isFollowed
+                                    onFollowingClick() // ViewModel handles toggle + API
                                 },
                                 modifier = Modifier
                                     .height(24.dp)
                                     .padding(horizontal = 10.dp),
                                 shape = RoundedCornerShape(6.dp),
-                                border = if (isFollowed) BorderStroke(1.dp, PrimaryColor) else null,
+                                border = if (postItem.iAmFollowing) BorderStroke(1.dp, PrimaryColor) else null,
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isFollowed) Color.White else PrimaryColor,
-                                    contentColor = if (isFollowed) PrimaryColor else Color.White
+                                    containerColor = if (postItem.iAmFollowing) Color.White else PrimaryColor,
+                                    contentColor = if (postItem.iAmFollowing) PrimaryColor else Color.White
                                 ),
                                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
                                 interactionSource = interactionSource
@@ -136,8 +135,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                                 Text(
                                     text = if (postItem.iAmFollowing) "Following" else "Follow",
                                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Normal
+                                    fontSize = 12.sp
                                 )
                             }
                         }

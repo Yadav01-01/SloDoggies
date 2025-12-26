@@ -98,7 +98,7 @@ fun AudienceListItem(
             modifier = Modifier
                 .size(44.dp)
                 .clip(CircleShape),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.Crop
         )
 
         Spacer(modifier = Modifier.width(12.dp))

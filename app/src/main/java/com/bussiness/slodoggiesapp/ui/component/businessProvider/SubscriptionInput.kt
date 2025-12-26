@@ -34,18 +34,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.SubscriptionData
+import com.bussiness.slodoggiesapp.data.newModel.subscription.SubscriptionPlan
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
 fun SubscriptionItem(
-    subscriptionItem: com.bussiness.slodoggiesapp.data.model.businessProvider.SubscriptionData,
+    plan: SubscriptionPlan,
+    isSelected: Boolean,
+    isActivated: Boolean,
     onUpgradeClick: () -> Unit,
     onCancelClick: () -> Unit
 ) {
-    val backgroundColor = if (subscriptionItem.isSelected) PrimaryColor else Color.White
-    val textColor = if (subscriptionItem.isSelected) Color.White else Color.Black
-    val featureIconColor = if (subscriptionItem.isSelected) Color.White else PrimaryColor
+    val backgroundColor = if (isSelected) PrimaryColor else Color.White
+    val textColor = if (isSelected) Color.White else Color.Black
+    val featureIconColor = if (isSelected) Color.White else PrimaryColor
+
 
     Card(
         modifier = Modifier
@@ -59,11 +63,11 @@ fun SubscriptionItem(
 
             // Plan Name
             Text(
-                text = subscriptionItem.planName,
+                text = plan.type.replaceFirstChar { it.uppercase() },
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Medium,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = if (subscriptionItem.isSelected) Color.White else PrimaryColor,
+                    color = if (isSelected) Color.White else PrimaryColor,
                     fontSize = 16.sp
                 )
             )
@@ -73,11 +77,11 @@ fun SubscriptionItem(
             // Price
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    text = subscriptionItem.price,
+                    text = "$${plan.price}",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily(Font(R.font.outfit_bold)),
-                        color = if (subscriptionItem.isSelected) Color.White else Color(0xFF282828),
+                        color = if (isSelected) Color.White else Color(0xFF282828),
                         fontSize = 30.sp
                     )
                 )
@@ -86,7 +90,7 @@ fun SubscriptionItem(
                     text = "/month",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        color = if (subscriptionItem.isSelected) Color.White else TextGrey,
+                        color = if (isSelected) Color.White else TextGrey,
                         fontSize = 14.sp
                     )
                 )
@@ -96,11 +100,11 @@ fun SubscriptionItem(
 
             // Description
             Text(
-                text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+                text =  plan.description,
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     fontSize = 14.sp,
-                    color = if (subscriptionItem.isSelected) Color.White else TextGrey
+                    color = if (isSelected) Color.White else TextGrey
                 ),
                 maxLines = 5,
                 overflow = TextOverflow.Ellipsis
@@ -114,7 +118,7 @@ fun SubscriptionItem(
 
             // Feature List
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                subscriptionItem.features.forEach {
+                plan.texts.forEach {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(R.drawable.check_circle),
@@ -138,7 +142,7 @@ fun SubscriptionItem(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Activated/Upgrade Section
-            if (subscriptionItem.isActivated) {
+            if (isActivated) {
                 Text(
                     text = "Activated",
                     style = MaterialTheme.typography.bodyMedium.copy(

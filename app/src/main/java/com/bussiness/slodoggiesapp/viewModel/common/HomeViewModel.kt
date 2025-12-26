@@ -2,16 +2,17 @@ package com.bussiness.slodoggiesapp.viewModel.common
 
 import android.content.Context
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.data.model.main.UserType
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedMapper
 import com.bussiness.slodoggiesapp.data.newModel.home.MediaResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostMediaResponse
-import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.MediaItem
-import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerPostItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.CommentItem
 import com.bussiness.slodoggiesapp.data.uiState.CommentReply
@@ -63,6 +64,14 @@ class HomeViewModel @Inject constructor(
         currentPage = 1
         isLastPage = false
         fetchMyPosts(isFirstPage = true)
+    }
+
+
+
+    fun loadClickedProfile(ownerUserId: String) {
+        currentPage = 1
+        isLastPage = false
+        fetchClickedProfilePost(ownerUserId = ownerUserId, isFirstPage = true)
     }
 
     fun loadNextPage() {
@@ -318,9 +327,77 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-
             repository.getMyPostDetails(
                 userId = sessionManager.getUserId(),
+                page = currentPage.toString()
+            ).collectLatest { result ->
+
+                when (result) {
+
+                    is Resource.Success -> {
+
+                        val response = result.data.data
+                        val apiPosts = response?.data ?: emptyList()
+
+                        //  Convert API PostItem → UI PostItem.NormalPost
+                        val normalPosts = apiPosts.map { it.toNormalPost() }
+
+                        //  Pagination Safe Merge
+                        val finalPosts =
+                            if (isFirstPage) normalPosts
+                            else _uiState.value.posts + normalPosts
+
+                        //  Update UI State
+                        _uiState.update { state ->
+                            state.copy(
+                                posts = finalPosts,
+                                isLoading = false,
+                                isLoadingMore = false,
+                                errorMessage = ""
+                            )
+                        }
+
+                        //  Pagination Handler
+                        val totalPages = response?.total_page ?: 1
+                        isLastPage = currentPage >= totalPages
+                        if (!isLastPage) currentPage++
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update { state ->
+                            state.copy(
+                                errorMessage = result.message ?: "Something went wrong",
+                                isLoading = false,
+                                isLoadingMore = false
+                            )
+                        }
+                    }
+
+                    is Resource.Loading -> Unit
+                    Resource.Idle -> Unit
+                }
+
+                isRequestRunning = false
+            }
+        }
+    }
+
+    private fun fetchClickedProfilePost(ownerUserId:String, isFirstPage: Boolean){
+        if (isRequestRunning) return
+        isRequestRunning = true
+
+        _uiState.update { state ->
+            state.copy(
+                isLoading = isFirstPage,
+                isLoadingMore = !isFirstPage,
+                errorMessage = ""
+            )
+        }
+
+        viewModelScope.launch {
+
+            repository.getMyPostDetails(
+                userId = ownerUserId,
                 page = currentPage.toString()
             ).collectLatest { result ->
 
@@ -402,11 +479,11 @@ class HomeViewModel @Inject constructor(
             shares = postShareCount ?: 0,
             isLiked = itemSuccess?.isLiked ?: false,
             isSaved = itemSuccess?.isSaved ?: false,
-            iAmFollowing = false
+            iAmFollowing = false,
+            userType = userType ?: "",
+            userPost = userPost?:false
         )
     }
-
-
 
     //  Merge function: API + Local
     private fun mergeApiWithLocal(apiPosts: List<PostItem>): List<PostItem> {
@@ -623,9 +700,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
-
-
     fun increaseCommentCount(postId: String) {
 
         _uiState.update { state ->
@@ -654,7 +728,6 @@ class HomeViewModel @Inject constructor(
             state.copy(posts = updatedPosts)
         }
     }
-
 
     private fun reportPost(
         postId:String,
@@ -693,8 +766,6 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-
-
 
      fun addNewComment(
         postId:String,
@@ -799,7 +870,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-
     // Add reply to a specific comment instantly
     private fun addReplyToList(parentCommentId: Int, replyText: String, replyId: Int) {
         val newReply = CommentReply(
@@ -866,8 +936,6 @@ class HomeViewModel @Inject constructor(
     }
 
 
-
-
     fun deleteComment(
         commentId:String,
         onSuccess: () -> Unit = { },
@@ -903,6 +971,8 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+
     fun deletePost(postId: Int) {
         _uiState.update { state ->
 
@@ -966,63 +1036,93 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
-    // Toggle Follow / Unfollow
+
+
+    @OptIn(UnstableApi::class)
     fun addAndRemoveFollowers(
         followedId: String,
-        onSuccess: () -> Unit = { },
         onError: (String) -> Unit
     ) {
+
+        //  Optimistic UI update (toggle + start loader)
+        _uiState.update { state ->
+            state.copy(
+                posts = state.posts.map { post ->
+                    when (post) {
+
+                        is PostItem.NormalPost ->
+                            if (post.userId == followedId) {
+                                post.copy(
+                                    iAmFollowing = !post.iAmFollowing,
+                                    isFollowLoading = true
+                                )
+                            } else post
+
+                        is PostItem.CommunityPost ->
+                            if (post.userId == followedId) {
+                                post.copy(
+                                    iAmFollowing = !post.iAmFollowing,
+                                    isFollowLoading = true
+                                )
+                            } else post
+
+                        is PostItem.SponsoredPost ->
+                            post
+                    }
+                }
+            )
+        }
+
         viewModelScope.launch {
             repository.addAndRemoveFollowers(
                 userId = sessionManager.getUserId(),
-                followerId = followedId,
+                followerId = followedId
             ).collectLatest { result ->
                 when (result) {
 
-                    is Resource.Loading -> {
-                        _uiState.update {
-                            it.copy(isLoading = true)
-                        }
-                    }
-
                     is Resource.Success -> {
-                        _uiState.update {
-                            it.copy(isLoading = false)
-                        }
-
-                        val response = result.data
-                        if (response?.success == true) {
-
+                        if (result.data.success) {
+                            //API success → stop loader ONLY
                             _uiState.update { state ->
-                                val updatedPosts = state.posts.map { post ->
-                                    if (post.stableKey == followedId && post is PostItem.CommunityPost) {
-                                        post.copy(
-                                            iAmFollowing = !post.iAmFollowing
-                                        )
-                                    } else post
-                                }
-                                state.copy(posts = updatedPosts)
+                                state.copy(
+                                    posts = state.posts.map { post ->
+                                        if (post.stableKey == followedId && post is PostItem.CommunityPost) {
+                                            post.copy(isFollowLoading = false)
+                                        } else post
+                                    }
+                                )
                             }
-
-                            onSuccess()
                         } else {
-                            onError(response?.message ?: "")
+                            rollbackFollow(followedId)
+                            onError(result.data.message ?: "Something went wrong")
                         }
                     }
 
                     is Resource.Error -> {
-                        _uiState.update {
-                            it.copy(isLoading = false)
-                        }
+                        rollbackFollow(followedId)
                         onError(result.message)
                     }
 
-                    Resource.Idle -> Unit
+                    else -> Unit
                 }
             }
         }
     }
 
+    private fun rollbackFollow(followedId: String) {
+        _uiState.update { state ->
+            state.copy(
+                posts = state.posts.map { post ->
+                    if (post.stableKey == followedId && post is PostItem.CommunityPost) {
+                        post.copy(
+                            iAmFollowing = !post.iAmFollowing,
+                            isFollowLoading = false
+                        )
+                    } else post
+                }
+            )
+        }
+    }
 
 
     fun editComment(
@@ -1191,6 +1291,10 @@ class HomeViewModel @Inject constructor(
                 welcomeButton = button
             )
         }
+    }
+
+    fun toggleCommentDialog(){
+        _uiState.update { it.copy(showCommentsDialog = !it.showCommentsDialog) }
     }
 
     fun showContinueAddPetDialog() {

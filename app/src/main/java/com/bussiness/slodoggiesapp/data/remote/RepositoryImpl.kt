@@ -33,6 +33,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.sponsered.BusinessAdsResponse
+import com.bussiness.slodoggiesapp.data.newModel.subscription.SubscriptionResponse
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
@@ -724,9 +725,9 @@ class RepositoryImpl @Inject constructor(
         emit(safeApiCall { api.ownerCategoryService(userId) })
     }.flowOn(Dispatchers.IO)
 
-    override suspend fun ownerServiceDetail(businessUserId: String): Flow<Resource<ServiceDetailsResponse>> = flow {
+    override suspend fun ownerServiceDetail(businessUserId: String,userId: String): Flow<Resource<ServiceDetailsResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.ownerServiceDetail(businessUserId) })
+        emit(safeApiCall { api.ownerServiceDetail(businessUserId,userId) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun discoverPetPlaces(
@@ -750,7 +751,21 @@ class RepositoryImpl @Inject constructor(
     override suspend fun friendList(userId: String): Flow<Resource<FriendListResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.friendList(userId) })
-    }
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun removeFollowFollower(
+        type: String,
+        userId: String,
+        followerId: String
+    ): Flow<Resource<CommonResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.removeFollowerFollowing(type,userId,followerId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getSubscription(userId: String): Flow<Resource<SubscriptionResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getSubscription(userId) })
+    }.flowOn(Dispatchers.IO)
 }
 
     /**

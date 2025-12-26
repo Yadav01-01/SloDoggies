@@ -9,7 +9,6 @@ object ApiEndPoint {
     const val VERIFY_FORGOT_OTP = "verify_forgot_otp"
     const val RESET_PASSWORD = "reset_password"
     const val RESEND_PASSWORD = "resend_otp"
-    //const val ADD_PETS = "add_pets"  Change By Shrawan
     const val ADD_PETS = "add_update_pet"
     const val GET_OWNER_DETAIL = "get_owner_details"
     const val UPDATE_OWNER_DETAIL = "update_owner_details"
@@ -34,7 +33,6 @@ object ApiEndPoint {
     const val LOG_OUT = "logout"
     const val ADD_REMOVE_FOLLOWER = "add_remove_follower"
     const val MY_EVENT_LIST = "get_my_event_list"
-    //const val GET_OWNER_GALLERY = "get_owner_gallery" //Change by Shrawan
     const val GET_OWNER_GALLERY = "get_gallery"
     const val GET_OWNER_PROFILE = "get_owner_profile"
     const val GET_PET_DETAIL = "get_pet_detail"
@@ -64,4 +62,6 @@ object ApiEndPoint {
     const val GET_USER_ADS = "getUserAds"
     const val FAQ = "faq"
     const val FRIEND_LIST = "friendList"
+    const val REMOVE_FOLLOWER_FOLLOWING = "removeFollowerFollowing"
+    const val GET_SUBSCRIPTION = "getSubscription"
 }

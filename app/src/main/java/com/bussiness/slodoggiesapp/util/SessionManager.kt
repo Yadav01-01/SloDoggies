@@ -25,6 +25,7 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
         // Keys for new data
         private const val KEY_USER_ID = "key_user_id"
         private const val KEY_USER_NAME = "key_user_name"
+        private const val KEY_USER_EMAIL = "key_user_email"
         private const val KEY_USER_IMAGE = "key_user_image"
         private const val KEY_TOKEN = "key_token"
         private const val KEY_SIGNUP_FLOW = "signup_flow"
@@ -73,6 +74,14 @@ class SessionManager @Inject constructor(@ApplicationContext context: Context) {
     /** Save user Name */
     fun setUserName(name: String) {
         preferences.edit { putString(KEY_USER_NAME, name) }
+    }
+
+    fun setUserEmail(email: String) {
+        preferences.edit { putString(KEY_USER_EMAIL, email) }
+    }
+
+    fun getUserEmail() : String {
+        return preferences.getString(KEY_USER_EMAIL, "") ?: ""
     }
 
     /** Save user Image */

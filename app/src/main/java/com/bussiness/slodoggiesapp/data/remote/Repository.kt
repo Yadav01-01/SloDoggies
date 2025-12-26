@@ -30,6 +30,7 @@ import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServicesResponse
 import com.bussiness.slodoggiesapp.data.newModel.petlist.PetListModel
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.newModel.sponsered.BusinessAdsResponse
+import com.bussiness.slodoggiesapp.data.newModel.subscription.SubscriptionResponse
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
@@ -395,7 +396,8 @@ interface Repository {
     ) : Flow<Resource<CategoryResponse>>
 
     suspend fun ownerServiceDetail(
-        businessUserId : String
+        businessUserId : String,
+        userId: String
     ) : Flow<Resource<ServiceDetailsResponse>>
 
     suspend fun discoverPetPlaces(
@@ -412,6 +414,16 @@ interface Repository {
     suspend fun friendList(
         userId: String,
     ) : Flow<Resource<FriendListResponse>>
+
+    suspend fun removeFollowFollower(
+        type : String,
+        userId: String,
+        followerId: String
+    ) : Flow<Resource<CommonResponse>>
+
+    suspend fun getSubscription(
+        userId: String
+    ) : Flow<Resource<SubscriptionResponse>>
 
 
 }

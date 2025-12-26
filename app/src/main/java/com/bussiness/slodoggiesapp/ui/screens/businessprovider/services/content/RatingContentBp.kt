@@ -47,8 +47,8 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
-fun ReviewContent(reviewList: List<com.bussiness.slodoggiesapp.data.model.businessProvider.Review>, onClickReply: () -> Unit) {
-    val ratingData = com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData(
+fun ReviewContent(reviewList: List<Review>, onClickReply: () -> Unit) {
+    val ratingData = RatingSummaryData(
         overallRating = 4.0f,
         totalReviews = 52,
         ratingPercentages = mapOf(
@@ -90,7 +90,7 @@ fun ReviewContent(reviewList: List<com.bussiness.slodoggiesapp.data.model.busine
 
 
 @Composable
-fun RatingSummary(ratingData: com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData) {
+fun RatingSummary(ratingData: RatingSummaryData) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -237,7 +237,7 @@ fun RatingBar(
 
 @Composable
 fun ReviewItemPanel(
-    data : com.bussiness.slodoggiesapp.data.model.businessProvider.Review,
+    data : Review,
     onClickMore: () -> Unit,
     onClickReply: () -> Unit
 ) {

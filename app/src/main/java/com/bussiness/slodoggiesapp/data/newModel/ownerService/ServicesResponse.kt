@@ -45,6 +45,9 @@ data class ServiceItem(
     @SerializedName("location")
     val location: String = "",
 
+    @SerializedName("distance")
+    val distance: String = "",
+
     @SerializedName("categoryName")
     val categoryName: List<String> = emptyList()
 
