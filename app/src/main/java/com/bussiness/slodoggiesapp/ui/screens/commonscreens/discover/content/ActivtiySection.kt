@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,10 +34,16 @@ fun ActivitiesPostsList(
     posts: List<PostItem>,
     onReportClick: () -> Unit,
     onShareClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onLikeClick :(postId:String) ->Unit,
+    onCommentOpen :(postId :String) -> Unit,
+    onSaveClick :(postId :String)->Unit,
+    onProfileClick:(postType:String,postUserId:String)->Unit
 ) {
+
     Spacer(Modifier.height(5.dp))
-    if (posts.isEmpty()){
+
+    if(posts.isEmpty()){
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -58,8 +65,11 @@ fun ActivitiesPostsList(
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     fontSize = 18.sp
                 )
+
             }
+
         }
+
     }else{
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -75,13 +85,17 @@ fun ActivitiesPostsList(
                         normalPost = true,
                         onEditClick = { /* Handle edit click */ },
                         onDeleteClick = { /* Handle delete click */ },
-                        onProfileClick = { onProfileClick() },
+                        onProfileClick = {
+                          Log.d("Testing_DEBUG",post.userType+" "+post.userId)
+                            onProfileClick(post.userType,post.userId)
+                        },
                         onSelfPostEdit = { /* Handle self post edit click */ },
                         onSelfPostDelete = { /* Handle self post delete click */ },
-                        onSaveClick = {  },
-                        onLikeClick = {  },
-                        onCommentClick = {  },
+                        onSaveClick = { onSaveClick(post.postId) },
+                        onLikeClick = { onLikeClick(post.postId)  },
+                        onCommentClick = { onCommentOpen(post.postId) },
                         onFollowingClick = {  }
+
                     )
                 }
             }

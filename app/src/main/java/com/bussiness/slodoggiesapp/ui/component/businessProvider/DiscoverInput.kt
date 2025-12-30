@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.component.businessProvider
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -68,6 +69,98 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostOpt
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
+//@Composable
+//fun SearchResultItem(
+//    name: String,
+//    label: String,
+//    imageRes: String?,
+//    onRemove: () -> Unit,
+//    onItemClick: () -> Unit,
+//    labelVisibility : Boolean,
+//    crossVisibility : Boolean
+//) {
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clickable { onItemClick() }
+//            .padding(horizontal = 0.dp, vertical = 12.dp),
+//        verticalAlignment = Alignment.CenterVertically
+//    ) {
+//
+//        val imageModel: Any = imageRes
+//            ?.takeIf { it.isNotBlank() }
+//            ?: R.drawable.ic_dog_face_icon
+//        if (imageRes.isNullOrBlank()) {
+//          Log.d("IMAGE_DEBUG","i am here in the imageModel")
+//            Image(
+//                painter = painterResource(id = R.drawable.ic_dog_face_icon),
+//                contentDescription = "$name profile image",
+//                modifier = Modifier
+//                    .size(48.dp)
+//                    .clip(CircleShape), // Matches the AsyncImage look
+//                contentScale = ContentScale.Crop
+//            )
+//
+//        } else {
+//            // Remote image
+//            AsyncImage(
+//                model = imageModel,
+//                placeholder = painterResource(R.drawable.ic_dog_face_icon),
+//                error = painterResource(R.drawable.ic_dog_face_icon),
+//                contentDescription = "$name profile image",
+//                modifier = Modifier
+//                    .size(48.dp)
+//                    .clip(CircleShape),
+//                contentScale = ContentScale.Crop
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.width(12.dp))
+//
+//        // Name and Label
+//        Column(modifier = Modifier.weight(1f)) {
+//            Text(
+//                text = name,
+//                fontWeight = FontWeight.SemiBold,
+//                fontSize = 14.sp,
+//                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                color = Color.Black
+//            )
+//
+//            if(labelVisibility){
+//                Text(
+//                    text = label,
+//                    fontSize = 11.sp,
+//                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
+//                    color = PrimaryColor,
+//                    modifier = Modifier
+//                        .padding(top = 4.dp)
+//                        .background(
+//                            color = Color(0xFFE5EFF2),
+//                            shape = RoundedCornerShape(16.dp)
+//                        )
+//                        .padding(horizontal = 8.dp, vertical = 0.dp)
+//                )
+//            }
+//
+//        }
+//
+//        if (crossVisibility){
+//            Icon(
+//                painter = painterResource(id = R.drawable.close_ic),
+//                contentDescription = "Remove",
+//                tint = Color.Unspecified,
+//                modifier = Modifier
+//                    .wrapContentSize()
+//                    .clickable { onRemove() }
+//            )
+//            Spacer(Modifier.width(15.dp))
+//        }
+//    }
+//    Divider(Modifier.height(1.dp).background(color = Color(0xFFE5EFF2)))
+//}
+
+
 @Composable
 fun SearchResultItem(
     name: String,
@@ -75,71 +168,71 @@ fun SearchResultItem(
     imageRes: String?,
     onRemove: () -> Unit,
     onItemClick: () -> Unit,
-    labelVisibility : Boolean,
-    crossVisibility : Boolean
+    labelVisibility: Boolean,
+    crossVisibility: Boolean
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onItemClick() }
-            .padding(horizontal = 0.dp, vertical = 12.dp),
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Profile Image
-        AsyncImage(
-            model = imageRes.orEmpty(),
-            placeholder = painterResource(R.drawable.ic_dog_face_icon),
-            error = painterResource(R.drawable.ic_dog_face_icon),
-            contentDescription = "$name profile image",
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
+        // --- IMAGE SECTION ---
+        if (imageRes.isNullOrBlank()) {
+            Log.d("IMAGE_DEBUG", "Showing local drawable: $name")
+            // Change 1: Use Image instead of Icon
+            // Change 2: Temporarily remove clip/crop to see if it appears
+            Image(
+                painter = painterResource(id = R.drawable.ic_dog_face_icon),
+                contentDescription = "Local Image",
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(Color.LightGray, CircleShape), // Add background to see the area
+                contentScale = ContentScale.Fit // Fit ensures the whole icon is visible
+            )
+        } else {
+            AsyncImage(
+                model = imageRes,
+                placeholder = painterResource(R.drawable.ic_dog_face_icon),
+                error = painterResource(R.drawable.ic_dog_face_icon),
+                contentDescription = "Remote Image",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
+        // -----------------------
+
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Name and Label
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = name,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                color = Color.Black
-            )
-
-            if(labelVisibility){
+            Text(text = name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+            if (labelVisibility) {
                 Text(
                     text = label,
                     fontSize = 11.sp,
-                    fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                    color = PrimaryColor,
+                    color = Color.Blue, // Use a standard color for testing
                     modifier = Modifier
                         .padding(top = 4.dp)
-                        .background(
-                            color = Color(0xFFE5EFF2),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 0.dp)
+                        .background(Color(0xFFE5EFF2), RoundedCornerShape(16.dp))
+                        .padding(horizontal = 8.dp)
                 )
             }
-
         }
 
-        if (crossVisibility){
+        if (crossVisibility) {
             Icon(
                 painter = painterResource(id = R.drawable.close_ic),
                 contentDescription = "Remove",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clickable { onRemove() }
+                modifier = Modifier.clickable { onRemove() }.padding(8.dp)
             )
-            Spacer(Modifier.width(15.dp))
         }
     }
-    Divider(Modifier.height(1.dp).background(color = Color(0xFFE5EFF2)))
+    Divider(modifier = Modifier.fillMaxWidth().height(1.dp), color = Color(0xFFE5EFF2))
 }
+
 
 @Composable
 fun SearchBar(
@@ -468,7 +561,8 @@ fun GalleryItemCard(item: GalleryItem, height: Int = 150, onClickItem: () -> Uni
 }
 
 @Composable
-fun PetPlaceCard(placeItem: PetPlaceItem, onItemClick: () -> Unit) {
+fun PetPlaceCard(placeItem: PetPlaceItem,
+                 onItemClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -479,6 +573,9 @@ fun PetPlaceCard(placeItem: PetPlaceItem, onItemClick: () -> Unit) {
             .padding(10.dp)
             .clickable { onItemClick() }
     ) {
+
+        Log.d("TESTING_image",""+placeItem.image)
+
         AsyncImage(
             model  = placeItem.image,
             placeholder = painterResource(R.drawable.no_image),
@@ -649,7 +746,7 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Uni
                 verticalAlignment = Alignment.Top
             ) {
 
-                // LEFT: Description
+
                 Text(
                     text = postItem.eventDescription ?: "No Description",
                     fontSize = 14.sp,

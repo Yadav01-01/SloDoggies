@@ -101,14 +101,15 @@ fun PetProfileScreen(navController: NavHostController) {
     }
 
     LaunchedEffect(uiState.errorMessage) {
+
         uiState.errorMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
+
     }
 
     BackHandler {
-        if (!navController.popBackStack(Routes.HOME_SCREEN,
-                false)) {
+        if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
             navController.navigate(Routes.HOME_SCREEN) {
                 launchSingleTop = true
             }
@@ -350,7 +351,7 @@ fun PetProfileScreen(navController: NavHostController) {
                 ) {
 
                     AsyncImage(
-                        model = uiState.data.owner.image,
+                        model = uiState.data?.owner?.image?:"",
                         contentDescription = "Owner Avatar",
                         placeholder = painterResource(R.drawable.ic_person_icon),
                         error = painterResource(R.drawable.ic_person_icon),
@@ -366,7 +367,7 @@ fun PetProfileScreen(navController: NavHostController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = uiState.data.owner.name,
+                                text = uiState.data?.owner?.name?:"",
                                 fontSize = 12.sp,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                                 fontWeight = FontWeight.Medium,
@@ -398,7 +399,7 @@ fun PetProfileScreen(navController: NavHostController) {
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = uiState.data.owner.parentType ?: "",
+                                text = uiState.data?.owner?.parentType ?: "",
                                 fontSize = 10.sp,
                                 color = PrimaryColor,
                                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -409,7 +410,7 @@ fun PetProfileScreen(navController: NavHostController) {
                         }
 
                         Text(
-                            text = uiState.data.owner.bio,
+                            text = uiState.data?.owner?.bio?:"",
                             fontSize = 12.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             fontWeight = FontWeight.Normal,

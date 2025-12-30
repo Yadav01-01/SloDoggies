@@ -51,9 +51,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RepositoryImpl @Inject constructor(
-    private val api: ApiService
-) : Repository {
+class RepositoryImpl @Inject constructor(private val api: ApiService) : Repository {
 
     override suspend fun sendOtp(
         emailOrPhone: String,
@@ -588,7 +586,7 @@ class RepositoryImpl @Inject constructor(
         addId: String
     ): Flow<Resource<CommonResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.postLikeUnlike(userId,postId,eventId,addId) })
+        emit(safeApiCall (false,{ api.postLikeUnlike(userId,postId,eventId,addId) }))
     }.flowOn(Dispatchers.IO)
 
 
@@ -600,7 +598,7 @@ class RepositoryImpl @Inject constructor(
         limit: String
     ): Flow<Resource<CommentsResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.getComments(userId,postId,addId,page,limit) })
+        emit(safeApiCall( false,{ api.getComments(userId,postId,addId,page,limit) }))
     }.flowOn(Dispatchers.IO)
 
     override suspend fun addNewComment(
@@ -620,7 +618,7 @@ class RepositoryImpl @Inject constructor(
         commentText: String
     ): Flow<Resource<AddCommentReplyResponse>>  = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.replyComment(userId,postId,commentId,commentText) })
+        emit(safeApiCall (false,{ api.replyComment(userId,postId,commentId,commentText) }))
     }.flowOn(Dispatchers.IO)
 
     override suspend fun deleteComment(
@@ -771,9 +769,11 @@ class RepositoryImpl @Inject constructor(
     /**
      * A reusable helper function to handle all API calls safely.
      */
-    private suspend fun <T : BaseResponse> safeApiCall(apiCall: suspend () -> Response<T>): Resource<T> {
+    private suspend fun <T : BaseResponse> safeApiCall(showLoader: Boolean = true, apiCall: suspend () -> Response<T>): Resource<T> {
         return try {
-            LoaderManager.show()
+            if(showLoader) {
+                LoaderManager.show()
+            }
             val response = apiCall()
             LoaderManager.hide()
             when {

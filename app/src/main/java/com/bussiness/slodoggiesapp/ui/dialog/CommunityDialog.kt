@@ -458,10 +458,10 @@ fun CenterToast(
 fun ReportBottomToast(
     onDismiss: () -> Unit
 ) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
-    ) {
+//    Dialog(
+//        onDismissRequest = onDismiss,
+//        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+//    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -498,5 +498,5 @@ fun ReportBottomToast(
 
             }
         }
-    }
+  //  }
 }

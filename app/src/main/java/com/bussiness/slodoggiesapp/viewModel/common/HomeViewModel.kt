@@ -32,8 +32,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+
     private val sessionManager: SessionManager,
     private val repository: Repository
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -1186,7 +1188,7 @@ class HomeViewModel @Inject constructor(
                     is Resource.Loading -> {
                         _uiStateComment.update { state ->
                             state.copy(
-                                isLoading = page == 1,
+                                isLoading = false,
                                 isLoadingMore = page > 1
                             )
                         }
@@ -1318,6 +1320,7 @@ class HomeViewModel @Inject constructor(
     fun onReasonSelected(reason: String) {
         _uiState.value = _uiState.value.copy(selectedReason = reason)
     }
+
 
     fun onMessageChange(text: String) {
         _uiState.value = _uiState.value.copy(message = text)

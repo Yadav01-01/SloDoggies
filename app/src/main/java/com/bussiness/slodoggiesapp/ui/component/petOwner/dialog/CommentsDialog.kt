@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -95,84 +96,81 @@ fun CommentsDialog(
 
 
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
+//    Dialog(
+//        onDismissRequest = onDismiss,
+//        properties = DialogProperties(
+//            usePlatformDefaultWidth = false,
+//            decorFitsSystemWindows = false
+//        )
+//    ) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .windowInsetsPadding(
-                    WindowInsets.safeDrawing.union(WindowInsets.ime)
-                ),
-            contentAlignment = Alignment.BottomCenter
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp)
         ) {
-            Column(
-                modifier = Modifier
+            // Close button above the surface
+            Box(
+                Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 10.dp)
+                    .padding(bottom = 8.dp)
             ) {
-                // Close button above the surface
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_cross_iconx),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .clip(CircleShape)
-                            .clickable { onDismiss() }
-                    )
-                }
-
-                Surface(
+                Image(
+                    painter = painterResource(id = R.drawable.ic_cross_iconx),
+                    contentDescription = null,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(
-                            min = Dp.Unspecified,              // let content shrink
-                            max = LocalConfiguration.current.screenHeightDp.dp * 0.6f // cap at 60%
-                        ),
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color.White
+                        .align(Alignment.TopEnd)
+                        .clip(CircleShape)
+                        .clickable { onDismiss() }
+                )
+            }
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth().height(400.dp),
+//                        .heightIn(
+//                            min = Dp.Unspecified,              // let content shrink
+//                            max = LocalConfiguration.current.screenHeightDp.dp * 0.6f // cap at 60%
+//                        ),
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
+                    // Header with close button
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
                     ) {
-                        // Header with close button
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                text = "Comments",
-                                fontSize = 20.sp,
-                                fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                color = Color.Black,
-                                fontWeight = FontWeight.Medium,
-                                modifier = Modifier.align(Alignment.CenterStart)
-                            )
-                        }
-
-                        Divider(
-                            color = Color(0xFF258694),
-                            thickness = 1.dp
+                        Text(
+                            text = "Comments",
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                            color = Color.Black,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.align(Alignment.CenterStart)
                         )
+                    }
 
-                        // Comments List
-                        LazyColumn(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
-                        ) {
-                            itemsIndexed(comments) { index, comment ->
+                    Divider(
+                        color = Color(0xFF258694),
+                        thickness = 1.dp
+                    )
+
+                    // Comments List
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        itemsIndexed(comments) { index, comment ->
 //                                CommentItem(
 //                                    comment = comment,
 //                                    onReply = { replyingTo = comment.userName },
@@ -182,156 +180,156 @@ fun CommentsDialog(
 //                                    },
 //                                    onDeleteClick = { onDeleteClick() }
 //                                )
-                                CommentItem(
-                                    comment = comment,
-                                    onReply = {
-                                        // If user taps reply, cancel edit mode immediately
-                                        editingComment = null
-                                        newComment = ""
-                                        replyingTo = comment.user.name
-                                        commentId = comment.id.toString()
-                                    },
-                                    onEditClick = {
-                                        // If user taps edit, cancel reply mode immediately
-                                        replyingTo = null
-                                        editingComment = comment
-                                        newComment = comment.content
-                                        commentId = comment.id.toString()
-                                    },
-                                    onDeleteClick = { onDeleteClick(comment.id.toString()) },
-                                    onCommentLikeClick = {
-                                        onCommentLikeClick(comment.id.toString())
-                                    }
-                                )
-
-
-
-
-                                // Replies
-                                if (comment.replies.isNotEmpty()) {
-                                    Column {
-                                        comment.replies.forEach { reply ->
-                                            Spacer(modifier = Modifier.height(8.dp))
-                                            ReplyItem(
-                                                reply = reply,
-                                                modifier = Modifier.padding(start = 48.dp),
-                                                onReply = { replyingTo = reply.user?.name })
-
-                                        }
-                                    }
-                                }
-
-                                // Divider
-                                if (index < comments.lastIndex) {
-                                    Divider(
-                                        color = Color.LightGray,
-                                        modifier = Modifier.padding(vertical = 8.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp, vertical = 6.dp)
-                                .background(Color(0xFFE8F0F3), RoundedCornerShape(10.dp))
-
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            // Reply indicator if replying to someone
-                            replyingTo?.let { userName ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(12.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = "Replying to $userName",
-                                            fontSize = 16.sp,
-                                            color = PrimaryColor,
-                                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                            fontWeight = FontWeight.Medium,
-                                            modifier = Modifier.weight(1f)
-                                        )
-
-                                        IconButton(
-                                            onClick = { replyingTo = null },
-                                            modifier = Modifier.size(20.dp)
-                                        ) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.black_cross_icon),
-                                                contentDescription = "Cancel reply"
-                                            )
-                                        }
-                                    }
-                                }
-
-                                HorizontalDivider(thickness = 1.dp, color = PrimaryColor)
-
-                            }
-                            // Comment input field
-                            editingComment?.let { comment ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(12.dp)
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = "Editing your comment",
-                                            fontSize = 16.sp,
-                                            color = PrimaryColor,
-                                            fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                                            fontWeight = FontWeight.Medium,
-                                            modifier = Modifier.weight(1f)
-                                        )
-                                        IconButton(onClick = { editingComment = null; newComment = "" }, modifier = Modifier.size(20.dp)) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.black_cross_icon),
-                                                contentDescription = "Cancel edit"
-                                            )
-                                        }
-                                    }
-                                }
-                                HorizontalDivider(thickness = 1.dp, color = PrimaryColor)
-                            }
-                            // Input field
-                            CommentInputBox(
-                                newComment = newComment,
-                                onCommentChange = { newComment = it },
-                                onSendClick = {
-                                    if (editingComment != null) {
-                                        // Update existing comment
-                                        // viewModel.updateComment(editingComment!!.id, newComment)
-                                        editingComment = null
-                                        onSandClick(newComment,"edit", commentId)
-                                    } else if (replyingTo != null) {
-                                        // Add reply
-                                        // viewModel.addReply(replyingTo!!, newComment)
-                                        replyingTo = null
-                                        onSandClick(newComment,"reply",commentId)
-                                    } else {
-                                        // Add new comment
-                                        // viewModel.addComment(newComment)
-                                        onSandClick(newComment,"new",commentId)
-                                    }
-
+                            CommentItem(
+                                comment = comment,
+                                onReply = {
+                                    // If user taps reply, cancel edit mode immediately
+                                    editingComment = null
                                     newComment = ""
-                                    commentId = ""
+                                    replyingTo = comment.user.name
+                                    commentId = comment.id.toString()
                                 },
-                                onEmojiClick = {  }
+                                onEditClick = {
+                                    // If user taps edit, cancel reply mode immediately
+                                    replyingTo = null
+                                    editingComment = comment
+                                    newComment = comment.content
+                                    commentId = comment.id.toString()
+                                },
+                                onDeleteClick = { onDeleteClick(comment.id.toString()) },
+                                onCommentLikeClick = {
+                                    onCommentLikeClick(comment.id.toString())
+                                }
                             )
+
+
+
+
+                            // Replies
+                            if (comment.replies.isNotEmpty()) {
+                                Column {
+                                    comment.replies.forEach { reply ->
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        ReplyItem(
+                                            reply = reply,
+                                            modifier = Modifier.padding(start = 48.dp),
+                                            onReply = { replyingTo = reply.user?.name })
+
+                                    }
+                                }
+                            }
+
+                            // Divider
+                            if (index < comments.lastIndex) {
+                                Divider(
+                                    color = Color.LightGray,
+                                    modifier = Modifier.padding(vertical = 8.dp)
+                                )
+                            }
                         }
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp, vertical = 6.dp)
+                            .background(Color(0xFFE8F0F3), RoundedCornerShape(10.dp))
+
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Reply indicator if replying to someone
+                        replyingTo?.let { userName ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Replying to $userName",
+                                        fontSize = 16.sp,
+                                        color = PrimaryColor,
+                                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.weight(1f)
+                                    )
+
+                                    IconButton(
+                                        onClick = { replyingTo = null },
+                                        modifier = Modifier.size(20.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.black_cross_icon),
+                                            contentDescription = "Cancel reply"
+                                        )
+                                    }
+                                }
+                            }
+
+                            HorizontalDivider(thickness = 1.dp, color = PrimaryColor)
+
+                        }
+                        // Comment input field
+                        editingComment?.let { comment ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "Editing your comment",
+                                        fontSize = 16.sp,
+                                        color = PrimaryColor,
+                                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                        fontWeight = FontWeight.Medium,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    IconButton(onClick = { editingComment = null; newComment = "" }, modifier = Modifier.size(20.dp)) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.black_cross_icon),
+                                            contentDescription = "Cancel edit"
+                                        )
+                                    }
+                                }
+                            }
+                            HorizontalDivider(thickness = 1.dp, color = PrimaryColor)
+                        }
+                        // Input field
+                        CommentInputBox(
+                            newComment = newComment,
+                            onCommentChange = { newComment = it },
+                            onSendClick = {
+                                if (editingComment != null) {
+                                    // Update existing comment
+                                    // viewModel.updateComment(editingComment!!.id, newComment)
+                                    editingComment = null
+                                    onSandClick(newComment,"edit", commentId)
+                                } else if (replyingTo != null) {
+                                    // Add reply
+                                    // viewModel.addReply(replyingTo!!, newComment)
+                                    replyingTo = null
+                                    onSandClick(newComment,"reply",commentId)
+                                } else {
+                                    // Add new comment
+                                    // viewModel.addComment(newComment)
+                                    onSandClick(newComment,"new",commentId)
+                                }
+
+                                newComment = ""
+                                commentId = ""
+                            },
+                            onEmojiClick = {  }
+                        )
                     }
                 }
             }
         }
     }
 }
+//}
 
 @Composable
 fun CommentInputBox(
@@ -623,38 +621,38 @@ fun ReplyItem(
                             )
                         }
                     }
-                   /* Box {
-                        IconButton(
-                            onClick = { showOptions = true  },
-                            modifier = Modifier.size(21.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "More options",
-                                tint = Color.Black
-                            )
-                        }
-                        if (showOptions) {
-                            CommentOptionsPopup(
-                                showPopup = showOptions,
-                                onDismiss = { showOptions = false },
-                                onReport = {
-                                    println("Reported comment: ${reply.id}")
-                                    showReportDialog = true
-                                },
-                                anchorPosition = iconButton.value?.positionInWindow()?.toDpOffset() ?: DpOffset.Zero
-                            )
-                        }
-                    }*/
+                    /* Box {
+                         IconButton(
+                             onClick = { showOptions = true  },
+                             modifier = Modifier.size(21.dp)
+                         ) {
+                             Icon(
+                                 imageVector = Icons.Default.MoreVert,
+                                 contentDescription = "More options",
+                                 tint = Color.Black
+                             )
+                         }
+                         if (showOptions) {
+                             CommentOptionsPopup(
+                                 showPopup = showOptions,
+                                 onDismiss = { showOptions = false },
+                                 onReport = {
+                                     println("Reported comment: ${reply.id}")
+                                     showReportDialog = true
+                                 },
+                                 anchorPosition = iconButton.value?.positionInWindow()?.toDpOffset() ?: DpOffset.Zero
+                             )
+                         }
+                     }*/
                     if (showReportDialog) {
                         ReportDialog(
                             onDismiss = { showReportDialog = false },
                             onCancel = { showReportDialog = false },
                             onSendReport = { showReportToast = true },
                             reasons = listOf("Bullying or unwanted contact",
-                                    "Violence, hate or exploitation",
-                                    "False Information",
-                                    "Scam, fraud or spam"),
+                                "Violence, hate or exploitation",
+                                "False Information",
+                                "Scam, fraud or spam"),
                             selectedReason = selectedReason,
                             message = message,
                             onReasonSelected = { reason -> selectedReason = reason },

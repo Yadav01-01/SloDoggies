@@ -79,25 +79,25 @@ data class Owner(
     val email: String = "",
 
     @SerializedName("phone")
-    val phone: String = "",
+    val phone: String? = "",
 
     @SerializedName("address")
-    val address: String = "",
+    val address: String? = "",
 
     @SerializedName("latitude")
-    val latitude: String = "",
+    val latitude: String? = "",
 
     @SerializedName("longitude")
-    val longitude: String = "",
+    val longitude: String? = "",
 
     @SerializedName("image")
-    val image: String = "",
+    val image: String? = "",
 
     @SerializedName("bio")
-    val bio: String = "",
+    val bio: String? = "",
 
     @SerializedName("parent_type")
-    val parentType: String = "",
+    val parentType: String? = "",
 
     @SerializedName("user_status")
     val userStatus: Int = 0,

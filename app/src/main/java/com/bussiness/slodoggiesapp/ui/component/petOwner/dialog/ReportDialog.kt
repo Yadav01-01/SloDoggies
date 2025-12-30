@@ -49,33 +49,37 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonBlueButton
 import com.bussiness.slodoggiesapp.ui.component.petOwner.CommonWhiteButton
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Surface
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 
-
-@Composable
-fun ReportDialog(
+   @Composable
+   fun ReportDialog(
     title: String,
-    reasons: List<String>,
     selectedReason: String,
+    reasons: List<String>,
     message: String,
     onReasonSelected: (String) -> Unit,
     onMessageChange: (String) -> Unit,
     onDismiss: () -> Unit,
     onCancel: () -> Unit,
     onSendReport: () -> Unit
-) {
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )
-    ) {
+  ) {
+//    Dialog(
+//        onDismissRequest = onDismiss,
+//        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+//    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding(), // pushes content above keyboard
             contentAlignment = Alignment.BottomCenter
-        ) {
+        )
+        {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -187,16 +191,16 @@ fun ReportDialog(
                 }
             }
         }
-    }
+  //  }
+
 }
 
 
 
-
-@Composable
-private fun CloseButton(onDismiss: () -> Unit) {
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Image(
+  @Composable
+  private fun CloseButton(onDismiss: () -> Unit) {
+      Box(modifier = Modifier.fillMaxWidth()) {
+         Image(
             painter = painterResource(id = R.drawable.ic_cross_iconx),
             contentDescription = "Close",
             modifier = Modifier
@@ -205,11 +209,11 @@ private fun CloseButton(onDismiss: () -> Unit) {
                 .clip(CircleShape)
                 .padding(8.dp)
         )
-    }
-}
+      }
+  }
 
-@Composable
-private fun DialogHeader(title: String = "Report Comment") {
+  @Composable
+  private fun DialogHeader(title: String = "Report Comment") {
     Box(
         modifier = Modifier
             .fillMaxWidth()

@@ -45,13 +45,13 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 fun PetPlaceDialog(onDismiss: () -> Unit) {
     val placeName by remember { mutableStateOf("Avila Beach ") }
 
-    Dialog(
-        onDismissRequest = onDismiss,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        ),
-    ) {
+//    Dialog(
+//        onDismissRequest = onDismiss,
+//        properties = DialogProperties(
+//            usePlatformDefaultWidth = false,
+//            decorFitsSystemWindows = false
+//        ),
+//    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -128,5 +128,5 @@ fun PetPlaceDialog(onDismiss: () -> Unit) {
                 }
             }
         }
-    }
+    //}
 }

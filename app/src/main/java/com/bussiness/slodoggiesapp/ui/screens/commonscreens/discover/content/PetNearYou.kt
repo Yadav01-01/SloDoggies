@@ -33,9 +33,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 fun ShowPetsNearYou(results: List<PetItem>, controller: NavHostController) {
     if (results.isEmpty()){
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxSize().padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

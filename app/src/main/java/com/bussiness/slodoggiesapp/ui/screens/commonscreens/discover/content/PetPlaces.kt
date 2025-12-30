@@ -17,6 +17,7 @@ fun PetPlacesResults(
     petPlacesData: List<PetPlaceItem>,
     onItemClick: (String) -> Unit
 ) {
+
     Spacer(Modifier.height(4.dp))
 
     LazyVerticalGrid(

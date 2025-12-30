@@ -43,10 +43,10 @@ class ForgotPasswordViewModel @Inject constructor(
                 return
             }
 
-            emailValue != sessionManager.getUserEmail() -> {
-                onError(Messages.EMAIL_ALREADY_REGISTERED)
-                return
-            }
+//            emailValue != sessionManager.getUserEmail() -> {
+//                onError(Messages.EMAIL_ALREADY_REGISTERED)
+//                return
+//            }
 
             !(android.util.Patterns.EMAIL_ADDRESS.matcher(emailValue).matches() ||
                     android.util.Patterns.PHONE.matcher(emailValue).matches()) -> {

@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover
 
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -44,7 +45,12 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategorySection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HashtagSection
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SearchBar
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.SocialEventCard
+import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.CommentsDialog
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
+import com.bussiness.slodoggiesapp.ui.dialog.BottomSheetBehaviorProperties
+import com.bussiness.slodoggiesapp.ui.dialog.BottomSheetDialog
+import com.bussiness.slodoggiesapp.ui.dialog.BottomSheetDialogProperties
+import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.dialog.PetPlaceDialog
 import com.bussiness.slodoggiesapp.ui.dialog.ReportBottomToast
 import com.bussiness.slodoggiesapp.ui.dialog.SavedDialog
@@ -54,22 +60,45 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content.Sho
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.ShareContentDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.DiscoverViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 
 @Composable
-fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewModel = hiltViewModel()) {
+fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewModel = hiltViewModel()){
+
 
     val uiState by viewModel.uiState.collectAsState()
+
+    val uiStateComment by viewModel.uiStateComment.collectAsState()
+
     val context = LocalContext.current
 
     var message by remember { mutableStateOf("") }
+
     var selectedReason by remember { mutableStateOf("") }
 
+    var showCommentsDialog by remember { mutableStateOf(false) }
+
+    var deleteComment      by remember { mutableStateOf(false) }
+
+    var showCommentsType   by remember { mutableStateOf("")    }
+
+    var deleteCommentId    by remember { mutableStateOf("")    }
+
+    val posts = uiState.posts
+
+
+
     LaunchedEffect(uiState.error) {
+
         val msg = uiState.error
+
         if (!msg.isNullOrBlank()) {
             Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
         }
+
     }
+
+
 
     BackHandler {
         if (!navController.popBackStack(Routes.HOME_SCREEN, false)) {
@@ -80,17 +109,15 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(horizontal = 12.dp)
+        modifier = Modifier.fillMaxSize().background(Color.White).padding(horizontal = 12.dp)
     ) {
+
         Spacer(Modifier.height(8.dp))
-        //  Search Bar
+
         SearchBar(query = uiState.query, onQueryChange = viewModel::updateQuery, placeholder = "Search")
 
         Spacer(modifier = Modifier.height(12.dp))
-        // Hashtags Row
+
         HashtagSection(
             hashtags = uiState.hashtags,
             onHashtagClick = { hashtag ->
@@ -99,13 +126,15 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
         )
 
         Spacer(modifier = Modifier.height(12.dp))
-        // Categories
+
         CategorySection(categories = uiState.categories, selectedCategory = uiState.selectedCategory, onCategorySelected = { viewModel.selectCategory(it) })
 
         Spacer(modifier = Modifier.height(10.dp))
         
         when (uiState.selectedCategory) {
+
             "Pets Near You" -> ShowPetsNearYou(uiState.pets, navController)
+
             "Pet Places"    -> PetPlacesResults( uiState.petPlaces,
                 onItemClick = { viewModel.showPetPlaceDialog(true)}
             )
@@ -113,9 +142,34 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 posts = uiState.posts,
                 onReportClick = { viewModel.showReportDialog(true) },
                 onShareClick = { viewModel.showShareContent(true) },
-                onProfileClick = { navController.navigate(Routes.PERSON_DETAIL_SCREEN)}
+                onLikeClick = { postId ->viewModel.postLikeUnlike(postId,"activity")   },
+                onCommentOpen = { postId->
+                    showCommentsType="Normal"
+                    viewModel.updatePostId(postId)
+                    showCommentsDialog = true
+                },
+                onSaveClick = {
+                     postId-> viewModel.savePost(
+                     postId, "", "",
+                     onError = { msg ->
+                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                              },
+                     onSuccess = {
+                        viewModel.toggleSave(postId)
+                     }
+                  )
+                },
+                onProfileClick = { postType, postUserId ->
+                    Log.d("TESTING_DISCOVBER", "Post Type"+ postType +" "+postUserId)
+                    if (postType == "Owner") {
+                        navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/$postUserId")
+                    } else {
+                        navController.navigate("${Routes.CLICKED_PROFILE_SCREEN}/$postUserId")
+                    }
+                }
             )
-            "Events"        -> EventsResult(
+
+            "Events" -> EventsResult(
                 posts = uiState.posts,
                 onClickMore = { viewModel.showReportDialog(true) },
                 onShareClick = { viewModel.showShareContent(true) },
@@ -130,13 +184,37 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     }) }
             )
-            else           -> ShowPetsNearYou(uiState.pets, navController)
+
+            else -> ShowPetsNearYou(uiState.pets, navController)
+
         }
     }
 
     if (uiState.showPetPlaceDialog) {
-        PetPlaceDialog(onDismiss = { viewModel.dismissPetPlaceDialog() })
+        BottomSheetDialog(
+            onDismissRequest = {
+                viewModel.dismissPetPlaceDialog()
+            },
+            properties = BottomSheetDialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = false,
+                dismissWithAnimation = true,
+                enableEdgeToEdge = false,
+                behaviorProperties = BottomSheetBehaviorProperties(
+                    state = BottomSheetBehaviorProperties.State.Expanded, // यह सुनिश्चित करेगा कि dialog expand state में open हो
+                    isFitToContents = false, // यह बदलना important है
+                    skipCollapsed = true, // Collapsed state को skip करेगा
+                    isHideable = true,
+                    isDraggable = true,
+                    peekHeight = BottomSheetBehaviorProperties.PeekHeight.Auto
+                )
+            )
+        ) {
+            PetPlaceDialog(onDismiss = { viewModel.dismissPetPlaceDialog() })
+        }
+
     }
+
     if (uiState.showShareContentDialog) {
         ShareContentDialog(
             onDismiss = { viewModel.showShareContent(false) },
@@ -153,26 +231,209 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
         )
     }
     if (uiState.showReportDialog) {
-        ReportDialog(
-            onDismiss = { viewModel.showReportDialog(false) },
-            onCancel = { viewModel.showReportDialog(false) },
-            onSendReport = { viewModel.showReportToast() },
-            reasons = listOf("Bullying or unwanted contact",
-                "Violence, hate or exploitation",
-                "False Information",
-                "Scam, fraud or spam"),
-            selectedReason = selectedReason,
-            message = message,
-            onReasonSelected = {  reason -> selectedReason = reason },
-            onMessageChange = { message = it },
-            title = "Report Post"
+
+        Log.d("TESTING_STATE","CALLING DISCOVER FIRST TIME")
+
+        BottomSheetDialog(
+            onDismissRequest = {
+                //  showSheet = false
+                viewModel.showReportDialog(false)
+            },
+            properties = BottomSheetDialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = false,
+                dismissWithAnimation = true,
+                enableEdgeToEdge = false,
+                behaviorProperties = BottomSheetBehaviorProperties(
+                    state = BottomSheetBehaviorProperties.State.Expanded, // यह सुनिश्चित करेगा कि dialog expand state में open हो
+                    isFitToContents = false, // यह बदलना important है
+                    skipCollapsed = true, // Collapsed state को skip करेगा
+                    isHideable = true,
+                    isDraggable = true,
+                    peekHeight = BottomSheetBehaviorProperties.PeekHeight.Auto
+                )
+            )
+        ) {
+            ReportDialog(
+                onDismiss = { viewModel.showReportDialog(false) },
+                onCancel = { viewModel.showReportDialog(false) },
+                onSendReport = { viewModel.showReportToast() },
+                reasons = listOf(
+                    "Bullying or unwanted contact",
+                    "Violence, hate or exploitation",
+                    "False Information",
+                    "Scam, fraud or spam"
+                ),
+                selectedReason = selectedReason,
+                message = message,
+                onReasonSelected = { reason -> selectedReason = reason },
+                onMessageChange = { message = it },
+                title = "Report Post"
+            )
+        }
+    }
+
+    if (uiState.showReportToast){
+        BottomSheetDialog(
+            onDismissRequest = {
+                //  showSheet = false
+                viewModel.dismissReportToast()
+            },
+            properties = BottomSheetDialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = false,
+                dismissWithAnimation = true,
+                enableEdgeToEdge = false,
+                behaviorProperties = BottomSheetBehaviorProperties(
+                    state = BottomSheetBehaviorProperties.State.Expanded, // यह सुनिश्चित करेगा कि dialog expand state में open हो
+                    isFitToContents = false, // यह बदलना important है
+                    skipCollapsed = true, // Collapsed state को skip करेगा
+                    isHideable = true,
+                    isDraggable = true,
+                    peekHeight = BottomSheetBehaviorProperties.PeekHeight.Auto
+                )
+            )
+        ) {
+            ReportBottomToast(
+                onDismiss = { viewModel.dismissReportToast() }
+            )
+        }
+    }
+
+    //Comment
+    //Comment
+    if (showCommentsDialog) {
+        // Load comments from API when dialog opens
+        var postId = ""
+        var adId = ""
+
+            postId = uiState.postId
+            Log.d("TESTING_POST_ID",postId)
+
+        LaunchedEffect(Unit) {
+            viewModel.getComments(
+                postId = postId,
+                addId = adId,
+                page = 1,
+                limit = 20,
+                onError = { msg ->
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    /* handle error */
+                },
+                onSuccess = {
+
+                }
+            )
+        }
+        BottomSheetDialog(
+            onDismissRequest = {
+                //  showSheet = false
+                showCommentsDialog = false
+            },
+            properties = BottomSheetDialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = false,
+                dismissWithAnimation = true,
+                enableEdgeToEdge = false,
+                behaviorProperties = BottomSheetBehaviorProperties(
+                    state = BottomSheetBehaviorProperties.State.Expanded, // यह सुनिश्चित करेगा कि dialog expand state में open हो
+                    isFitToContents = false, // यह बदलना important है
+                    skipCollapsed = true, // Collapsed state को skip करेगा
+                    isHideable = true,
+                    isDraggable = true,
+                    peekHeight = BottomSheetBehaviorProperties.PeekHeight.Auto
+                )
+            )
+        ) {
+            CommentsDialog(
+                comments = uiStateComment.comments/*sampleComments*/,
+                onDismiss = {
+                    viewModel.clearComments()
+                    showCommentsDialog = false
+                    showCommentsType = ""
+                },
+                onDeleteClick = { commentId ->
+                    deleteCommentId = commentId
+                    deleteComment = true
+                },
+                onSandClick = { comment, type, commentId ->
+                    if (type == "reply") {
+                        viewModel.replyComment(
+                            postId = uiState.postId,
+                            commentText = comment, commentId = commentId, onError = { error ->
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            }, onSuccess = {
+
+                            })
+                    } else if (type == "edit") {
+                        viewModel.editComment(
+                            commentId = commentId, commenText = comment,
+                            onSuccess = {
+
+                            }, onError = { error ->
+                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            })
+                    } else/* (type.equals("new"))*/ {
+                        if (showCommentsType == "Ad") {
+                            viewModel.addNewComment(
+                                postId = "",
+                                addId = uiState.postId,
+                                commentText = comment,
+                                onSuccess = { viewModel.increaseCommentCount(uiState.postId) },
+                                onError = { error ->
+                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+
+                        } else if (showCommentsType == "Normal") {
+                            viewModel.addNewComment(
+                                postId = uiState.postId,
+                                addId = "",
+                                commentText = comment,
+                                onSuccess = { viewModel.increaseCommentCount(uiState.postId) },
+                                onError = { error ->
+                                    Toast.makeText(
+                                        context,
+                                        error,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            )
+                        }
+
+                    }
+                    Log.d("********", "$comment $type")
+                },
+                onCommentLikeClick = { commentId ->
+                    viewModel.commentLike(
+                        commentId,
+                        onError = { msg ->
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        },
+                        onSuccess = {
+
+                        })
+                }
+            )}
+    }
+
+    if (deleteComment) {
+        DeleteChatDialog(
+            onDismiss = { deleteComment = false },
+            onClickRemove = {
+                deleteComment = false
+                viewModel.deleteComment(deleteCommentId, onSuccess = {
+
+                }, onError = { error ->
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                })
+            },
+            iconResId = R.drawable.delete_mi,
+            text = "Delete Comment",
+            description = stringResource(R.string.delete_Comment)
         )
     }
-    if (uiState.showReportDialog){
-        ReportBottomToast(
-            onDismiss = {viewModel.dismissReportToast()}
-        )
-    }
+
 }
 
 
@@ -230,6 +491,7 @@ fun EventsResult(
                         onClickFollowing = { onClickFollowing(event.postId) },
                         isFollowing = event.iAmFollowing
                     )
+
                 }
             }
         }

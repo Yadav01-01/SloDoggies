@@ -19,13 +19,13 @@ data class DiscoverUiState(
     val posts: List<PostItem> = emptyList(),
     val isLoading: Boolean = false,
     val categories: List<String> = listOf(
-        "Pets Near You", "Events", "Pet Places", "Activities"
-    ),
+        "Pets Near You", "Events", "Pet Places", "Activities"),
     val hashtags: List<HashtagItem> = emptyList(),
     val petPlaces: List<PetPlaceItem> = emptyList(),
     val error: String? = null,
     val page: Int = 1,
     val isLastPage: Boolean = false,
     val isLoadingMore: Boolean = false,
+    val postId : String = "",
 )
 
