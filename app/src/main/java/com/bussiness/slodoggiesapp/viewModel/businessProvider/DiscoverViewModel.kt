@@ -44,7 +44,6 @@ class DiscoverViewModel @Inject constructor(
     private val _uiStateComment = MutableStateFlow(CommentsUiState())
     val uiStateComment: StateFlow<CommentsUiState> = _uiStateComment
 
-
     init {
         loadHashtags()
         loadForSelectedCategory()
@@ -232,8 +231,8 @@ class DiscoverViewModel @Inject constructor(
                 limit = "10",
                 search = state.query
             ).collectLatest { result ->
-
                 when (result) {
+
                     is Resource.Success -> {
                         val newPets = result.data.data?.pets.orEmpty()
                         val merged = if (isFirstPage) newPets else state.pets + newPets
@@ -254,6 +253,7 @@ class DiscoverViewModel @Inject constructor(
                     }
 
                     is Resource.Error -> showError(result.message)
+
                     else -> Unit
                 }
 
@@ -261,9 +261,7 @@ class DiscoverViewModel @Inject constructor(
             }
         }
     }
-    fun commentLike(commentId:String,
-                    onSuccess: () -> Unit = { },
-                    onError: (String) -> Unit) {
+    fun commentLike(commentId:String, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
         viewModelScope.launch {
             repository.commentLike(
                 userId = sessionManager.getUserId(),
@@ -468,12 +466,12 @@ class DiscoverViewModel @Inject constructor(
         }
     }
 
-    fun savePost(postId:String, onSuccess: () -> Unit ) {
+    fun savePost(type :String ="normal", postId:String, onSuccess: () -> Unit) {
         viewModelScope.launch {
             repository.savePost(
                 userId = sessionManager.getUserId(),
-                postId = postId,
-                eventId = "",
+                postId = if(type.equals("normal"))postId else "",
+                eventId = if(!type.equals("normal"))"" else postId,
                 addId = "",
             ).collectLatest { result ->
                 when (result) {

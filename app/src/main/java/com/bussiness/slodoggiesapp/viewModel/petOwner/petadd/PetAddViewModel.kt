@@ -12,6 +12,7 @@ import com.bussiness.slodoggiesapp.data.newModel.petlist.Data
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.uiState.PetAddUpDateUiState
 import com.bussiness.slodoggiesapp.network.Resource
+import com.bussiness.slodoggiesapp.ui.component.common.MessageItem
 import com.bussiness.slodoggiesapp.ui.component.common.createSingleMultipart
 import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.util.SessionManager
@@ -55,6 +56,7 @@ class PetAddViewModel @Inject constructor(private val repository: Repository, pr
 
     fun updatePet(context: Context, onSuccess: () -> Unit = { }, onError: (String) -> Unit) {
         val state = _uiState.value
+        val imagePart = state.image?.let { createSingleMultipart(context,uri = it, keyName = "pet_image") }
         if (state.name==null){
             onError(Messages.PET_NAME)
             return
@@ -67,7 +69,11 @@ class PetAddViewModel @Inject constructor(private val repository: Repository, pr
             onError(Messages.BIO_SMS)
             return
         }
-        val imagePart = state.image?.let { createSingleMultipart(context,uri = it, keyName = "pet_image") }
+        if(imagePart == null){
+            onError(Messages.PET_IMAGE_UPLOAD)
+            return
+        }
+
         viewModelScope.launch {
             repository.updatePetRequest(
                 petName = state.name?:"",

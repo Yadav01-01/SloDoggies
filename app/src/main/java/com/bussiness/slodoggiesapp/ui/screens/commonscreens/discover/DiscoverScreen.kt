@@ -182,7 +182,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 onLikeClick = { postId -> viewModel.postLikeUnlike(postId) },
                 onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
                 onProfileClick = { postUserId -> navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${postUserId}") },
-                onInterested = { postId -> viewModel.savePost(postId,
+                onInterested = { postId -> viewModel.savePost("event",postId,
                     onSuccess = { viewModel.showSavedDialog(true) }
                 ) },
                 onClickFollowing = { postId -> viewModel.addAndRemoveFollowers(postId,

@@ -85,6 +85,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.isVideoFile
 import com.bussiness.slodoggiesapp.viewModel.petOwner.ownerProfile.PetOwnerProfileViewModel
+import com.bussiness.slodoggiesapp.viewModel.petOwner.petadd.PetAddViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 
@@ -95,7 +96,7 @@ fun PetProfileScreen(navController: NavHostController) {
     val uiState by viewModel.uiState.collectAsState()
     val selectedPet = uiState.data.pets.getOrNull(uiState.selectedPet)
     val context = LocalContext.current
-
+    val viewModelUpdatePet: PetAddViewModel = hiltViewModel()
     LaunchedEffect(Unit) {
         viewModel.onRefresh()
     }
@@ -117,9 +118,7 @@ fun PetProfileScreen(navController: NavHostController) {
     }
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
+        modifier = Modifier.fillMaxSize().background(Color.White),
         contentPadding = PaddingValues(bottom = 30.dp)
     ) {
         item {
@@ -609,9 +608,21 @@ fun PetProfileScreen(navController: NavHostController) {
             "Add Your Pet",
             onDismiss = { viewModel.petInfoDialog(false) },
             onAddPet = {
-                // Handle pet info saving
-                viewModel.petInfoDialog(false)
-              viewModel.petAddedSuccessDialog(true)
+
+                viewModelUpdatePet.updatePet(context=context,
+                    onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
+                    onSuccess = {
+
+//                        showPetInfoDialog = false
+//                        petAddedSuccessDialog = true
+//                        viewModelPetList.petListRequest()
+                        viewModel.petInfoDialog(false)
+                        viewModel.petAddedSuccessDialog(true)
+                        viewModel.onRefresh()
+                    }
+                )
+
+
             },
             onCancel = { viewModel.petInfoDialog(false) },
             onProfile = true
