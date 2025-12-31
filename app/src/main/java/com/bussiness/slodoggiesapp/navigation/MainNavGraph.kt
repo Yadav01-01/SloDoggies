@@ -171,8 +171,6 @@ fun MainNavGraph(
             FollowerScreen(navController = navController, type = type, userId = userId)
         }
 
-
-
         composable(
             route = "${Routes.EDIT_PET_PROFILE_SCREEN}/{petId}",
             arguments = listOf(navArgument("petId") { type = NavType.StringType; defaultValue = " " })

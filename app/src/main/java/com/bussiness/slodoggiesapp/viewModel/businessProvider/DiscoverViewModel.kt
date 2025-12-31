@@ -4,6 +4,7 @@ import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.UnstableApi
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlaceItem
 import com.bussiness.slodoggiesapp.data.newModel.home.HomeFeedMapper
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
@@ -784,7 +785,9 @@ class DiscoverViewModel @Inject constructor(
         _uiState.update { it.copy(showReportToast = false) }
 
     fun dismissPetPlaceDialog() =
-        _uiState.update { it.copy(showPetPlaceDialog = false) }
+        _uiState.update { it.copy(
+            showPetPlaceDialog = false,
+            selectedPetPlace = null) }
 
     fun dismissSavedDialog() =
         _uiState.update { it.copy(showSavedDialog = false) }
@@ -1136,6 +1139,16 @@ class DiscoverViewModel @Inject constructor(
             }
         }
     }
+
+    fun onPetPlaceClicked(item: PetPlaceItem) {
+        _uiState.update {
+            it.copy(
+                selectedPetPlace = item,
+                showPetPlaceDialog = true
+            )
+        }
+    }
+
 
 
 }

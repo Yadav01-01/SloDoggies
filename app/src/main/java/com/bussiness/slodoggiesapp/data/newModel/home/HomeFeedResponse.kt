@@ -74,9 +74,16 @@ data class ContentResponse(
 // Optional Media (Profile images / pet images)
 // ------------------------------------------------------
 data class MediaResponse(
-    @SerializedName("petImageUrl") val petImageUrl: String? = null,
-    @SerializedName("parentImageUrl") val parentImageUrl: String? = null
+    @SerializedName("petImageUrl")
+    val petImageUrl: String? = null,
+
+    @SerializedName("parentImageUrl")
+    val parentImageUrl: String? = null,
+
+    @SerializedName("imageUrl")
+    val imageUrl: String? = null
 )
+
 
 // ------------------------------------------------------
 // Post Media List (Images + Videos)

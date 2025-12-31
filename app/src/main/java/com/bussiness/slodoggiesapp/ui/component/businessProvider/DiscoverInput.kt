@@ -641,7 +641,7 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Uni
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = postItem.media?.parentImageUrl ,
+                model = postItem.media?.imageUrl ,
                 placeholder = painterResource(R.drawable.ic_person_icon),
                 error = painterResource(R.drawable.ic_person_icon),
                 contentDescription = "User Image",
@@ -697,8 +697,6 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Uni
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 )
             }
-
-
 
             PostOptionsMenu (modifier = Modifier, onReportClick = onReportClick)
         }

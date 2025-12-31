@@ -15,7 +15,7 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetPlaceCard
 @Composable
 fun PetPlacesResults(
     petPlacesData: List<PetPlaceItem>,
-    onItemClick: (String) -> Unit
+    onItemClick: (PetPlaceItem) -> Unit
 ) {
 
     Spacer(Modifier.height(4.dp))
@@ -30,7 +30,7 @@ fun PetPlacesResults(
             val item = petPlacesData[index]
             PetPlaceCard(
                 placeItem = item,
-                onItemClick = { onItemClick(item.placeId ?: "") }
+                onItemClick = { onItemClick(item) }
             )
         }
     }

@@ -5,6 +5,7 @@ import com.bussiness.slodoggiesapp.data.newModel.discover.HashtagItem
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetItem
 import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlaceItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
+import java.util.Collections.emptyList
 
 data class DiscoverUiState(
     val query: String = "",
@@ -22,6 +23,7 @@ data class DiscoverUiState(
         "Pets Near You", "Events", "Pet Places", "Activities"),
     val hashtags: List<HashtagItem> = emptyList(),
     val petPlaces: List<PetPlaceItem> = emptyList(),
+    val selectedPetPlace: PetPlaceItem? = null,
     val error: String? = null,
     val page: Int = 1,
     val isLastPage: Boolean = false,

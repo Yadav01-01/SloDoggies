@@ -37,13 +37,14 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.discover.PetPlaceItem
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.common.ExpandableText
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 
 @Composable
-fun PetPlaceDialog(onDismiss: () -> Unit) {
-    val placeName by remember { mutableStateOf("Avila Beach ") }
+fun PetPlaceDialog(petPlace : PetPlaceItem,onDismiss: () -> Unit) {
+
 
 //    Dialog(
 //        onDismissRequest = onDismiss,
@@ -90,7 +91,7 @@ fun PetPlaceDialog(onDismiss: () -> Unit) {
                             .verticalScroll(rememberScrollState())
                     ) {
                         Text(
-                            text = placeName,
+                            text = petPlace.location?:"Unknown",
                             fontSize = 18.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_medium)),
                             color = Color.Black
@@ -101,9 +102,9 @@ fun PetPlaceDialog(onDismiss: () -> Unit) {
                         Spacer(modifier = Modifier.height(12.dp))
 
                         AsyncImage(
-                            model = "",
-                            placeholder = painterResource(R.drawable.place_ic),
-                            error = painterResource(R.drawable.place_ic),
+                            model = petPlace.image,
+                            placeholder = painterResource(R.drawable.no_image),
+                            error = painterResource(R.drawable.no_image),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -123,7 +124,7 @@ fun PetPlaceDialog(onDismiss: () -> Unit) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        ExpandableText(stringResource(R.string.expanded_text))
+                        ExpandableText(petPlace.overview)
                     }
                 }
             }

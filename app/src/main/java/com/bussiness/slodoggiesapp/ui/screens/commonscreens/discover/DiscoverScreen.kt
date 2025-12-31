@@ -86,6 +86,9 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
 
     val posts = uiState.posts
 
+    val selectedPetPlace = uiState.selectedPetPlace
+
+
 
 
     LaunchedEffect(uiState.error) {
@@ -135,8 +138,11 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
 
             "Pets Near You" -> ShowPetsNearYou(uiState.pets, navController)
 
-            "Pet Places"    -> PetPlacesResults( uiState.petPlaces,
-                onItemClick = { viewModel.showPetPlaceDialog(true)}
+            "Pet Places"    -> PetPlacesResults(
+                uiState.petPlaces,
+                onItemClick = { petPlace ->
+                    viewModel.onPetPlaceClicked(petPlace)
+                }
             )
             "Activities"    -> ActivitiesPostsList(
                 posts = uiState.posts,
@@ -190,7 +196,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
         }
     }
 
-    if (uiState.showPetPlaceDialog) {
+    if (uiState.showPetPlaceDialog && selectedPetPlace != null) {
         BottomSheetDialog(
             onDismissRequest = {
                 viewModel.dismissPetPlaceDialog()
@@ -201,19 +207,22 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 dismissWithAnimation = true,
                 enableEdgeToEdge = false,
                 behaviorProperties = BottomSheetBehaviorProperties(
-                    state = BottomSheetBehaviorProperties.State.Expanded, // यह सुनिश्चित करेगा कि dialog expand state में open हो
-                    isFitToContents = false, // यह बदलना important है
-                    skipCollapsed = true, // Collapsed state को skip करेगा
+                    state = BottomSheetBehaviorProperties.State.Expanded,
+                    isFitToContents = false,
+                    skipCollapsed = true,
                     isHideable = true,
                     isDraggable = true,
                     peekHeight = BottomSheetBehaviorProperties.PeekHeight.Auto
                 )
             )
         ) {
-            PetPlaceDialog(onDismiss = { viewModel.dismissPetPlaceDialog() })
+            PetPlaceDialog(
+                petPlace = selectedPetPlace,
+                onDismiss = { viewModel.dismissPetPlaceDialog() }
+            )
         }
-
     }
+
 
     if (uiState.showShareContentDialog) {
         ShareContentDialog(
