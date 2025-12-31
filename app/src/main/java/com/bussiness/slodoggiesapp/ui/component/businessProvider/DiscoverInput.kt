@@ -625,7 +625,8 @@ fun PetPlaceCard(placeItem: PetPlaceItem,
 }
 
 @Composable
-fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Unit, onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onLikeClick : () -> Unit, onProfileClick: () -> Unit,onInterested : () -> Unit,isFollowing: Boolean) {
+fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Unit,
+                    onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onLikeClick : () -> Unit, onProfileClick: () -> Unit,onInterested : () -> Unit,isFollowing: Boolean) {
 
     Column(modifier = Modifier
         .background(Color.White)

@@ -217,7 +217,18 @@ fun HomeScreen(
                                 }
                             )
                         },
-                        onClickInterested = { /*  */ },
+                        onClickInterested = {
+                            viewModel.savePost(
+                                "", post.postId, "",
+                                onError = { msg ->
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                },
+                                onSuccess = {
+                                    viewModel.toggleSave(post.postId)
+                                }
+                            )
+
+                        },
                         onFollowingClick = {
                             viewModel.addAndRemoveFollowers(
                                 post.userId,

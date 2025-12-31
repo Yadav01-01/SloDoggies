@@ -237,11 +237,12 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Location
+
             Row(
                 verticalAlignment = Alignment.Top,
                 modifier = Modifier.padding(horizontal = 12.dp)
             ) {
+
                 Icon(
                     painter = painterResource(R.drawable.location_ic_icon),
                     contentDescription = null,
@@ -279,13 +280,13 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
             ) {
                 Text(if (postItem.alreadyJoined == true)"Joined" else "Join Community", modifier = Modifier.padding(end = 35.dp),
                     color = Color.White, fontSize = 16.sp, fontFamily = FontFamily(Font(R.font.outfit_medium)))
+
                 Icon(
                     painter = painterResource(R.drawable.ic_chat_icon),
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .wrapContentSize()
+                        .align(Alignment.CenterEnd).wrapContentSize()
                 )
             }
 
@@ -416,8 +417,7 @@ fun CommunityPostLikes(
                 modifier = Modifier.size(25.dp)
             ) {
                 Icon(
-                    painter = if (isBookmarked)
-                        painterResource(id = R.drawable.filled_ic)
+                    painter = if (isBookmarked) painterResource(id = R.drawable.filled_ic)
                     else painterResource(id = R.drawable.intrested_ic),
                     contentDescription = "Bookmark",
                     tint = Color.Unspecified,

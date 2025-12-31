@@ -45,7 +45,6 @@ sealed class PostItem(open val stableKey: String) {
         val userType : String,
         val userPost: Boolean,
         val time: String,
-
         // Event / Community Data
         val eventTitle: String,
         val eventStartDate: String?,
@@ -53,11 +52,8 @@ sealed class PostItem(open val stableKey: String) {
         val eventDescription: String?,
         val location: String?,
         val alreadyJoined: Boolean?,
-
-
         val media: MediaResponse?,
         val mediaList: List<PostMediaResponse>,
-
         val likes: Int,
         val comments: Int,
         val shares: Int,

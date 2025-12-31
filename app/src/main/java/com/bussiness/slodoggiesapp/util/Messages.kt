@@ -31,6 +31,7 @@ object Messages {
     const val SERVICE = "Please select a service."
     const val BREED_NAME = "Breed can't be empty"
     const val BIO_SMS = "Bio can't be empty"
+    const val PET_IMAGE_UPLOAD = "Please Upload Pet Image"
     const val WRITE_POST_SMS = "Write post can't be empty"
     const val UPLOAD_IMAGE_SMS = "Select at least one media"
     const val PET_SELECT_SMS = "Please select pet"
