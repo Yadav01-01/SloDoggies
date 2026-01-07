@@ -74,7 +74,6 @@ fun ChatScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-
     ) {
         // Header stays
         ChatHeaderItem(
@@ -83,7 +82,8 @@ fun ChatScreen(
                 if (!isNavigating) {
                     isNavigating = true
                     navController.popBackStack()
-                } },
+                }
+                          },
             onDeleteClick = { deleteDialog = true },
             onReportClick = { showReportDialog = true },
             onBlockClick = {

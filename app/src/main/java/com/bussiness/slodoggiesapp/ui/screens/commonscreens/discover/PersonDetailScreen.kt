@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -70,6 +71,7 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.isVideoFile
+import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.PersonDetailViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -279,17 +281,20 @@ fun PersonDetailScreen(
                     .padding(horizontal = 4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                FilledCustomButton(
-                    modifier = Modifier.weight(1f).height(35.dp),
-                    buttonText = if (uiState.isFollowed) "Following" else "Follow",
-                    onClickFilled = { viewModel.follow(profile.owner.userId.toString()) },
-                    buttonTextSize = 14
-                )
-                OutlineCustomButton(
-                    modifier = Modifier.weight(1f).height(35.dp),
-                    text = "Message",
-                    onClick = { viewModel.message(navController) }
-                )
+                val sessionManager : SessionManager = SessionManager(LocalContext.current)
+                if(sessionManager.getUserId() != userId ) {
+                    FilledCustomButton(
+                        modifier = Modifier.weight(1f).height(35.dp),
+                        buttonText = if (uiState.isFollowed) "Following" else "Follow",
+                        onClickFilled = { viewModel.follow(profile.owner.userId.toString()) },
+                        buttonTextSize = 14
+                    )
+                    OutlineCustomButton(
+                        modifier = Modifier.weight(1f).height(35.dp),
+                        text = "Message",
+                        onClick = { viewModel.message(navController) }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(20.dp))

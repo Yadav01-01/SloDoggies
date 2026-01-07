@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.GalleryItem
@@ -68,6 +69,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostIma
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.PostOptionsMenu
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
+import com.bussiness.slodoggiesapp.util.SessionManager
 
 //@Composable
 //fun SearchResultItem(
@@ -626,7 +628,13 @@ fun PetPlaceCard(placeItem: PetPlaceItem,
 
 @Composable
 fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Unit,
-                    onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit, onLikeClick : () -> Unit, onProfileClick: () -> Unit,onInterested : () -> Unit,isFollowing: Boolean) {
+                    onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit,
+                    onLikeClick : () -> Unit,
+                    onProfileClick: () -> Unit,
+                    onInterested : () -> Unit,
+                    isFollowing: Boolean,
+                    sessionManager: SessionManager
+                    ) {
 
     Column(modifier = Modifier
         .background(Color.White)
@@ -666,29 +674,32 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Uni
                     )
 
                     Spacer(Modifier.width(8.dp))
-
                     val interactionSource = remember { MutableInteractionSource() }
 
-                    OutlinedButton(
-                        onClick = { onClickFollowing() },
-                        modifier = Modifier
-                            .height(24.dp)
-                            .padding(horizontal = 10.dp),
-                        shape = RoundedCornerShape(6.dp),
-                        border = if (postItem.iAmFollowing) BorderStroke(1.dp, PrimaryColor) else null,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (postItem.iAmFollowing) Color.White else PrimaryColor,
-                            contentColor = if (postItem.iAmFollowing) PrimaryColor else Color.White
-                        ),
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
-                        interactionSource = interactionSource
-                    ) {
-                        Text(
-                            text = if (postItem.iAmFollowing) "Following" else "Follow",
-                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Normal
-                        )
+                    val sessionManager = SessionManager.getInstance(LocalContext.current)
+                    if(sessionManager.getUserId() != postItem.userId) {
+                        OutlinedButton(
+                            onClick = { onClickFollowing() },
+                            modifier = Modifier.height(24.dp).padding(horizontal = 10.dp),
+                            shape = RoundedCornerShape(6.dp),
+                            border = if (postItem.iAmFollowing) BorderStroke(
+                                1.dp,
+                                PrimaryColor
+                            ) else null,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (postItem.iAmFollowing) Color.White else PrimaryColor,
+                                contentColor = if (postItem.iAmFollowing) PrimaryColor else Color.White
+                            ),
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                            interactionSource = interactionSource
+                        ) {
+                            Text(
+                                text = if (postItem.iAmFollowing) "Following" else "Follow",
+                                fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Normal
+                            )
+                        }
                     }
                 }
                 Text(
@@ -699,7 +710,10 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Uni
                 )
             }
 
-            PostOptionsMenu (modifier = Modifier, onReportClick = onReportClick)
+           if(sessionManager.getUserId() != postItem.userId) {
+               PostOptionsMenu(modifier = Modifier, onReportClick = onReportClick)
+           }
+
         }
 
         // Title & Details

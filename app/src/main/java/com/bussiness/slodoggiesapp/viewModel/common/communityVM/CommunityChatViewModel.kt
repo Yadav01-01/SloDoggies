@@ -31,16 +31,18 @@ class CommunityChatViewModel @Inject constructor() : ViewModel() {
             )
         )
     )
+
     val messages: StateFlow<List<ChatMessage>> = _messages
 
     private val _currentMessage = MutableStateFlow("")
+
     val currentMessage: StateFlow<String> = _currentMessage
 
     // holds multiple pending attachments (like WhatsApp allows multiple images)
     private val _pendingAttachments = MutableStateFlow<List<Pair<Uri, String>>>(emptyList())
     val pendingAttachments: StateFlow<List<Pair<Uri, String>>> = _pendingAttachments
 
-    // Handle text typing
+
     fun onMessageChange(newMessage: String) {
         _currentMessage.value = newMessage.take(250)
     }

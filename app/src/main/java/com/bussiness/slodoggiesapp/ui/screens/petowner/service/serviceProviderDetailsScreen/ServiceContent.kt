@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen
 
+import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -225,6 +226,8 @@ fun ImageGalleryScreen(media: List<ServiceMedia>) {
     val maxVisibleImages = 6
     val gridHeight = 100.dp
 
+    Log.d("TESTING_SIZE","Number of photos is "+ media.size)
+
     Box(modifier = Modifier.fillMaxWidth().height(gridHeight)) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
@@ -318,12 +321,13 @@ fun ImageGridItem(
             else CardDefaults.cardElevation(defaultElevation = 2.dp)
         ) {
             AsyncImage(
-                model = imageRes,
+                model = imageRes.mediaUrl,
                 placeholder = painterResource(R.drawable.no_image),
                 error = painterResource(R.drawable.no_image),
                 contentDescription = "Gallery Image",
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.FillBounds
+
             )
         }
     }

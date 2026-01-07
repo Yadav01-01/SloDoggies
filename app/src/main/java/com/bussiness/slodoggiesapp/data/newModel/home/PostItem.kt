@@ -30,7 +30,8 @@ sealed class PostItem(open val stableKey: String) {
         val isLiked: Boolean,
         val isSaved: Boolean,
         val iAmFollowing: Boolean,
-        val isFollowLoading: Boolean = false
+        val isFollowLoading: Boolean = false,
+        var authorType:String? = null
     ) : PostItem("normal_$postId")
 
     // ------------------------------------------------------

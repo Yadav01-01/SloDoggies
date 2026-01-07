@@ -43,29 +43,67 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData
 import com.bussiness.slodoggiesapp.data.model.businessProvider.Review
 import com.bussiness.slodoggiesapp.data.model.businessProvider.ReviewReply
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.RatingsAndReviews
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ReviewItem
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.ui.theme.TextGrey
 
 @Composable
-fun ReviewContent(reviewList: List<Review>, onClickReply: () -> Unit) {
-    val ratingData = RatingSummaryData(
-        overallRating = 4.0f,
-        totalReviews = 52,
+fun ReviewContent(ratingsAndReviews: RatingsAndReviews?, onClickReply: () -> Unit) {
+//    val ratingData = RatingSummaryData(
+//        overallRating = 4.0f,
+//        totalReviews = 52,
+//        ratingPercentages = mapOf(
+//            5 to 0.8f,
+//            4 to 0.6f,
+//            3 to 0.3f,
+//            2 to 0.1f,
+//            1 to 0.05f
+//        ),
+//        reviewCounts = mapOf(
+//            5 to 10,
+//            4 to 500,
+//            3 to 28,
+//            2 to 18,
+//            1 to 15
+//        )
+//    )
+
+    val ratingData = com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData(
+        overallRating = ratingsAndReviews?.averageRating?.toFloat()?:0.0f,
+        totalReviews = ratingsAndReviews?.totalReviews?:0,
         ratingPercentages = mapOf(
-            5 to 0.8f,
-            4 to 0.6f,
-            3 to 0.3f,
-            2 to 0.1f,
-            1 to 0.05f
+            5 to (
+                    ((ratingsAndReviews?.ratingDistribution?.star5 ?: 0).toFloat()
+                            / (ratingsAndReviews?.totalReviews ?: 1)) * 100
+                    ),
+            4 to (
+                    ((ratingsAndReviews?.ratingDistribution?.star4 ?: 0).toFloat()
+                            / (ratingsAndReviews?.totalReviews ?: 1)) * 100
+                    ),
+            3 to (
+                    ((ratingsAndReviews?.ratingDistribution?.star3 ?: 0).toFloat()
+                            / (ratingsAndReviews?.totalReviews ?: 1)) * 100
+                    ),
+            2 to (
+                    ((ratingsAndReviews?.ratingDistribution?.star2 ?: 0).toFloat()
+                            / (ratingsAndReviews?.totalReviews ?: 1)) * 100
+                    ),
+            1 to (
+                    ((ratingsAndReviews?.ratingDistribution?.star1 ?: 0).toFloat()
+                            / (ratingsAndReviews?.totalReviews ?: 1)) * 100
+                    )
         ),
         reviewCounts = mapOf(
-            5 to 10,
-            4 to 500,
-            3 to 28,
-            2 to 18,
-            1 to 15
+            5 to (ratingsAndReviews?.ratingDistribution?.star5 ?: 0),
+            4 to (ratingsAndReviews?.ratingDistribution?.star4 ?: 0),
+            3 to (ratingsAndReviews?.ratingDistribution?.star3 ?: 0),
+            2 to (ratingsAndReviews?.ratingDistribution?.star2 ?: 0),
+            1 to (ratingsAndReviews?.ratingDistribution?.star1 ?: 0)
         )
     )
+
+
 
     LazyColumn(
         modifier = Modifier
@@ -78,7 +116,7 @@ fun ReviewContent(reviewList: List<Review>, onClickReply: () -> Unit) {
             RatingSummary(ratingData)
         }
 
-        items(reviewList) { review ->
+        items(ratingsAndReviews?.reviews ?: mutableListOf<ReviewItem>()) { review ->
             ReviewItemPanel(
                 data = review,
                 onClickMore = {},
@@ -125,7 +163,7 @@ fun RatingSummary(ratingData: RatingSummaryData) {
 
         Spacer(modifier = Modifier.width(24.dp))
 
-        // Overall Rating
+
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
                 text = String.format("%.1f", ratingData.overallRating),
@@ -237,14 +275,14 @@ fun RatingBar(
 
 @Composable
 fun ReviewItemPanel(
-    data : Review,
+    data : ReviewItem,
     onClickMore: () -> Unit,
     onClickReply: () -> Unit
 ) {
     Column {
         Row(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
-                model = data.avatar,
+                model = data.reviewerImage,
                 contentDescription = null,
                 placeholder = painterResource(id = R.drawable.ic_person_icon),
                 error = painterResource(id = R.drawable.ic_person_icon),
@@ -261,7 +299,7 @@ fun ReviewItemPanel(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
-                        text = data.name,
+                        text = data.user?.name?:"",
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
                         color = Color.Black
@@ -295,7 +333,7 @@ fun ReviewItemPanel(
                         Spacer(Modifier.width(10.dp))
 
                         Text(
-                            text = data.timeAgo,
+                            text = data.timeAgo?:"",
                             fontSize = 14.sp,
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color(0xFF949494)
@@ -315,7 +353,7 @@ fun ReviewItemPanel(
         Spacer(Modifier.height(8.dp))
 
         Text(
-            text = data.review,
+            text = data.comment?:"",
             fontSize = 13.sp,
             fontFamily = FontFamily(Font(R.font.outfit_regular)),
             color = Color.Black,
@@ -331,22 +369,43 @@ fun ReviewItemPanel(
             color = PrimaryColor,
             modifier = Modifier.clickable { onClickReply() })
 
-        data.reply?.let { ReviewReplyItem(reply = it) }
+//        data.replies?.let {
+//
+//
+//            ReviewReplyItem(reply = it)
+//
+//        }
+//        LazyColumn {
+//            items(
+//                items = data.replies ?: emptyList(),
+//                key = { it.replyId }
+//            ) { reply ->
+//                ReviewReplyItem(reply = reply)
+//                Divider(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(vertical = 16.dp),
+//                    color = Color(0xFFE6EFF2),
+//                    thickness = 1.dp
+//                )
+//            }
+//        }
 
-        Divider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            color = Color(0xFFE6EFF2),
-            thickness = 1.dp
-        )
+//        Divider(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(vertical = 16.dp),
+//            color = Color(0xFFE6EFF2),
+//            thickness = 1.dp
+//        )
     }
 }
 
 
 @Composable
 fun ReviewReplyItem(
-    reply: com.bussiness.slodoggiesapp.data.model.businessProvider.ReviewReply,
+  //  reply: com.bussiness.slodoggiesapp.data.model.businessProvider.ReviewReply,
+   reply: com.bussiness.slodoggiesapp.data.newModel.ownerService.ReviewReply,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -356,7 +415,7 @@ fun ReviewReplyItem(
     ) {
         // User Image
         AsyncImage(
-            model = reply.providerImage,
+            model = reply.user.profileImage,
             placeholder = painterResource(R.drawable.ic_person_icon),
             error = painterResource(R.drawable.ic_person_icon),
             contentDescription = null,
@@ -370,7 +429,7 @@ fun ReviewReplyItem(
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = reply.providerName,
+                    text = reply.user.name,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     fontWeight = FontWeight.Medium,
                     fontSize = 13.sp,
@@ -380,7 +439,7 @@ fun ReviewReplyItem(
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text = reply.pTimeAgo,
+                    text = reply.timeAgo,
                     fontSize = 12.sp,
                     color = TextGrey,
                     fontFamily = FontFamily(Font(R.font.outfit_regular)),
@@ -396,7 +455,8 @@ fun ReviewReplyItem(
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
-                    text = reply.providerRole,
+                //    text = reply.providerRole,
+                    text = "",
                     fontSize = 9.sp,
                     fontFamily = FontFamily(Font(R.font.outfit_medium)),
                     fontWeight = FontWeight.Medium,
@@ -407,7 +467,7 @@ fun ReviewReplyItem(
             Spacer(Modifier.height(10.dp))
 
             Text(
-                text = reply.pMessage,
+                text = reply.comment,
                 fontSize = 12.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
                 fontWeight = FontWeight.Normal,

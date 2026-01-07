@@ -1,5 +1,7 @@
 package com.bussiness.slodoggiesapp.data.remote
 
+import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowersResponse
@@ -9,6 +11,7 @@ import com.bussiness.slodoggiesapp.data.newModel.MyPostsResponse
 import com.bussiness.slodoggiesapp.data.newModel.authresponse.OtpResponse
 import com.bussiness.slodoggiesapp.data.newModel.authresponse.OwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.authresponse.RegisterResponse
+import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetails
 import com.bussiness.slodoggiesapp.data.newModel.discover.TrendingHashtagsResponse
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.PetOwnerDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessdetails.BusinessDetailsModel
@@ -400,7 +403,18 @@ interface Repository {
         userId: String
     ) : Flow<Resource<ServiceDetailsResponse>>
 
-    suspend fun discoverPetPlaces(
+
+    suspend fun getOwnerServiceDetail(
+        businessUserId:String
+    ) : Flow<Resource<ServiceDetailsResponse>>
+
+    suspend fun deleteService(userId: Int, serviceId:Int) : Flow<Resource<DeleteResponse>>
+
+    suspend fun serviceReview(serviceId:Int, userId:Int, rating:String, message:String)
+    : Flow<Resource<DeleteResponse>>
+
+
+     suspend fun discoverPetPlaces(
         userId: String,
         search: String
     ) : Flow<Resource<PetPlacesResponse>>

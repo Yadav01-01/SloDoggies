@@ -25,8 +25,6 @@ class ServicesListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ServicesListModel())
     val uiState: StateFlow<ServicesListModel> = _uiState.asStateFlow()
 
-
-
     fun servicesList(){
         viewModelScope.launch {
             repository.servicesListRequest(sessionManager.getUserId()).collectLatest { result ->
@@ -58,7 +56,6 @@ class ServicesListViewModel @Inject constructor(
     private fun onError(message: String?) {
         _uiState.update { it.copy(error = message ?: "Something went wrong") }
     }
-
 
 
 }

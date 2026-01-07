@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -61,8 +62,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.ServicePackage
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceItemDetails
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FullScreenImageViewerScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.EnhancedExpandableInfoSpinner
@@ -72,7 +75,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 fun PetSitterCard(
     name: String,
     image: String,
-    rating: Float,
+    rating: Float =0.0f,
     ratingCount: Int,
     providerName: String,
     about: String,
@@ -218,8 +221,8 @@ fun TypeButton(
 
 @Composable
 fun ServicePackageCard(
-    data: Data,
-    onEdit: (Data) -> Unit,
+    data: ServiceItemDetails,
+    onEdit: (ServiceItemDetails) -> Unit,
     onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -239,14 +242,30 @@ fun ServicePackageCard(
             verticalAlignment = Alignment.Top
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_paw_like_filled_icon),
-                    contentDescription = null,
-                    tint = Color.Unspecified
-                )
+                if (data.media.size ==0  || data.media.get(0).mediaUrl.isNullOrEmpty()) {
+                    // Fallback icon
+                    Icon(
+                        painter = painterResource(R.drawable.ic_paw_like_filled_icon),
+                        contentDescription = null,
+                        tint = Color.Unspecified
+                    )
+                } else {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(data.media.get(0).mediaUrl)
+                            .crossfade(true)
+                            .build(),
+                        modifier = Modifier
+                            .size(22.dp)
+                            .clip(CircleShape),
+                        contentDescription = null,
+                        placeholder = painterResource(R.drawable.ic_paw_like_filled_icon),
+                        error = painterResource(R.drawable.ic_paw_like_filled_icon)
+                    )
+                }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = data.service_title?:"",
+                    text = data.serviceTitle  ?: "",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -319,7 +338,11 @@ fun ServicePackageCard(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                data.service_image?.let { PhotosGrid(it) }
+                val mediaUrls: List<String> =
+                    data?.media
+                        ?.mapNotNull { it.mediaUrl.takeIf { url -> url.isNotBlank() } }
+                        .orEmpty()
+                data.media?.let { PhotosGrid(mediaUrls.toMutableList()) }
 
             }
         }

@@ -1,6 +1,8 @@
 package com.bussiness.slodoggiesapp.data.remote
 
 import android.util.Log
+import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
 import com.bussiness.slodoggiesapp.data.model.common.ErrorResponse
 import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
@@ -726,6 +728,27 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
     override suspend fun ownerServiceDetail(businessUserId: String,userId: String): Flow<Resource<ServiceDetailsResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.ownerServiceDetail(businessUserId,userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getOwnerServiceDetail(businessUserId: String) : Flow<Resource<ServiceDetailsResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getOwnerServiceDetail(businessUserId)  })
+    }.flowOn(Dispatchers.IO)
+
+
+    override suspend fun deleteService(userId: Int, serviceId:Int) : Flow<Resource<DeleteResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.deleteService(userId,serviceId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun serviceReview(
+        serviceId: Int,
+        userId: Int,
+        rating: String,
+        message: String
+    ): Flow<Resource<DeleteResponse>> = flow {
+        emit(Resource.Loading)
+        emit(safeApiCall { api.serviceReview(serviceId,userId,rating,message) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun discoverPetPlaces(

@@ -150,8 +150,9 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                         lineHeight = 15.sp
                     )
                 }
-
-                PostOptionsMenu(modifier = Modifier, onReportClick = onReportClick )
+                if(sessionManager.getUserId() != postItem.userId) {
+                    PostOptionsMenu(modifier = Modifier, onReportClick = onReportClick)
+                }
             }
 
             Spacer(modifier = Modifier.height(2.dp))

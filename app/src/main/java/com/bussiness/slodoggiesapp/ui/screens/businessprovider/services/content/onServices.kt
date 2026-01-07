@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceItemDetails
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.AddServiceButton
@@ -24,9 +26,9 @@ import com.google.gson.Gson
 
 @Composable
 fun ServicePackageSection(
-    uiStateService: MutableList<Data>?,
+    uiStateService: MutableList<ServiceItemDetails>,
     navController: NavHostController,
-    onClickDelete: () -> Unit
+    onClickDelete: (id:Int) -> Unit
 ) {
     FormHeadingText("Available Services-")
       LazyColumn(
@@ -38,11 +40,20 @@ fun ServicePackageSection(
                     ServicePackageCard(
                         data = servicePackage,
                         onEdit = { data->
-                            val jsonString = Gson().toJson(data)
-                            val encodedJson = Uri.encode(jsonString)
-                            navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/$encodedJson")
+//                            Log.d("TESTING_DATA","data is "+data)
+//                            val jsonString = Gson().toJson(data)
+//                            val encodedJson = Uri.encode(jsonString)
+//                            navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/""/$encodedJson)
+
+                            val type = "edit" // or pass dynamically
+
+                            val encodedJson = Uri.encode(Gson().toJson(data))
+
+                            navController.navigate(
+                                "${Routes.EDIT_ADD_SERVICE_SCREEN}/$type/$encodedJson"
+                            )
                                  },
-                        onDelete = { onClickDelete() }
+                        onDelete = { onClickDelete(servicePackage.serviceId) }
                     )
                 }
             }
@@ -50,7 +61,8 @@ fun ServicePackageSection(
                 Spacer(modifier = Modifier.height(12.dp))
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     AddServiceButton(modifier = Modifier, onClickButton = {
-                        navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/${""}") }
+                        navController.navigate(Routes.ADD_SERVICE_NEW)
+                      }
                     )
                 }
             }

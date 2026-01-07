@@ -44,7 +44,8 @@ object HomeFeedMapper {
                 shares = shares,
                 isLiked = itemSuccess?.isLiked ?: false,
                 isSaved = itemSuccess?.isSave ?: false,
-                iAmFollowing = itemSuccess?.iAmFollowing ?: false
+                iAmFollowing = itemSuccess?.iAmFollowing ?: false,
+                authorType = author?.author_type
             )
 
             "community" -> PostItem.CommunityPost(

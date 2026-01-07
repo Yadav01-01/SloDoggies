@@ -9,6 +9,8 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.newModel.businessprofile.BusinessProfileModel
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceDetailsData
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceItemDetails
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.ServicesListModel
 import com.bussiness.slodoggiesapp.data.remote.Repository
@@ -45,16 +47,19 @@ class AddServiceViewModel @Inject constructor(
     val selectedPhotos: StateFlow<List<String>> = _selectedPhotos
 
 
-    fun updateData(model: Data?) {
-        val images = model?.service_image ?: emptyList()
+    fun updateData(model: ServiceItemDetails?) {
+        val images = model?.media ?: emptyList()
+        val mediaUrls = images
+            .filter { it.mediaType == "image" }
+            .map { it.mediaUrl }
         _uiStateServices.value = _uiStateServices.value.copy(
-            service_title = model?.service_title.orEmpty(),
+            service_title = model?.serviceTitle.orEmpty(),
             description = model?.description.orEmpty(),
             price = model?.price.orEmpty(),
-            id = model?.id ?: 0,
-            service_image = images.toMutableList()
+            id = model?.serviceId ?: 0,
+            service_image = mediaUrls.toMutableList()
         )
-        _selectedPhotos.value = images
+        _selectedPhotos.value = mediaUrls
     }
 
     fun refresh() {

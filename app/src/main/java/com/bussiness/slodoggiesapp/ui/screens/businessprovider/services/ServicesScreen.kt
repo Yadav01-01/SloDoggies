@@ -43,23 +43,33 @@ import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ReviewContent
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ServicePackageSection
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
+import com.bussiness.slodoggiesapp.viewModel.petOwner.servicesVM.ServiceDetailViewModel
 import com.bussiness.slodoggiesapp.viewModel.servicebusiness.BusinessServicesViewModel
 import com.bussiness.slodoggiesapp.viewModel.serviceslist.ServicesListViewModel
 
 @Composable
 fun ServiceScreen(navController: NavHostController) {
 
-
     val viewModel: BusinessServicesViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
+
     val viewModelService: ServicesListViewModel = hiltViewModel()
     val uiStateService by viewModelService.uiState.collectAsState()
+
+    val serviceProviderDetailViewModel : ServiceDetailViewModel = hiltViewModel()
+    val uiStateServiceProvider by serviceProviderDetailViewModel.serviceDetail.collectAsState()
+
+
+
+
     val context = LocalContext.current
 
     var selected by remember { mutableStateOf("Services") }
     var commentReply by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
-    var deleteDialog by remember { mutableStateOf(false) }
+
+    val deleteDialog by serviceProviderDetailViewModel.showDeleteDialog.collectAsState()
 
     val reviewListData = listOf(
         Review(
@@ -87,7 +97,8 @@ fun ServiceScreen(navController: NavHostController) {
     )
 
     LaunchedEffect(Unit) {
-        viewModel.getBusinessDetail("")
+        serviceProviderDetailViewModel.getServiceDetail()
+       // viewModel.getBusinessDetail("")
     }
 
     // Inside your Composable
@@ -137,16 +148,16 @@ fun ServiceScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
-            val data=uiState.data?.business
+            val data=uiStateServiceProvider.serviceDetail
             PetSitterCard(
-                name = data?.business_name?:"Unknown",
-                image=data?.business_logo?:"",
-                rating = 4.5f,
+                name = data?.businessName?:"Unknown",
+                image=data?.profileImage?:"",
+                rating = data?.rating?:0.0f,
                 ratingCount = 100,
-                providerName = data?.provider_name?:"Unknown",
-                about = data?.bio?:"Bio",
+                providerName = data?.providerName?:"Unknown",
+                about = data?.businessDescription?:"Bio",
                 phone = data?.phone?:"Unknown",
-                website = data?.website_url?:"Unknown",
+                website = data?.website?:"Unknown",
                 address = data?.address?:"Unknown",
                 onEditClick = { navController.navigate(Routes.EDIT_BUSINESS_SCREEN)}
             )
@@ -172,20 +183,27 @@ fun ServiceScreen(navController: NavHostController) {
 
             when (selected) {
                 "Services" -> {
-                    uiStateService.data?.let {
+                    uiStateServiceProvider.serviceDetail?.let {
                         ServicePackageSection(
-                            uiStateService = uiStateService.data,
+                            uiStateService = uiStateServiceProvider.serviceDetail!!.services.toMutableList(),
                             navController,
-                            onClickDelete = { deleteDialog = true })
+                            onClickDelete = { id->
+                                serviceProviderDetailViewModel.selectedServiceId= id
+                                serviceProviderDetailViewModel.showDeleteDialog()
+
+                            })
                     }
                 }
-                "Rating & Reviews" -> ReviewContent(reviewListData, onClickReply = { commentReply = true })
+                "Rating & Reviews" -> ReviewContent(//reviewListData,
+                    uiStateServiceProvider.serviceDetail?.ratingsAndReviews,
+                 onClickReply = { commentReply = true })
             }
 
             AddServiceButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 onClickButton = {
-                    navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/add")
+                  //  navController.navigate("${Routes.EDIT_ADD_SERVICE_SCREEN}/add/${null}")
+                    navController.navigate(Routes.ADD_SERVICE_NEW)
                 }
             )
         }
@@ -202,13 +220,20 @@ fun ServiceScreen(navController: NavHostController) {
         )
     }
     if (deleteDialog){
+
         DeleteChatDialog(
-            onDismiss = { deleteDialog = false },
-            onClickRemove = { deleteDialog = false  },
+            onDismiss = {  serviceProviderDetailViewModel.hideDeleteDialog() },
+            onClickRemove = {
+                val sessionManager : SessionManager = SessionManager(context)
+                val userId = sessionManager.getUserId()
+                serviceProviderDetailViewModel.deleteService(userId.toInt(), serviceProviderDetailViewModel.selectedServiceId)
+
+                            },
             iconResId = R.drawable.delete_mi,
             text = stringResource(R.string.delete_service),
             description = stringResource(R.string.service_desc)
         )
+
     }
 
 }

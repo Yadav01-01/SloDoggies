@@ -37,7 +37,8 @@ fun ActivitiesPostsList(
     onLikeClick :(postId:String) ->Unit,
     onCommentOpen :(postId :String) -> Unit,
     onSaveClick :(postId :String)->Unit,
-    onProfileClick:(postType:String,postUserId:String)->Unit
+    onProfileClick:(postType:String,postUserId:String)->Unit,
+    onFollowClick :(postId:String) ->Unit
 ) {
 
     Spacer(Modifier.height(5.dp))
@@ -87,14 +88,19 @@ fun ActivitiesPostsList(
                         onDeleteClick = { /* Handle delete click */ },
                         onProfileClick = {
                           Log.d("Testing_DEBUG",post.userType+" "+post.userId)
-                            onProfileClick(post.userType,post.userId)
+                            onProfileClick(post.authorType?:"",post.userId)
                         },
                         onSelfPostEdit = { /* Handle self post edit click */ },
                         onSelfPostDelete = { /* Handle self post delete click */ },
                         onSaveClick = { onSaveClick(post.postId) },
                         onLikeClick = { onLikeClick(post.postId)  },
-                        onCommentClick = { onCommentOpen(post.postId) },
-                        onFollowingClick = {  }
+                        onCommentClick = {
+                            onCommentOpen(post.postId)
+                                         },
+
+                        onFollowingClick = {
+                            onFollowClick(post.userId)
+                        }
 
                     )
                 }

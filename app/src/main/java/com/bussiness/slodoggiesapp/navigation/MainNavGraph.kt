@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.navigation
 
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -9,6 +10,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceItemDetails
+import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.settings.SubscriptionScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.DiscoverScreen
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.PersonDetailScreen
@@ -51,6 +54,7 @@ import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.EditProfil
 import com.bussiness.slodoggiesapp.ui.screens.petowner.profileScreens.PetProfileScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.PetServicesScreen
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen.ServiceProviderDetailsScreen
+import com.google.gson.Gson
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -130,6 +134,17 @@ fun MainNavGraph(
         composable(Routes.PREVIEW_ADS_SCREEN) { PreviewAdsScreen(navController) }
         composable(Routes.NEW_MESSAGE_SCREEN) { NewMessageScreen(navController) }
         composable(Routes.TRANSACTION_SCREEN) { TransactionScreen(navController) }
+
+
+        composable(Routes.ADD_SERVICE_NEW) {
+            EditAddServiceScreen(
+                navController = navController,
+                type = "add",
+                data = null
+            )
+        }
+
+
        // composable(Routes.CLICKED_PROFILE_SCREEN) { ClickedProfile(navController) }
         composable(
             route = Routes.CLICKED_PROFILE_SCREEN + "/{userId}",
@@ -154,13 +169,55 @@ fun MainNavGraph(
             VerifyAccount(navController, type = type, data = data)
         }
 
+//        composable(
+//            route = "${Routes.EDIT_ADD_SERVICE_SCREEN}/{type}/{data}",
+//            arguments = listOf(navArgument("type") { type = NavType.StringType; defaultValue = "" })
+//        ) { backStackEntry ->
+//            val type = backStackEntry.arguments?.getString("type") ?: ""
+//            val decodedJson = Uri.decode(type)
+//
+//            val data = Gson().fromJson(decodedJson, Data::class.java)
+//
+//            EditAddServiceScreen(navController, type,data)
+//        }
+
         composable(
-            route = "${Routes.EDIT_ADD_SERVICE_SCREEN}/{type}",
-            arguments = listOf(navArgument("type") { type = NavType.StringType; defaultValue = "" })
+            route = "${Routes.EDIT_ADD_SERVICE_SCREEN}/{type}/{data}",
+            arguments = listOf(
+                navArgument("type") { type = NavType.StringType },
+                navArgument("data") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
         ) { backStackEntry ->
-            val type = backStackEntry.arguments?.getString("type") ?: ""
-            EditAddServiceScreen(navController, type)
+
+            val type = backStackEntry.arguments?.getString("type").orEmpty()
+
+            val json = backStackEntry.arguments?.getString("data")
+
+//            val serviceItemDetails = json?.let {
+//                Gson().fromJson(
+//                    Uri.decode(it),
+//                    ServiceItemDetails::class.java
+//                )
+//            }
+
+            val serviceItemDetails = json
+                ?.takeIf { it != "null" }
+                ?.let {
+                    Gson().fromJson(Uri.decode(it),
+                        ServiceItemDetails::class.java)
+                }
+
+            EditAddServiceScreen(
+                navController = navController,
+                type = type,
+                data = serviceItemDetails
+            )
         }
+
 
         composable(
             route = "${Routes.FOLLOWER_SCREEN}/{type}/{userId}",
@@ -175,6 +232,7 @@ fun MainNavGraph(
             route = "${Routes.EDIT_PET_PROFILE_SCREEN}/{petId}",
             arguments = listOf(navArgument("petId") { type = NavType.StringType; defaultValue = " " })
         ) { backStackEntry ->
+
             val petId = backStackEntry.arguments?.getString("petId") ?: "Follower"
             EditPetProfileScreen(navController, petId)
         }

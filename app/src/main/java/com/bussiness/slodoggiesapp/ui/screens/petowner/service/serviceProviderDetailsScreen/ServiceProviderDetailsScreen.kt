@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,12 +30,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -69,6 +74,7 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.petOwner.servicesVM.ServiceDetailViewModel
 
 @Composable
@@ -78,11 +84,26 @@ fun ServiceProviderDetailsScreen(
     viewModel: ServiceDetailViewModel = hiltViewModel()
 ) {
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     // Fetch service details only once
     LaunchedEffect(serviceId) {
-        viewModel.setServiceDetail(serviceId)
+        if(viewModel.serviceId.isEmpty()){
+            viewModel.serviceId = serviceId
+        }
+        viewModel.setServiceDetail(viewModel.serviceId)
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.reviewSubmitted.collect {
+            if (it) {
+                snackbarHostState.showSnackbar(message = "Review submitted successfully")
+            }
+        }
+    }
+
+
+    val context =LocalContext.current
     // Collect UI state
     val data = viewModel.serviceDetail.collectAsState().value
     var selectedOption by remember { mutableStateOf("Services") }
@@ -92,7 +113,6 @@ fun ServiceProviderDetailsScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-
         BackHandler {
             navController.navigate(Routes.PET_SERVICES_SCREEN) {
                 popUpTo(Routes.PET_SERVICES_SCREEN) { inclusive = false }
@@ -146,7 +166,14 @@ fun ServiceProviderDetailsScreen(
 
             when (selectedOption) {
                 "Services" -> ServicesContent(data.serviceDetail?.services)
-                "Rating & Reviews" -> ReviewInterface(data.serviceDetail?.ratingsAndReviews)
+                "Rating & Reviews" -> ReviewInterface(data.serviceDetail?.ratingsAndReviews){
+                    rating,review ->
+                        val sessionManager: SessionManager = SessionManager(context)
+                        viewModel.serviceReview(
+                            serviceId.toInt(), sessionManager.getUserId().toInt(),
+                            rating,review
+                        )
+                }
             }
         }
     }
@@ -346,6 +373,29 @@ fun ProviderDetails(
                             .padding(horizontal = 16.dp, vertical = 8.dp)
                     )
                 }
+
+//                OutlinedButton(
+//                    onClick = {
+//                        onFollowingClick()
+//                    },
+//                    modifier = Modifier
+//                        .height(24.dp)
+//                        .padding(horizontal = 10.dp),
+//                    shape = RoundedCornerShape(6.dp),
+//                    border = if (iAmFollowing) BorderStroke(1.dp, PrimaryColor) else null,
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = if (iAmFollowing) Color.White else PrimaryColor,
+//                        contentColor = if (iAmFollowing) PrimaryColor else Color.White
+//                    ),
+//                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+//                    interactionSource = interactionSource
+//                ) {
+//                    androidx.compose.material3.Text(
+//                        text = if (iAmFollowing) "Following" else "Follow",
+//                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+//                        fontSize = 12.sp
+//                    )
+//                }
             }
             EnhancedExpandableInfoSpinner(phoneNumber = phoneNumber, website = website, address = address, businessDescription = businessDescription)
         }

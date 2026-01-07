@@ -1,7 +1,7 @@
-package com.bussiness.slodoggiesapp.navigation
+    package com.bussiness.slodoggiesapp.navigation
 
 object Routes {
-    //Business Provider
+
     const val SPLASH = "splash"
     const val ONBOARDING = "onboarding"
     const val JOIN_THE_PACK = "joinThePack"
@@ -63,4 +63,5 @@ object Routes {
     const val AUTH_TERMS_AND_CONDITION_SCREEN = "AuthTermsAndConditionsScreen"
     const val AUTH_PRIVACY_POLICY_SCREEN = "AuthPrivacyPolicyScreen"
     const val CLICKED_PROFILE_SCREEN = "ClickedProfile"
+    const val ADD_SERVICE_NEW = "ADD_SERVICE_NEW"
 }

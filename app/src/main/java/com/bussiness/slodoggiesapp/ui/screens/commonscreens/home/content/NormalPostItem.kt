@@ -171,19 +171,21 @@ fun PostHeader(userId : String ,user: String,petName : String, personImage : Str
                     )
 
                     // Front image (dog in FULL COLOR with white border)
-                    AsyncImage(
-                        model = dogImage,
-                        placeholder = painterResource(R.drawable.ic_dog_face_icon),
-                        error = painterResource(R.drawable.ic_dog_face_icon),
-                        contentScale = ContentScale.Crop,
-                        contentDescription = "Dog",
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(CircleShape)
-                            .background(TextGrey)
-                            .border(2.dp, Color.White, CircleShape)
-                            .align(Alignment.BottomEnd)
-                    )
+                 if(!petName.isNullOrBlank()) {
+                     AsyncImage(
+                         model = dogImage,
+                         placeholder = painterResource(R.drawable.ic_dog_face_icon),
+                         error = painterResource(R.drawable.ic_dog_face_icon),
+                         contentScale = ContentScale.Crop,
+                         contentDescription = "Dog",
+                         modifier = Modifier
+                             .size(30.dp)
+                             .clip(CircleShape)
+                             .background(TextGrey)
+                             .border(2.dp, Color.White, CircleShape)
+                             .align(Alignment.BottomEnd)
+                     )
+                 }
                 }
             }else{
                 Image(
@@ -206,11 +208,23 @@ fun PostHeader(userId : String ,user: String,petName : String, personImage : Str
                             withStyle(style = SpanStyle( fontFamily = FontFamily(Font(R.font.outfit_medium)),fontWeight = FontWeight.Medium)) {
                                 append(user)
                             }
-                            withStyle(style = SpanStyle( fontFamily = FontFamily(Font(R.font.outfit_regular)),fontWeight = FontWeight.Normal)) {
-                                append(" with ")
-                            }
-                            withStyle(style = SpanStyle( fontFamily = FontFamily(Font(R.font.outfit_medium)),fontWeight = FontWeight.Medium)) {
-                                append(petName)
+                            if(!petName.isNullOrBlank()) {
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                                        fontWeight = FontWeight.Normal
+                                    )
+                                ) {
+                                    append(" with ")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                ) {
+                                    append(petName)
+                                }
                             }
                         },
                         fontSize = 12.sp,
@@ -229,7 +243,7 @@ fun PostHeader(userId : String ,user: String,petName : String, personImage : Str
                       if (sessionManager.getUserId() != userId){
                           OutlinedButton(
                               onClick = {
-                                  onFollowingClick() // ViewModel handles toggle + API
+                                  onFollowingClick()
                               },
                               modifier = Modifier
                                   .height(24.dp)
@@ -267,12 +281,18 @@ fun PostHeader(userId : String ,user: String,petName : String, personImage : Str
         if (normalPost){
             if (sessionManager.getUserId() != userId){
                 PostOptionsMenu (modifier = Modifier, onReportClick = onReportClick)
-            }else{
+            }
+            else{
                 PostContentMenu(modifier = Modifier, onEditClick = { onSelfPostEdit() }, onDeleteClick = { onSelfPostDelete() })
             }
+        }
+        else{
 
-        }else{
-            PostContentMenu(modifier = Modifier, onEditClick = { onEditClick() }, onDeleteClick = { onDeleteClick() })
+                PostContentMenu(
+                    modifier = Modifier,
+                    onEditClick = { onEditClick() },
+                    onDeleteClick = { onDeleteClick() })
+
         }
     }
 }

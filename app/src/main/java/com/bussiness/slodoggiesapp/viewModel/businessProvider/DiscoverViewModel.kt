@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.viewModel.businessProvider
 
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -468,10 +469,12 @@ class DiscoverViewModel @Inject constructor(
 
     fun savePost(type :String ="normal", postId:String, onSuccess: () -> Unit) {
         viewModelScope.launch {
+            Log.d("TESTING_RESULT",type)
+
             repository.savePost(
                 userId = sessionManager.getUserId(),
-                postId = if(type.equals("normal"))postId else "",
-                eventId = if(!type.equals("normal"))"" else postId,
+                postId = postId ,
+                eventId =  "",
                 addId = "",
             ).collectLatest { result ->
                 when (result) {
@@ -490,6 +493,8 @@ class DiscoverViewModel @Inject constructor(
                         }
                     }
                     is Resource.Error -> {
+                        Log.d("TESTING_RESULT",result.message)
+
                         _uiState.value = _uiState.value.copy(isLoading = false, error = result.message)
                     }
                     Resource.Idle -> Unit
@@ -497,6 +502,45 @@ class DiscoverViewModel @Inject constructor(
             }
         }
     }
+
+
+    fun interestedPost( postId:String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+
+
+            repository.savePost(
+                userId = sessionManager.getUserId(),
+                postId = "" ,
+                eventId =  postId,
+                addId = "",
+            ).collectLatest { result ->
+                when (result) {
+                    is Resource.Loading -> {
+                        _uiState.value = _uiState.value.copy(isLoading = true)
+                    }
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        result.data.let { response ->
+                            if (response.success) {
+                                toggleSave(postId)
+                                onSuccess()
+                            } else {
+                                _uiState.value = _uiState.value.copy(isLoading = true, error = result.data.message)
+                            }
+                        }
+                    }
+                    is Resource.Error -> {
+                        Log.d("TESTING_RESULT",result.message)
+
+                        _uiState.value = _uiState.value.copy(isLoading = false, error = result.message)
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
+    }
+
+
 
     fun updatePostId(postId: String) {
         _uiState.update {
@@ -607,25 +651,25 @@ class DiscoverViewModel @Inject constructor(
         onError: (String) -> Unit
     ) {
         //  Optimistic UI update (toggle + start loader)
-        _uiState.update { state ->
-            state.copy(
-                posts = state.posts.map { post ->
-                    when (post) {
-                        is PostItem.CommunityPost ->
-                            if (post.userId == followedId) {
-                                post.copy(
-                                    iAmFollowing = !post.iAmFollowing,
-                                    isFollowLoading = true
-                                )
-                            } else post
-
-                        is PostItem.SponsoredPost -> post
-
-                        is PostItem.NormalPost -> post
-                    }
-                }
-            )
-        }
+//        _uiState.update { state ->
+//            state.copy(
+//                posts = state.posts.map { post ->
+//                    when (post) {
+//                        is PostItem.CommunityPost ->
+//                            if (post.userId == followedId) {
+//                                post.copy(
+//                                    iAmFollowing = !post.iAmFollowing,
+//                                    isFollowLoading = true
+//                                )
+//                            } else post
+//
+//                        is PostItem.SponsoredPost -> post
+//
+//                        is PostItem.NormalPost -> post
+//                    }
+//                }
+//            )
+//        }
 
         viewModelScope.launch {
             repository.addAndRemoveFollowers(
@@ -637,15 +681,39 @@ class DiscoverViewModel @Inject constructor(
                     is Resource.Success -> {
                         if (result.data.success) {
                             //API success → stop loader ONLY
+//                            _uiState.update { state ->
+//                                state.copy(
+//                                    posts = state.posts.map { post ->
+//                                        if (post.stableKey == followedId && post is PostItem.CommunityPost) {
+//                                            post.copy(isFollowLoading = false)
+//                                        } else post
+//                                    }
+//                                )
+//                            }
                             _uiState.update { state ->
                                 state.copy(
-                                    posts = state.posts.map { post ->
-                                        if (post.stableKey == followedId && post is PostItem.CommunityPost) {
-                                            post.copy(isFollowLoading = false)
-                                        } else post
+                                    posts = state.posts.map {
+                                            post ->
+                                        when (post) {
+
+                                            is PostItem.NormalPost ->
+                                                if (post.userId == followedId)
+                                                    post.copy(iAmFollowing = !post.iAmFollowing)
+                                                else post
+
+                                            is PostItem.CommunityPost ->
+                                                if (post.userId == followedId)
+                                                    post.copy(iAmFollowing = !post.iAmFollowing)
+                                                else post
+
+                                            else -> post
+                                        }
                                     }
                                 )
                             }
+
+
+
                         } else {
                             rollbackFollow(followedId)
                             onError(result.data.message ?: "Something went wrong")

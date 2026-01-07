@@ -51,7 +51,8 @@ data class AuthorResponse(
     @SerializedName("name") val name: String?,
     @SerializedName("petName") val petName: String? = null,
     @SerializedName("badge") val badge: String? = null,
-    @SerializedName("time") val time: String? = null
+    @SerializedName("time") val time: String? = null,
+    @SerializedName("author_type") val author_type :String? = null
 )
 
 // ------------------------------------------------------
@@ -81,7 +82,9 @@ data class MediaResponse(
     val parentImageUrl: String? = null,
 
     @SerializedName("imageUrl")
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+
+
 )
 
 

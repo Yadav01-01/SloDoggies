@@ -59,6 +59,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content.Pet
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content.ShowPetsNearYou
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.ShareContentDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.DiscoverViewModel
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 
@@ -87,9 +88,6 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
     val posts = uiState.posts
 
     val selectedPetPlace = uiState.selectedPetPlace
-
-
-
 
     LaunchedEffect(uiState.error) {
 
@@ -144,11 +142,11 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                     viewModel.onPetPlaceClicked(petPlace)
                 }
             )
-            "Activities"    -> ActivitiesPostsList(
+            "Activities" -> ActivitiesPostsList(
                 posts = uiState.posts,
                 onReportClick = { viewModel.showReportDialog(true) },
                 onShareClick = { viewModel.showShareContent(true) },
-                onLikeClick = { postId ->viewModel.postLikeUnlike(postId,"activity")   },
+                onLikeClick = { postId -> viewModel.postLikeUnlike(postId,"activity")   },
                 onCommentOpen = { postId->
                     showCommentsType="Normal"
                     viewModel.updatePostId(postId)
@@ -172,6 +170,14 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                     } else {
                         navController.navigate("${Routes.CLICKED_PROFILE_SCREEN}/$postUserId")
                     }
+                },
+                onFollowClick ={
+                    postId->
+                    Log.d("TESTING_ACTIVITY","PostId is "+postId)
+                    viewModel.addAndRemoveFollowers(postId,
+                        onError = { msg ->
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        })
                 }
             )
 
@@ -182,13 +188,15 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 onLikeClick = { postId -> viewModel.postLikeUnlike(postId) },
                 onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
                 onProfileClick = { postUserId -> navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${postUserId}") },
-                onInterested = { postId -> viewModel.savePost("event",postId,
-                    onSuccess = { viewModel.showSavedDialog(true) }
+                onInterested = { postId -> viewModel.interestedPost(postId,
+                   onSuccess = {  //viewModel.showSavedDialog(true)
+                        }
                 ) },
                 onClickFollowing = { postId -> viewModel.addAndRemoveFollowers(postId,
                     onError = { msg ->
                         Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    }) }
+                    })
+                }
             )
 
             else -> ShowPetsNearYou(uiState.pets, navController)
@@ -489,6 +497,7 @@ fun EventsResult(
                 // Check each item
                 if (event is PostItem.CommunityPost) {
 
+                    var sessionManager = SessionManager(LocalContext.current)
                     SocialEventCard(
                         postItem = event,
                         onReportClick = { onClickMore() },
@@ -498,7 +507,7 @@ fun EventsResult(
                         onProfileClick = { onProfileClick(event.userId) },
                         onInterested = { onInterested(event.postId) },
                         onClickFollowing = { onClickFollowing(event.postId) },
-                        isFollowing = event.iAmFollowing
+                        isFollowing = event.iAmFollowing, sessionManager = sessionManager
                     )
 
                 }

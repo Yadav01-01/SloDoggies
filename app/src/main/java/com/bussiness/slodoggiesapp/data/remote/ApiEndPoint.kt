@@ -64,4 +64,6 @@ object ApiEndPoint {
     const val FRIEND_LIST = "friendList"
     const val REMOVE_FOLLOWER_FOLLOWING = "removeFollowerFollowing"
     const val GET_SUBSCRIPTION = "getSubscription"
+    const val DELETE_SERVICE ="delete_service"
+    const val SERVICE_REVIEW = "serviceReview"
 }

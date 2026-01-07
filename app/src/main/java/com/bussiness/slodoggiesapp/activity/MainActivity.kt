@@ -2,7 +2,9 @@ package com.bussiness.slodoggiesapp.activity
 
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.R
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
@@ -15,16 +17,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation.findNavController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.navigation.NavGraph
+import com.bussiness.slodoggiesapp.navigation.Routes
+import com.bussiness.slodoggiesapp.network.AuthEventBus
 import com.bussiness.slodoggiesapp.ui.component.LoaderOverlay
 import com.bussiness.slodoggiesapp.ui.component.common.SetStatusBarColor
 import com.bussiness.slodoggiesapp.viewModel.common.GlobalLoaderViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
+
+    @Inject
+    lateinit var authEventBus: AuthEventBus
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -35,6 +46,14 @@ class MainActivity : ComponentActivity() {
                 val mainNavController = rememberNavController()
                 val loaderViewModel: GlobalLoaderViewModel = hiltViewModel()
                 val isLoading by loaderViewModel.isLoading.collectAsState()
+                lifecycleScope.launchWhenStarted {
+                    authEventBus.sessionExpired.collect {
+                        Toast.makeText(this@MainActivity, "Session Expired", Toast.LENGTH_LONG).show()
+                        mainNavController.navigate(Routes.JOIN_THE_PACK) {
+                            popUpTo(0)
+                        }
+                    }
+                }
                 Box(Modifier.fillMaxSize()) {
                     NavGraph(navController = mainNavController)
                     LoaderOverlay(isVisible = isLoading)

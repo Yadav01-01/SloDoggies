@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.home.MediaResponse
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.newModel.home.PostMediaResponse
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.Comment
@@ -70,13 +71,11 @@ fun SponsoredPostItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth().clickable { onSponsoredClick() }) {
-            PostHeader(user = post.userName, time = post.time,userPost = post.userPost,
+            PostHeader(userImage = post.media,user = post.userName, time = post.time,userPost = post.userPost,
                 onReportClick = { onReportClick()}, onProfileClick = { onProfileClick() })
             PostCaption(caption = post.caption, description = post.description)
             Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(353.dp)
+                modifier = Modifier.fillMaxWidth().height(353.dp)
             ) {
 
                 PostImage(mediaList = post.mediaList)
@@ -106,7 +105,7 @@ fun SponsoredPostItem(
 }
 
 @Composable
-private fun PostHeader(user: String, time: String,userPost :Boolean, onReportClick: () -> Unit,onProfileClick: () -> Unit,) {
+private fun PostHeader(userImage: MediaResponse?, user: String, time: String, userPost :Boolean, onReportClick: () -> Unit, onProfileClick: () -> Unit,) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -119,7 +118,7 @@ private fun PostHeader(user: String, time: String,userPost :Boolean, onReportCli
             interactionSource = remember { MutableInteractionSource() }
         ) { onProfileClick() }) {
             AsyncImage(
-                model = "painterResource(id = R.drawable.dummy_person_image1)",
+                model = userImage?.parentImageUrl,
                 placeholder = painterResource(R.drawable.ic_person_icon),
                 error =  painterResource(R.drawable.ic_person_icon),
                 contentDescription = "Profile",

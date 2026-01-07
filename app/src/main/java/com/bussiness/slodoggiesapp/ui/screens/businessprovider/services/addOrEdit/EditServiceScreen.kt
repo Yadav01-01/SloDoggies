@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.bussiness.slodoggiesapp.R
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ServiceItemDetails
 import com.bussiness.slodoggiesapp.data.newModel.servicelist.Data
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
@@ -52,7 +53,8 @@ import com.google.gson.Gson
 @Composable
 fun EditAddServiceScreen(
     navController: NavHostController,
-    type: String
+    type: String,
+    data :ServiceItemDetails?= null
 ) {
     val viewModel: AddServiceViewModel = hiltViewModel()
 
@@ -60,14 +62,17 @@ fun EditAddServiceScreen(
 
     val context = LocalContext.current
 
-    val model: Data? = if (type.isNotBlank()) {
-        val jsonString = Uri.decode(type)
-        Gson().fromJson(jsonString, Data::class.java)
-    } else null
+//    val model: Data? = if (type.isNotBlank()) {
+//        val jsonString = Uri.decode(type)
+//        Gson().fromJson(jsonString, Data::class.java)
+//    } else null
+    val model = data
 
 
     LaunchedEffect(model) {
-        viewModel.updateData(model)
+        data?.let {
+            viewModel.updateData(it)
+        }
     }
 
 

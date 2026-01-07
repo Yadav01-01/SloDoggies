@@ -1,5 +1,7 @@
 package com.bussiness.slodoggiesapp.data.remote
 
+import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
+import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowersResponse
@@ -541,6 +543,31 @@ interface ApiService {
         @Field("business_user_id") businessUserId: String,
         @Field("user_id") userId: String
     ) : Response<ServiceDetailsResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.OWNER_SERVICE_DETAIL)
+    suspend fun getOwnerServiceDetail(
+        @Field("business_user_id") businessUserId: String
+    ) : Response<ServiceDetailsResponse>
+
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.DELETE_SERVICE)
+    suspend fun deleteService(
+        @Field("user_id") userId :Int,
+        @Field("service_id") serviceId: Int
+    ) : Response<DeleteResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.SERVICE_REVIEW)
+    suspend fun serviceReview(
+        @Field("serviceId") serviceId:Int,
+        @Field("user_id") userId:Int,
+        @Field("rating") rating:String,
+        @Field("message") message :String
+    ) : Response<DeleteResponse>
+
+
 
     @FormUrlEncoded
     @POST(ApiEndPoint.DISCOVER_PET_PLACES)

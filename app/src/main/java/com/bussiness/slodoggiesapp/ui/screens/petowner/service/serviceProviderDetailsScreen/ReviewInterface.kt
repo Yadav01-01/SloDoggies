@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -45,37 +47,40 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.RatingsAndReviews
+import com.bussiness.slodoggiesapp.data.newModel.ownerService.ReviewItem
+import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ReviewItemPanel
 
 
 @Composable
-fun ReviewInterface(ratingsAndReviews: RatingsAndReviews?) {
+fun ReviewInterface(ratingsAndReviews: RatingsAndReviews?,
+                    onClick : (rating:String, message:String) ->Unit) {
+
     var reviewText by remember { mutableStateOf("") }
+
     var selectedRating by remember { mutableStateOf(0) }
+
     val ratings = com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData(
-        overallRating = 4.0f,
-        totalReviews = 42,
+        overallRating = ratingsAndReviews?.averageRating?.toFloat()?:0.0f,
+        totalReviews = ratingsAndReviews?.totalReviews?:0,
         ratingPercentages = mapOf(
-            5 to 0.8f,
-            4 to 0.6f,
-            3 to 0.3f,
-            2 to 0.1f,
-            1 to 0.05f
+            5 to (
+                    ((ratingsAndReviews?.ratingDistribution?.star5 ?: 0).toFloat() / (ratingsAndReviews?.totalReviews ?: 1)) * 100),
+            4 to (((ratingsAndReviews?.ratingDistribution?.star4 ?: 0).toFloat() / (ratingsAndReviews?.totalReviews ?: 1)) * 100),
+            3 to (((ratingsAndReviews?.ratingDistribution?.star3 ?: 0).toFloat() / (ratingsAndReviews?.totalReviews ?: 1)) * 100),
+            2 to (((ratingsAndReviews?.ratingDistribution?.star2 ?: 0).toFloat() / (ratingsAndReviews?.totalReviews ?: 1)) * 100),
+            1 to (((ratingsAndReviews?.ratingDistribution?.star1 ?: 0).toFloat() / (ratingsAndReviews?.totalReviews ?: 1)) * 100)
         ),
         reviewCounts = mapOf(
-            5 to 10,
-            4 to 500,
-            3 to 28,
-            2 to 18,
-            1 to 15
+            5 to (ratingsAndReviews?.ratingDistribution?.star5 ?: 0),
+            4 to (ratingsAndReviews?.ratingDistribution?.star4 ?: 0),
+            3 to (ratingsAndReviews?.ratingDistribution?.star3 ?: 0),
+            2 to (ratingsAndReviews?.ratingDistribution?.star2 ?: 0),
+            1 to (ratingsAndReviews?.ratingDistribution?.star1 ?: 0)
         )
     )
 
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .padding(vertical = 10.dp)
-            .imePadding(),
+        modifier = Modifier.fillMaxSize().background(Color.White).padding(vertical = 10.dp).imePadding(),
         verticalArrangement = Arrangement.spacedBy(16.dp) // consistent spacing
     ) {
         // Rating Summary Section
@@ -83,26 +88,54 @@ fun ReviewInterface(ratingsAndReviews: RatingsAndReviews?) {
             RatingSummary(ratings)
         }
 
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
-            ReviewsList()
-        }
+//        item {
+//            Spacer(modifier = Modifier.height(8.dp))
+//         //   ReviewsList()
+//
+//            items(ratingsAndReviews?.reviews ?: mutableListOf<ReviewItem>()) { review ->
+//                ReviewItemPanel(
+//                    data = review,
+//                    onClickMore = {},
+//                    onClickReply = { onClickReply() }
+//                )
+//            }
+//
+//        }
 
-        // Rate & Review Section
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                // ReviewsList()
+            }
+
+            items(ratingsAndReviews?.reviews ?: emptyList()) { review ->
+                ReviewItemPanel(
+                    data = review,
+                    onClickMore = {
+
+                    },
+                    onClickReply = {
+                    //onClickReply()
+                    }
+                )
+            }
+
+
         item {
+
             Text(
                 text = "Rate & Review",
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_medium)),
                 color = Color.Black,
             )
+
             Divider(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                 color = Color(0xFFE9EAEB),
                 thickness = 1.dp
             )
+
         }
 
         // Star Rating
@@ -113,7 +146,6 @@ fun ReviewInterface(ratingsAndReviews: RatingsAndReviews?) {
             )
         }
 
-        // Review Text Field
         item {
             OutlinedTextField(
                 value = reviewText,
@@ -139,11 +171,14 @@ fun ReviewInterface(ratingsAndReviews: RatingsAndReviews?) {
         // Submit Button
         item {
             Button(
-                onClick = { /* Handle submit */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                onClick = {
+
+                    onClick(selectedRating.toString(),reviewText)
+                          selectedRating=0
+                          reviewText=""
+                          },
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                  colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF258694)
                 ),
                 shape = RoundedCornerShape(8.dp)
@@ -229,6 +264,7 @@ fun RatingSummary(ratingData: com.bussiness.slodoggiesapp.data.model.businessPro
                 color = Color.Black
             )
         }
+
     }
 }
 
@@ -281,25 +317,28 @@ fun RatingBar(rating: Int, percentage: Float,reviewNumbers : String) {
 
 @Composable
 fun ReviewsList() {
-    Column {
-        ReviewItem(
-            name = "Courtney Henry",
-            rating = 5,
-            timeAgo = "2 mins ago",
-            review = "Consequat velit qui adipisicing sunt do rependerit ad laborum tempor ullamco exercitation. Ullamco tempor adipisicing et voluptate duis sit commodo aliqua",
-            avatarColor = Color(0xFF4A9B8E)
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        ReviewItem(
-            name = "Cameron Williamson",
-            rating = 4,
-            timeAgo = "2 mins ago",
-            review = "Consequat velit qui adipisicing sunt do rependerit ad laborum tempor ullamco.",
-            avatarColor = Color(0xFFE8B4A0)
-        )
-    }
+
+//    Column {
+//        ReviewItem(
+//            name = "Courtney Henry",
+//            rating = 5,
+//            timeAgo = "2 mins ago",
+//            review = "Consequat velit qui adipisicing sunt do rependerit ad laborum tempor ullamco exercitation. Ullamco tempor adipisicing et voluptate duis sit commodo aliqua",
+//            avatarColor = Color(0xFF4A9B8E)
+//        )
+//
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        ReviewItem(
+//            name = "Cameron Williamson",
+//            rating = 4,
+//            timeAgo = "2 mins ago",
+//            review = "Consequat velit qui adipisicing sunt do rependerit ad laborum tempor ullamco.",
+//            avatarColor = Color(0xFFE8B4A0)
+//        )
+//    }
 }
 
 @Composable
@@ -347,7 +386,6 @@ fun ReviewItem(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Row {
-                    // Star Rating
                     Row {
                         repeat(rating) {
                             Icon(

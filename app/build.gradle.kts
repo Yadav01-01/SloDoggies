@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     id("org.jetbrains.kotlin.kapt")
     id ("com.google.gms.google-services")
+
 }
 
 android {
@@ -116,6 +117,8 @@ dependencies {
     implementation(libs.coil.video)
 
 
+
+
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
@@ -173,5 +176,6 @@ dependencies {
     //firebase
     implementation (platform(libs.firebase.bom))
     implementation (libs.firebase.messaging)
+ //   implementation("com.google.firebase:firebase-firestore-ktx")
 
 }

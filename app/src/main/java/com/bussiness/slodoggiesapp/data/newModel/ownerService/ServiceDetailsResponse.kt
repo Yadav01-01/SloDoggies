@@ -15,18 +15,19 @@ data class ServiceDetailsData(
     @SerializedName("provider_name") val providerName: String? = null,
     @SerializedName("profileImage") val profileImage: String? = null,
     @SerializedName("category") val category: List<String> = emptyList(),
-    @SerializedName("rating") val rating: Int = 0,
+    @SerializedName("rating") val rating: Float? = 0.0f,
     @SerializedName("milesAway") val milesAway: String = "",
     @SerializedName("businessDescription") val businessDescription: String? = null,
     @SerializedName("phone") val phone: String? = null,
     @SerializedName("website") val website: String? = null,
     @SerializedName("address") val address: String? = null,
     @SerializedName("verificationstatus") val verificationStatus: Boolean = false,
-    @SerializedName("services") val services: List<ServiceItemDetails> = emptyList(),
+    @SerializedName("services") var services: List<ServiceItemDetails> = emptyList(),
     @SerializedName("ratingsAndReviews") val ratingsAndReviews: RatingsAndReviews = RatingsAndReviews()
 )
 
 data class ServiceItemDetails(
+    @SerializedName("serviceId") val serviceId :Int =0,
     @SerializedName("serviceTitle") val serviceTitle: String = "",
     @SerializedName("price") val price: String = "",
     @SerializedName("currency") val currency: String = "",
@@ -61,6 +62,50 @@ data class ReviewItem(
     @SerializedName("reviewerImage") val reviewerImage: String? = null,
     @SerializedName("rating") val rating: Int = 0,
     @SerializedName("comment") val comment: String? = null,
-    @SerializedName("date") val date: String? = null
+    @SerializedName("date") val date: String? = null,
+
+    @SerializedName("reviewId")
+    val reviewId: Int = 0,
+
+    @SerializedName("user")
+    val user: ReviewUser? = null,
+    @SerializedName("timeAgo")
+    val timeAgo: String = "",
+    @SerializedName("replies")
+    val replies: List<ReviewReply> = emptyList(),
+
+    @SerializedName("canReply")
+    val canReply: Boolean = false,
+    )
+
+   data class ReviewUser(
+
+    @SerializedName("userId")
+    val userId: Int = 0,
+
+    @SerializedName("name")
+    val name: String = "",
+
+    @SerializedName("profileImage")
+    val profileImage: String = ""
+)
+
+
+  data class ReviewReply(
+
+    @SerializedName("replyId")
+    val replyId: Int = 0,
+
+    @SerializedName("user")
+    val user: ReviewUser,
+
+    @SerializedName("timeAgo")
+    val timeAgo: String = "",
+
+    @SerializedName("comment")
+    val comment: String = "",
+
+    @SerializedName("createdAt")
+    val createdAt: String = ""
 )
 

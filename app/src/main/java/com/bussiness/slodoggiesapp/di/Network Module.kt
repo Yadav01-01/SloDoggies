@@ -2,10 +2,12 @@ package com.bussiness.slodoggiesapp.di
 
 import android.content.Context
 import com.bussiness.slodoggiesapp.BuildConfig
+import com.bussiness.slodoggiesapp.activity.MainActivity
 import com.bussiness.slodoggiesapp.data.remote.ApiService
 import com.bussiness.slodoggiesapp.data.remote.Repository
 import com.bussiness.slodoggiesapp.data.remote.RepositoryImpl
 import com.bussiness.slodoggiesapp.network.NetworkInterceptor
+import com.bussiness.slodoggiesapp.network.SessionExpiredHandler
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -69,6 +71,7 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+
 
 
     @Provides

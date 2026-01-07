@@ -59,7 +59,7 @@ fun PetServiceCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
-            .clickable {  navController.navigate("${Routes.SERVICE_PROVIDER_DETAILS}/${service.serviceId}") },
+            .clickable {  navController.navigate("${Routes.SERVICE_PROVIDER_DETAILS}/${service.providerId}") },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         shape = RoundedCornerShape(10.dp)
@@ -84,7 +84,7 @@ fun PetServiceCard(
             Row(verticalAlignment = Alignment.CenterVertically) {
 
                 Text(
-                    text = serviceName ?: "",
+                    text = serviceName ?: "Unknown Service",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black,

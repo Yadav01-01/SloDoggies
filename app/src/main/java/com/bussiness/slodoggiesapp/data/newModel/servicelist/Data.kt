@@ -8,5 +8,7 @@ data class Data(
     val price: String?=null,
     val service_image: MutableList<String>?=null,
     val service_title: String?=null,
-    val updated_at: String?=null
+    val updated_at: String?=null,
+    val serviceName :String? = null,
+    val image :String? = null
 )

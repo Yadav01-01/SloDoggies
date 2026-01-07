@@ -48,12 +48,11 @@ fun RatingSummaryService(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
-        // Rating Bars
+
         Column(modifier = Modifier.weight(1f)) {
             for (rating in 5 downTo 1) {
                 val count = ratingDistribution[rating] ?: 0
                 val percentage = count.toFloat() / maxCount!!
-
                 RatingBar(
                     rating = rating,
                     percentage = percentage,
@@ -61,6 +60,7 @@ fun RatingSummaryService(
                 )
 
                 if (rating > 1) Spacer(modifier = Modifier.height(4.dp))
+
             }
         }
 
