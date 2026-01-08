@@ -398,6 +398,7 @@ fun ReviewItemPanel(
 //            color = Color(0xFFE6EFF2),
 //            thickness = 1.dp
 //        )
+
     }
 }
 

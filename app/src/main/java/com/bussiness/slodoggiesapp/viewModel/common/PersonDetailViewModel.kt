@@ -66,7 +66,7 @@ class PersonDetailViewModel @Inject constructor(
     }
 
     fun message(navController: NavHostController) {
-        // TODO: integrate chat API
+
         navController.navigate(Routes.CHAT_SCREEN)
     }
 

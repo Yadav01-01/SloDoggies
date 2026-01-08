@@ -116,6 +116,25 @@ fun MainNavGraph(
         composable(Routes.PET_EVENT_SCREEN) { EventScreen(navController) }
         composable(Routes.ACCOUNT_PRIVACY_SCREEN) { AccountPrivacy(navController,authNavController) }
 //        composable(Routes.USER_POST_SCREEN) { UserPost(navController) }
+
+
+        composable(route = Routes.CHAT_SCREEN_FUNCTIONAL+"/{receiverId}/{receiverImage}/{receiverName}/{type}",
+                   arguments = listOf(
+                       navArgument("receiverId") {type = NavType.StringType; defaultValue = ""},
+                       navArgument("receiverImage"){type = NavType.StringType; defaultValue=""},
+                       navArgument("receiverName"){type = NavType.StringType; defaultValue=""},
+                       navArgument("type"){type = NavType.StringType; defaultValue=""}
+                   )
+            ) {
+            val receiverId = it.arguments?.getString("receiverId")?:""
+            val receiverImage = it.arguments?.getString("receiverImage") ?: ""
+            val receiverName = it.arguments?.getString("receiverName")?:""
+            val type = it.arguments?.getString("type")?:""
+
+            ChatScreen(navController,receiverId,receiverImage,receiverName,type)
+        }
+
+
         composable(
             route = Routes.USER_POST_SCREEN + "/{postId}/{type}/{userId}",
             arguments = listOf(

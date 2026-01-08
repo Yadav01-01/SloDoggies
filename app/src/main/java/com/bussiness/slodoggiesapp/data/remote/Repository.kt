@@ -2,6 +2,9 @@ package com.bussiness.slodoggiesapp.data.remote
 
 import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
 import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
+import com.bussiness.slodoggiesapp.data.model.common.CreateChannelResponse
+import com.bussiness.slodoggiesapp.data.model.common.UserImageResponse
+import com.bussiness.slodoggiesapp.data.model.petOwner.FollowStatusResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowersResponse
@@ -39,6 +42,7 @@ import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
+import retrofit2.http.Field
 
 interface Repository {
 
@@ -439,5 +443,20 @@ interface Repository {
         userId: String
     ) : Flow<Resource<SubscriptionResponse>>
 
+    suspend fun businessFollow(
+        @Field("business_id")  businessId:String
+    ) :Flow<Resource<FollowStatusResponse>>
+
+    suspend fun createChannel(
+        @Field("sender_id") senderId :Int,
+        @Field("receiver_id") receiverId:String?,
+        @Field("event_id") eventId :String?,
+        @Field("chat_id") chatId :String?,
+        @Field("chat_type") chatType:String?,
+        ) : Flow<Resource<CreateChannelResponse>>
+
+    suspend fun getUserImage(
+        @Field("user_id") userId :String
+    ) : Flow<Resource<UserImageResponse>>
 
 }

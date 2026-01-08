@@ -3,7 +3,10 @@ package com.bussiness.slodoggiesapp.data.remote
 import android.util.Log
 import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
 import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
+import com.bussiness.slodoggiesapp.data.model.common.CreateChannelResponse
 import com.bussiness.slodoggiesapp.data.model.common.ErrorResponse
+import com.bussiness.slodoggiesapp.data.model.common.UserImageResponse
+import com.bussiness.slodoggiesapp.data.model.petOwner.FollowStatusResponse
 import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
@@ -786,6 +789,28 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
         emit(Resource.Loading)
         emit(safeApiCall { api.getSubscription(userId) })
     }.flowOn(Dispatchers.IO)
+
+    override suspend fun businessFollow(businessId: String): Flow<Resource<FollowStatusResponse>> =flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.businessFollow(businessId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun createChannel(
+        senderId: Int,
+        receiverId: String?,
+        eventId: String?,
+        chatId: String?,
+        chatType: String?
+    ): Flow<Resource<CreateChannelResponse>> = flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.createChannel(senderId,receiverId,eventId,chatId,chatType) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun getUserImage(userId: String): Flow<Resource<UserImageResponse>> =flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.getUserImage(userId) })
+    }.flowOn(Dispatchers.IO)
+
 }
 
     /**

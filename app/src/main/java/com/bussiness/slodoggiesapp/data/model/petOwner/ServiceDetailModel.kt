@@ -1,5 +1,8 @@
 package com.bussiness.slodoggiesapp.data.model.petOwner
 
+import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
+import com.google.gson.annotations.SerializedName
+
 data class ServiceDetailModel (
     val providerName: String,
     val rating: Double,
@@ -47,4 +50,27 @@ data class UserReview(
     val rating: Float,
     val timeAgo: String,
     val comment: String
+)
+
+data class FollowStatusResponse(
+    @SerializedName("success")
+    override val success: Boolean = false,
+
+    @SerializedName("code")
+    val code: Int = 0,
+
+    @SerializedName("message")
+    override val message: String = "",
+
+    @SerializedName("data")
+    val data: FollowStatusData? = null // safe if missing or null
+)  : BaseResponse
+
+
+data class FollowStatusData(
+    @SerializedName("is_follower")
+    val isFollower: Boolean = false,
+
+    @SerializedName("is_following")
+    val isFollowing: Boolean = false
 )

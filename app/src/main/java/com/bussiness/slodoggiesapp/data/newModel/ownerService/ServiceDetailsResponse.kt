@@ -43,7 +43,7 @@ data class ServiceMedia(
 
 data class RatingsAndReviews(
     @SerializedName("serviceId") val serviceId: Int = 0,
-    @SerializedName("averageRating") val averageRating: Int = 0,
+    @SerializedName("averageRating") val averageRating: Float = 0.0f,
     @SerializedName("totalReviews") val totalReviews: Int = 0,
     @SerializedName("ratingDistribution") val ratingDistribution: RatingDistribution = RatingDistribution(),
     @SerializedName("reviews") val reviews: List<ReviewItem> = emptyList()
@@ -58,10 +58,15 @@ data class RatingDistribution(
 )
 
 data class ReviewItem(
+
     @SerializedName("reviewerName") val reviewerName: String? = null,
+
     @SerializedName("reviewerImage") val reviewerImage: String? = null,
+
     @SerializedName("rating") val rating: Int = 0,
+
     @SerializedName("comment") val comment: String? = null,
+
     @SerializedName("date") val date: String? = null,
 
     @SerializedName("reviewId")
@@ -69,8 +74,10 @@ data class ReviewItem(
 
     @SerializedName("user")
     val user: ReviewUser? = null,
+
     @SerializedName("timeAgo")
     val timeAgo: String = "",
+
     @SerializedName("replies")
     val replies: List<ReviewReply> = emptyList(),
 
@@ -88,7 +95,8 @@ data class ReviewItem(
 
     @SerializedName("profileImage")
     val profileImage: String = ""
-)
+
+   )
 
 
   data class ReviewReply(

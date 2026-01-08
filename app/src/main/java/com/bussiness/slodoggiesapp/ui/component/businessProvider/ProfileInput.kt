@@ -124,7 +124,7 @@ fun AudienceListItem(
         }
 
         OutlinedButton(
-            onClick = if (!isFollower) onPrimaryClick else onFollowBackClick,
+            onClick = if (!isFollower) onPrimaryClick else { if(!data.isFollowing)onFollowBackClick else onPrimaryClick },
             shape = RoundedCornerShape(5.dp),
             border = BorderStroke(1.dp, PrimaryColor),
             modifier = Modifier.wrapContentWidth().height(30.dp),

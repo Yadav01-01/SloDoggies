@@ -12,5 +12,7 @@ object AppConstant {
     const val KEY_CONTACT = "user_contact"
     const val KEY_PASSWORD = "user_password"
     const val KEY_FCM_TOKEN = "fcm_token"
+    const val SINGLE ="single"
+    const val MULTIPLE ="multiple"
 
 }

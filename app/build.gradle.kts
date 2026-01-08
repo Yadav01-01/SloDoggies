@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.room.runtime.android)
+    implementation(libs.firebase.storage)
 
     // Instrumentation tests (androidTest)
     androidTestImplementation(libs.androidx.junit)
@@ -137,45 +138,43 @@ dependencies {
     kaptTest(libs.hilt.compiler)
     kaptAndroidTest(libs.hilt.compiler)
 
-    //systemUI
-    implementation (libs.accompanist.systemuicontroller)
+     //systemUI
+     implementation (libs.accompanist.systemuicontroller)
 
-    // Media3
-    implementation(libs.androidx.media3.exoplayer.v180)
-    implementation(libs.androidx.media3.ui.v180)
-    implementation(libs.androidx.media3.common)
+     // Media3
+     implementation(libs.androidx.media3.exoplayer.v180)
+     implementation(libs.androidx.media3.ui.v180)
+     implementation(libs.androidx.media3.common)
 
-    // Retrofit + OkHttp
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
-    implementation(libs.okhttp)
-    implementation(libs.logging.interceptor)
+     // Retrofit + OkHttp
+     implementation(libs.retrofit)
+     implementation(libs.converter.gson)
+     implementation(libs.okhttp)
+     implementation(libs.logging.interceptor)
 
-    // Coroutines
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.android)
+     // Coroutines
+     implementation(libs.kotlinx.coroutines.core)
+     implementation(libs.kotlinx.coroutines.android)
+     // Gson with lenient parsing
+     implementation(libs.gson)
+     //OkHttp
+     implementation(platform(libs.okhttp.bom))
+     implementation(libs.okhttp3.okhttp)
+     implementation(libs.okhttp3.logging.interceptor)
 
-    // Gson with lenient parsing
-    implementation(libs.gson)
+     //lottie animation loader
+     implementation(libs.lottie.compose)
 
-    //OkHttp
-    implementation(platform(libs.okhttp.bom))
-    implementation(libs.okhttp3.okhttp)
-    implementation(libs.okhttp3.logging.interceptor)
-
-    //lottie animation loader
-    implementation(libs.lottie.compose)
-
-    //google place API
-//    implementation (libs.places)
-    implementation(libs.places.v320)
-    implementation (libs.accompanist.permissions)
-    implementation (libs.play.services.location)
-    implementation (libs.accompanist.swiperefresh)
+     //google place API
+     //    implementation (libs.places)
+     implementation(libs.places.v320)
+     implementation (libs.accompanist.permissions)
+     implementation (libs.play.services.location)
+     implementation (libs.accompanist.swiperefresh)
 
     //firebase
     implementation (platform(libs.firebase.bom))
     implementation (libs.firebase.messaging)
- //   implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation ("com.google.firebase:firebase-firestore")
 
 }

@@ -1,6 +1,8 @@
 package com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceProviderDetailsScreen
 
 import android.annotation.SuppressLint
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -74,8 +76,12 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.AppConstant
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.petOwner.servicesVM.ServiceDetailViewModel
+import kotlinx.coroutines.flow.collectLatest
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun ServiceProviderDetailsScreen(
@@ -85,27 +91,36 @@ fun ServiceProviderDetailsScreen(
 ) {
 
     val snackbarHostState = remember { SnackbarHostState() }
-
-    // Fetch service details only once
+    val context = LocalContext.current
+   // Fetch service details only once
     LaunchedEffect(serviceId) {
         if(viewModel.serviceId.isEmpty()){
             viewModel.serviceId = serviceId
         }
         viewModel.setServiceDetail(viewModel.serviceId)
+        viewModel.callCheckFollowStatus(serviceId)
     }
 
+//    LaunchedEffect(Unit) {
+//        viewModel.reviewSubmitted.collect {
+//            if (it) {
+//                snackbarHostState.showSnackbar(message = "Review submitted successfully")
+//            }
+//        }
+
+
+
+  //  }
+
     LaunchedEffect(Unit) {
-        viewModel.reviewSubmitted.collect {
-            if (it) {
-                snackbarHostState.showSnackbar(message = "Review submitted successfully")
-            }
+        viewModel.errorMessage.collectLatest { error ->
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
     }
 
-
-    val context =LocalContext.current
     // Collect UI state
     val data = viewModel.serviceDetail.collectAsState().value
+
     var selectedOption by remember { mutableStateOf("Services") }
 
     Column(
@@ -142,6 +157,7 @@ fun ServiceProviderDetailsScreen(
                 .padding(horizontal = 15.dp)
         ) {
             Spacer(modifier = Modifier.height(10.dp))
+            Log.d("TESTING_SERVICE", "Service Detail ois"+data.serviceDetail?.businessName)
             ProviderDetails(
                 serviceType = data.serviceDetail?.category?.firstOrNull() ?: "Service",
                 cardRating = (data.serviceDetail?.rating ?: 0).toString(),
@@ -154,7 +170,20 @@ fun ServiceProviderDetailsScreen(
                 website = data.serviceDetail?.website ?: "Undisclosed",
                 miles = data.serviceDetail?.milesAway ?: "Undisclosed",
                 address = data.serviceDetail?.address ?: "Undisclosed",
-                onClickInquire = { navController.navigate(Routes.CHAT_SCREEN) }
+                iAmFollowing1 = false,id=serviceId,
+                onClickInquire = {
+                    val receiverId = serviceId
+                    val receiverImage = URLEncoder.encode(data.serviceDetail?.profileImage?:"", StandardCharsets.UTF_8.toString())
+                    val receiverName = URLEncoder.encode(data.serviceDetail?.providerName?:"", StandardCharsets.UTF_8.toString())
+                    val type = AppConstant.SINGLE
+
+                    navController.navigate(
+                        "${Routes.CHAT_SCREEN_FUNCTIONAL}/$receiverId/$receiverImage/$receiverName/$type"
+                    )
+
+                    //navController.navigate(Routes.CHAT_SCREEN)
+
+                }
             )
 
             Spacer(Modifier.height(20.dp))
@@ -169,7 +198,12 @@ fun ServiceProviderDetailsScreen(
                 "Rating & Reviews" -> ReviewInterface(data.serviceDetail?.ratingsAndReviews){
                     rating,review ->
                         val sessionManager: SessionManager = SessionManager(context)
+                    if(rating.equals("0")){
+                        Toast.makeText(context,"Please Give Rating",Toast.LENGTH_LONG).show()
+                        return@ReviewInterface
+                    }
                         viewModel.serviceReview(
+
                             serviceId.toInt(), sessionManager.getUserId().toInt(),
                             rating,review
                         )
@@ -193,7 +227,20 @@ fun ProviderDetails(
     phoneNumber: String,
     website: String,
     address: String,
+    viewModel: ServiceDetailViewModel = hiltViewModel(),
+    iAmFollowing1: Boolean=false,
+    id:String,
     onClickInquire: () -> Unit) {
+    val context = LocalContext.current // <-- this replaces "context"
+
+    var iAmFollowing by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        viewModel.isFollow.collect {
+            Log.d("TESTING_FOLLOW",""+it)
+            iAmFollowing = it
+        }
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -202,7 +249,7 @@ fun ProviderDetails(
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
 
-            // Paw Icon
+
             Box(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -216,7 +263,6 @@ fun ProviderDetails(
                         .width(50.dp)
                         .align(Alignment.TopStart)
                         .clip(RoundedCornerShape(10.dp)),
-
                     )
                 Surface(
                     color = Color.White, // White background
@@ -358,44 +404,45 @@ fun ProviderDetails(
                 )
 
                 Surface(
-                    color = PrimaryColor,
-                    shape = RoundedCornerShape(5.dp),
                     modifier = Modifier.width(121.dp)
                 ) {
-                    Text(
-                        text = stringResource(R.string.follow),
-                        fontSize = 12.sp,
-                        color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-
-//                OutlinedButton(
-//                    onClick = {
-//                        onFollowingClick()
-//                    },
-//                    modifier = Modifier
-//                        .height(24.dp)
-//                        .padding(horizontal = 10.dp),
-//                    shape = RoundedCornerShape(6.dp),
-//                    border = if (iAmFollowing) BorderStroke(1.dp, PrimaryColor) else null,
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = if (iAmFollowing) Color.White else PrimaryColor,
-//                        contentColor = if (iAmFollowing) PrimaryColor else Color.White
-//                    ),
-//                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
-//                    interactionSource = interactionSource
-//                ) {
-//                    androidx.compose.material3.Text(
-//                        text = if (iAmFollowing) "Following" else "Follow",
-//                        fontFamily = FontFamily(Font(R.font.outfit_regular)),
-//                        fontSize = 12.sp
+//                    Text(
+//                        text = stringResource(R.string.follow),
+//                        fontSize = 12.sp,
+//                        color = Color.White,
+//                        fontFamily = FontFamily(Font(R.font.outfit_medium)),
+//                        textAlign = TextAlign.Center,
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .padding(horizontal = 16.dp, vertical = 8.dp)
 //                    )
-//                }
+                    Log.d("TESTING_FOLLOW","test "+iAmFollowing)
+
+                    OutlinedButton(
+                        onClick = {
+                            viewModel.addAndRemoveFollowers(id){
+                                it-> Toast.makeText(context,it.toString(),Toast.LENGTH_LONG).show()
+                            }
+                        },
+                        modifier = Modifier
+                            .height(24.dp)
+                            .padding(horizontal = 10.dp),
+                        shape = RoundedCornerShape(6.dp),
+                        border = if (iAmFollowing) BorderStroke(1.dp, PrimaryColor) else null,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (iAmFollowing) Color.White else PrimaryColor,
+                            contentColor = if (iAmFollowing) PrimaryColor else Color.White
+                        ),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = if (iAmFollowing) "Following" else "Follow",
+                            fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                            fontSize = 12.sp
+                        )
+                    }
+                }
             }
             EnhancedExpandableInfoSpinner(phoneNumber = phoneNumber, website = website, address = address, businessDescription = businessDescription)
         }
