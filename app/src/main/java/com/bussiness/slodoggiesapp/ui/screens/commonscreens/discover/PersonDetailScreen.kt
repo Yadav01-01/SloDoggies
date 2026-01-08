@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -69,12 +70,15 @@ import com.bussiness.slodoggiesapp.ui.component.businessProvider.OutlineCustomBu
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.PetOwnerDetail
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ProfileDetail
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.AppConstant
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.formatStringNumberShorthand
 import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.isVideoFile
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.PersonDetailViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun PersonDetailScreen(
@@ -292,7 +296,23 @@ fun PersonDetailScreen(
                     OutlineCustomButton(
                         modifier = Modifier.weight(1f).height(35.dp),
                         text = "Message",
-                        onClick = { viewModel.message(navController) }
+                        onClick = {
+
+                            val receiverId = uiState.data.owner.userId
+                            Log.d("TESTING_RECEIVER_ID", "receiverId"+receiverId)
+                            val receiverImage = URLEncoder.encode(profile.owner.image?:"", StandardCharsets.UTF_8.toString())
+                            val receiverName = URLEncoder.encode(profile.owner.name, StandardCharsets.UTF_8.toString())
+                            val type = AppConstant.SINGLE
+
+                            navController.navigate(
+                                "${Routes.CHAT_SCREEN_FUNCTIONAL}/$receiverId/$receiverImage/$receiverName/$type"
+                            )
+
+
+                          //  viewModel.message(navController)
+
+
+                        }
                     )
                 }
             }

@@ -49,7 +49,10 @@ import com.bussiness.slodoggiesapp.ui.component.petOwner.SearchBar
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceContent.PetServiceCard
 import com.bussiness.slodoggiesapp.ui.screens.petowner.service.serviceContent.ServiceTypeChip
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.AppConstant
 import com.bussiness.slodoggiesapp.viewModel.petOwner.PetServicesViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.util.UUID
 
 @Composable
@@ -167,7 +170,16 @@ fun PetServicesScreen(navController: NavHostController, viewModel: PetServicesVi
                     PetServiceCard(
                         service = service,
                         navController = navController,
-                        onInquire = { navController.navigate(Routes.CHAT_SCREEN) }
+                        onInquire = {
+                            val receiverId = service.providerId
+                            val receiverImage = URLEncoder.encode(service.image, StandardCharsets.UTF_8.toString())
+                            val receiverName = URLEncoder.encode(service.providerName, StandardCharsets.UTF_8.toString())
+                            val type = AppConstant.SINGLE
+
+                            navController.navigate(
+                                "${Routes.CHAT_SCREEN_FUNCTIONAL}/$receiverId/$receiverImage/$receiverName/$type"
+                            )
+                        }
                     )
                 }
             }

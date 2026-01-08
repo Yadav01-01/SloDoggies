@@ -41,6 +41,7 @@ playServicesLocation = "21.3.0"
 retrofit = "2.11.0"
 securityCrypto = "1.1.0"
 roomRuntimeAndroid = "2.8.4"
+firebaseStorage = "22.0.1"
 
 
 [libraries]
@@ -96,6 +97,7 @@ places-v320 = { module = "com.google.android.libraries.places:places", version.r
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-room-runtime-android = { group = "androidx.room", name = "room-runtime-android", version.ref = "roomRuntimeAndroid" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

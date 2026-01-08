@@ -60,7 +60,7 @@ fun ReviewInterface(ratingsAndReviews: RatingsAndReviews?,
     var selectedRating by remember { mutableStateOf(0) }
 
     val ratings = com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData(
-        overallRating = ratingsAndReviews?.averageRating?.toFloat()?:0.0f,
+        overallRating = ratingsAndReviews?.averageRating?:0.0f,
         totalReviews = ratingsAndReviews?.totalReviews?:0,
         ratingPercentages = mapOf(
             5 to (

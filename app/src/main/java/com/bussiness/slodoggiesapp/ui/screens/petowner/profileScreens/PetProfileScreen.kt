@@ -97,16 +97,15 @@ fun PetProfileScreen(navController: NavHostController) {
     val selectedPet = uiState.data.pets.getOrNull(uiState.selectedPet)
     val context = LocalContext.current
     val viewModelUpdatePet: PetAddViewModel = hiltViewModel()
+
     LaunchedEffect(Unit) {
         viewModel.onRefresh()
     }
 
     LaunchedEffect(uiState.errorMessage) {
-
         uiState.errorMessage?.let {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
-
     }
 
     BackHandler {

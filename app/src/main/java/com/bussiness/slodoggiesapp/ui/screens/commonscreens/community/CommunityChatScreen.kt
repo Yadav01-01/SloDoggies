@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +49,7 @@ import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.common.BottomMessageBar
 import com.bussiness.slodoggiesapp.ui.component.common.CommunityHeader
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -62,6 +64,8 @@ fun CommunityChatScreen(
     val messages by viewModel.messages.collectAsState()
     val currentMessage by viewModel.currentMessage.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
+
+    val currentUserId = SessionManager(LocalContext.current).getUserId()
 
     val listState = rememberLazyListState() // LazyColumn scroll state
 
@@ -105,6 +109,7 @@ fun CommunityChatScreen(
             CommunityChatSection(
                 messages = messages,
                 listState = listState,
+                currentUserId,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = 75.dp)
@@ -119,11 +124,43 @@ fun CommunityChatScreen(
     }
 }
 
+// Old Chat Code
+//@Composable
+//fun CommunityChatSection(
+//    messages: List<ChatMessage>,
+//    listState: LazyListState,
+//    modifier: Modifier = Modifier
+//) {
+//    LazyColumn(
+//        state = listState,
+//        modifier = modifier.fillMaxSize(),
+//        verticalArrangement = Arrangement.Top,
+//        contentPadding = PaddingValues(vertical = 8.dp)
+//    ) {
+//        var lastDate: String? = null
+//
+//        items(messages) { message ->
+//            val currentDate = formatDate(message.timestamp)
+//
+//            // Show date separator when new date starts
+//            if (currentDate != lastDate) {
+//                DateSeparator(dateText = currentDate)
+//                lastDate = currentDate
+//            }
+//
+//            ChatBubble(message)
+//        }
+//    }
+//}
 
+
+
+// New Nikunj Code
 @Composable
 fun CommunityChatSection(
     messages: List<ChatMessage>,
     listState: LazyListState,
+    currentUserId: String, // logged-in user ID
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -134,28 +171,38 @@ fun CommunityChatSection(
     ) {
         var lastDate: String? = null
 
-        items(messages) { message ->
-            val currentDate = formatDate(message.timestamp)
+        // Sort messages by timestamp
+        val sortedMessages = messages.sortedBy { it.timestamp }
 
-            // Show date separator when new date starts
+        items(sortedMessages) { message ->
+            // Compute date string from message.date if available
+            val currentDate = message.date ?: formatDate(message.timestamp)
+
+            // Show date separator if this is a new date
             if (currentDate != lastDate) {
                 DateSeparator(dateText = currentDate)
                 lastDate = currentDate
             }
 
-            ChatBubble(message)
+            // Determine if this message is sent by the current user
+            val isMine = message.senderId == currentUserId || message.receiverId != currentUserId
+
+            ChatBubble(message = message, isMine = isMine)
         }
     }
 }
 
 
-
+// New Code Nikunj
 @Composable
-fun ChatBubble(message: ChatMessage) {
-    val bubbleColor = if (message.isUser) PrimaryColor else Color(0xFFE5EFF2)
-    val alignment = if (message.isUser) Arrangement.End else Arrangement.Start
+fun ChatBubble(
+    message: ChatMessage,
+    isMine: Boolean
+) {
+    val bubbleColor = if (isMine) PrimaryColor else Color(0xFFE5EFF2)
+    val alignment = if (isMine) Arrangement.End else Arrangement.Start
 
-    val bubbleShape = if (message.isUser) {
+    val bubbleShape = if (isMine) {
         RoundedCornerShape(
             topStart = 16.dp,
             topEnd = 16.dp,
@@ -170,7 +217,7 @@ fun ChatBubble(message: ChatMessage) {
             bottomEnd = 16.dp
         )
     }
-    val maxBubbleWidth = LocalConfiguration.current.screenWidthDp.dp * 0.8f
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -178,7 +225,8 @@ fun ChatBubble(message: ChatMessage) {
         horizontalArrangement = alignment,
         verticalAlignment = Alignment.Top
     ) {
-        if (!message.isUser) {
+        // Show sender image only if it's not mine
+        if (!isMine) {
             Image(
                 painter = painterResource(id = R.drawable.dummy_person_image2),
                 contentDescription = "Profile Picture",
@@ -196,41 +244,113 @@ fun ChatBubble(message: ChatMessage) {
                 .padding(top = 4.dp, bottom = 4.dp)
                 .clip(bubbleShape)
                 .background(bubbleColor)
-                .widthIn(
-                    max = if (message.isUser)
-                        LocalConfiguration.current.screenWidthDp.dp * 0.8f
-                    else
-                        LocalConfiguration.current.screenWidthDp.dp * 0.7f
-                )
+                .widthIn(max = LocalConfiguration.current.screenWidthDp.dp * 0.8f)
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 10.dp, vertical = 6.dp)
-            ) {
-                Box(
-                    modifier = Modifier.wrapContentSize()
-                ) {
-                    Text(
-                        text = message.text,
-                        color = if (message.isUser) Color.White else Color.Black,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .padding(end = 50.dp) // leave space for timestamp inside bubble
-                    )
-                }
+            Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)) {
+                Text(
+                    text = message.message,
+                    color = if (isMine) Color.White else Color.Black,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(end = 50.dp) // leave space for timestamp
+                )
             }
+
+            // Timestamp inside bubble
             Text(
-                text = formatTime(message.timestamp),
+                text = message.time ?: formatTime(message.timestamp),
                 fontSize = 11.sp,
-                color = if (message.isUser) Color(0xFFE0E0E0) else Color.Gray,
+                color = if (isMine) Color(0xFFE0E0E0) else Color.Gray,
                 modifier = Modifier
                     .padding(end = 6.dp)
                     .align(Alignment.BottomEnd)
             )
-
         }
     }
 }
+
+// Old Poc Code
+
+//@Composable
+//fun ChatBubble(message: ChatMessage) {
+//    val bubbleColor = if (message.isUser) PrimaryColor else Color(0xFFE5EFF2)
+//    val alignment = if (message.isUser) Arrangement.End else Arrangement.Start
+//
+//    val bubbleShape = if (message.isUser) {
+//        RoundedCornerShape(
+//            topStart = 16.dp,
+//            topEnd = 16.dp,
+//            bottomStart = 16.dp,
+//            bottomEnd = 0.dp
+//        )
+//    } else {
+//        RoundedCornerShape(
+//            topStart = 16.dp,
+//            topEnd = 16.dp,
+//            bottomStart = 0.dp,
+//            bottomEnd = 16.dp
+//        )
+//    }
+//    val maxBubbleWidth = LocalConfiguration.current.screenWidthDp.dp * 0.8f
+//    Row(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 8.dp, vertical = 4.dp),
+//        horizontalArrangement = alignment,
+//        verticalAlignment = Alignment.Top
+//    ) {
+//        if (!message.isUser) {
+//            Image(
+//                painter = painterResource(id = R.drawable.dummy_person_image2),
+//                contentDescription = "Profile Picture",
+//                modifier = Modifier
+//                    .size(36.dp)
+//                    .clip(CircleShape)
+//                    .background(Color.Gray)
+//                    .align(Alignment.Bottom)
+//            )
+//            Spacer(modifier = Modifier.width(8.dp))
+//        }
+//
+//        Box(
+//            modifier = Modifier
+//                .padding(top = 4.dp, bottom = 4.dp)
+//                .clip(bubbleShape)
+//                .background(bubbleColor)
+//                .widthIn(
+//                    max = if (message.isUser)
+//                        LocalConfiguration.current.screenWidthDp.dp * 0.8f
+//                    else
+//                        LocalConfiguration.current.screenWidthDp.dp * 0.7f
+//                )
+//        ) {
+//            Column(
+//                modifier = Modifier
+//                    .padding(horizontal = 10.dp, vertical = 6.dp)
+//            ) {
+//                Box(
+//                    modifier = Modifier.wrapContentSize()
+//                ) {
+//                    Text(
+//                        text = message.text,
+//                        color = if (message.isUser) Color.White else Color.Black,
+//                        fontSize = 14.sp,
+//                        modifier = Modifier
+//                            .padding(end = 50.dp) // leave space for timestamp inside bubble
+//                    )
+//                }
+//            }
+//            Text(
+//                text = formatTime(message.timestamp),
+//                fontSize = 11.sp,
+//                color = if (message.isUser) Color(0xFFE0E0E0) else Color.Gray,
+//                modifier = Modifier
+//                    .padding(end = 6.dp)
+//                    .align(Alignment.BottomEnd)
+//            )
+//
+//        }
+//    }
+//}
 
 fun formatTime(timestamp: Long): String {
     val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())

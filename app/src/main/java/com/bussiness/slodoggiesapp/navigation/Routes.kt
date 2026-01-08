@@ -34,6 +34,7 @@ object Routes {
     const val NOTIFICATION_SCREEN = "NotificationScreen"
     const val MESSAGE_SCREEN = "MessageScreen"
     const val CHAT_SCREEN = "ChatScreen"
+    const val CHAT_SCREEN_FUNCTIONAL ="ChatScreenFunctional"
     const val SUBSCRIPTION_SCREEN = "SubscriptionScreen"
     const val COMMUNITY_PROFILE_SCREEN = "CommunityProfileScreen"
     const val ADD_PARTICIPANTS_SCREEN = "AddParticipantsScreen"

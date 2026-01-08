@@ -51,7 +51,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.common.ChatWindow
+import com.bussiness.slodoggiesapp.data.model.common.Message
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
 
 @Composable
@@ -204,7 +206,11 @@ fun BottomMessageBar(
                     .size(50.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(PrimaryColor)
-                    .clickable { viewModel.sendMessage() },
+                    .clickable {
+
+
+
+                        viewModel.sendMessage() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

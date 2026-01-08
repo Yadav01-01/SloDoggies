@@ -66,4 +66,6 @@ object ApiEndPoint {
     const val GET_SUBSCRIPTION = "getSubscription"
     const val DELETE_SERVICE ="delete_service"
     const val SERVICE_REVIEW = "serviceReview"
+    const val BUSINESS_FOLLOW = "business_follow"
+    const val GET_USER_IMAGE = "get_user_image"
 }

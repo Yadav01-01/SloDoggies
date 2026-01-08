@@ -2,6 +2,9 @@ package com.bussiness.slodoggiesapp.data.remote
 
 import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
 import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
+import com.bussiness.slodoggiesapp.data.model.common.CreateChannelResponse
+import com.bussiness.slodoggiesapp.data.model.common.UserImageResponse
+import com.bussiness.slodoggiesapp.data.model.petOwner.FollowStatusResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
 import com.bussiness.slodoggiesapp.data.newModel.commonresponse.CommonResponse
 import com.bussiness.slodoggiesapp.data.newModel.followerresponse.FollowersResponse
@@ -35,6 +38,7 @@ import com.bussiness.slodoggiesapp.data.newModel.sponsered.BusinessAdsResponse
 import com.bussiness.slodoggiesapp.data.newModel.subscription.SubscriptionResponse
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
+import com.bussiness.slodoggiesapp.network.Resource
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -559,9 +563,9 @@ interface ApiService {
     ) : Response<DeleteResponse>
 
     @FormUrlEncoded
-    @POST(ApiEndPoint.SERVICE_REVIEW)
+    @POST("add_business_review")
     suspend fun serviceReview(
-        @Field("serviceId") serviceId:Int,
+        @Field("business_id") serviceId:Int,
         @Field("user_id") userId:Int,
         @Field("rating") rating:String,
         @Field("message") message :String
@@ -604,5 +608,28 @@ interface ApiService {
     suspend fun getSubscription(
         @Field("user_id") userId: String,
     ) :  Response<SubscriptionResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.BUSINESS_FOLLOW)
+    suspend fun businessFollow(
+        @Field("business_id")  businessId:String
+    ) : Response<FollowStatusResponse>
+
+
+    @FormUrlEncoded
+    @POST("create_channel")
+    suspend fun createChannel(
+        @Field("sender_id") senderId :Int,
+        @Field("receiver_id") receiverId:String?,
+        @Field("event_id") eventId :String?,
+        @Field("chat_id") chatId :String?,
+        @Field("chat_type") chatType:String?,
+    ) : Response<CreateChannelResponse>
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.GET_USER_IMAGE)
+    suspend fun getUserImage(
+        @Field("user_id") userId :String
+    ) : Response<UserImageResponse>
 
 }

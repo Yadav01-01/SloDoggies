@@ -56,10 +56,12 @@ import com.bussiness.slodoggiesapp.ui.component.common.NoDataView
 import com.bussiness.slodoggiesapp.ui.dialog.CenterToast
 import com.bussiness.slodoggiesapp.ui.dialog.RemoveParticipantDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.AppConstant
 import com.bussiness.slodoggiesapp.viewModel.common.FollowerFollowingViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
+import java.net.URLEncoder
 
 
 @Composable
@@ -231,7 +233,12 @@ fun FollowerScreen(
                     data = data,
                     isFollower = screenState.selectedOption == "Follower",
                     onPrimaryClick = {
-                        navController.navigate(Routes.CHAT_SCREEN)
+                        val singleUser = AppConstant.SINGLE
+                        val encodedImage = URLEncoder.encode(data.profilePic ?: "", "UTF-8")
+                        val encodedName = URLEncoder.encode(data.name ?: "", "UTF-8")
+                        navController.navigate(
+                            "${Routes.CHAT_SCREEN_FUNCTIONAL}/${data.id}/${encodedImage?: ""}/${encodedName}/${singleUser}"
+                        )
                     },
                     onRemoveClick = {
                         if (screenState.selectedOption == "Follower") {

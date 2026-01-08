@@ -15,6 +15,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,6 +32,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.ChatHeaderData
@@ -41,33 +45,170 @@ import com.bussiness.slodoggiesapp.ui.dialog.BottomToast
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.community.CommunityChatSection
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.AppConstant
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.delay
+import java.net.URLDecoder
+import java.util.Date
 
 @Composable
 fun ChatScreen(
-    navController: NavHostController,
+    navController: NavHostController,receiverId:String ="",receiverImage:String ="",receiverName:String="",type:String="",
     viewModel: CommunityChatViewModel = hiltViewModel()
 ) {
+
     var showToast by remember { mutableStateOf(false) }
+
     var isBlocked by remember { mutableStateOf(false) }
+
     var deleteDialog by remember { mutableStateOf(false) }
+
     var selectedReason by remember { mutableStateOf("") }
+
     var message by remember { mutableStateOf("") }
+
     var showReportDialog by remember { mutableStateOf(false) }
+
     val sessionManager = SessionManager.getInstance(LocalContext.current)
 
+    val currentUserId = sessionManager.getUserId()
+
+    viewModel.currentUserId = currentUserId
+
+    val receiverImage = receiverImage.takeIf { it.isNotEmpty() }
+        ?.let { URLDecoder.decode(it, "UTF-8") } ?: ""
+    val receiverName = receiverName.takeIf { it.isNotEmpty() }
+        ?.let { URLDecoder.decode(it, "UTF-8") } ?: ""
+    val chatId = remember(receiverId, currentUserId) {
+        if (receiverId.isNotEmpty()) {
+            if (receiverId.toInt() < currentUserId.toInt()) {
+                "${currentUserId}_${receiverId}"
+            } else {
+                "${receiverId}_${currentUserId}"
+            }
+        } else {
+            ""
+        }
+    }
+    viewModel.setChatData(chatId,receiverId)
+    viewModel.getUserImage(currentUserId)
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val db = FirebaseFirestore.getInstance()
     val messages by viewModel.messages.collectAsState()
     val currentMessage by viewModel.currentMessage.collectAsState()
     val listState = rememberLazyListState()
     var isNavigating by remember { mutableStateOf(false) }
+    var otherUserOnline by remember { mutableStateOf(false) }
+    var otherUserLastSeen by remember { mutableStateOf<Date?>(null) }
+
+    if(type.equals(AppConstant.SINGLE)) {
+
+        // --- Firestore References (safe even if collection doesn't exist) ---
+        val currentUserDoc = remember(currentUserId) {
+            db.collection("users").document(currentUserId)
+        }
+
+        val receiverDoc = remember(receiverId) {
+            db.collection("users").document(receiverId)
+        }
+
+        // --- UI State (Compose will recompose automatically) ---
+
+        /* ---------------------------------------------------------
+       1️⃣ Ensure CURRENT USER document exists (runs once)
+       --------------------------------------------------------- */
+        LaunchedEffect(currentUserId) {
+            currentUserDoc.set(
+                mapOf(
+                    "uid" to currentUserId,
+                    "isOnline" to true,
+                    "lastSeen" to FieldValue.serverTimestamp()
+                ),
+                SetOptions.merge()
+            )
+        }
+
+        /* ---------------------------------------------------------
+       2️⃣ Observe RECEIVER presence (REAL-TIME)
+       --------------------------------------------------------- */
+        DisposableEffect(receiverId) {
+            val listener = receiverDoc.addSnapshotListener { snapshot, _ ->
+                if (snapshot != null && snapshot.exists()) {
+                    otherUserOnline = snapshot.getBoolean("isOnline") ?: false
+                    otherUserLastSeen = snapshot.getTimestamp("lastSeen")?.toDate()
+                } else {
+                    otherUserOnline = false
+                    otherUserLastSeen = null
+                }
+            }
+
+            onDispose { listener.remove() }
+        }
+
+        /* ---------------------------------------------------------
+       3️⃣ Handle APP lifecycle (online / offline)
+       --------------------------------------------------------- */
+        DisposableEffect(lifecycleOwner) {
+            val observer = object : DefaultLifecycleObserver {
+
+                override fun onStart(owner: LifecycleOwner) {
+                    currentUserDoc.set(
+                        mapOf(
+                            "isOnline" to true,
+                            "lastSeen" to FieldValue.serverTimestamp()
+                        ),
+                        SetOptions.merge()
+                    )
+                }
+
+                override fun onStop(owner: LifecycleOwner) {
+                    currentUserDoc.set(
+                        mapOf(
+                            "isOnline" to false,
+                            "lastSeen" to FieldValue.serverTimestamp()
+                        ),
+                        SetOptions.merge()
+                    )
+                }
+            }
+
+            lifecycleOwner.lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+
+                // Guarantee offline when screen is destroyed
+                currentUserDoc.set(
+                    mapOf(
+                        "isOnline" to false,
+                        "lastSeen" to FieldValue.serverTimestamp()
+                    ),
+                    SetOptions.merge()
+                )
+            }
+        }
+
+    }
+
+
+
+    val chatHeader = com.bussiness.slodoggiesapp.data.model.businessProvider.ChatHeaderData(
+        imageUrl = receiverImage,
+        name = receiverName,
+        status =if(type.equals(AppConstant.SINGLE)){ if(otherUserOnline)"Active Now" else "Offline" } else{"22 Member"}
+    )
 
     // Scroll to latest message when list changes
     LaunchedEffect(messages.size) {
+
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
         }
+
     }
 
     Column(
@@ -105,6 +246,7 @@ fun ChatScreen(
             CommunityChatSection(
                 messages = messages,
                 listState = listState,
+                currentUserId,
                 modifier = Modifier.fillMaxSize().padding(bottom = 65.dp)
             )
 
@@ -177,10 +319,4 @@ fun ChatScreen(
     }
 }
 
-
-var chatHeader = com.bussiness.slodoggiesapp.data.model.businessProvider.ChatHeaderData(
-    imageUrl = "https://example.com/user2.jpg",
-    name = "Merry",
-    status = "Active Now"
-)
 
