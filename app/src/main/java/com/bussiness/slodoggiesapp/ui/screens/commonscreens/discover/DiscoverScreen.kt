@@ -192,10 +192,13 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                    onSuccess = {  //viewModel.showSavedDialog(true)
                         }
                 ) },
-                onClickFollowing = { postId -> viewModel.addAndRemoveFollowers(postId,
-                    onError = { msg ->
-                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                    })
+                onClickFollowing = {
+                        userId->
+                    Log.d("TESTING_ACTIVITY","PostId is "+userId)
+                    viewModel.addAndRemoveFollowers(userId,
+                        onError = { msg ->
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        })
                 }
             )
 
@@ -463,7 +466,7 @@ fun EventsResult(
     onLikeClick: (String) -> Unit,
     onProfileClick: (String) -> Unit,
     onInterested: (String) -> Unit,
-    onClickFollowing: (String) -> Unit,
+    onClickFollowing: (userId:String) -> Unit,
 ) {
     if (posts.isEmpty()){
         Box(
@@ -493,11 +496,14 @@ fun EventsResult(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(posts) { event ->
+            items(
+                posts,
+                key = {it.stableKey}
+                ) { event ->
                 // Check each item
                 if (event is PostItem.CommunityPost) {
 
-                    var sessionManager = SessionManager(LocalContext.current)
+                    val sessionManager = SessionManager(LocalContext.current)
                     SocialEventCard(
                         postItem = event,
                         onReportClick = { onClickMore() },
@@ -506,8 +512,8 @@ fun EventsResult(
                         onJoinedCommunity = { onJoinClick() },
                         onProfileClick = { onProfileClick(event.userId) },
                         onInterested = { onInterested(event.postId) },
-                        onClickFollowing = { onClickFollowing(event.postId) },
-                        isFollowing = event.iAmFollowing, sessionManager = sessionManager
+                        onClickFollowing = { onClickFollowing(event.userId) },
+                        sessionManager = sessionManager
                     )
 
                 }

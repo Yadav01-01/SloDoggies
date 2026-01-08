@@ -278,7 +278,7 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
                         viewModel.addPhoto(it.toString())
                     },
                     onMediaUnSelected = {
-                        viewModel.removePhoto(it)
+                        viewModel.removePhoto(it.toString())
                     },
                     type="image")
             }

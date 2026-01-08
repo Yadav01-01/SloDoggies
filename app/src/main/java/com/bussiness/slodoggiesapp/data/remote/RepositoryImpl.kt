@@ -475,7 +475,6 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
         emit(result)
     }.flowOn(Dispatchers.IO)
 
-
     override suspend fun getFollowerList(userId: String,page: String,limit: String, search : String): Flow<Resource<FollowersResponse>> = flow {
         emit(Resource.Loading)
         emit(safeApiCall { api.getFollowerList(userId,page,limit,search) })
@@ -501,7 +500,7 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
         followerId: String
     ): Flow<Resource<CommonResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.addAndRemoveFollowers(userId,followerId) })
+        emit(safeApiCall(showLoader = false) { api.addAndRemoveFollowers(userId,followerId) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getOwnerProfileDetails(userId: String,petOwnerId : String): Flow<Resource<PetOwnerDetailsResponse>> = flow{
@@ -511,7 +510,7 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
 
     override suspend fun getOwnerGalleryPost(userId: String,page: String): Flow<Resource<OwnerGalleryResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall { api.getOwnerGallery(userId,page) })
+        emit(safeApiCall(showLoader = false) { api.getOwnerGallery(userId,page) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun getPetDetail(petId: String): Flow<Resource<UpdatePetModel>> = flow {
@@ -600,7 +599,7 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
         limit: String
     ): Flow<Resource<CommentsResponse>> = flow{
         emit(Resource.Loading)
-        emit(safeApiCall( false,{ api.getComments(userId,postId,addId,page,limit) }))
+        emit(safeApiCall( false) { api.getComments(userId, postId, addId, page, limit) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun addNewComment(
@@ -620,7 +619,7 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
         commentText: String
     ): Flow<Resource<AddCommentReplyResponse>>  = flow{
         emit(Resource.Loading)
-        emit(safeApiCall (false,{ api.replyComment(userId,postId,commentId,commentText) }))
+        emit(safeApiCall (false) { api.replyComment(userId, postId, commentId, commentText) })
     }.flowOn(Dispatchers.IO)
 
     override suspend fun deleteComment(

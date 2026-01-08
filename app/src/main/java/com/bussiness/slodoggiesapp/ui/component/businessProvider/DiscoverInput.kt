@@ -627,15 +627,16 @@ fun PetPlaceCard(placeItem: PetPlaceItem,
 }
 
 @Composable
-fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Unit,
+fun SocialEventCard(postItem: PostItem.CommunityPost,
+                    onClickFollowing: () -> Unit,
                     onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit,
                     onLikeClick : () -> Unit,
                     onProfileClick: () -> Unit,
                     onInterested : () -> Unit,
-                    isFollowing: Boolean,
                     sessionManager: SessionManager
                     ) {
 
+    val iAmFollowing = postItem.iAmFollowing
     Column(modifier = Modifier
         .background(Color.White)
         .border(1.dp, Color(0xFFE5EFF2), RoundedCornerShape(10.dp))
@@ -676,28 +677,27 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,onClickFollowing: () -> Uni
                     Spacer(Modifier.width(8.dp))
                     val interactionSource = remember { MutableInteractionSource() }
 
-                    val sessionManager = SessionManager.getInstance(LocalContext.current)
                     if(sessionManager.getUserId() != postItem.userId) {
                         OutlinedButton(
-                            onClick = { onClickFollowing() },
-                            modifier = Modifier.height(24.dp).padding(horizontal = 10.dp),
+                            onClick = {
+                                onClickFollowing()
+                            },
+                            modifier = Modifier
+                                .height(24.dp)
+                                .padding(horizontal = 10.dp),
                             shape = RoundedCornerShape(6.dp),
-                            border = if (postItem.iAmFollowing) BorderStroke(
-                                1.dp,
-                                PrimaryColor
-                            ) else null,
+                            border = if (iAmFollowing) BorderStroke(1.dp, PrimaryColor) else null,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (postItem.iAmFollowing) Color.White else PrimaryColor,
-                                contentColor = if (postItem.iAmFollowing) PrimaryColor else Color.White
+                                containerColor = if (iAmFollowing) Color.White else PrimaryColor,
+                                contentColor = if (iAmFollowing) PrimaryColor else Color.White
                             ),
                             contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
                             interactionSource = interactionSource
                         ) {
                             Text(
-                                text = if (postItem.iAmFollowing) "Following" else "Follow",
+                                text = if (iAmFollowing) "Following" else "Follow",
                                 fontFamily = FontFamily(Font(R.font.outfit_regular)),
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Normal
+                                fontSize = 12.sp
                             )
                         }
                     }
