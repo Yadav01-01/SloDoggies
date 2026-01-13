@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import android.webkit.WebView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -39,6 +40,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.viewModel.privacypolicy.PrivacyPolicyViewModel
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+
 
 @Composable
 fun PrivacyPolicyScreen(navController: NavHostController) {
@@ -140,23 +142,80 @@ fun ShowDataPrivacyPolicy(navController: NavHostController, type: String) {
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 20.dp, vertical = 10.dp)
                 ) {
-                    AndroidView(
-                        factory = { context ->
-                            TextView(context).apply {
-                                setTextColor(android.graphics.Color.parseColor("#252E32"))
-                                textSize = 16f
+//                    AndroidView(
+//                        factory = { context ->
+//                            TextView(context).apply {
+//                                setTextColor(android.graphics.Color.parseColor("#252E32"))
+//                                textSize = 16f
+//
+//                                // Optional: Enable clickable links
+//                                movementMethod = android.text.method.LinkMovementMethod.getInstance()
+//                            }
+//                        },
+//                        update = { view ->
+//                            view.text = HtmlCompat.fromHtml(
+//                                termsText,
+//                                HtmlCompat.FROM_HTML_MODE_LEGACY
+//                            )
+//                        }
+//                    )
 
-                                // Optional: Enable clickable links
-                                movementMethod = android.text.method.LinkMovementMethod.getInstance()
+//                    AndroidView(
+//                        modifier = Modifier.fillMaxSize(),
+//                        factory = { context ->
+//                            WebView(context).apply {
+//                                settings.javaScriptEnabled = true
+//                                settings.domStorageEnabled = true
+//                                setBackgroundColor(android.graphics.Color.parseColor("#00000000"))
+//
+//                            }
+//                        },
+//                        update = { webView ->
+//                            webView.loadDataWithBaseURL(
+//                                null,
+//                                termsText,
+//                                "text/html",
+//                                "utf-8",
+//                                null
+//                            )
+//                        }
+//                    )
+                    val htmlWithCss = """
+                    <html>
+                    <head>
+                        <style>
+                            img { max-width: 100%; height: auto; }
+                            body { margin: 0; padding: 0; font-size: 16px; color: #252E32; }
+                        </style>
+                    </head>
+                    <body>
+                        $termsText
+                    </body>
+                    </html>
+                """.trimIndent()
+
+                    AndroidView(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 10.dp, vertical = 10.dp),
+                        factory = { context ->
+                            WebView(context).apply {
+                                settings.javaScriptEnabled = true
+                                settings.domStorageEnabled = true
+                                setBackgroundColor(android.graphics.Color.TRANSPARENT)
                             }
                         },
-                        update = { view ->
-                            view.text = HtmlCompat.fromHtml(
-                                termsText,
-                                HtmlCompat.FROM_HTML_MODE_LEGACY
+                        update = { webView ->
+                            webView.loadDataWithBaseURL(
+                                null,
+                                htmlWithCss,
+                                "text/html",
+                                "utf-8",
+                                null
                             )
                         }
                     )
+
                 }
             }
         }

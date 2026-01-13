@@ -1,9 +1,15 @@
 package com.bussiness.slodoggiesapp.ui.component.businessProvider
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +58,7 @@ fun ChoosePostTypeButton(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+
     Button (
         onClick = onClick,
         modifier = modifier
@@ -225,6 +232,108 @@ fun CustomDropdownBox(
         }
     }
 }
+
+
+
+@Composable
+fun CustomDropdownBox1(
+    label: String,
+    items: List<String>,
+    selectedItem: String,
+    onItemSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val interactionSource = remember { MutableInteractionSource() }
+    Log.d("TESTING_DROP_DOWN_LIST","Size is "+items.size)
+    Column(modifier = Modifier.fillMaxWidth()) {
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, Color(0xFFAEAEAE), RoundedCornerShape(8.dp))
+                .background(Color.White, RoundedCornerShape(8.dp))
+                .clickable(
+                  interactionSource = interactionSource,
+                    indication = null
+                ) { expanded = !expanded }
+                .padding(12.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = if (selectedItem.isNotEmpty()) selectedItem else label,
+                    color = if (selectedItem.isNotEmpty()) Color.Black else TextGrey,
+                    fontSize = 15.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)))
+
+                Icon(
+                    painter = painterResource(
+                        id = if (expanded) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down
+                    ),
+                    contentDescription = null,
+                    tint = Color.Gray
+                )
+            }
+        }
+
+        // Dropdown list
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp),
+                shape = RoundedCornerShape(8.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                ) {
+                    items.forEach { item ->
+                        Log.d("TESTING_DROP_DOWN_LIST","Item name is "+item)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    //if (item == selectedItem) PrimaryColor else Color.White,
+                                    if (item == selectedItem) PrimaryColor else Color.White,
+                                    RoundedCornerShape(6.dp)
+                                )
+                                .clickable(
+                                    interactionSource = interactionSource,
+                                    indication = null
+                                ) {
+                                    onItemSelected(item)
+                                    expanded = false
+                                }
+                                .padding(horizontal = 12.dp, vertical = 12.dp)
+                        ) {
+                            Text(
+                                text = item,
+                                color = if (item == selectedItem) Color.Black else Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = FontFamily(Font(R.font.outfit_regular))
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
 
 @Composable
 fun ScrollableDropdownBox(

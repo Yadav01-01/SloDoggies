@@ -33,6 +33,11 @@ class PostCreateOwnerViewModel @Inject constructor(private val repository: Repos
     fun onHashTagChange(tage: String) {
         _uiState.value = _uiState.value.copy(hashTage = tage)
     }
+
+    fun onAddressChange(address:String){
+        _uiState.value = _uiState.value.copy(location = address)
+    }
+
     fun onLocation(location: String) {
         _uiState.value = _uiState.value.copy(location = location)
     }

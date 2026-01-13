@@ -457,7 +457,11 @@ private fun PostCaption(caption: String, description: String, hashTags: String) 
 
         // Hashtags
         Text(
-            text = hashTags,
+            text = if (hashTags.startsWith("#")) {
+                hashTags
+            } else {
+                "#$hashTags"
+            },
             fontSize = 12.5.sp,
             color = PrimaryColor,
             fontFamily = FontFamily(Font(R.font.inter_regular)),

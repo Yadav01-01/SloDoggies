@@ -53,13 +53,14 @@ class HomeViewModel @Inject constructor(
     init {
       //  loadFirstPage()
         initWelcomeDialog()
-        friendList()
+       // friendList()
     }
 
     fun loadFirstPage() {
         currentPage = 1
         isLastPage = false
         fetchPosts(isFirstPage = true)
+
     }
 
     fun loadPostFirstPage() {
@@ -93,6 +94,10 @@ class HomeViewModel @Inject constructor(
             getMySavedPosts(isFirstPage = false)
         }
     }
+    fun loadSavePost(){
+        getMySavedPosts(isFirstPage = true)
+
+    }
 
     fun loadSavePage() {
         if (!isLastPage && !isRequestRunning) {
@@ -100,7 +105,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun friendList(){
+    fun friendList(){
         viewModelScope.launch {
             repository.friendList(sessionManager.getUserId()).collectLatest { result ->
                 when (result){
@@ -161,7 +166,8 @@ class HomeViewModel @Inject constructor(
                                 else state.posts + mergedPosts,
                                 isLoading = false,
                                 isLoadingMore = false,
-                                errorMessage = ""
+                                errorMessage = "",
+                                refreshVersion = state.refreshVersion+1
                             )
                         }
 
@@ -188,6 +194,7 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
     private fun getMySavedPosts(isFirstPage: Boolean) {
         if (isRequestRunning) return
         isRequestRunning = true
@@ -206,9 +213,7 @@ class HomeViewModel @Inject constructor(
                 userId = sessionManager.getUserId(),
                 page = currentPage.toString()
             ).collectLatest { result ->
-
                 when (result) {
-
                     is Resource.Success -> {
                         val response = result.data.data
 
@@ -224,10 +229,11 @@ class HomeViewModel @Inject constructor(
                                 else state.posts + mergedPosts,
                                 isLoading = false,
                                 isLoadingMore = false,
-                                errorMessage = ""
+                                errorMessage = "",
+                                refreshVersion =state.refreshVersion+1
                             )
                         }
-
+                        Log.d("TESTING_","Inside success of posts "+uiState.value.posts.size)
                         val totalPages = response?.totalPage ?: 1
                         isLastPage = currentPage >= totalPages
                         if (!isLastPage) currentPage++
@@ -256,6 +262,7 @@ class HomeViewModel @Inject constructor(
         if (isRequestRunning) return
         isRequestRunning = true
 
+        Log.d("TESTING_SLODOGGIES","Size is "+uiState.value.posts.size)
         _uiState.update { state ->
             state.copy(
                 isLoading = isFirstPage,
@@ -279,18 +286,23 @@ class HomeViewModel @Inject constructor(
                         val items = response?.items ?: emptyList()
                         val uiPosts = HomeFeedMapper.map(items)
 
-                        val mergedPosts = mergeApiWithLocal(uiPosts)
+                        val mergedPosts = if(isFirstPage) uiPosts else mergeApiWithLocal(uiPosts)
 
                         _uiState.update { state ->
-                            state.copy(
+                               state.copy(
                                 posts = if (isFirstPage) mergedPosts
                                 else state.posts + mergedPosts,
+
                                 isLoading = false,
                                 isLoadingMore = false,
-                                errorMessage = ""
-                            )
+                                errorMessage = "",
+                                   refreshVersion = state.refreshVersion +  1
+
+                               )
+
                         }
 
+                        Log.d("TESTING_SLODOGGIES","Size is inside success"+uiState.value.posts.size)
                         val totalPages = response?.totalPage ?: 1
                         isLastPage = currentPage >= totalPages
                         if (!isLastPage) currentPage++
@@ -349,13 +361,21 @@ class HomeViewModel @Inject constructor(
                             if (isFirstPage) normalPosts
                             else _uiState.value.posts + normalPosts
 
+                        if(uiState.value.posts.size ==0){
+                            uiState.value.responseMessage= "No Post Found"
+                        }
                         //  Update UI State
                         _uiState.update { state ->
                             state.copy(
                                 posts = finalPosts,
                                 isLoading = false,
                                 isLoadingMore = false,
-                                errorMessage = ""
+                                errorMessage = "",
+                               responseMessage = if (uiState.value.posts.isEmpty()) {
+                                    "No Post Found"
+                                } else {
+                                    "OOps! Something Went Wrong"
+                                }
                             )
                         }
 
@@ -618,12 +638,13 @@ class HomeViewModel @Inject constructor(
 
 
     //  Updated toggleSave to update local memory also
-    fun toggleSave(postId: String) {
+    fun toggleSave(postId: String,from :String ="Home") {
 
         val currentLocal = localSavedState[postId] ?: false
         localSavedState[postId] = !currentLocal  // important
 
         _uiState.update { state ->
+            if(from.equals("Home")){
             val updated = state.posts.map { post ->
 
                 when (post) {
@@ -637,7 +658,19 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
+
             state.copy(posts = updated)
+            }else{
+                val updated = state.posts.filterNot { post ->
+                    when (post) {
+                        is PostItem.NormalPost -> post.postId == postId
+                        is PostItem.CommunityPost -> post.postId == postId
+                        is PostItem.SponsoredPost -> post.postId == postId
+                    }
+                }
+
+                state.copy(posts = updated)
+            }
         }
     }
 

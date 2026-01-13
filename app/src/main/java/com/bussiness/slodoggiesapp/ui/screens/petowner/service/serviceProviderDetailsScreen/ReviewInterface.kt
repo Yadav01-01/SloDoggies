@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -49,6 +50,8 @@ import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.RatingsAndReviews
 import com.bussiness.slodoggiesapp.data.newModel.ownerService.ReviewItem
 import com.bussiness.slodoggiesapp.ui.screens.businessprovider.services.content.ReviewItemPanel
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 @Composable
@@ -230,7 +233,7 @@ fun RatingSummary(ratingData: com.bussiness.slodoggiesapp.data.model.businessPro
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "4.0",
+                text = ratingData.overallRating.roundToInt().toString(),
                 fontSize = 48.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_bold)),
                 color = Color.Black
@@ -238,10 +241,9 @@ fun RatingSummary(ratingData: com.bussiness.slodoggiesapp.data.model.businessPro
 
             // Star Rating Display
             Row {
-                repeat(4) {
+                repeat(ratingData.overallRating.roundToInt()) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_round_star),
-                        // imageVector = Icons.Filled.Star,
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = Modifier.size(20.dp)
@@ -254,11 +256,10 @@ fun RatingSummary(ratingData: com.bussiness.slodoggiesapp.data.model.businessPro
                     modifier = Modifier.size(20.dp)
                 )
             }
-
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "52 Reviews",
+                text = if(ratingData.totalReviews.toString().equals("0") || ratingData.totalReviews.toString().equals("1"))ratingData.totalReviews.toString() +" review" else ratingData.totalReviews.toString() +" reviews",
                 fontSize = 14.sp,
                 fontFamily = FontFamily(Font(R.font.outfit_semibold)),
                 color = Color.Black

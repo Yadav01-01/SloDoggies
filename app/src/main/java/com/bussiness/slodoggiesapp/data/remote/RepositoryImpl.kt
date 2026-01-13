@@ -93,7 +93,11 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
         otp: String
     ): Flow<Resource<RegisterResponse>> = flow {
         emit(Resource.Loading)
-        emit(safeApiCall { api.userRegister(fullName, emailOrPhone, password, deviceType, fcm_token, userType, otp) })
+
+        emit(safeApiCall {
+            api.userRegister(fullName, emailOrPhone, password, deviceType, fcm_token, userType, otp)
+           }
+        )
     }.flowOn(Dispatchers.IO)
 
     override suspend fun userLogin(

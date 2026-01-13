@@ -11,6 +11,8 @@ import com.google.android.gms.location.Priority
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
+import com.google.android.gms.maps.model.LatLng
+
 
 sealed class LocationAction {
     data object RequestPermission : LocationAction()
@@ -27,7 +29,6 @@ class LocationViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _locationState = MutableStateFlow(LocationUiState())
     val locationState: StateFlow<LocationUiState> = _locationState
-
 
     /** Main function — UI calls this */
     fun checkRequirements(
@@ -73,6 +74,7 @@ class LocationViewModel(app: Application) : AndroidViewModel(app) {
                     address = address,
                     isLoading = false
                 )
+
             }
             .addOnFailureListener {
                 _locationState.value = LocationUiState(

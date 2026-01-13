@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CategoryInputField
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox
+import com.bussiness.slodoggiesapp.ui.component.businessProvider.CustomDropdownBox1
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.DescriptionBox
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.FormHeadingText
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.InputField
@@ -135,10 +136,11 @@ fun PromotionScreenContent(
 
         item {
             FormHeadingText(stringResource(R.string.service))
+         //   FormHeadingText("Service")
             Spacer(Modifier.height(10.dp))
-            CustomDropdownBox(
+            CustomDropdownBox1(
                 label = if (selectedServices.isEmpty()) "Select Service" else selectedServices,
-                items = uiStateService.data?.map { it.service_title ?: "" } ?: emptyList(),
+                items = uiStateService.data?.map { it.serviceName ?: "" } ?: emptyList(),
                 selectedItem = selectedServices,
                 onItemSelected = {
                     Log.d("******",it)

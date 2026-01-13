@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.room.runtime.android)
     implementation(libs.firebase.storage)
+    implementation(libs.androidx.compose.animation)
 
     // Instrumentation tests (androidTest)
     androidTestImplementation(libs.androidx.junit)

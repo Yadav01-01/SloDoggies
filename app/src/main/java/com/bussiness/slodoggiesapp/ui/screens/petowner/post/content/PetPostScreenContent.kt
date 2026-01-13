@@ -75,6 +75,7 @@ import com.bussiness.slodoggiesapp.ui.component.common.MediaUploadSection
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.FillPetInfoDialog
 import com.bussiness.slodoggiesapp.ui.dialog.UpdatedDialogWithExternalClose
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.LocationUtils.Companion.getAddressFromLatLng
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.location.LocationAction
 import com.bussiness.slodoggiesapp.viewModel.common.location.LocationViewModel
@@ -89,6 +90,9 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 
 @SuppressLint("ContextCastToActivity")
 @OptIn(ExperimentalPermissionsApi::class)
@@ -110,6 +114,32 @@ fun PetPostScreenContent(onClickPost: () -> Unit) {
     val updatePetListState by viewModelPetList.uiState.collectAsState()
     var wasPermissionGranted by remember { mutableStateOf(permission.status.isGranted) }
     val sessionManager = SessionManager(context)
+
+
+    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val place = Autocomplete.getPlaceFromIntent(result.data!!)
+            val placeLatLong=place.latLng
+            val addressResult = getAddressFromLatLng(context, placeLatLong?.latitude?:0.000, placeLatLong?.longitude?:0.000)
+
+            Log.d("Location", "zip: ${addressResult?.zip}")
+            Log.d("Location", "city: ${addressResult?.city}")
+            Log.d("Location", "state: ${addressResult?.state}")
+            Log.d("Location", "street: ${addressResult?.street}")
+            Log.d("Location", "latitude: ${placeLatLong?.latitude ?: 0.000}")
+            Log.d("Location", "longitude: ${placeLatLong?.longitude ?: 0.000}")
+
+            locationState.address= place.address
+            locationState.latitude=placeLatLong?.latitude
+            locationState.longitude=placeLatLong?.longitude
+
+            viewModelPostCreateOwner.onLocation(place.address?:"")
+            viewModelPostCreateOwner.onLatitude(placeLatLong?.latitude.toString())
+            viewModelPostCreateOwner.onLongitude(placeLatLong?.latitude.toString())
+
+        }
+    }
+
     val gpsLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult()
     ) { resultCode ->
@@ -196,9 +226,7 @@ fun PetPostScreenContent(onClickPost: () -> Unit) {
             MediaUploadSection(maxImages = 6,
                 imageList=uiStatePostCreateOwner.image?: mutableListOf(),
                 onMediaSelected = {
-                    Log.v("&&&&&&&",it.toString())
-                    viewModelPostCreateOwner.addPhoto(it)
-                                  } ,
+                    viewModelPostCreateOwner.addPhoto(it) } ,
                 onMediaUnSelected = {  viewModelPostCreateOwner.removePhoto(it) })
 
         }
@@ -226,7 +254,7 @@ fun PetPostScreenContent(onClickPost: () -> Unit) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable {
-                /*onClickLocation()*/
+                    /*onClickLocation()*/
                     when {
                         permission.status.isGranted -> {
                             // Permission granted → check GPS & fetch
@@ -274,6 +302,16 @@ fun PetPostScreenContent(onClickPost: () -> Unit) {
                 placeholder = stringResource(R.string.enter_flat_address),
                 input = locationState.address?:"Address".ifEmpty { "Address" } ,
                 onValueChange = {},
+                onClick = {
+                    val fields = listOf(
+                        Place.Field.ID,
+                        Place.Field.NAME,
+                        Place.Field.ADDRESS,
+                        Place.Field.LAT_LNG
+                    )
+                    val intent = Autocomplete.IntentBuilder(AutocompleteActivityMode.FULLSCREEN,fields).build(context)
+                    launcher.launch(intent)
+                },
                 readOnly = true
             )
         }

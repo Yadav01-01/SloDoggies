@@ -1,5 +1,5 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home
-
+import androidx.compose.runtime.key
 import android.app.Activity
 import android.util.Log
 import android.widget.Toast
@@ -67,6 +67,7 @@ import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 import com.google.gson.Gson
+import kotlinx.coroutines.NonCancellable.key
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -75,7 +76,6 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()) {
 
     val uiState by viewModel.uiState.collectAsState()
-
     val uiStateComment by viewModel.uiStateComment.collectAsState()
     val dialogCount by viewModel.petInfoDialogCount.collectAsState()
     val context = LocalContext.current
@@ -95,12 +95,22 @@ fun HomeScreen(
         }
     )
 
+//    LaunchedEffect(Unit) {
+//        viewModel.loadFirstPage()
+//    }
+    LaunchedEffect( navController.currentBackStackEntry){
+        Log.d("TESTING_SLODOGGIES","I am inside the load again")
+        viewModel.loadFirstPage()
+    }
+
     // val onReportClick = remember { { viewModel.showReportDialog() } }
     val onShareClick = remember { { viewModel.showShareContent() } }
     val onProfileClick = remember { {
         navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/$userId")
-     }
+      }
+
     }
+
 
     val onSponsoredClick = remember {
         {
@@ -113,11 +123,12 @@ fun HomeScreen(
         }
     }
 
-    val currentBackStackEntry = navController.currentBackStackEntryAsState()
 
-    LaunchedEffect(currentBackStackEntry.value) {
-        viewModel.loadFirstPage()
-    }
+//    val currentBackStackEntry = navController.currentBackStackEntryAsState()
+//
+//    LaunchedEffect(currentBackStackEntry.value) {
+//        viewModel.loadFirstPage()
+//    }
 
     Column(
         modifier = Modifier
@@ -155,7 +166,7 @@ fun HomeScreen(
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "OOps! Something Went Wrong",
+                        text =uiState.responseMessage,
                         style = MaterialTheme.typography.titleMedium,
                         color = Color(0XFF258694),
                         fontFamily = FontFamily(Font(R.font.outfit_medium)),
@@ -164,208 +175,207 @@ fun HomeScreen(
                 }
             }
         }
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 50.dp,top =12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            itemsIndexed(
-                items = posts,
-                key = { _, post -> post.stableKey }
-            ) { index, post ->
+        key(uiState.refreshVersion) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 50.dp, top = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
 
-                if (index == posts.lastIndex - 2) {
-                    viewModel.loadNextPage()
-                }
+                itemsIndexed(
+                    items = posts,
+                    key = { _, post -> post.stableKey }
+                ) { index, post ->
+                    if (index == posts.lastIndex - 2) {
+                        viewModel.loadNextPage()
+                    }
 
-                when (post) {
-                    is PostItem.CommunityPost -> CommunityPostItem(
-                        postItem = post,
-                        onReportClick = { viewModel.showReportDialog(post.postId) },
-                        onShareClick = onShareClick,
-                        onJoinedCommunity = {
-                            navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
-                        },
-                        onProfileClick = {
+                    when (post) {
+                        is PostItem.CommunityPost -> CommunityPostItem(
+                            postItem = post,
+                            onReportClick = { viewModel.showReportDialog(post.postId) },
+                            onShareClick = onShareClick,
+                            onJoinedCommunity = {
+                                navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+                            },
+                            onProfileClick = {
 
-                            if (post.userType == "Owner"){
-                                navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
-                            }else{
-                                navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/${post.userId}")
-                            }
-
-                        },
-                        onLikeClick = {
-                            viewModel.postLikeUnlike(
-                                "", post.postId, "",
-                                onError = { msg ->
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                                },
-                                onSuccess = {
-                                    viewModel.toggleLike(post.postId)
+                                if (post.userType == "Owner") {
+                                    navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
+                                } else {
+                                    navController.navigate(Routes.CLICKED_PROFILE_SCREEN + "/${post.userId}")
                                 }
-                            )
-                        },
-                        onSaveClick = {
-                            viewModel.savePost(
-                                "", post.postId, "",
-                                onError = { msg ->
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                                },
-                                onSuccess = {
-                                    viewModel.toggleSave(post.postId)
-                                }
-                            )
-                        },
-                        onClickInterested = {
-                            viewModel.savePost(
-                                "", post.postId, "",
-                                onError = { msg ->
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                                },
-                                onSuccess = {
-                                    viewModel.toggleSave(post.postId)
-                                }
-                            )
 
-                        },
-                        onFollowingClick = {
-                            viewModel.addAndRemoveFollowers(
-                                post.userId,
-                                onError = { msg ->
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                                }
-                            )
-                        },
-                    )
-                    is PostItem.SponsoredPost -> SponsoredPostItem(
-                        post = post,
-                        onReportClick = { viewModel.showReportDialog(post.postId) },
-                        onShareClick = onShareClick,
-                        onProfileClick = {
-                            navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/${post.userId}")
-                        },
-                        onSponsoredClick = {
-                            val dest = when {
-                                sessionManager.getUserType() == UserType.Owner ->
-                                    "${Routes.SERVICE_PROVIDER_DETAILS}/${post.userId}"
+                            },
+                            onLikeClick = {
+                                viewModel.postLikeUnlike(
+                                    "", post.postId, "",
+                                    onError = { msg ->
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    },
+                                    onSuccess = {
+                                        viewModel.toggleLike(post.postId)
+                                    }
+                                )
+                            },
+                            onSaveClick = {
+                                viewModel.savePost(
+                                    "", post.postId, "",
+                                    onError = { msg ->
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    },
+                                    onSuccess = {
+                                        viewModel.toggleSave(post.postId)
+                                    }
+                                )
+                            },
+                            onClickInterested = {
+                                viewModel.savePost(
+                                    "", post.postId, "",
+                                    onError = { msg ->
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    },
+                                    onSuccess = {
+                                        viewModel.toggleSave(post.postId)
+                                    }
+                                )
 
-                                post.userPost -> Routes.SPONSORED_ADS_SCREEN
-
-                                else -> "${Routes.SERVICE_PROVIDER_DETAILS}/${post.userId}"
-                            }
-                            navController.navigate(dest)
-                        },
-                        onLikeClick = {
-                            viewModel.postLikeUnlike(
-                                "", "", post.postId,
-                                onError = { msg ->
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                                },
-                                onSuccess = {
-                                    viewModel.toggleLike(post.postId)
-                                }
-                            )
-                        },
-                        onCommentClick = {
-                            viewModel.updatePostId(post.postId)
-                            showCommentsDialog = true
-                            showCommentsType = "Ad"
-                        }
-                    )
-                    is PostItem.NormalPost -> NormalPostItem(
-                        modifier = Modifier.padding(horizontal = 12.dp),
-                        postItem = post,
-                        onReportClick = { viewModel.showReportDialog(post.postId) },
-                        onShareClick = onShareClick,
-                        normalPost = true,
-                        onEditClick = {},
-                        onDeleteClick = {},
-                        onProfileClick = {
-
-                            if (post.userType == "Owner"){
-                                navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
-                            }
-                            else{
-                                navController.navigate(Routes.CLICKED_PROFILE_SCREEN+ "/${post.userId}")
-                            }
-
-                        },
-                        onSelfPostEdit = {
-                            val postJson = Gson().toJson(post)
-                            navController.currentBackStackEntry
-                                ?.savedStateHandle
-                                ?.set("Post", postJson)
-
-                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                "PostType",
-                                "NormalPost"
-                            )
-                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                "Screen",
-                                "Home"
-                            )
-
-                            navController.navigate(Routes.EDIT_POST_SCREEN)
-                                         },
-                        onSelfPostDelete = {
-                            viewModel.updatePostId(post.postId)
-                            viewModel.showDeleteDialog()
-                                           },
-                        onSaveClick = {
-                            viewModel.savePost(
-                                post.postId, "", "",
-                                onError = { msg ->
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                                },
-                                onSuccess = {
-                                    viewModel.toggleSave(post.postId)
-                                }
-                            )
-                        },
-                        onLikeClick = {
-                            viewModel.postLikeUnlike(
-                                post.postId, "", "",
-                                onError = { msg ->
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                                },
-                                onSuccess = {
-                                    viewModel.toggleLike(post.postId)
-                                }
-                            )
-                        },
-                        onCommentClick = {
-                            viewModel.updatePostId(post.postId)
-                            showCommentsDialog = true
-                            showCommentsType = "Normal"
-                        },
-                        onFollowingClick = {
-                            viewModel.addAndRemoveFollowers(
-                                post.userId,
-                                onError = { msg ->
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                                }
-                            )
-                        }
-                    )
-                }
-            }
-
-            // ----------------------
-            // LOADING ITEM
-            // ----------------------
-            item {
-                if (uiState.isLoading) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(32.dp),
-                            color = PrimaryColor
+                            },
+                            onFollowingClick = {
+                                viewModel.addAndRemoveFollowers(
+                                    post.userId,
+                                    onError = { msg ->
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            },
                         )
+
+                        is PostItem.SponsoredPost -> SponsoredPostItem(
+                            post = post,
+                            onReportClick = { viewModel.showReportDialog(post.postId) },
+                            onShareClick = onShareClick,
+                            onProfileClick = {
+                                navController.navigate(Routes.CLICKED_PROFILE_SCREEN + "/${post.userId}")
+                            },
+                            onSponsoredClick = {
+                                val dest = when {
+                                    sessionManager.getUserType() == UserType.Owner ->
+                                        "${Routes.SERVICE_PROVIDER_DETAILS}/${post.userId}"
+
+                                    post.userPost -> Routes.SPONSORED_ADS_SCREEN
+
+                                    else -> "${Routes.SERVICE_PROVIDER_DETAILS}/${post.userId}"
+                                }
+                                navController.navigate(dest)
+                            },
+                            onLikeClick = {
+                                viewModel.postLikeUnlike(
+                                    "", "", post.postId,
+                                    onError = { msg ->
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    },
+                                    onSuccess = {
+                                        viewModel.toggleLike(post.postId)
+                                    }
+                                )
+                            },
+                            onCommentClick = {
+                                viewModel.updatePostId(post.postId)
+                                showCommentsDialog = true
+                                showCommentsType = "Ad"
+                            }
+                        )
+
+                        is PostItem.NormalPost -> NormalPostItem(
+                            modifier = Modifier.padding(horizontal = 12.dp),
+                            postItem = post,
+                            onReportClick = { viewModel.showReportDialog(post.postId) },
+                            onShareClick = onShareClick,
+                            normalPost = true,
+                            onEditClick = {},
+                            onDeleteClick = {},
+                            onProfileClick = {
+
+                                if (post.userType == "Owner") {
+                                    navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${post.userId}")
+                                } else {
+                                    navController.navigate(Routes.CLICKED_PROFILE_SCREEN + "/${post.userId}")
+                                }
+
+                            },
+                            onSelfPostEdit = {
+                                val postJson = Gson().toJson(post)
+                                navController.currentBackStackEntry
+                                    ?.savedStateHandle
+                                    ?.set("Post", postJson)
+
+                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                    "PostType",
+                                    "NormalPost"
+                                )
+                                navController.currentBackStackEntry?.savedStateHandle?.set(
+                                    "Screen",
+                                    "Home"
+                                )
+
+                                navController.navigate(Routes.EDIT_POST_SCREEN)
+                            },
+                            onSelfPostDelete = {
+                                viewModel.updatePostId(post.postId)
+                                viewModel.showDeleteDialog()
+                            },
+                            onSaveClick = {
+                                viewModel.savePost(
+                                    post.postId, "", "",
+                                    onError = { msg ->
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    },
+                                    onSuccess = {
+                                        viewModel.toggleSave(post.postId)
+                                    }
+                                )
+                            },
+                            onLikeClick = {
+                                viewModel.postLikeUnlike(
+                                    post.postId, "", "",
+                                    onError = { msg ->
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    },
+                                    onSuccess = {
+                                        viewModel.toggleLike(post.postId)
+                                    }
+                                )
+                            },
+                            onCommentClick = {
+                                viewModel.updatePostId(post.postId)
+                                showCommentsDialog = true
+                                showCommentsType = "Normal"
+                            },
+                            onFollowingClick = {
+                                viewModel.addAndRemoveFollowers(
+                                    post.userId,
+                                    onError = { msg ->
+                                        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    }
+                                )
+                            }
+                        )
+                    }
+                }
+                item {
+                    if (uiState.isLoading) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(32.dp),
+                                color = PrimaryColor
+                            )
+                        }
                     }
                 }
             }

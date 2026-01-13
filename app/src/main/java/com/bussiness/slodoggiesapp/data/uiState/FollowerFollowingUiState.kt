@@ -7,7 +7,7 @@ data class FollowerFollowingUiState(
     val followers: List<AudienceItem> = emptyList(),
     val following: List<AudienceItem> = emptyList(),
     val error: String? = null,
-    val selectedOption: String = "Follower",
+    var selectedOption: String = "Follower",
     val query: String = "",
     val removeDialog: Boolean = false,
     val removeFollowing: Boolean = false,

@@ -71,13 +71,19 @@ fun FollowerScreen(
     userId: String
 ) {
     val viewModel: FollowerFollowingViewModel = hiltViewModel()
-
+    var currentType =remember { mutableStateOf(type) }
     var screenState by remember {
         mutableStateOf(FollowerFollowingUiState(selectedOption = type))
     }
+
     val uiState by viewModel.uiState.collectAsState()
+
     val context = LocalContext.current
     viewModel.setProfileUser(userId)
+
+    LaunchedEffect(type) {
+        viewModel.updateSelectedOption(type)
+    }
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let { msg ->
@@ -90,9 +96,11 @@ fun FollowerScreen(
     LaunchedEffect(userId, uiState.selectedOption) {
 
         val isOtherUser = userId.isNotBlank()
+        Log.d("TESTING_Current_Type","type is inner "+uiState.selectedOption)
 
         when (uiState.selectedOption) {
             "Follower" -> {
+                Log.d("TESTING_Current_Type","I am in Follower")
                 if (isOtherUser) {
                     viewModel.loadOtherUserFollowers(userId, reset = true)
                 } else {
@@ -101,6 +109,7 @@ fun FollowerScreen(
             }
 
             "Following" -> {
+                Log.d("TESTING_Current_Type","I am in Following")
                 if (isOtherUser) {
                     viewModel.loadOtherUserFollowing(userId, reset = true)
                 } else {
@@ -164,6 +173,7 @@ fun FollowerScreen(
                             text = "${uiState.totalFollower} Followers",
                             selected = screenState.selectedOption == "Follower",
                             onClick = {
+                                currentType.value = "Followers"
                                 updateState { copy(selectedOption = "Follower") }
                                 viewModel.updateSelectedOption("Follower")
                             }
@@ -173,6 +183,7 @@ fun FollowerScreen(
                             text = "${uiState.totalFollowing} Following",
                             selected = screenState.selectedOption == "Following",
                             onClick = {
+                                currentType.value = "Following"
                                 updateState { copy(selectedOption = "Following") }
                                 viewModel.updateSelectedOption("Following")
                             }

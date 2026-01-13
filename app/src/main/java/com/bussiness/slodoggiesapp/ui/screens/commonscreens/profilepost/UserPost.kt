@@ -72,12 +72,23 @@ fun UserPost(
     }
 
     LaunchedEffect(posts, postId) {
+        Log.d("TESTING_insta","Post Id is here "+postId)
         if (postId.isNotBlank() && posts.isNotEmpty()) {
-            val index = posts.indexOfFirst { it.stableKey == postId }
+
+            val index = posts.indexOfFirst { post ->
+                when (post) {
+                    is PostItem.NormalPost -> post.postId == postId
+                    is PostItem.CommunityPost -> post.postId == postId
+                    is PostItem.SponsoredPost -> post.postId == postId
+                }
+            }
+
             if (index >= 0) {
                 listState.scrollToItem(index)
             }
+
         }
+
     }
 
     BackHandler {
@@ -153,7 +164,7 @@ fun UserPost(
                                     viewModel.savePost(post.postId, "", "",
                                         onError = { msg -> Toast.makeText(context, msg, Toast.LENGTH_SHORT).show() },
                                         onSuccess = {
-                                            viewModel.toggleSave(post.postId)
+                                            viewModel.toggleSave(post.postId,"user_save")
                                         })
                                 },
                                 onLikeClick = {

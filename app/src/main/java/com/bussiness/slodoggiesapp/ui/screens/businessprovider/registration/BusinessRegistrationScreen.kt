@@ -241,7 +241,9 @@ fun BusinessRegistrationScreen(navController: NavHostController,viewModel: Busin
                     onVerify = {
                         state.data?.phone?.let { it1 -> viewModelOtp.userEmailPhone(it1) }
                         viewModelOtp.sendOtpRequest(
-                            onError = {},
+                            onError = {
+                                Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                            },
                             type ="dialogPhone" ,
                             onSuccess = {
                                 val type="dialogPhone"

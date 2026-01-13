@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 
+import android.webkit.WebView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -147,21 +148,58 @@ fun HelpAndSupportScreen(navController: NavHostController) {
 
                         // HTML Content
                         val contentText = uiState.data?.content ?: ""
+
+                        val htmlWithCss = """
+                    <html>
+                    <head>
+                        <style>
+                            img { max-width: 100%; height: auto; }
+                            body { margin: 0; padding: 0; font-size: 16px; color: #252E32; }
+                        </style>
+                    </head>
+                    <body>
+                        $contentText
+                    </body>
+                    </html>
+                """.trimIndent()
+
                         AndroidView(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 10.dp, vertical = 10.dp),
                             factory = { context ->
-                                TextView(context).apply {
-                                    setTextColor(android.graphics.Color.parseColor("#252E32"))
-                                    textSize = 16f
-                                    movementMethod = android.text.method.LinkMovementMethod.getInstance()
+                                WebView(context).apply {
+                                    settings.javaScriptEnabled = true
+                                    settings.domStorageEnabled = true
+                                    setBackgroundColor(android.graphics.Color.TRANSPARENT)
                                 }
                             },
-                            update = { view ->
-                                view.text = HtmlCompat.fromHtml(
-                                    contentText,
-                                    HtmlCompat.FROM_HTML_MODE_LEGACY
+                            update = { webView ->
+                                webView.loadDataWithBaseURL(
+                                    null,
+                                    htmlWithCss,
+                                    "text/html",
+                                    "utf-8",
+                                    null
                                 )
                             }
                         )
+
+//                        AndroidView(
+//                            factory = { context ->
+//                                TextView(context).apply {
+//                                    setTextColor(android.graphics.Color.parseColor("#252E32"))
+//                                    textSize = 16f
+//                                    movementMethod = android.text.method.LinkMovementMethod.getInstance()
+//                                }
+//                            },
+//                            update = { view ->
+//                                view.text = HtmlCompat.fromHtml(
+//                                    contentText,
+//                                    HtmlCompat.FROM_HTML_MODE_LEGACY
+//                                )
+//                            }
+//                        )
 
                         // Professional User Editable
                         if (sessionManager.getUserType() == UserType.Professional) {

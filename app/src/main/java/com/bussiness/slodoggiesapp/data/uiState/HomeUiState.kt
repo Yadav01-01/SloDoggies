@@ -30,6 +30,9 @@ data class HomeUiState(
     val isFollowed: Boolean = false,
     val isFollowLoading: Boolean = false,
     val showCommentsDialog : Boolean = false,
-    val deleteComment : Boolean = false
+    val deleteComment : Boolean = false,
+    var responseMessage:String = "OOps! No Post Found",
+    val refreshVersion: Int = 0
+
 )
 

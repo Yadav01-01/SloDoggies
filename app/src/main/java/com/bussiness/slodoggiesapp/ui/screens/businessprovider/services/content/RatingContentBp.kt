@@ -134,18 +134,17 @@ fun RatingSummary(ratingData: RatingSummaryData) {
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = Color(0xFFE6EFF2),
+                     color = Color(0xFFE6EFF2),
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(10.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
+        //
         // Rating Bars
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
+            modifier = Modifier.fillMaxWidth().weight(1f),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             for (rating in 5 downTo 1) {
@@ -162,7 +161,6 @@ fun RatingSummary(ratingData: RatingSummaryData) {
 
 
         Spacer(modifier = Modifier.width(24.dp))
-
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -312,7 +310,6 @@ fun ReviewItemPanel(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        // Star Rating
                         repeat(data.rating) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_round_star),
@@ -338,14 +335,14 @@ fun ReviewItemPanel(
                             fontFamily = FontFamily(Font(R.font.outfit_regular)),
                             color = Color(0xFF949494)
                         )
+
                     }
 
-                    // MoreVert Icon
-                    Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.MoreVert,
-                        contentDescription = "More options",
-                        tint = Color.Black,
-                        modifier = Modifier.size(24.dp).clickable { onClickMore() })
+//                    Icon(
+//                        imageVector = androidx.compose.material.icons.Icons.Default.MoreVert,
+//                        contentDescription = "More options",
+//                        tint = Color.Black,
+//                        modifier = Modifier.size(24.dp).clickable { onClickMore() })
                 }
             }
         }
