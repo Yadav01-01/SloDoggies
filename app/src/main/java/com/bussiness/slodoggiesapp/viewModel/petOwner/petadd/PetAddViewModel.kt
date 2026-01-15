@@ -27,10 +27,11 @@ import javax.inject.Inject
 @HiltViewModel
 class PetAddViewModel @Inject constructor(private val repository: Repository, private var sessionManager: SessionManager) : ViewModel() {
 
+
     private val _uiState = MutableStateFlow(PetAddUpDateUiState())
     val uiState: StateFlow<PetAddUpDateUiState> = _uiState
-    var  dataType : Data? = Data()
 
+    var  dataType : Data? = Data()
 
     val ageOptions = listOf("< than 1 Year") + (1..20).map { "$it Year" }
 

@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.component.petOwner.dialog
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -71,6 +72,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.xr.compose.testing.toDp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.uiState.CommentItem
 import com.bussiness.slodoggiesapp.data.uiState.CommentReply
@@ -85,7 +88,6 @@ fun CommentsDialog(
     comments: List<CommentItem> = emptyList(),
     onDeleteClick : (commentId:String) -> Unit,
     onCommentLikeClick : (commentId:String) -> Unit,
-
     onSandClick : (message:String,type:String,commentId:String) -> Unit
 ) {
     var editingComment by remember { mutableStateOf<CommentItem?>(null) }
@@ -93,17 +95,7 @@ fun CommentsDialog(
     var replyingTo by remember { mutableStateOf<String?>(null) }
     var commentId by remember { mutableStateOf("") }
 
-
-
-
-//    Dialog(
-//        onDismissRequest = onDismiss,
-//        properties = DialogProperties(
-//            usePlatformDefaultWidth = false,
-//            decorFitsSystemWindows = false
-//        )
-//    ) {
-    Box(
+  Box(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.BottomCenter
@@ -142,7 +134,7 @@ fun CommentsDialog(
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    // Header with close button
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -163,7 +155,6 @@ fun CommentsDialog(
                         thickness = 1.dp
                     )
 
-                    // Comments List
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f)
@@ -171,15 +162,6 @@ fun CommentsDialog(
                             .padding(horizontal = 16.dp)
                     ) {
                         itemsIndexed(comments) { index, comment ->
-//                                CommentItem(
-//                                    comment = comment,
-//                                    onReply = { replyingTo = comment.userName },
-//                                    onEditClick = {
-//                                        editingComment = comment
-//                                        newComment = comment.text // prefill text in box
-//                                    },
-//                                    onDeleteClick = { onDeleteClick() }
-//                                )
                             CommentItem(
                                 comment = comment,
                                 onReply = {
@@ -210,7 +192,11 @@ fun CommentsDialog(
                                         ReplyItem(
                                             reply = reply,
                                             modifier = Modifier.padding(start = 48.dp),
-                                            onReply = { replyingTo = reply.user?.name })
+                                            onReply = {
+                                                replyingTo = reply.user?.name
+                                                commentId = comment.id.toString()
+
+                                            })
 
                                     }
                                 }
@@ -407,8 +393,20 @@ fun CommentItem(comment: CommentItem, onReply: () -> Unit, onEditClick : () -> U
                 .padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.dummy_person_image2),
+//            Image(
+//                painter = painterResource(id = R.drawable.dummy_person_image2),
+//                contentDescription = "Person",
+//                modifier = Modifier
+//                    .size(35.dp)
+//                    .clip(CircleShape)
+//            )
+            AsyncImage(
+                model =
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(   comment.user.image)
+                        .crossfade(true) // Smooth fade-in transition
+                        .build()
+                  , // Replace with your image URL
                 contentDescription = "Person",
                 modifier = Modifier
                     .size(35.dp)
@@ -581,12 +579,26 @@ fun ReplyItem(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.dummy_person_image2),
+//            Image(
+//                painter = painterResource(id = R.drawable.dummy_person_image2),
+//                contentDescription = "Person",
+//                modifier = Modifier
+//                    .size(32.dp)
+//                    .clip(CircleShape)
+//            )
+            AsyncImage(
+                model =
+                    ImageRequest.Builder(LocalContext.current)
+                        .data( reply.user?.image)
+                        .crossfade(true) // Smooth fade-in transition
+                        .build()
+
+                   , // Replace with your image URL
                 contentDescription = "Person",
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
+                    .size(35.dp)
+                    .clip(CircleShape),
+
             )
 
             Spacer(modifier = Modifier.width(12.dp))

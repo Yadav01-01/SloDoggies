@@ -448,12 +448,15 @@ fun HomeScreen(
                         if (type == "reply") {
                             viewModel.replyComment(
                                 postId = uiState.postId,
-                                commentText = comment, commentId = commentId, onError = { error ->
-                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                                }, onSuccess = {
-
-                                })
-                        } else if (type == "edit") {
+                                commentText = comment,
+                                commentId = commentId,
+                                onError = { error ->
+                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show() },
+                                onSuccess = {
+                                }
+                            )
+                        }
+                        else if (type == "edit") {
                             viewModel.editComment(
                                 commentId = commentId, commenText = comment,
                                 onSuccess = {

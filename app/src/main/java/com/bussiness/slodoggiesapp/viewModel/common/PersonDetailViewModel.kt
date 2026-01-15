@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
+import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerData
 import com.bussiness.slodoggiesapp.data.newModel.ownerProfile.OwnerPostItem
 import com.bussiness.slodoggiesapp.data.remote.Repository
@@ -66,19 +67,20 @@ class PersonDetailViewModel @Inject constructor(
     }
 
     fun message(navController: NavHostController) {
-
         navController.navigate(Routes.CHAT_SCREEN)
     }
 
     fun profileDetail(ownerId : String){
         viewModelScope.launch {
-            repository.getOwnerProfileDetails(sessionManager.getUserId(),ownerId).collectLatest { result ->
-                when(result){
-                    is Resource.Loading ->{
+            repository.getOwnerProfileDetails(sessionManager.getUserId(),ownerId).collectLatest {
+                result -> when(result){
+                    is Resource.Loading -> {
                         _uiState.update { it.copy(loading = true) }
                     }
                     is Resource.Success ->{
-                        _uiState.update { it.copy(loading = false, data = result.data.data) }
+                        _uiState.update { it.copy(loading = false, data = result.data.data ,
+                            isFollowed = result.data.data.isFollowing)
+                        }
                     }
                     is Resource.Error ->{
                         _uiState.update { it.copy(loading = false, error = result.message) }
@@ -87,6 +89,19 @@ class PersonDetailViewModel @Inject constructor(
                     Resource.Idle -> TODO()
                 }
             }
+        }
+    }
+
+    fun toggleFollow() {
+        _uiState.update  { currentState ->
+            currentState.copy(
+                isFollowed = !currentState.isFollowed,
+                data = currentState.data.copy(
+                        owner = currentState.data.owner.copy(
+                        isFollowing = !currentState.data.owner.isFollowing
+                    )
+                )
+            )
         }
     }
 
@@ -145,4 +160,37 @@ class PersonDetailViewModel @Inject constructor(
             galleryPostDetail(state.currentPage + 1, ownerUserId = ownerUserId)
         }
     }
+
+
+    fun addAndRemoveFollowers(
+        followedId: String,
+        onError: (String) -> Unit
+    ) {
+
+        //  Optimistic UI update (toggle + start loader)
+        viewModelScope.launch {
+            repository.addAndRemoveFollowers(
+                userId = sessionManager.getUserId(),
+                followerId = followedId
+            ).collectLatest { result ->
+                when (result) {
+
+                    is Resource.Success -> {
+                        if (result.data.success) {
+                            //API success → stop loader ONLY
+                            toggleFollow()
+                        }
+                    }
+
+                    is Resource.Error -> {
+                     onError(result.message)
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+    }
+
+
 }

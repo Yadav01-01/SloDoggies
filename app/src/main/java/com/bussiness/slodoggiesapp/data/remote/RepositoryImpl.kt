@@ -428,7 +428,7 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
         val availDays = availableDays.toRequestBody("text/plain".toMediaTypeOrNull())
         val availTime= availableTime.toRequestBody("text/plain".toMediaTypeOrNull())
 
-        // Call safeApiCall wrapper
+
         val result = safeApiCall {
             api.registerAndUpdateBusiness(
                 userId = id,

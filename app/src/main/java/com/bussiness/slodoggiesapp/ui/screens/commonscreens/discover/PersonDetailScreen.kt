@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover
 
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -92,9 +93,9 @@ fun PersonDetailScreen(
         viewModel.galleryPostDetail(1, userId)
     }
 
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
-
     val profile = uiState.data
     val post = uiState.posts
 
@@ -286,11 +287,17 @@ fun PersonDetailScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 val sessionManager : SessionManager = SessionManager(LocalContext.current)
+                Log.d("TESTING_STATUS","Status is"+ uiState.data.owner.isFollowing)
                 if(sessionManager.getUserId() != userId ) {
                     FilledCustomButton(
                         modifier = Modifier.weight(1f).height(35.dp),
+
                         buttonText = if (uiState.isFollowed) "Following" else "Follow",
-                        onClickFilled = { viewModel.follow(profile.owner.userId.toString()) },
+                        onClickFilled = {
+                            viewModel.addAndRemoveFollowers(profile.owner.userId.toString()){
+                             Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                           }
+                                        },
                         buttonTextSize = 14
                     )
                     OutlineCustomButton(
@@ -401,10 +408,8 @@ fun PersonDetailScreen(
                         .padding(horizontal = 10.dp, vertical = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-
                     rowItems.forEach { post ->
                         val imageUrl = post.mediaPath?.firstOrNull()?.url ?: ""
-
                         if (imageUrl.isVideoFile()) {
                             val  thumbnailBitmap = post.mediaPath?.firstOrNull()?.thumbnailUrl ?: ""
                             Box(
@@ -425,10 +430,8 @@ fun PersonDetailScreen(
                                     error = painterResource(R.drawable.no_image),
                                     contentScale = ContentScale.Crop
                                 )
-
                                 Box(
-                                    Modifier
-                                        .fillMaxSize()
+                                    Modifier.fillMaxSize()
                                         .background(Color.Black.copy(.35f)),
                                     Alignment.Center
                                 ) {

@@ -18,6 +18,7 @@ data class PetOwnerDetailsResponse(
 ) : BaseResponse
 
 data class OwnerData(
+
     @SerializedName("pets")
     val pets: List<Pet> = emptyList(),
 
@@ -26,6 +27,9 @@ data class OwnerData(
 
     @SerializedName("post_count")
     val postCount: Int = 0,
+
+    @SerializedName("is_following")
+    val isFollowing :Boolean = true,
 
     @SerializedName("follower_count")
     val followerCount: Int = 0,
@@ -106,7 +110,9 @@ data class Owner(
     val createdAt: String = "",
 
     @SerializedName("updated_at")
-    val updatedAt: String = ""
+    val updatedAt: String = "",
+    @SerializedName("is_following")
+    val isFollowing :Boolean = false
 )
 
 

@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.RatingSummaryData
 import com.bussiness.slodoggiesapp.data.model.businessProvider.Review
@@ -280,7 +282,10 @@ fun ReviewItemPanel(
     Column {
         Row(modifier = Modifier.fillMaxWidth()) {
             AsyncImage(
-                model = data.reviewerImage,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(data.user?.profileImage)
+                    .crossfade(true) // Smooth fade-in transition
+                    .build(),
                 contentDescription = null,
                 placeholder = painterResource(id = R.drawable.ic_person_icon),
                 error = painterResource(id = R.drawable.ic_person_icon),
