@@ -68,4 +68,5 @@ object ApiEndPoint {
     const val SERVICE_REVIEW = "serviceReview"
     const val BUSINESS_FOLLOW = "business_follow"
     const val GET_USER_IMAGE = "get_user_image"
+    const val CREATE_CHANNEL = "create_channel"
 }
