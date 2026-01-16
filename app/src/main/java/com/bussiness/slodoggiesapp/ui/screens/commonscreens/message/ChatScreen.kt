@@ -306,7 +306,8 @@ fun ChatScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = 65.dp),
-                receiverImage = receiverImage
+                receiverImage = receiverImage,
+                isReceiverOnline = otherUserOnline,
             )
 
 
