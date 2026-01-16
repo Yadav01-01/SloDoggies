@@ -25,7 +25,7 @@ class ChatRepository(
 //            .set(message)
 //    }
 
-    fun sendMessage(chatId: String, message: ChatMessage) {
+/*    fun sendMessage(chatId: String, message: ChatMessage) {
         firestore.collection("chats")
             .document(chatId)
             .collection("messages")
@@ -38,11 +38,34 @@ class ChatRepository(
                 Log.e("ChatRepository", "Failed to send message: ${e.message}", e)
 
             }
+    }*/
+fun sendMessage(chatId: String, message: ChatMessage) {
+
+    if (chatId.isBlank()) {
+        Log.e("ChatRepository", "chatId is empty. Message not sent.")
+        return
     }
+
+    firestore
+        .collection("chats")
+        .document(chatId)
+        .collection("messages")
+        .add(message) // 🔥 auto document id
+        .addOnSuccessListener {
+            Log.d("ChatRepository", "Message sent successfully")
+        }
+        .addOnFailureListener { e ->
+            Log.e("ChatRepository", "Failed to send message", e)
+        }
+}
 
 
     fun observeMessages(chatId: String,currentUserId:String): Flow<List<ChatMessage>> = callbackFlow {
-
+        if (chatId.isBlank()) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
         val subscription = firestore.collection("chats")
             .document(chatId)
             .collection("messages")

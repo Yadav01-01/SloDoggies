@@ -128,7 +128,7 @@ class CommunityChatViewModel @Inject constructor(
     }
 
 
-    fun getMessage(chatId:String,currentUserId:String){
+/*    fun getMessage(chatId:String,currentUserId:String){
         viewModelScope.launch {
             chatRepository.observeMessages(chatId,currentUserId).collect {
                 it.forEach {
@@ -139,7 +139,25 @@ class CommunityChatViewModel @Inject constructor(
 //                _messages.postValue(it)
             }
         }
+    }*/
+fun getMessage(chatId: String, currentUserId: String) {
+    viewModelScope.launch {
+        chatRepository.observeMessages(chatId, currentUserId).collect { list ->
+
+            val mappedList = list.map { msg ->
+                val (date, time) = formatTimestamp(msg.timestamp)
+
+                msg.copy(
+                    date = date,
+                    time = time
+                )
+            }
+
+            _messages.value = mappedList
+        }
     }
+}
+
 
     fun getUserImage(userId: String) {
         viewModelScope.launch {
