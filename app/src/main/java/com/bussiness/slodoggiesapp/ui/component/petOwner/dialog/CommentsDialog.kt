@@ -51,6 +51,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -58,6 +60,7 @@ import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -94,7 +97,9 @@ fun CommentsDialog(
     var newComment by remember { mutableStateOf("") }
     var replyingTo by remember { mutableStateOf<String?>(null) }
     var commentId by remember { mutableStateOf("") }
-
+    val context = LocalContext.current
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
   Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -196,6 +201,8 @@ fun CommentsDialog(
                                                 replyingTo = reply.user?.name
                                                 commentId = comment.id.toString()
 
+                                            }, onCommentLikeClick = {
+                                                onCommentLikeClick(reply.id.toString())
                                             })
 
                                     }
@@ -282,6 +289,7 @@ fun CommentsDialog(
                         }
                         // Input field
                         CommentInputBox(
+                            focusRequester = focusRequester,
                             newComment = newComment,
                             onCommentChange = { newComment = it },
                             onSendClick = {
@@ -304,7 +312,8 @@ fun CommentsDialog(
                                 newComment = ""
                                 commentId = ""
                             },
-                            onEmojiClick = {  }
+                            onEmojiClick = {     focusRequester.requestFocus()       // TextField focus
+                                keyboardController?.show()    }
                         )
                     }
                 }
@@ -316,12 +325,13 @@ fun CommentsDialog(
 
 @Composable
 fun CommentInputBox(
+    focusRequester : FocusRequester,
     newComment: String,
     onCommentChange: (String) -> Unit,
     onSendClick: () -> Unit,
     onEmojiClick: () -> Unit
 ) {
-
+  //  val focusRequester = remember { FocusRequester() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -333,7 +343,8 @@ fun CommentInputBox(
             painter = painterResource(id = R.drawable.ic_smile_icon),
             contentDescription = "Emoji",
             tint = Color.Gray,
-            modifier = Modifier.size(30.dp).clickable { onEmojiClick()}
+            modifier = Modifier.size(30.dp).clickable(interactionSource = remember { MutableInteractionSource() },
+                indication = null) { onEmojiClick()}
         )
 
         Spacer(modifier = Modifier.width(8.dp))
@@ -356,7 +367,7 @@ fun CommentInputBox(
                     fontFamily = FontFamily(Font(R.font.outfit_regular))
                 ),
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth() .focusRequester(focusRequester)
             )
         }
 
@@ -564,7 +575,7 @@ fun CommentItem(comment: CommentItem, onReply: () -> Unit, onEditClick : () -> U
 @Composable
 fun ReplyItem(
     reply: CommentReply,
-    modifier: Modifier = Modifier, onReply: () -> Unit
+    modifier: Modifier = Modifier, onReply: () -> Unit, onCommentLikeClick: () -> Unit
 ) {
     var showOptions by remember { mutableStateOf(false) }
     var anchorPosition by remember { mutableStateOf(DpOffset.Zero) }
@@ -573,6 +584,9 @@ fun ReplyItem(
     var showReportToast by remember { mutableStateOf(false) }
     var selectedReason by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
+   // var isLiked by remember { mutableStateOf(reply.isLikedByCurrentUser) }
+    var isLiked by remember { mutableStateOf(reply.isLikedByCurrentUser ?: false) }
+    var likeCount by remember { mutableStateOf(reply.likeCount ?: 0) }
 
     Column(modifier = modifier) {
         Row(
@@ -691,9 +705,9 @@ fun ReplyItem(
                 modifier = Modifier.padding(start = 15.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                if (reply.isLikedByCurrentUser?:false) {
+       /*         if (reply.isLikedByCurrentUser?:false) {
                     IconButton(
-                        onClick = { /* Handle like */ },
+                        onClick = { *//* Handle like *//* },
                         modifier = Modifier.size(15.dp)
                     ) {
                         Icon(
@@ -704,7 +718,7 @@ fun ReplyItem(
                     }
                 } else {
                     IconButton(
-                        onClick = { /* Handle like */ },
+                        onClick = { *//* Handle like *//* },
                         modifier = Modifier.size(15.dp)
                     ) {
                         Icon(
@@ -712,9 +726,32 @@ fun ReplyItem(
                             contentDescription = "Like",
                         )
                     }
-                }
+                }*/
 
-                if (reply.likeCount?:0 > 0) {
+                Icon(
+                    painter = painterResource(
+                        id = if (isLiked) R.drawable.ic_paw_like_filled_icon
+                        else R.drawable.ic_paw_like_icon
+                    ),
+                    contentDescription = "Paw",
+                    modifier = Modifier
+                        .size(15.dp)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) {
+
+                            isLiked = !isLiked // Toggle the liked state
+                            // Update like count immediately
+                            if (isLiked) likeCount += 1
+                            else likeCount -= 1
+
+                            onCommentLikeClick()
+                        },
+                    tint = Color.Unspecified
+                )
+
+      /*          if (reply.likeCount?:0 > 0) {
                     Text(
                         text = reply.likeCount.toString(),
                         fontSize = 12.sp,
@@ -730,7 +767,15 @@ fun ReplyItem(
                         color = Color(0xFF949494),
                         modifier = Modifier.padding(start = 4.dp)
                     )
-                }
+                }*/
+                Text(
+                    text = likeCount.toString()/*(if (isLiked) likes + 1 else likes).toString()*/,
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily(Font(R.font.outfit_regular)),
+                    fontWeight = FontWeight.Normal,
+                    color = if (isLiked!!) PrimaryColor else Color.Black,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
             }
         }
 
