@@ -1,26 +1,87 @@
 {
   "project_info": {
-    "project_number": "955612031252",
-    "project_id": "slodoggies-9d9a4",
-    "storage_bucket": "slodoggies-9d9a4.firebasestorage.app"
+    "project_number": "700110153997",
+    "project_id": "competent-pro",
+    "storage_bucket": "competent-pro.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:955612031252:android:a624282cde10323c987a01",
+        "mobilesdk_app_id": "1:700110153997:android:5f974ab877e048aba62844",
         "android_client_info": {
-          "package_name": "com.bussiness.slodoggiesapp"
+          "package_name": "com.business.compro"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "700110153997-tnkjko43rqdp8dctuc5ffb0ho10kr9c9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.business.compro",
+            "certificate_hash": "84702c42479a0d4fe28169f1d147b811cb99d9aa"
+          }
+        },
+        {
+          "client_id": "700110153997-0vceldbf7uvavad82qq4u1ii1i376kn8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyDLIAM4nANoslcZ40BKkmijTQdoWYarIK4"
+          "current_key": "AIzaSyAbcmAM8ZbUubcRNSU8uAFMhCejnZQns14"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "700110153997-0vceldbf7uvavad82qq4u1ii1i376kn8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "700110153997-dapu1bocvk3tmuls4ureb7jnajh1u4eh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "yesitlabs.Compro"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:700110153997:android:8187aa2879c3ec36a62844",
+        "android_client_info": {
+          "package_name": "com.bussiness.slodoggiesapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "700110153997-0vceldbf7uvavad82qq4u1ii1i376kn8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbcmAM8ZbUubcRNSU8uAFMhCejnZQns14"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "700110153997-0vceldbf7uvavad82qq4u1ii1i376kn8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "700110153997-dapu1bocvk3tmuls4ureb7jnajh1u4eh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "yesitlabs.Compro"
+              }
+            }
+          ]
         }
       }
     }
