@@ -8,6 +8,7 @@ data class CreateChannelResponse(
     override val message: String,
     val data: ChannelData
 ) : BaseResponse
+
 data class ChannelData(
     val sender_id: Int,
     val receiver_id: Int?,      // nullable because API returns null

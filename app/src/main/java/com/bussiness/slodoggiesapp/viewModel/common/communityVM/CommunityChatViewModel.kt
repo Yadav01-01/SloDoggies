@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bussiness.slodoggiesapp.data.model.common.ChatMessage
+import com.bussiness.slodoggiesapp.data.model.common.CreateChannelResponse
 import com.bussiness.slodoggiesapp.data.model.common.UserImageResponse
 import com.bussiness.slodoggiesapp.data.remote.ChatRepository
 import com.bussiness.slodoggiesapp.data.remote.Repository
@@ -64,6 +65,17 @@ class CommunityChatViewModel @Inject constructor(
 
     fun onMessageChange(newMessage: String) {
         _currentMessage.value = newMessage.take(250)
+    }
+
+    suspend fun createChannel(
+        senderId: Int,
+        receiverId: String?,
+        eventId: String?,
+        chatId: String?,
+        chatType: String?
+    ){
+        
+
     }
 
     // Handle message send (text + attachments)

@@ -632,4 +632,14 @@ interface ApiService {
         @Field("user_id") userId :String
     ) : Response<UserImageResponse>
 
+    @FormUrlEncoded
+    @POST(ApiEndPoint.CREATE_CHANNEL)
+    suspend fun createChannel(
+        @Field("receiver_user_id") receiverUserId :Int,
+        @Field("chat_id") chatId: String
+    ) : Response<CreateChannelResponse>
+
+
+
+
 }
