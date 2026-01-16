@@ -2,6 +2,7 @@ package com.bussiness.slodoggiesapp.ui.screens.commonscreens.community
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +72,7 @@ fun CommunityChatScreen(
     val currentUserId = SessionManager(LocalContext.current).getUserId()
 
     val listState = rememberLazyListState() // LazyColumn scroll state
+    var otherUserOnline by remember { mutableStateOf(false) }
 
     // Scroll to bottom when messages change
     LaunchedEffect(messages.size) {
@@ -116,7 +118,8 @@ fun CommunityChatScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = 75.dp),
-                receiverImage = ""
+                receiverImage = "",
+                isReceiverOnline = otherUserOnline,
             )
 
 
@@ -166,7 +169,8 @@ fun CommunityChatSection(
     listState: LazyListState,
     currentUserId: String, // logged-in user ID
     modifier: Modifier = Modifier,
-    receiverImage : String
+    receiverImage : String,
+    isReceiverOnline: Boolean
 ) {
     val sortedMessages = remember(messages) {
         messages.sortedBy { it.timestamp }
@@ -226,7 +230,8 @@ fun CommunityChatSection(
             ChatBubble(
                 message = message,
                 isMine = isMine,
-                receiverImage = receiverImage
+                receiverImage = receiverImage,
+                isReceiverOnline = isReceiverOnline
             )
         }
     }
@@ -238,7 +243,8 @@ fun CommunityChatSection(
 fun ChatBubble(
     message: ChatMessage,
     isMine: Boolean,
-    receiverImage : String
+    receiverImage : String,
+    isReceiverOnline : Boolean
 ) {
     val bubbleColor = if (isMine) PrimaryColor else Color(0xFFE5EFF2)
     val alignment = if (isMine) Arrangement.End else Arrangement.Start
@@ -268,30 +274,40 @@ fun ChatBubble(
     ) {
         // Show sender image only if it's not mine
         if (!isMine) {
-            if (!receiverImage.isNullOrEmpty()){
-                AsyncImage(
-                    model = receiverImage,
-                    placeholder = painterResource(id = R.drawable.paw_icon),
-                    error =  painterResource(id = R.drawable.paw_icon),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color.Gray)
-                        .align(Alignment.Bottom)
-                )
-            }else{
-                Image(
-                    painter = painterResource(id = R.drawable.dummy_person_image2),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color.Gray)
-                        .align(Alignment.Bottom)
-                )
-            }
+            Box(modifier = Modifier.size(36.dp) .align(Alignment.Bottom)) {
+                if (!receiverImage.isNullOrEmpty()) {
+                    AsyncImage(
+                        model = receiverImage,
+                        placeholder = painterResource(id = R.drawable.paw_icon),
+                        error = painterResource(id = R.drawable.paw_icon),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.Gray)
 
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.dummy_person_image2),
+                        contentDescription = "Profile Picture",
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(Color.Gray)
+
+                    )
+                }
+                if (isReceiverOnline) {
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .background(Color(0xFF218291), CircleShape)
+                            .border(2.dp, Color.White, CircleShape)
+                            .align(Alignment.TopEnd)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.width(8.dp))
         }
 
