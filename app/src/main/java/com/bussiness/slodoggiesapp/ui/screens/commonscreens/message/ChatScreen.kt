@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.ChatHeaderData
+import com.bussiness.slodoggiesapp.data.model.common.ChatMessage
 import com.bussiness.slodoggiesapp.ui.component.common.BottomMessageBar
 import com.bussiness.slodoggiesapp.ui.component.common.ChatHeaderItem
 import com.bussiness.slodoggiesapp.ui.component.petOwner.dialog.ReportDialog
@@ -105,6 +106,11 @@ fun ChatScreen(
     var otherUserOnline by remember { mutableStateOf(false) }
     var otherUserLastSeen by remember { mutableStateOf<Date?>(null) }
 
+    LaunchedEffect(Unit) {
+        viewModel.getMessage(chatId,currentUserId)
+    }
+
+
     if(type.equals(AppConstant.SINGLE)) {
 
         // --- Firestore References (safe even if collection doesn't exist) ---
@@ -149,9 +155,7 @@ fun ChatScreen(
             onDispose { listener.remove() }
         }
 
-        /* ---------------------------------------------------------
-       3️⃣ Handle APP lifecycle (online / offline)
-       --------------------------------------------------------- */
+
         DisposableEffect(lifecycleOwner) {
             val observer = object : DefaultLifecycleObserver {
 
@@ -202,6 +206,44 @@ fun ChatScreen(
         status =if(type.equals(AppConstant.SINGLE)){ if(otherUserOnline)"Active Now" else "Offline" } else{"22 Member"}
     )
 
+    val dummyMessages = remember {
+        listOf(
+            ChatMessage(
+                senderId = "1",
+                receiverId = "2",
+                message = "Hi, how are you?",
+                timestamp = System.currentTimeMillis() - 1000 * 60 * 60,
+                date = "14 January 2026",
+                time = "10:00 AM"
+            ),
+            ChatMessage(
+                senderId = "2",
+                receiverId = "1",
+                message = "I am good, what about you?",
+                timestamp = System.currentTimeMillis() - 1000 * 60 * 50,
+                date = "14 January 2026",
+                time = "10:10 AM"
+            ),
+            ChatMessage(
+                senderId = "1",
+                receiverId = "2",
+                message = "All good 👍",
+                timestamp = System.currentTimeMillis() - 1000 * 60 * 40,
+                date = "14 January 2026",
+                time = "10:20 AM"
+            ),
+            ChatMessage(
+                senderId = "2",
+                receiverId = "1",
+                message = "Tomorrow meeting?",
+                timestamp = System.currentTimeMillis(),
+                date = "15 January 2026",
+                time = "09:00 AM"
+            )
+        )
+    }
+
+
     // Scroll to latest message when list changes
     LaunchedEffect(messages.size) {
 
@@ -214,7 +256,7 @@ fun ChatScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(Color.White).imePadding()
     ) {
         // Header stays
         ChatHeaderItem(
@@ -243,12 +285,30 @@ fun ChatScreen(
                 .fillMaxWidth()
                 .imePadding()
         ) {
-            CommunityChatSection(
+          /*  CommunityChatSection(
                 messages = messages,
                 listState = listState,
                 currentUserId,
                 modifier = Modifier.fillMaxSize().padding(bottom = 65.dp)
+            ) */
+        /*    CommunityChatSection(
+                messages = dummyMessages,
+                listState = rememberLazyListState(),
+                currentUserId = "1",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 65.dp)
+            )*/
+            CommunityChatSection(
+                messages = messages,   // 🔥 Firebase
+                listState = listState,
+                currentUserId = currentUserId,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 65.dp),
+                receiverImage = receiverImage
             )
+
 
             if (!isBlocked){
                 BottomMessageBar(

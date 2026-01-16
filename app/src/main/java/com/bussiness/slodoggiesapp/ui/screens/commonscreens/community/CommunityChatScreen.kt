@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.Community
 import com.bussiness.slodoggiesapp.data.model.common.ChatMessage
@@ -112,7 +115,8 @@ fun CommunityChatScreen(
                 currentUserId,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 75.dp)
+                    .padding(bottom = 75.dp),
+                receiverImage = ""
             )
 
 
@@ -161,8 +165,18 @@ fun CommunityChatSection(
     messages: List<ChatMessage>,
     listState: LazyListState,
     currentUserId: String, // logged-in user ID
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    receiverImage : String
 ) {
+    val sortedMessages = remember(messages) {
+        messages.sortedBy { it.timestamp }
+    }
+    // ✅ Auto-scroll to last message when new message arrives
+    LaunchedEffect(sortedMessages.size) {
+        if (sortedMessages.isNotEmpty()) {
+            listState.animateScrollToItem(sortedMessages.lastIndex)
+        }
+    }
     LazyColumn(
         state = listState,
         modifier = modifier.fillMaxSize(),
@@ -172,9 +186,9 @@ fun CommunityChatSection(
         var lastDate: String? = null
 
         // Sort messages by timestamp
-        val sortedMessages = messages.sortedBy { it.timestamp }
+       // val sortedMessages = messages.sortedBy { it.timestamp }
 
-        items(sortedMessages) { message ->
+        /*items(sortedMessages) { message ->
             // Compute date string from message.date if available
             val currentDate = message.date ?: formatDate(message.timestamp)
 
@@ -185,9 +199,35 @@ fun CommunityChatSection(
             }
 
             // Determine if this message is sent by the current user
-            val isMine = message.senderId == currentUserId || message.receiverId != currentUserId
-
+        //    val isMine = message.senderId == currentUserId || message.receiverId != currentUserId
+            val isMine = message.senderId == currentUserId
             ChatBubble(message = message, isMine = isMine)
+        }*/
+        itemsIndexed(
+            items = sortedMessages,
+            key = { _, item -> item.timestamp } // ✅ stable key
+        ) { index, message ->
+
+            val currentDate =
+                message.date ?: formatDate(message.timestamp)
+
+            val previousDate =
+                sortedMessages.getOrNull(index - 1)?.date
+                    ?: sortedMessages.getOrNull(index - 1)
+                        ?.let { formatDate(it.timestamp) }
+
+            // ✅ Correct Date Separator Logic
+            if (index == 0 || currentDate != previousDate) {
+                DateSeparator(dateText = currentDate)
+            }
+
+            val isMine = message.senderId == currentUserId
+
+            ChatBubble(
+                message = message,
+                isMine = isMine,
+                receiverImage = receiverImage
+            )
         }
     }
 }
@@ -197,7 +237,8 @@ fun CommunityChatSection(
 @Composable
 fun ChatBubble(
     message: ChatMessage,
-    isMine: Boolean
+    isMine: Boolean,
+    receiverImage : String
 ) {
     val bubbleColor = if (isMine) PrimaryColor else Color(0xFFE5EFF2)
     val alignment = if (isMine) Arrangement.End else Arrangement.Start
@@ -227,15 +268,30 @@ fun ChatBubble(
     ) {
         // Show sender image only if it's not mine
         if (!isMine) {
-            Image(
-                painter = painterResource(id = R.drawable.dummy_person_image2),
-                contentDescription = "Profile Picture",
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-                    .background(Color.Gray)
-                    .align(Alignment.Bottom)
-            )
+            if (!receiverImage.isNullOrEmpty()){
+                AsyncImage(
+                    model = receiverImage,
+                    placeholder = painterResource(id = R.drawable.paw_icon),
+                    error =  painterResource(id = R.drawable.paw_icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray)
+                        .align(Alignment.Bottom)
+                )
+            }else{
+                Image(
+                    painter = painterResource(id = R.drawable.dummy_person_image2),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .background(Color.Gray)
+                        .align(Alignment.Bottom)
+                )
+            }
+
             Spacer(modifier = Modifier.width(8.dp))
         }
 
@@ -267,6 +323,33 @@ fun ChatBubble(
         }
     }
 }
+
+sealed class ChatListItem {
+    data class DateHeader(val date: String) : ChatListItem()
+    data class MessageItem(val message: ChatMessage) : ChatListItem()
+}
+
+fun buildChatItems(messages: List<ChatMessage>): List<ChatListItem> {
+    val items = mutableListOf<ChatListItem>()
+    var lastDate: String? = null
+
+    messages
+        .sortedBy { it.timestamp }
+        .forEach { message ->
+
+            val currentDate = message.date ?: formatDate(message.timestamp)
+
+            if (currentDate != lastDate) {
+                items.add(ChatListItem.DateHeader(currentDate))
+                lastDate = currentDate
+            }
+
+            items.add(ChatListItem.MessageItem(message))
+        }
+
+    return items
+}
+
 
 // Old Poc Code
 
