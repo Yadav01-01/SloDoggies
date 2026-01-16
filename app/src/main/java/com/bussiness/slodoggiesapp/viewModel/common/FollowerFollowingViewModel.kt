@@ -354,7 +354,7 @@ class FollowerFollowingViewModel @Inject constructor(
         }
     }
 
-    fun removeFollowerFollowing(type: String, followedId: String){
+/*    fun removeFollowerFollowing(type: String, followedId: String){
         viewModelScope.launch {
             repository.removeFollowFollower(type = type, userId = sessionManager.getUserId(), followerId = followedId)
                 .collectLatest { result->
@@ -372,7 +372,65 @@ class FollowerFollowingViewModel @Inject constructor(
                     }
                 }
         }
+    }*/
+
+    fun removeFollowerFollowing(type: String, followedId: String) {
+        viewModelScope.launch {
+            repository.removeFollowFollower(
+                type = type,
+                userId = sessionManager.getUserId(),
+                followerId = followedId
+            ).collectLatest { result ->
+
+                when (result) {
+
+                    is Resource.Loading -> {
+                        _uiState.update { it.copy(isLoading = true) }
+                    }
+
+                    is Resource.Success -> {
+                        _uiState.update { state ->
+
+                            when (type) {
+
+                                "follower" -> state.copy(
+                                    isLoading = false,
+                                    followers = state.followers.filterNot {
+                                        it.id.toString() == followedId
+                                    },
+                                    totalFollower = (state.totalFollower.toIntOrNull()?.minus(1))?.toString()
+                                        ?: state.totalFollower
+                                )
+
+                                "following" -> state.copy(
+                                    isLoading = false,
+                                    following = state.following.filterNot {
+                                        it.id.toString() == followedId
+                                    },
+                                    totalFollowing = (state.totalFollowing.toIntOrNull()?.minus(1))?.toString()
+                                        ?: state.totalFollowing
+                                )
+
+                                else -> state.copy(isLoading = false)
+                            }
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _uiState.update {
+                            it.copy(
+                                isLoading = false,
+                                error = result.message ?: "Something went wrong"
+                            )
+                        }
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
     }
+
 
 
     fun consumeError() {

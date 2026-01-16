@@ -262,10 +262,12 @@ fun FollowerScreen(
                         } else {
                             updateState { copy(removeFollowing = true, selectedUserId = data.id.toString()) }
                         }
+                      //  viewModel.refresh()
                     },
                     onFollowBackClick = {
                         // Follow-back logic
-                        viewModel.addAndRemoveFollowers(screenState.selectedUserId)
+                      //  viewModel.addAndRemoveFollowers(screenState.selectedUserId)
+                        viewModel.addAndRemoveFollowers(data.id.toString())
                     }
                 )
             }
