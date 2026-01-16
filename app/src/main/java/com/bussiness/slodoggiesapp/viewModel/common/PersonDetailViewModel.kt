@@ -78,7 +78,8 @@ class PersonDetailViewModel @Inject constructor(
                         _uiState.update { it.copy(loading = true) }
                     }
                     is Resource.Success ->{
-                        _uiState.update { it.copy(loading = false, data = result.data.data ,
+                        _uiState.update { it.copy(loading = false,
+                            data = result.data.data ,
                             isFollowed = result.data.data.isFollowing)
                         }
                     }
@@ -97,9 +98,12 @@ class PersonDetailViewModel @Inject constructor(
             currentState.copy(
                 isFollowed = !currentState.isFollowed,
                 data = currentState.data.copy(
+                    followerCount = if(!currentState.data.owner.isFollowing){ currentState.data.followerCount+1} else {
+                        currentState.data.followerCount-1},
                         owner = currentState.data.owner.copy(
                         isFollowing = !currentState.data.owner.isFollowing
-                    )
+                        )
+
                 )
             )
         }

@@ -70,8 +70,11 @@ fun FollowerScreen(
     type: String,
     userId: String
 ) {
+
     val viewModel: FollowerFollowingViewModel = hiltViewModel()
+
     var currentType =remember { mutableStateOf(type) }
+
     var screenState by remember {
         mutableStateOf(FollowerFollowingUiState(selectedOption = type))
     }
@@ -79,10 +82,12 @@ fun FollowerScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     val context = LocalContext.current
+
     viewModel.setProfileUser(userId)
 
     LaunchedEffect(type) {
         viewModel.updateSelectedOption(type)
+        // we can any one add or remove from the follower. now i have to remove it
     }
 
     LaunchedEffect(uiState.error) {

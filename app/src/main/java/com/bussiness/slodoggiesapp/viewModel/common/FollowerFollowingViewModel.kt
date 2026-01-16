@@ -54,23 +54,21 @@ class FollowerFollowingViewModel @Inject constructor(
 
     fun loadMyFollowers(reset: Boolean = false) {
         loadFollowersInternal(
-            userId = sessionManager.getUserId(),
-            reset = reset
+            userId = sessionManager.getUserId(), reset = reset
         )
     }
 
     fun loadOtherUserFollowers(userId: String, reset: Boolean = false) {
+
         loadFollowersInternal(
             userId = userId,
             reset = reset
         )
+
     }
 
     fun loadMyFollowing(reset: Boolean = false) {
-        loadFollowingInternal(
-            userId = sessionManager.getUserId(),
-            reset = reset
-        )
+        loadFollowingInternal(userId = sessionManager.getUserId(), reset = reset)
     }
 
     fun loadOtherUserFollowing(userId: String, reset: Boolean = false) {
@@ -80,10 +78,6 @@ class FollowerFollowingViewModel @Inject constructor(
         )
     }
 
-
-    /**
-     * Called when user types in search bar
-     */
     fun onSearchQueryChange(query: String) {
         hasUserTyped = true
         searchQuery.value = query
@@ -100,9 +94,7 @@ class FollowerFollowingViewModel @Inject constructor(
     }
 
 
-    /**
-     * Debounce search and auto trigger API
-     */
+
     @OptIn(FlowPreview::class)
     private fun observeSearchInput() {
         viewModelScope.launch {
@@ -134,7 +126,10 @@ class FollowerFollowingViewModel @Inject constructor(
 
     // When user switches tab
     fun updateSelectedOption(type: String) {
-        _uiState.update { it.copy(selectedOption = type) }
+
+        _uiState.update {
+            it.copy(selectedOption = type)
+        }
 
         when (type) {
             TAB_FOLLOWER -> {
@@ -158,7 +153,7 @@ class FollowerFollowingViewModel @Inject constructor(
     ): Boolean = !loading && page <= totalPages
 
 
-    //  Mappers
+
     private fun FollowerItem.toAudienceItem() = AudienceItem(
         id = id,
         name = name.orEmpty(),

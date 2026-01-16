@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.newModel.home.PostItem
 import com.bussiness.slodoggiesapp.ui.dialog.DeleteChatDialog
@@ -86,7 +87,14 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AsyncImage(
-                    model = postItem.media?.parentImageUrl,
+                    model =
+                        ImageRequest.Builder(LocalContext.current)
+                            .data(postItem.media?.parentImageUrl)
+                            .crossfade(true) // Smooth fade-in transition
+                            .build(),
+
+
+
                     placeholder = painterResource(R.drawable.ic_person_icon1),
                     error = painterResource(R.drawable.ic_person_icon1),
                     contentDescription = "User Image",
@@ -287,7 +295,8 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier
-                        .align(Alignment.CenterEnd).wrapContentSize()
+                        .align(Alignment.CenterEnd)
+                        .wrapContentSize()
                 )
             }
 
@@ -439,4 +448,5 @@ fun CommunityPostLikes(
         )
     }
 }
+
 
