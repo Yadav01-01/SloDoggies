@@ -207,10 +207,14 @@ fun BottomMessageBar(
                     .clip(RoundedCornerShape(10.dp))
                     .background(PrimaryColor)
                     .clickable {
+                               if(viewModel.messages.value.size ==0){
+                                     viewModel.createChannel()
+                               }
+                               else {
+                                   viewModel.sendMessage()
+                               }
 
-
-
-                        viewModel.sendMessage() },
+                               },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

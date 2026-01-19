@@ -122,11 +122,8 @@ fun ChatScreen(
             db.collection("users").document(receiverId)
         }
 
-        // --- UI State (Compose will recompose automatically) ---
 
-        /* ---------------------------------------------------------
-       1️⃣ Ensure CURRENT USER document exists (runs once)
-       --------------------------------------------------------- */
+
         LaunchedEffect(currentUserId) {
             currentUserDoc.set(
                 mapOf(
@@ -138,9 +135,7 @@ fun ChatScreen(
             )
         }
 
-        /* ---------------------------------------------------------
-       2️⃣ Observe RECEIVER presence (REAL-TIME)
-       --------------------------------------------------------- */
+
         DisposableEffect(receiverId) {
             val listener = receiverDoc.addSnapshotListener { snapshot, _ ->
                 if (snapshot != null && snapshot.exists()) {
@@ -206,42 +201,6 @@ fun ChatScreen(
         status =if(type.equals(AppConstant.SINGLE)){ if(otherUserOnline)"Active Now" else "Offline" } else{"22 Member"}
     )
 
-    val dummyMessages = remember {
-        listOf(
-            ChatMessage(
-                senderId = "1",
-                receiverId = "2",
-                message = "Hi, how are you?",
-                timestamp = System.currentTimeMillis() - 1000 * 60 * 60,
-                date = "14 January 2026",
-                time = "10:00 AM"
-            ),
-            ChatMessage(
-                senderId = "2",
-                receiverId = "1",
-                message = "I am good, what about you?",
-                timestamp = System.currentTimeMillis() - 1000 * 60 * 50,
-                date = "14 January 2026",
-                time = "10:10 AM"
-            ),
-            ChatMessage(
-                senderId = "1",
-                receiverId = "2",
-                message = "All good 👍",
-                timestamp = System.currentTimeMillis() - 1000 * 60 * 40,
-                date = "14 January 2026",
-                time = "10:20 AM"
-            ),
-            ChatMessage(
-                senderId = "2",
-                receiverId = "1",
-                message = "Tomorrow meeting?",
-                timestamp = System.currentTimeMillis(),
-                date = "15 January 2026",
-                time = "09:00 AM"
-            )
-        )
-    }
 
 
     // Scroll to latest message when list changes
@@ -371,7 +330,9 @@ fun ChatScreen(
         if (deleteDialog) {
             DeleteChatDialog(
                 onDismiss = { deleteDialog = false },
-                onClickRemove = { /* handle delete */ },
+                onClickRemove = { /* handle delete */
+                    viewModel.deleteChatForMe(chatId)
+                },
                 iconResId = R.drawable.delete_mi,
                 text = stringResource(R.string.Delete_conversation),
                 description = stringResource(R.string.Delete_it)

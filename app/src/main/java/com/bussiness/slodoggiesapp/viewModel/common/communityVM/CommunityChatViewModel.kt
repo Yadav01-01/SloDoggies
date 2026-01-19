@@ -18,6 +18,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -66,19 +68,35 @@ class CommunityChatViewModel @Inject constructor(
     fun onMessageChange(newMessage: String) {
         _currentMessage.value = newMessage.take(250)
     }
+    fun createChannel(){
+        viewModelScope.launch {
+            repository.createChannel(
+               if(currentUserId.isNotEmpty()) currentUserId.toInt()else -1, receiverId.value,null,chatId.value,"single"
+            ).collectLatest { result ->
+                when (result){
+                    is Resource.Loading -> {
 
-    suspend fun createChannel(
-        senderId: Int,
-        receiverId: String?,
-        eventId: String?,
-        chatId: String?,
-        chatType: String?
-    ){
-        
+                    }
+                    is Resource.Success -> {
+                        sendMessage()
+                    }
+                    is Resource.Error -> {
+
+                    }
+                    Resource.Idle -> Unit
+                }
+            }
+        }
 
     }
 
     // Handle message send (text + attachments)
+
+
+
+
+
+
     fun sendMessage() {
         val text = _currentMessage.value.trim()
         val attachments = _pendingAttachments.value
@@ -98,8 +116,9 @@ class CommunityChatViewModel @Inject constructor(
                     receiverId = receiverId.value?:"", senderImage = senderImage
                     )
 
+
                 chatId.value.let {
-                    chatRepository.sendMessage(it?:"",chatMessage)
+                    chatRepository.sendMessage(it?:"",chatMessage,currentUserId)
                 }
 //                _messages.value += ChatMessage(
 //                    text = text,
@@ -140,7 +159,7 @@ class CommunityChatViewModel @Inject constructor(
             }
         }
     }*/
-fun getMessage(chatId: String, currentUserId: String) {
+  suspend fun getMessage(chatId: String, currentUserId: String) {
     viewModelScope.launch {
         chatRepository.observeMessages(chatId, currentUserId).collect { list ->
 
@@ -157,29 +176,40 @@ fun getMessage(chatId: String, currentUserId: String) {
         }
     }
 }
+    fun deleteChatForMe(chatId: String) {
+        chatRepository.deleteChatForMe(chatId = chatId,currentUserId){ success ->
+            if (success) {
+                Log.d("TESTING_MESSAGE","I AM HERE IN DELETE SUCCESS")
+                _messages.value   = emptyList<ChatMessage>()
+            } else {
+                Log.d("TESTING_MESSAGE","I AM HERE IN DELETE fAILURE")
 
+            }
+        }
+    }
 
     fun getUserImage(userId: String) {
-        viewModelScope.launch {
-            repository.getUserImage(userId).collect { result ->
-                when (result) {
-                    is Resource.Loading -> {
+        if(senderImage == null || senderImage.isEmpty()) {
+            viewModelScope.launch {
+                repository.getUserImage(userId).collect { result ->
+                    when (result) {
+                        is Resource.Loading -> {
 
-                    }
-
-                    is Resource.Success -> {
-                        result.data.let { response ->
-                                 response.data?.let {
-                                     senderImage = it
-                                 }
                         }
+                        is Resource.Success -> {
+                            result.data.let { response ->
+                                response.data?.let {
+                                    senderImage = it
+                                }
+                            }
+                        }
+
+                        is Resource.Error -> {
+
+                        }
+
+                        Resource.Idle -> TODO()
                     }
-
-                    is Resource.Error -> {
-
-                    }
-
-                    Resource.Idle -> TODO()
                 }
             }
         }

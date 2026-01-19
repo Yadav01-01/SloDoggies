@@ -15,6 +15,8 @@ data class ChatMessage(
     var date:String? = null,
     var time:String? = null,
     var seen :Boolean= false,
-    var senderImage:String =""
+    var senderImage:String ="",
+    val deletedAt: Map<String, Long> = emptyMap()
+
 )
 
