@@ -64,6 +64,7 @@ import java.util.Locale
 
 @Composable
 fun CommunityChatScreen(
+
     navController: NavHostController,
     receiverId:String ="",
     receiverImage:String ="",

@@ -127,13 +127,14 @@ fun MyEventScreen(navController: NavHostController) {
                             // navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
                           eventData?.let {
                                 val receiverId = it.user_id.toString() ?: ""
+                              val chatId = it.id ?: ""
                                 // Get the first image from get_event_image list if available
                                 val firstImageUrl = it.get_event_image?.firstOrNull()?.media_path ?: ""
                                 Log.d("CommunityChatScreen", "Image URL: $firstImageUrl")
                                 val receiverImage = URLEncoder.encode(firstImageUrl, StandardCharsets.UTF_8.toString())
                                 val receiverName = URLEncoder.encode(it.event_title ?: "", StandardCharsets.UTF_8.toString())
                                 val type = "event"
-                                navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$type")
+                                navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type")
                             }
                         }
                     }
