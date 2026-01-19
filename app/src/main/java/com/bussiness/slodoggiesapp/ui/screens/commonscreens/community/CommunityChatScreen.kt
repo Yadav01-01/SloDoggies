@@ -64,7 +64,12 @@ import java.util.Locale
 
 @Composable
 fun CommunityChatScreen(
-    navController: NavHostController,receiverId:String ="",receiverImage:String ="",receiverName:String="",type:String="",
+    navController: NavHostController,
+    receiverId:String ="",
+    receiverImage:String ="",
+    receiverName:String="",
+    chatId :String ="",
+    type:String="",
     viewModel: CommunityChatViewModel = hiltViewModel()
 ) {
     Log.d("CommunityChatScreen","receiverId-$receiverId receiverImage-$receiverImage receiverName-$receiverName type-$type ")
@@ -82,25 +87,15 @@ fun CommunityChatScreen(
         ?.let { URLDecoder.decode(it, "UTF-8") } ?: ""
     val receiverName = receiverName.takeIf { it.isNotEmpty() }
         ?.let { URLDecoder.decode(it, "UTF-8") } ?: ""
-    val chatId = remember(receiverId, currentUserId) {
-        if (receiverId.isNotEmpty()) {
-            if (receiverId.toInt() < currentUserId.toInt()) {
-                "${currentUserId}_${receiverId}"
-            } else {
-                "${receiverId}_${currentUserId}"
-            }
-        } else {
-            ""
-        }
-    }
+
     viewModel.setChatData(chatId,receiverId)
     viewModel.getUserImage(currentUserId)
 
     val listState = rememberLazyListState() // LazyColumn scroll state
-    var otherUserOnline by remember { mutableStateOf(false) }
-//    LaunchedEffect(Unit) {
-//        viewModel.getMessage(chatId, currentUserId)
-//    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getMessage("14", currentUserId)
+    }
     // Scroll to bottom when messages change
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
@@ -146,7 +141,7 @@ fun CommunityChatScreen(
                     .fillMaxSize()
                     .padding(bottom = 75.dp),
                 receiverImage = "",
-                isReceiverOnline = otherUserOnline,
+                isReceiverOnline = false, chatType= type
             )
 
          /*   CommunityChatSection(
@@ -208,7 +203,8 @@ fun CommunityChatSection(
     currentUserId: String, // logged-in user ID
     modifier: Modifier = Modifier,
     receiverImage : String,
-    isReceiverOnline: Boolean
+    isReceiverOnline: Boolean,
+    chatType: String
 ) {
     val sortedMessages = remember(messages) {
         messages.sortedBy { it.timestamp }
@@ -270,7 +266,8 @@ fun CommunityChatSection(
                 message = message,
                 isMine = isMine,
                 receiverImage = receiverImage,
-                isReceiverOnline = isReceiverOnline
+                isReceiverOnline = isReceiverOnline,
+                type= chatType
             )
         }
     }
@@ -283,7 +280,8 @@ fun ChatBubble(
     message: ChatMessage,
     isMine: Boolean,
     receiverImage : String,
-    isReceiverOnline : Boolean
+    isReceiverOnline : Boolean,
+    type: String
 ) {
     val bubbleColor = if (isMine) PrimaryColor else Color(0xFFE5EFF2)
     val alignment = if (isMine) Arrangement.End else Arrangement.Start
@@ -314,9 +312,9 @@ fun ChatBubble(
         // Show sender image only if it's not mine
         if (!isMine) {
             Box(modifier = Modifier.size(36.dp) .align(Alignment.Bottom)) {
-                if (!receiverImage.isNullOrEmpty()) {
+                if (!receiverImage.isNullOrEmpty() || !message.senderImage.isNullOrEmpty()) {
                     AsyncImage(
-                        model = receiverImage,
+                        model = if(type.equals("event"))message.senderImage else receiverImage,
                         placeholder = painterResource(id = R.drawable.paw_icon),
                         error = painterResource(id = R.drawable.paw_icon),
                         contentDescription = null,

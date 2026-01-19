@@ -1,6 +1,7 @@
 package com.bussiness.slodoggiesapp.data.model.common
 
 import android.net.Uri
+import java.security.Timestamp
 
 data class ChatMessage(
     val text: String="",
@@ -16,7 +17,9 @@ data class ChatMessage(
     var time:String? = null,
     var seen :Boolean= false,
     var senderImage:String ="",
-    val deletedAt: Map<String, Long> = emptyMap()
+    val deletedAt: Map<String, Long> = emptyMap(),
+
+
 
 )
 

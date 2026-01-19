@@ -267,6 +267,7 @@ fun ChatScreen(
                     .padding(bottom = 65.dp),
                 receiverImage = receiverImage,
                 isReceiverOnline = otherUserOnline,
+                chatType = "single"
             )
 
 

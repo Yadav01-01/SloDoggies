@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOf
 
 class ChatRepository(
     private val firestore: FirebaseFirestore,
@@ -76,37 +78,105 @@ class ChatRepository(
 //        awaitClose { subscription.remove() }
 //    }
 
+//purana chalta hua sendMessage
+//    fun sendMessage(
+//        chatId: String, message: ChatMessage, currentUserId: String
+//    ) {
+//
+//        if (chatId.isBlank()) {
+//            return
+//        }
+//
+//        val chatRef = firestore.collection("chats").document(chatId)
+//
+//
+//        chatRef.collection("messages").add(message)
+//            .addOnSuccessListener {
+//
+//
+//                chatRef.update(
+//                    mapOf(
+//                        "lastMessage" to message.message,
+//                        "lastMessageTime" to System.currentTimeMillis(),
+//                        "deletedAt.$currentUserId" to FieldValue.delete() // ⭐ KEY
+//                    )
+//                )
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e("ChatRepository", "Failed to send message", e)
+//            }
+//    }
+
+    // ***** working send message with delete functionality fully working ****/
+
+//    fun sendMessage(
+//        chatId: String,
+//        message: ChatMessage,
+//        currentUserId: String
+//    ) {
+//        if (chatId.isBlank()) return
+//
+//        val chatRef = firestore.collection("chats").document(chatId)
+//
+//        val batch = firestore.batch()
+//
+//        val msgRef = chatRef.collection("messages").document()
+//        batch.set(msgRef, message)
+//
+//        batch.update(
+//            chatRef,
+//            mapOf(
+//                "lastMessage" to message.message,
+//                "lastMessageTime" to System.currentTimeMillis()
+//                // ❌ deletedAt ko MAT chhedo
+//            )
+//        )
+//
+//        batch.commit().addOnSuccessListener {
+//            Log.e("ChatRepository", "Success to send message", )
+//
+//        }
+//            .addOnFailureListener {
+//                Log.e("ChatRepository", "Failed to send message", it)
+//            }
+//    }
+
 
     fun sendMessage(
         chatId: String,
         message: ChatMessage,
         currentUserId: String
     ) {
-        if (chatId.isBlank()) {
-            return
-        }
+        if (chatId.isBlank()) return
 
         val chatRef = firestore.collection("chats").document(chatId)
+        val msgRef = chatRef.collection("messages").document()
 
-        // 1️⃣ Message add karo
-        chatRef
-            .collection("messages")
-            .add(message)
+        val batch = firestore.batch()
+
+        // 1️⃣ Message save
+        batch.set(msgRef, message)
+
+        // 2️⃣ Chat document create/update safely
+        batch.set(
+            chatRef,
+            mapOf(
+                "lastMessage" to message.message,
+                "lastMessageTime" to System.currentTimeMillis()
+            ),
+            SetOptions.merge() // 🔥 creates doc if missing
+        )
+
+        batch.commit()
             .addOnSuccessListener {
-
-                // 2️⃣ Chat ko sender ke liye restore karo
-                chatRef.update(
-                    mapOf(
-                        "lastMessage" to message.message,
-                        "lastMessageTime" to System.currentTimeMillis(),
-                        "deletedAt.$currentUserId" to FieldValue.delete() // ⭐ KEY
-                    )
-                )
+                Log.d("ChatRepository", "Message sent successfully")
             }
-            .addOnFailureListener { e ->
-                Log.e("ChatRepository", "Failed to send message", e)
+            .addOnFailureListener {
+                Log.e("ChatRepository", "Failed to send message", it)
             }
     }
+
+
 
     // old chat message delete code with
 //    fun observeMessages(
@@ -144,6 +214,8 @@ class ChatRepository(
 //        awaitClose { listener.remove() }
 //    }
 
+    // second solution
+
     fun observeMessages(
         chatId: String,
         currentUserId: String
@@ -162,7 +234,7 @@ class ChatRepository(
         val chatSnapshot = chatRef.get().await()
         val deletedAtMap = chatSnapshot.get("deletedAt") as? Map<String, Long> ?: emptyMap()
         val deleteTime = deletedAtMap[currentUserId] ?: 0L
-
+        Log.d("TESTING_DELETE","fetching_time"+ deleteTime)
         val listener = messagesRef.addSnapshotListener { snapshots, _ ->
             val visibleMessages = snapshots?.documents
                 ?.mapNotNull { it.toObject(ChatMessage::class.java) }
@@ -175,27 +247,48 @@ class ChatRepository(
         awaitClose { listener.remove() }
     }
 
-
-
     fun deleteChatForMe(
         chatId: String,
         currentUserId: String,
-        onResult: (success: Boolean) -> Unit
+        onResult: (Boolean) -> Unit
     ) {
-        firestore.collection("chats")
-            .document(chatId)
-            .set(
-                mapOf("deletedAt" to mapOf(currentUserId to System.currentTimeMillis())),
-                SetOptions.merge() // 🔥 merge prevents failure if document/field missing
-            )
-            .addOnSuccessListener {
-                onResult(true)
-            }
+        val chatRef = firestore.collection("chats").document(chatId)
+
+        chatRef.update("deletedAt.$currentUserId", System.currentTimeMillis())
+            .addOnSuccessListener { onResult(true) }
             .addOnFailureListener { e ->
-                e.printStackTrace()
-                onResult(false)
+                // document/field not exist → create map safely
+                val data = mapOf("deletedAt" to mapOf(currentUserId to System.currentTimeMillis()))
+                chatRef.set(data, SetOptions.merge())
+                    .addOnSuccessListener { onResult(true) }
+                    .addOnFailureListener { e2 ->
+                        e2.printStackTrace()
+                        onResult(false)
+                    }
             }
     }
+
+
+
+//    fun deleteChatForMe(
+//        chatId: String,
+//        currentUserId: String,
+//        onResult: (success: Boolean) -> Unit
+//    ) {
+//        firestore.collection("chats")
+//            .document(chatId)
+//            .set(
+//                mapOf("deletedAt" to mapOf(currentUserId to System.currentTimeMillis())),
+//                SetOptions.merge() // 🔥 merge prevents failure if document/field missing
+//            )
+//            .addOnSuccessListener {
+//                onResult(true)
+//            }
+//            .addOnFailureListener { e ->
+//                e.printStackTrace()
+//                onResult(false)
+//            }
+//    }
 
 
 

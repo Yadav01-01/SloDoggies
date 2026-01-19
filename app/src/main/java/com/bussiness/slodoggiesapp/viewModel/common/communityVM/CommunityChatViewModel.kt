@@ -159,7 +159,7 @@ class CommunityChatViewModel @Inject constructor(
             }
         }
     }*/
-  suspend fun getMessage(chatId: String, currentUserId: String) {
+   fun getMessage(chatId: String, currentUserId: String) {
     viewModelScope.launch {
         chatRepository.observeMessages(chatId, currentUserId).collect { list ->
 

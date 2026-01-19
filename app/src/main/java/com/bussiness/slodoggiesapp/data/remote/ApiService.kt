@@ -620,7 +620,7 @@ interface ApiService {
     @POST("create_channel")
     suspend fun createChannel(
         @Field("sender_id") senderId :Int,
-        @Field("receiver_id") receiverId:String?,
+        @Field("receiver_user_id") receiverId:String?,
         @Field("event_id") eventId :String?,
         @Field("chat_id") chatId :String?,
         @Field("chat_type") chatType:String?,
