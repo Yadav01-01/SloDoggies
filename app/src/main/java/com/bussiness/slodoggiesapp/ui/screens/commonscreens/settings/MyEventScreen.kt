@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.settings
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -37,6 +38,8 @@ import com.bussiness.slodoggiesapp.util.Messages
 import com.bussiness.slodoggiesapp.viewModel.event.EventListViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -119,8 +122,19 @@ fun MyEventScreen(navController: NavHostController) {
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     items(events, key = { it.id }) { event ->
-                        EventCard(event = event, selectedOption = "") {
-                            navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+                        EventCard(event = event, selectedOption = "") {eventData->
+
+                            // navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+                          eventData?.let {
+                                val receiverId = it.user_id.toString() ?: ""
+                                // Get the first image from get_event_image list if available
+                                val firstImageUrl = it.get_event_image?.firstOrNull()?.media_path ?: ""
+                                Log.d("CommunityChatScreen", "Image URL: $firstImageUrl")
+                                val receiverImage = URLEncoder.encode(firstImageUrl, StandardCharsets.UTF_8.toString())
+                                val receiverName = URLEncoder.encode(it.event_title ?: "", StandardCharsets.UTF_8.toString())
+                                val type = "event"
+                                navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$type")
+                            }
                         }
                     }
                     // Show bottom loader while next page is loading

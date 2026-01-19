@@ -59,9 +59,12 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content.Pet
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.discover.content.ShowPetsNearYou
 import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.ShareContentDialog
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
+import com.bussiness.slodoggiesapp.util.AppConstant
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.DiscoverViewModel
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewModel = hiltViewModel()){
@@ -186,14 +189,35 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 onClickMore = { viewModel.showReportDialog(true) },
                 onShareClick = { viewModel.showShareContent(true) },
                 onLikeClick = { postId -> viewModel.postLikeUnlike(postId) },
-                onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
+               // onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
+//                onJoinClick = {
+//                    val receiverId = serviceId
+//                    val receiverImage = URLEncoder.encode(data.serviceDetail?.profileImage?:"", StandardCharsets.UTF_8.toString())
+//                    val receiverName = URLEncoder.encode(data.serviceDetail?.providerName?:"", StandardCharsets.UTF_8.toString())
+//                    val type = "event"
+//                    navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$type") },
                 onProfileClick = { postUserId -> navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${postUserId}") },
                 onInterested = { postId -> viewModel.interestedPost(postId,
                    onSuccess = {  //viewModel.showSavedDialog(true)
                         }
                 ) },
-                onClickFollowing = {
-                        userId->
+
+                onJoinClick = { post ->
+                    val event = post as? PostItem.CommunityPost
+
+                    event?.let {
+                        val receiverId = it.userId ?: ""
+                        /*
+                        postItem.media?.imageUrl
+                         */
+                        Log.d("CommunityChatScreen","${it.media?.imageUrl?: ""}")
+                        val receiverImage = URLEncoder.encode(it.mediaList?.get(0)?.mediaUrl?: "" , StandardCharsets.UTF_8.toString())
+                        val receiverName = URLEncoder.encode(it.eventTitle ?: "", StandardCharsets.UTF_8.toString())
+                        val type = "event"
+                        navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$type")
+                    }
+                },
+                onClickFollowing = { userId->
                     Log.d("TESTING_ACTIVITY","PostId is "+userId)
                     viewModel.addAndRemoveFollowers(userId,
                         onError = { msg ->
@@ -461,7 +485,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
 fun EventsResult(
     posts: List<PostItem>,
     onClickMore: () -> Unit,
-    onJoinClick: () -> Unit,
+    onJoinClick: (PostItem.CommunityPost) -> Unit,
     onShareClick: () -> Unit,
     onLikeClick: (String) -> Unit,
     onProfileClick: (String) -> Unit,
@@ -509,7 +533,7 @@ fun EventsResult(
                         onReportClick = { onClickMore() },
                         onShareClick = { onShareClick() },
                         onLikeClick = { onLikeClick(event.postId) },
-                        onJoinedCommunity = { onJoinClick() },
+                        onJoinedCommunity = { onJoinClick(event) },
                         onProfileClick = { onProfileClick(event.userId) },
                         onInterested = { onInterested(event.postId) },
                         onClickFollowing = { onClickFollowing(event.userId) },

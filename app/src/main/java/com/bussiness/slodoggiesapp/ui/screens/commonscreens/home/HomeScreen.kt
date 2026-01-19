@@ -68,6 +68,8 @@ import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.NonCancellable.key
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -195,9 +197,29 @@ fun HomeScreen(
                             postItem = post,
                             onReportClick = { viewModel.showReportDialog(post.postId) },
                             onShareClick = onShareClick,
-                            onJoinedCommunity = {
-                                navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
-                            },
+                            onJoinedCommunity = { post->
+                               // navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+                                val event = post as? PostItem.CommunityPost
+                                val imageUrl =  event?.media?.imageUrl
+                                event?.let {
+                                    val receiverId = it.userId ?: ""
+                                    /*
+                                    postItem.media?.imageUrl
+                                     */
+                                    Log.d("CommunityChatScreen", "${it.media?.parentImageUrl ?: ""}")
+                                    val receiverImage = URLEncoder.encode(
+                                        it.mediaList?.get(0)?.mediaUrl ?: "",
+                                        StandardCharsets.UTF_8.toString()
+                                    )
+                                    val receiverName = URLEncoder.encode(
+                                        it.eventTitle ?: "",
+                                        StandardCharsets.UTF_8.toString()
+                                    )
+                                    val type = "event"
+                                    navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$type")
+                                }
+                                                },
+
                             onProfileClick = {
 
                                 if (post.userType == "Owner") {

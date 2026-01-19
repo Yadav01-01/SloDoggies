@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.community
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,6 +56,7 @@ import com.bussiness.slodoggiesapp.ui.component.common.CommunityHeader
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
+import java.net.URLDecoder
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -62,18 +64,43 @@ import java.util.Locale
 
 @Composable
 fun CommunityChatScreen(
-    navController: NavHostController,
+    navController: NavHostController,receiverId:String ="",receiverImage:String ="",receiverName:String="",type:String="",
     viewModel: CommunityChatViewModel = hiltViewModel()
 ) {
+    Log.d("CommunityChatScreen","receiverId-$receiverId receiverImage-$receiverImage receiverName-$receiverName type-$type ")
     val messages by viewModel.messages.collectAsState()
     val currentMessage by viewModel.currentMessage.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
 
-    val currentUserId = SessionManager(LocalContext.current).getUserId()
+    val sessionManager = SessionManager.getInstance(LocalContext.current)
+
+    val currentUserId = sessionManager.getUserId()
+
+    viewModel.currentUserId = currentUserId
+
+    val receiverImage = receiverImage.takeIf { it.isNotEmpty() }
+        ?.let { URLDecoder.decode(it, "UTF-8") } ?: ""
+    val receiverName = receiverName.takeIf { it.isNotEmpty() }
+        ?.let { URLDecoder.decode(it, "UTF-8") } ?: ""
+    val chatId = remember(receiverId, currentUserId) {
+        if (receiverId.isNotEmpty()) {
+            if (receiverId.toInt() < currentUserId.toInt()) {
+                "${currentUserId}_${receiverId}"
+            } else {
+                "${receiverId}_${currentUserId}"
+            }
+        } else {
+            ""
+        }
+    }
+    viewModel.setChatData(chatId,receiverId)
+    viewModel.getUserImage(currentUserId)
 
     val listState = rememberLazyListState() // LazyColumn scroll state
     var otherUserOnline by remember { mutableStateOf(false) }
-
+//    LaunchedEffect(Unit) {
+//        viewModel.getMessage(chatId, currentUserId)
+//    }
     // Scroll to bottom when messages change
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
@@ -90,9 +117,9 @@ fun CommunityChatScreen(
         CommunityHeader(
             community = com.bussiness.slodoggiesapp.data.model.businessProvider.Community(
                 id = "1",
-                name = "Event Community 1",
+                name = receiverName,
                 membersCount = 22,
-                imageUrl = ""
+                imageUrl = receiverImage
             ),
             onBackClick = {
                 if (!isNavigating) {
@@ -121,6 +148,17 @@ fun CommunityChatScreen(
                 receiverImage = "",
                 isReceiverOnline = otherUserOnline,
             )
+
+         /*   CommunityChatSection(
+                messages = messages,   // 🔥 Firebase
+                listState = listState,
+                currentUserId = currentUserId,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 65.dp),
+                receiverImage = receiverImage,
+                isReceiverOnline = otherUserOnline,
+            )*/
 
 
             BottomMessageBar(
@@ -175,6 +213,7 @@ fun CommunityChatSection(
     val sortedMessages = remember(messages) {
         messages.sortedBy { it.timestamp }
     }
+
     // ✅ Auto-scroll to last message when new message arrives
     LaunchedEffect(sortedMessages.size) {
         if (sortedMessages.isNotEmpty()) {

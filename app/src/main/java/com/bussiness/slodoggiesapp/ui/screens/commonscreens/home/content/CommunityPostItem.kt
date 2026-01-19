@@ -1,5 +1,6 @@
 package com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,7 +57,7 @@ import com.bussiness.slodoggiesapp.util.SessionManager
 
 @Composable
 fun CommunityPostItem(postItem: PostItem.CommunityPost,
-                      onJoinedCommunity: () -> Unit,
+                      onJoinedCommunity: (PostItem.CommunityPost) -> Unit,
                       onReportClick:  () -> Unit,
                       onShareClick: () -> Unit,
                       onProfileClick: () -> Unit,
@@ -69,6 +70,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
     val isFollowed = postItem.iAmFollowing
     val sessionManager = SessionManager.getInstance(LocalContext.current)
 
+    Log.d("postItem", "$postItem")
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -284,7 +286,7 @@ fun CommunityPostItem(postItem: PostItem.CommunityPost,
                     .fillMaxWidth()
                     .background(Color.Black)
                     .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .clickable { onJoinedCommunity() },
+                    .clickable { onJoinedCommunity(postItem) },
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Text(if (postItem.alreadyJoined == true)"Joined" else "Join Community", modifier = Modifier.padding(end = 35.dp),

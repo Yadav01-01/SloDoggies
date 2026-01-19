@@ -629,7 +629,7 @@ fun PetPlaceCard(placeItem: PetPlaceItem,
 @Composable
 fun SocialEventCard(postItem: PostItem.CommunityPost,
                     onClickFollowing: () -> Unit,
-                    onJoinedCommunity: () -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit,
+                    onJoinedCommunity: (PostItem.CommunityPost) -> Unit, onReportClick: () -> Unit, onShareClick: () -> Unit,
                     onLikeClick : () -> Unit,
                     onProfileClick: () -> Unit,
                     onInterested : () -> Unit,
@@ -823,7 +823,7 @@ fun SocialEventCard(postItem: PostItem.CommunityPost,
                 .fillMaxWidth()
                 .background(Color.Black)
                 .padding(horizontal = 12.dp, vertical = 8.dp)
-                .clickable { onJoinedCommunity() },
+                .clickable { onJoinedCommunity(postItem) },
             contentAlignment = Alignment.CenterEnd
         ) {
             Text("Join Community", modifier = Modifier.padding(end = 35.dp),
