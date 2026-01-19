@@ -64,7 +64,8 @@ import java.util.Locale
 
 @Composable
 fun CommunityChatScreen(
-    navController: NavHostController,receiverId:String ="",receiverImage:String ="",receiverName:String="",type:String="",
+    navController: NavHostController,receiverId:String ="",receiverImage:String ="",receiverName:String="",type:String="",chatId :String ="",
+
     viewModel: CommunityChatViewModel = hiltViewModel()
 ) {
     Log.d("CommunityChatScreen","receiverId-$receiverId receiverImage-$receiverImage receiverName-$receiverName type-$type ")

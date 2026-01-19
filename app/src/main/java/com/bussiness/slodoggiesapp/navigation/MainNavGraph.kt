@@ -99,20 +99,22 @@ fun MainNavGraph(
         composable(Routes.HELP_AND_SUPPORT_SCREEN) { HelpAndSupportScreen(navController) }
         composable(Routes.MY_EVENT_SCREEN) { MyEventScreen(navController) }
        // composable(Routes.COMMUNITY_CHAT_SCREEN) { CommunityChatScreen(navController) }
-        composable(route = Routes.COMMUNITY_CHAT_SCREEN+"/{receiverId}/{receiverImage}/{receiverName}/{type}",
+        composable(route = Routes.COMMUNITY_CHAT_SCREEN+"/{receiverId}/{receiverImage}/{receiverName}/{chatId}/{type}",
             arguments = listOf(
                 navArgument("receiverId") {type = NavType.StringType; defaultValue = ""},
                 navArgument("receiverImage"){type = NavType.StringType; defaultValue=""},
                 navArgument("receiverName"){type = NavType.StringType; defaultValue=""},
+                navArgument("chatId") {type = NavType.StringType; defaultValue = ""},
                 navArgument("type"){type = NavType.StringType; defaultValue=""}
             )
         ) {
             val receiverId = it.arguments?.getString("receiverId")?:""
             val receiverImage = it.arguments?.getString("receiverImage") ?: ""
             val receiverName = it.arguments?.getString("receiverName")?:""
+            val chatId = it.arguments?.getString("chatId")?:""
             val type = it.arguments?.getString("type")?:""
 
-            CommunityChatScreen(navController,receiverId,receiverImage,receiverName,type)
+            CommunityChatScreen(navController,receiverId,receiverImage,receiverName,chatId,type)
         }
         composable(Routes.NOTIFICATION_SCREEN) { NotificationScreen(navController) }
         composable(Routes.MESSAGE_SCREEN) { MessageScreen(navController) }

@@ -203,6 +203,7 @@ fun HomeScreen(
                                 val imageUrl =  event?.media?.imageUrl
                                 event?.let {
                                     val receiverId = it.userId ?: ""
+                                    val chatId = it.postId ?: ""
                                     /*
                                     postItem.media?.imageUrl
                                      */
@@ -216,7 +217,7 @@ fun HomeScreen(
                                         StandardCharsets.UTF_8.toString()
                                     )
                                     val type = "event"
-                                    navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$type")
+                                    navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type")
                                 }
                                                 },
 

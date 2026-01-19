@@ -207,6 +207,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
 
                     event?.let {
                         val receiverId = it.userId ?: ""
+                        val chatId = it.postId ?: ""
                         /*
                         postItem.media?.imageUrl
                          */
@@ -214,7 +215,7 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                         val receiverImage = URLEncoder.encode(it.mediaList?.get(0)?.mediaUrl?: "" , StandardCharsets.UTF_8.toString())
                         val receiverName = URLEncoder.encode(it.eventTitle ?: "", StandardCharsets.UTF_8.toString())
                         val type = "event"
-                        navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$type")
+                        navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type")
                     }
                 },
                 onClickFollowing = { userId->
