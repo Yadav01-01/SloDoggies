@@ -54,25 +54,18 @@ class NetworkInterceptor @Inject constructor(
 
         if (!isOnline()) {
         throw NoNetworkException()
-    }
-
+        }
         val token = sessionManager.getToken()
         Log.d("TESTING-TOKEN",""+token)
-
         val originalRequest = chain.request()
-
         val requestBuilder = originalRequest.newBuilder()
 
-
-    if (token.isNotEmpty()) {
-        requestBuilder.addHeader("Authorization", "Bearer $token")
-    }
-
-    requestBuilder.addHeader("Accept", "application/json")
-
-    val newRequest = requestBuilder.build()
-
-    if (BuildConfig.DEBUG) {
+        if (token.isNotEmpty()) {
+          requestBuilder.addHeader("Authorization", "Bearer $token")
+        }
+        requestBuilder.addHeader("Accept", "application/json")
+        val newRequest = requestBuilder.build()
+        if (BuildConfig.DEBUG) {
         Log.d("API_REQUEST", "URL: ${newRequest.url}")
         Log.d("API_REQUEST", "Method: ${newRequest.method}")
         Log.d("API_REQUEST", "Headers: ${newRequest.headers}")

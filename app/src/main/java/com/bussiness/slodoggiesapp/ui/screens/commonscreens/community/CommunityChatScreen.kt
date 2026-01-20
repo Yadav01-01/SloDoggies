@@ -108,7 +108,6 @@ fun CommunityChatScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-
     ) {
         CommunityHeader(
             community = com.bussiness.slodoggiesapp.data.model.businessProvider.Community(
