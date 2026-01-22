@@ -63,19 +63,21 @@ import com.bussiness.slodoggiesapp.util.AppConstant
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.businessProvider.DiscoverViewModel
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 @Composable
 fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewModel = hiltViewModel()){
 
-
+    val communityChatViewModel: CommunityChatViewModel = hiltViewModel() // Add this
+    val totalMembers by communityChatViewModel.totalMembers.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 
     val uiStateComment by viewModel.uiStateComment.collectAsState()
 
     val context = LocalContext.current
-
+    val sessionManager = SessionManager.getInstance(context)
     var message by remember { mutableStateOf("") }
 
     var selectedReason by remember { mutableStateOf("") }
@@ -110,6 +112,35 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 launchSingleTop = true
             }
         }
+    }
+    var pendingNavigationData by remember {
+        mutableStateOf<Triple<PostItem.CommunityPost, String, String>?>(null)
+    }
+    LaunchedEffect(totalMembers, pendingNavigationData) {
+
+        val data = pendingNavigationData ?: return@LaunchedEffect
+        val members = totalMembers ?: return@LaunchedEffect
+
+        // if (members > 0) {
+
+        val (event, receiverImage, receiverName) = data
+
+        Log.d("currentTotalMembers3", "$members")
+
+        navController.navigate(
+            "${Routes.COMMUNITY_CHAT_SCREEN}/" +
+                    "${event.userId}/" +
+                    "$receiverImage/" +
+                    "$receiverName/" +
+                    "${event.postId}/" +
+                    "event/" +
+                    members
+        )
+
+        // prevent double navigation
+        pendingNavigationData = null
+        communityChatViewModel.clearTotalMembers()
+        // }
     }
 
     Column(
@@ -189,13 +220,8 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                 onClickMore = { viewModel.showReportDialog(true) },
                 onShareClick = { viewModel.showShareContent(true) },
                 onLikeClick = { postId -> viewModel.postLikeUnlike(postId) },
-               // onJoinClick = { navController.navigate(Routes.COMMUNITY_CHAT_SCREEN) },
-//                onJoinClick = {
-//                    val receiverId = serviceId
-//                    val receiverImage = URLEncoder.encode(data.serviceDetail?.profileImage?:"", StandardCharsets.UTF_8.toString())
-//                    val receiverName = URLEncoder.encode(data.serviceDetail?.providerName?:"", StandardCharsets.UTF_8.toString())
-//                    val type = "event"
-//                    navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$type") },
+
+
                 onProfileClick = { postUserId -> navController.navigate("${Routes.PERSON_DETAIL_SCREEN}/${postUserId}") },
                 onInterested = { postId -> viewModel.interestedPost(postId,
                    onSuccess = {  //viewModel.showSavedDialog(true)
@@ -212,10 +238,16 @@ fun DiscoverScreen(navController: NavHostController, viewModel: DiscoverViewMode
                         postItem.media?.imageUrl
                          */
                         Log.d("CommunityChatScreen","${it.media?.imageUrl?: ""}")
+                        val type = "event"
+                        communityChatViewModel.joinCommunity(
+                            userId = listOf(sessionManager.getUserId()),
+                            eventId = it.postId
+                        )
                         val receiverImage = URLEncoder.encode(it.mediaList?.get(0)?.mediaUrl?: "" , StandardCharsets.UTF_8.toString())
                         val receiverName = URLEncoder.encode(it.eventTitle ?: "", StandardCharsets.UTF_8.toString())
-                        val type = "event"
-                        navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type")
+                        pendingNavigationData = Triple(event, receiverImage, receiverName)
+
+                      //  navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type")
                     }
                 },
                 onClickFollowing = { userId->

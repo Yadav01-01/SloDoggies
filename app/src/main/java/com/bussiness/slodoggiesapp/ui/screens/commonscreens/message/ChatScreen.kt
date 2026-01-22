@@ -108,6 +108,7 @@ fun ChatScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getMessage(chatId,currentUserId)
+        viewModel.markAllMessagesAsRead(chatId, currentUserId)
     }
 
 

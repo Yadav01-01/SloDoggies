@@ -66,6 +66,7 @@ import com.bussiness.slodoggiesapp.ui.screens.commonscreens.home.content.Sponsor
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.SessionManager
 import com.bussiness.slodoggiesapp.viewModel.common.HomeViewModel
+import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
 import com.google.gson.Gson
 import kotlinx.coroutines.NonCancellable.key
 import java.net.URLEncoder
@@ -76,7 +77,8 @@ import java.nio.charset.StandardCharsets
 fun HomeScreen(
     navController: NavHostController,
     viewModel: HomeViewModel = hiltViewModel()) {
-
+    val communityChatViewModel: CommunityChatViewModel = hiltViewModel() // Add this
+    val totalMembers by communityChatViewModel.totalMembers.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
     val uiStateComment by viewModel.uiStateComment.collectAsState()
     val dialogCount by viewModel.petInfoDialogCount.collectAsState()
@@ -96,7 +98,11 @@ fun HomeScreen(
             viewModel.loadFirstPage()
         }
     )
+    var pendingNavigationData by remember {
+        mutableStateOf<Triple<PostItem.CommunityPost, String, String>?>(null)
+    }
 
+    val currentTotalMembers = communityChatViewModel.totalMembers.collectAsState()
 //    LaunchedEffect(Unit) {
 //        viewModel.loadFirstPage()
 //    }
@@ -123,6 +129,32 @@ fun HomeScreen(
 
             navController.navigate(dest)
         }
+    }
+    LaunchedEffect(totalMembers, pendingNavigationData) {
+
+        val data = pendingNavigationData ?: return@LaunchedEffect
+        val members = totalMembers ?: return@LaunchedEffect
+
+       // if (members > 0) {
+
+            val (event, receiverImage, receiverName) = data
+
+            Log.d("currentTotalMembers3", "$members")
+
+            navController.navigate(
+                "${Routes.COMMUNITY_CHAT_SCREEN}/" +
+                        "${event.userId}/" +
+                        "$receiverImage/" +
+                        "$receiverName/" +
+                        "${event.postId}/" +
+                        "event/" +
+                        members
+            )
+
+            // prevent double navigation
+            pendingNavigationData = null
+            communityChatViewModel.clearTotalMembers()
+       // }
     }
 
 
@@ -198,26 +230,43 @@ fun HomeScreen(
                             onReportClick = { viewModel.showReportDialog(post.postId) },
                             onShareClick = onShareClick,
                             onJoinedCommunity = { post->
-                               // navController.navigate(Routes.COMMUNITY_CHAT_SCREEN)
+
                                 val event = post as? PostItem.CommunityPost
                                 val imageUrl =  event?.media?.imageUrl
+                                Log.d("CommunityChatScreen", "event-$event")
                                 event?.let {
                                     val receiverId = it.userId ?: ""
                                     val chatId = it.postId ?: ""
                                     /*
                                     postItem.media?.imageUrl
                                      */
+                                    Log.d("CommunityChatScreen", "chatId-$chatId")
                                     Log.d("CommunityChatScreen", "${it.media?.parentImageUrl ?: ""}")
+                                 StandardCharsets.UTF_8.toString()
+
+                                    val type = "event"
+                                    communityChatViewModel.joinCommunity(
+                                        userId = listOf(sessionManager.getUserId()),
+                                        eventId = it.postId
+                                    )
                                     val receiverImage = URLEncoder.encode(
                                         it.mediaList?.get(0)?.mediaUrl ?: "",
                                         StandardCharsets.UTF_8.toString()
                                     )
                                     val receiverName = URLEncoder.encode(
                                         it.eventTitle ?: "",
-                                        StandardCharsets.UTF_8.toString()
                                     )
-                                    val type = "event"
-                                    navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type")
+
+                                        pendingNavigationData = Triple(event, receiverImage, receiverName)
+
+                                   // val currentTotalMembers = communityChatViewModel.totalMembers.value
+
+                            /*        if (currentTotalMembers != null){
+                                        Log.d("currentTotalMembers3","$currentTotalMembers")
+                                        navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type/${2}")
+                                    }*/
+
+
                                 }
                                                 },
 

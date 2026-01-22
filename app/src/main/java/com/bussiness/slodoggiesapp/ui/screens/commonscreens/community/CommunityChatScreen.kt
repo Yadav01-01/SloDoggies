@@ -71,13 +71,14 @@ fun CommunityChatScreen(
     receiverName:String="",
     chatId :String ="",
     type:String="",
+    count: String= "",
     viewModel: CommunityChatViewModel = hiltViewModel()
 ) {
-    Log.d("CommunityChatScreen","receiverId-$receiverId receiverImage-$receiverImage receiverName-$receiverName type-$type ")
+    Log.d("CommunityChatScreen","receiverId-$receiverId receiverImage-$receiverImage receiverName-$receiverName chatId-$chatId type-$type ")
     val messages by viewModel.messages.collectAsState()
     val currentMessage by viewModel.currentMessage.collectAsState()
     var isNavigating by remember { mutableStateOf(false) }
-
+    Log.d("checktotalCount2", "$count")
     val sessionManager = SessionManager.getInstance(LocalContext.current)
 
     val currentUserId = sessionManager.getUserId()
@@ -91,16 +92,18 @@ fun CommunityChatScreen(
 
     viewModel.setChatData(chatId,receiverId)
     viewModel.getUserImage(currentUserId)
-
+   // viewModel.joinCommunity(currentUserId,chatId)
     val listState = rememberLazyListState() // LazyColumn scroll state
 
     LaunchedEffect(Unit) {
-        viewModel.getMessage("14", currentUserId)
+        viewModel.getMessage(chatId, receiverId)
+        viewModel.markAllMessagesAsRead(chatId, currentUserId)
     }
     // Scroll to bottom when messages change
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.size - 1)
+           // viewModel.joinCommunity(listOf(currentUserId), chatId)
         }
     }
 
@@ -113,7 +116,7 @@ fun CommunityChatScreen(
             community = com.bussiness.slodoggiesapp.data.model.businessProvider.Community(
                 id = "1",
                 name = receiverName,
-                membersCount = 22,
+                membersCount = count.toInt() ,
                 imageUrl = receiverImage
             ),
             onBackClick = {

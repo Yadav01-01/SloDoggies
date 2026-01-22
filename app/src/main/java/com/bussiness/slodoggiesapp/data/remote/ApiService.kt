@@ -2,7 +2,10 @@ package com.bussiness.slodoggiesapp.data.remote
 
 import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
 import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
+import com.bussiness.slodoggiesapp.data.model.common.AllChatListResponse
 import com.bussiness.slodoggiesapp.data.model.common.CreateChannelResponse
+import com.bussiness.slodoggiesapp.data.model.common.JoinCommunityRequest
+import com.bussiness.slodoggiesapp.data.model.common.JoinCommunityResponse
 import com.bussiness.slodoggiesapp.data.model.common.UserImageResponse
 import com.bussiness.slodoggiesapp.data.model.petOwner.FollowStatusResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
@@ -39,9 +42,11 @@ import com.bussiness.slodoggiesapp.data.newModel.subscription.SubscriptionRespon
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
+import com.google.gson.annotations.SerializedName
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -639,6 +644,17 @@ interface ApiService {
         @Field("chat_id") chatId: String
     ) : Response<CreateChannelResponse>
 
+
+    @POST(ApiEndPoint.JOIN_COMMUNITY)
+    suspend fun joinCommunity(
+        @Body request: JoinCommunityRequest // Create a data class
+    ) : Response<JoinCommunityResponse>
+
+
+
+    @FormUrlEncoded
+    @POST(ApiEndPoint.ALL_CHAT_LIST)
+    suspend fun allChatList(  @Field("user_id") userId :String,) : Response<AllChatListResponse>
 
 
 

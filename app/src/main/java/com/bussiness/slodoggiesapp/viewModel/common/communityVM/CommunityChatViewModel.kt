@@ -55,6 +55,10 @@ class CommunityChatViewModel @Inject constructor(
     val chatId: StateFlow<String?> = _chatId
 
     var senderImage :String =""
+
+    private var _totalMembers = MutableStateFlow<Int?>(null)
+    var totalMembers: StateFlow<Int?> = _totalMembers
+
     private val _receiverId = MutableStateFlow<String?>(null)
     val receiverId: StateFlow<String?> = _receiverId
 
@@ -237,5 +241,57 @@ class CommunityChatViewModel @Inject constructor(
     // Remove specific attachment
     fun removeAttachment(uri: Uri) {
         _pendingAttachments.value = _pendingAttachments.value.filterNot { it.first == uri }
+    }
+
+
+    fun joinCommunity(userId: List<String>,eventId: String) {
+       // if(senderImage == null || senderImage.isEmpty()) {
+            viewModelScope.launch {
+                repository.joinCommunity(userId,eventId).collect { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+
+                        }
+                        is Resource.Success -> {
+                            result.data.let { response ->
+                                response.data?.let {totalMembersData ->
+                                    // Access the total_members property from TotalMembersData
+                                   // _totalMembers.value = totalMembersData.total_members ?: 0
+                                    Log.d("checktotalCount1", "${totalMembersData.total_members}")
+                                    _totalMembers.value =
+                                        totalMembersData.total_members
+                                }
+                            }
+                        }
+
+                        is Resource.Error -> {
+
+                        }
+
+                        Resource.Idle -> TODO()
+                    }
+                }
+            }
+        // CommunityChatViewModel या ChatViewModel में
+
+//        }
+    }
+    fun markAllMessagesAsRead(chatId: String, currentUserId: String) {
+        viewModelScope.launch {
+            // Reset unseen count for this user
+            val chatRef = firestore.collection("chats").document(chatId)
+            val unseenField = "unseenCount.$currentUserId"
+
+            chatRef.update(unseenField, 0)
+                .addOnSuccessListener {
+                    Log.d("ChatViewModel", "Marked all messages as read for user: $currentUserId")
+                }
+                .addOnFailureListener { e ->
+                    Log.e("ChatViewModel", "Failed to mark messages as read", e)
+                }
+        }
+    }
+    fun clearTotalMembers() {
+        _totalMembers.value = null
     }
 }

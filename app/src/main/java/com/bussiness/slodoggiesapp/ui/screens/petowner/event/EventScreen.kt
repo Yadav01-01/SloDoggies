@@ -39,6 +39,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -48,12 +49,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.bussiness.slodoggiesapp.R
 import com.bussiness.slodoggiesapp.data.model.businessProvider.Event
+import com.bussiness.slodoggiesapp.data.model.common.CommunityNavData
 import com.bussiness.slodoggiesapp.navigation.Routes
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.ChoosePostTypeButton
 import com.bussiness.slodoggiesapp.ui.component.businessProvider.HeadingTextWithIcon
 import com.bussiness.slodoggiesapp.ui.component.common.EventCard
 import com.bussiness.slodoggiesapp.ui.theme.PrimaryColor
 import com.bussiness.slodoggiesapp.util.Messages
+import com.bussiness.slodoggiesapp.util.SessionManager
+import com.bussiness.slodoggiesapp.viewModel.common.communityVM.CommunityChatViewModel
 import com.bussiness.slodoggiesapp.viewModel.event.EventListViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -64,12 +68,15 @@ import java.nio.charset.StandardCharsets
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EventScreen(navController: NavHostController) {
-
+    val communityChatViewModel: CommunityChatViewModel = hiltViewModel() // Add this
+    val totalMembers by communityChatViewModel.totalMembers.collectAsState()
 
     val viewModel: EventListViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val selectedOption by viewModel.selectedOption
     val isRefreshing = uiState.isRefreshing
+    val context = LocalContext.current
+    val sessionManager = SessionManager.getInstance(context)
 
     val pullRefreshState = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = {
         viewModel.refreshList()
@@ -100,6 +107,27 @@ fun EventScreen(navController: NavHostController) {
                 inclusive = true
             }
         }
+    }
+    var pendingNavigationData by remember {
+        mutableStateOf<CommunityNavData?>(null)
+    }
+    LaunchedEffect(totalMembers, pendingNavigationData) {
+
+        val data = pendingNavigationData ?: return@LaunchedEffect
+        val members = totalMembers ?: return@LaunchedEffect
+
+        navController.navigate(
+            "${Routes.COMMUNITY_CHAT_SCREEN}/" +
+                    "${data.userId}/" +
+                    "${data.receiverImage}/" +
+                    "${data.receiverName}/" +
+                    "${data.postId}/" +
+                    "event/" +
+                    members
+        )
+
+        pendingNavigationData = null
+        communityChatViewModel.clearTotalMembers()
     }
 
     Column(modifier = Modifier
@@ -177,7 +205,17 @@ fun EventScreen(navController: NavHostController) {
                                     val receiverImage = URLEncoder.encode(firstImageUrl, StandardCharsets.UTF_8.toString())
                                     val receiverName = URLEncoder.encode(it.event_title ?: "", StandardCharsets.UTF_8.toString())
                                     val type = "event"
-                                    navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type")
+                                    communityChatViewModel.joinCommunity(
+                                        userId = listOf(sessionManager.getUserId()),
+                                        eventId = it.id.toString() ?: ""
+                                    )
+                                    pendingNavigationData = CommunityNavData(
+                                        userId = it.user_id.toString(),
+                                        postId = it.id.toString() ?: "",
+                                        receiverImage = receiverImage,
+                                        receiverName = receiverName
+                                    )
+                                   // navController.navigate("${Routes.COMMUNITY_CHAT_SCREEN}/$receiverId/$receiverImage/$receiverName/$chatId/$type")
                                 }
 
                         }

@@ -3,8 +3,11 @@ package com.bussiness.slodoggiesapp.data.remote
 import android.util.Log
 import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
 import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
+import com.bussiness.slodoggiesapp.data.model.common.AllChatListResponse
 import com.bussiness.slodoggiesapp.data.model.common.CreateChannelResponse
 import com.bussiness.slodoggiesapp.data.model.common.ErrorResponse
+import com.bussiness.slodoggiesapp.data.model.common.JoinCommunityRequest
+import com.bussiness.slodoggiesapp.data.model.common.JoinCommunityResponse
 import com.bussiness.slodoggiesapp.data.model.common.UserImageResponse
 import com.bussiness.slodoggiesapp.data.model.petOwner.FollowStatusResponse
 import com.bussiness.slodoggiesapp.data.newModel.baseresponse.BaseResponse
@@ -813,6 +816,20 @@ class RepositoryImpl @Inject constructor(private val api: ApiService) : Reposito
     override suspend fun getUserImage(userId: String): Flow<Resource<UserImageResponse>> =flow{
         emit(Resource.Loading)
         emit(safeApiCall { api.getUserImage(userId) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun joinCommunity(
+        userId: List<String>,
+        eventId: String
+    ): Flow<Resource<JoinCommunityResponse>> =flow{
+        emit(Resource.Loading)
+        val request = JoinCommunityRequest(userId, eventId)
+        emit(safeApiCall { api.joinCommunity(request) })
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun allChatList( userId :String): Flow<Resource<AllChatListResponse>> =flow{
+        emit(Resource.Loading)
+        emit(safeApiCall { api.allChatList(userId) })
     }.flowOn(Dispatchers.IO)
 
 }

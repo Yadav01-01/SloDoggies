@@ -2,7 +2,9 @@ package com.bussiness.slodoggiesapp.data.remote
 
 import com.bussiness.slodoggiesapp.data.model.businessProvider.BusinessData
 import com.bussiness.slodoggiesapp.data.model.businessProvider.DeleteResponse
+import com.bussiness.slodoggiesapp.data.model.common.AllChatListResponse
 import com.bussiness.slodoggiesapp.data.model.common.CreateChannelResponse
+import com.bussiness.slodoggiesapp.data.model.common.JoinCommunityResponse
 import com.bussiness.slodoggiesapp.data.model.common.UserImageResponse
 import com.bussiness.slodoggiesapp.data.model.petOwner.FollowStatusResponse
 import com.bussiness.slodoggiesapp.data.newModel.businessDetail.BusinessDetailsResponse
@@ -40,9 +42,13 @@ import com.bussiness.slodoggiesapp.data.newModel.subscription.SubscriptionRespon
 import com.bussiness.slodoggiesapp.data.newModel.termscondition.TermsConditionModel
 import com.bussiness.slodoggiesapp.data.newModel.updatepet.UpdatePetModel
 import com.bussiness.slodoggiesapp.network.Resource
+import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.Field
+import retrofit2.http.POST
 
 interface Repository {
 
@@ -458,5 +464,15 @@ interface Repository {
     suspend fun getUserImage(
         @Field("user_id") userId :String
     ) : Flow<Resource<UserImageResponse>>
+
+    suspend fun joinCommunity(
+        userId :List<String>,
+        eventId: String
+    ) : Flow<Resource<JoinCommunityResponse>>
+
+
+
+
+    suspend fun allChatList( userId :String): Flow<Resource<AllChatListResponse>>
 
 }
